@@ -29,6 +29,17 @@ export function EventFilters({ onFilterChange, selectedDate }: EventFiltersProps
     });
   };
 
+  const handleShowAll = () => {
+    setDate(undefined);
+    setGenre("all");
+    setArtist("");
+    onFilterChange({
+      date: undefined,
+      genre: "all",
+      artist: "",
+    });
+  };
+
   return (
     <div className="space-y-4">
       <Card>
@@ -67,9 +78,18 @@ export function EventFilters({ onFilterChange, selectedDate }: EventFiltersProps
             />
           </div>
 
-          <Button className="w-full" onClick={handleApplyFilters}>
-            Aplicar Filtros
-          </Button>
+          <div className="flex gap-2">
+            <Button className="flex-1" onClick={handleApplyFilters}>
+              Aplicar Filtros
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1" 
+              onClick={handleShowAll}
+            >
+              Mostrar Todos
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
