@@ -9,7 +9,7 @@ export default function Home() {
         <p className="text-xl text-muted-foreground">Música Argentina en Berlín</p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
         <Card>
           <CardHeader>
             <CardTitle>Próximos Eventos</CardTitle>
@@ -27,16 +27,6 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Button className="w-full">Explorar Artistas</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Lugares</CardTitle>
-            <CardDescription>Descubre los mejores lugares para música argentina en Berlín</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full">Ver Lugares</Button>
           </CardContent>
         </Card>
       </div>
