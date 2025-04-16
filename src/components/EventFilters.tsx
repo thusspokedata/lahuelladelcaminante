@@ -5,8 +5,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EventCalendar } from "@/components/EventCalendar";
+import { useState } from "react";
 
-export function EventFilters() {
+interface EventFiltersProps {
+  onFilterChange: (filters: {
+    date: Date | undefined;
+    genre: string | undefined;
+    artist: string;
+  }) => void;
+}
+
+export function EventFilters({ onFilterChange }: EventFiltersProps) {
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [genre, setGenre] = useState<string | undefined>(undefined);
+  const [artist, setArtist] = useState("");
+
+  const handleApplyFilters = () => {
+    onFilterChange({
+      date,
+      genre,
+      artist,
+    });
+  };
+
   return (
     <div className="space-y-4">
       <Card>
@@ -16,12 +37,12 @@ export function EventFilters() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Fecha</label>
-            <EventCalendar />
+            <EventCalendar onSelect={setDate} />
           </div>
           
           <div className="space-y-2">
             <label className="text-sm font-medium">Género</label>
-            <Select>
+            <Select value={genre} onValueChange={setGenre}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar género" />
               </SelectTrigger>
@@ -37,10 +58,16 @@ export function EventFilters() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Artista</label>
-            <Input placeholder="Buscar artista..." />
+            <Input 
+              placeholder="Buscar artista..." 
+              value={artist}
+              onChange={(e) => setArtist(e.target.value)}
+            />
           </div>
 
-          <Button className="w-full">Aplicar Filtros</Button>
+          <Button className="w-full" onClick={handleApplyFilters}>
+            Aplicar Filtros
+          </Button>
         </CardContent>
       </Card>
     </div>
