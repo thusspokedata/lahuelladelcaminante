@@ -28,7 +28,7 @@ const mockEvents = [
     location: "Café Tango",
     time: "20:00",
     price: 15,
-    imageUrl: "/placeholder.jpg"
+    imageUrl: "https://picsum.photos/seed/tango/400/300"
   },
   {
     id: "2",
@@ -44,7 +44,7 @@ const mockEvents = [
     location: "La Peña",
     time: "21:00",
     price: 12,
-    imageUrl: "/placeholder.jpg"
+    imageUrl: "https://picsum.photos/seed/folklore/400/300"
   },
   {
     id: "3",
@@ -60,7 +60,7 @@ const mockEvents = [
     location: "Rock Bar",
     time: "19:00",
     price: 10,
-    imageUrl: "/placeholder.jpg"
+    imageUrl: "https://picsum.photos/seed/rock/400/300"
   }
 ];
 
