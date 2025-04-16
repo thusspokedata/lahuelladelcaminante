@@ -2,14 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { EventCalendar } from "@/components/EventCalendar";
 
 export function EventFilters() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-
   return (
     <div className="space-y-4">
       <Card>
@@ -19,12 +16,7 @@ export function EventFilters() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Fecha</label>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border"
-            />
+            <EventCalendar />
           </div>
           
           <div className="space-y-2">
