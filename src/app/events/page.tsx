@@ -66,7 +66,7 @@ const mockEvents = [
 
 export default function EventsPage() {
   const [filteredEvents, setFilteredEvents] = useState(mockEvents);
-  const [date, setDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const handleFilterChange = (filters: {
     date: Date | undefined;
@@ -74,6 +74,7 @@ export default function EventsPage() {
     artist: string;
   }) => {
     let filtered = [...mockEvents];
+    setSelectedDate(filters.date);
 
     // Only filter by genre if a genre is selected
     if (filters.genre && filters.genre !== "all") {
@@ -111,12 +112,12 @@ export default function EventsPage() {
   // Create a flat list of events with their dates for chronological sorting
   const sortedEvents = filteredEvents.flatMap(event => {
     // If a date filter is applied, only show the matching date
-    if (date) {
+    if (selectedDate) {
       const matchingDate = event.dates.find(d => {
         const eventDate = d.dateObj;
-        return eventDate.getDate() === date.getDate() &&
-               eventDate.getMonth() === date.getMonth() &&
-               eventDate.getFullYear() === date.getFullYear();
+        return eventDate.getDate() === selectedDate.getDate() &&
+               eventDate.getMonth() === selectedDate.getMonth() &&
+               eventDate.getFullYear() === selectedDate.getFullYear();
       });
       return matchingDate ? [{
         ...event,
@@ -147,7 +148,7 @@ export default function EventsPage() {
       </header>
 
       <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-        <EventFilters onFilterChange={handleFilterChange} selectedDate={date} />
+        <EventFilters onFilterChange={handleFilterChange} selectedDate={selectedDate} />
 
         {/* Lista de Eventos */}
         <div className="space-y-4">
