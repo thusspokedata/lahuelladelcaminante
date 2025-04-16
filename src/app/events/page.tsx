@@ -1,5 +1,10 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EventCard } from "@/components/EventCard";
 import { EventFilters } from "@/components/EventFilters";
+import Link from "next/link";
 
 const mockEvents = [
   {
@@ -41,8 +46,15 @@ export default function EventsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Eventos</h1>
-        <p className="text-xl text-muted-foreground">Próximos shows de música argentina en Berlín</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Eventos</h1>
+            <p className="text-xl text-muted-foreground">Próximos shows de música argentina en Berlín</p>
+          </div>
+          <Link href="/">
+            <Button variant="outline">Volver al Inicio</Button>
+          </Link>
+        </div>
       </header>
 
       <div className="grid gap-8 md:grid-cols-[300px_1fr]">
