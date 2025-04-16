@@ -17,7 +17,7 @@ interface EventFiltersProps {
 
 export function EventFilters({ onFilterChange }: EventFiltersProps) {
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const [genre, setGenre] = useState<string | undefined>(undefined);
+  const [genre, setGenre] = useState<string>("all");
   const [artist, setArtist] = useState("");
 
   const handleApplyFilters = () => {
@@ -47,6 +47,7 @@ export function EventFilters({ onFilterChange }: EventFiltersProps) {
                 <SelectValue placeholder="Seleccionar género" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Todos los géneros</SelectItem>
                 <SelectItem value="tango">Tango</SelectItem>
                 <SelectItem value="folklore">Folklore</SelectItem>
                 <SelectItem value="rock">Rock</SelectItem>
