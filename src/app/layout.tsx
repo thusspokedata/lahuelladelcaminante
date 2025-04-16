@@ -5,12 +5,12 @@ import { Providers } from "./providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,14 +34,23 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header className="flex justify-end items-center p-4 gap-4 h-16">
-              <SignedOut>
-                <SignInButton />
-                <SignUpButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+            <header className="flex justify-between items-center p-4 h-16">
+              <Link href="/">
+                <Button variant="outline">Volver al Inicio</Button>
+              </Link>
+              <div className="flex gap-4">
+                <SignedOut>
+                  <Link href="/sign-in">
+                    <Button variant="outline">Iniciar Sesión</Button>
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button>Registrarse</Button>
+                  </Link>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
             </header>
             {children}
           </ThemeProvider>
