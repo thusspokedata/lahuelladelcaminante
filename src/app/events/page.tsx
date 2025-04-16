@@ -66,6 +66,7 @@ const mockEvents = [
 
 export default function EventsPage() {
   const [filteredEvents, setFilteredEvents] = useState(mockEvents);
+  const [date, setDate] = useState<Date | null>(null);
 
   const handleFilterChange = (filters: {
     date: Date | undefined;
@@ -108,13 +109,28 @@ export default function EventsPage() {
   };
 
   // Create a flat list of events with their dates for chronological sorting
-  const sortedEvents = filteredEvents.flatMap(event => 
-    event.dates.map(dateObj => ({
+  const sortedEvents = filteredEvents.flatMap(event => {
+    // If a date filter is applied, only show the matching date
+    if (date) {
+      const matchingDate = event.dates.find(d => {
+        const eventDate = d.dateObj;
+        return eventDate.getDate() === date.getDate() &&
+               eventDate.getMonth() === date.getMonth() &&
+               eventDate.getFullYear() === date.getFullYear();
+      });
+      return matchingDate ? [{
+        ...event,
+        date: matchingDate.date,
+        dateObj: matchingDate.dateObj
+      }] : [];
+    }
+    // Otherwise show all dates
+    return event.dates.map(dateObj => ({
       ...event,
       date: dateObj.date,
       dateObj: dateObj.dateObj
-    }))
-  ).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+    }));
+  }).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -131,7 +147,7 @@ export default function EventsPage() {
       </header>
 
       <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-        <EventFilters onFilterChange={handleFilterChange} />
+        <EventFilters onFilterChange={handleFilterChange} selectedDate={date} />
 
         {/* Lista de Eventos */}
         <div className="space-y-4">

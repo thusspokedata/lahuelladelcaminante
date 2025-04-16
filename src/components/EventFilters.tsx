@@ -13,10 +13,11 @@ interface EventFiltersProps {
     genre: string | undefined;
     artist: string;
   }) => void;
+  selectedDate: Date | undefined;
 }
 
-export function EventFilters({ onFilterChange }: EventFiltersProps) {
-  const [date, setDate] = useState<Date | undefined>(undefined);
+export function EventFilters({ onFilterChange, selectedDate }: EventFiltersProps) {
+  const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [genre, setGenre] = useState<string>("all");
   const [artist, setArtist] = useState("");
 
@@ -37,7 +38,7 @@ export function EventFilters({ onFilterChange }: EventFiltersProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Fecha</label>
-            <EventCalendar onSelect={setDate} />
+            <EventCalendar onSelect={setDate} selectedDate={date} />
           </div>
           
           <div className="space-y-2">

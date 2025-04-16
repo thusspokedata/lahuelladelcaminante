@@ -5,10 +5,11 @@ import { Suspense, useState } from "react";
 
 interface EventCalendarProps {
   onSelect?: (date: Date | undefined) => void;
+  selectedDate?: Date | undefined;
 }
 
-function CalendarComponent({ onSelect }: EventCalendarProps) {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+function CalendarComponent({ onSelect, selectedDate }: EventCalendarProps) {
+  const [date, setDate] = useState<Date | undefined>(selectedDate);
 
   const handleSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
