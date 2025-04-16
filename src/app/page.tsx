@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -16,7 +17,9 @@ export default function Home() {
             <CardDescription>Descubre los próximos shows de música argentina en Berlín</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full">Ver Eventos</Button>
+            <Link href="/events">
+              <Button className="w-full">Ver Eventos</Button>
+            </Link>
           </CardContent>
         </Card>
 
