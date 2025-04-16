@@ -14,9 +14,14 @@ interface EventFiltersProps {
     artist: string;
   }) => void;
   selectedDate: Date | undefined;
+  events: {
+    dates: {
+      dateObj: Date;
+    }[];
+  }[];
 }
 
-export function EventFilters({ onFilterChange, selectedDate }: EventFiltersProps) {
+export function EventFilters({ onFilterChange, selectedDate, events }: EventFiltersProps) {
   const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [genre, setGenre] = useState<string>("all");
   const [artist, setArtist] = useState("");
@@ -49,7 +54,7 @@ export function EventFilters({ onFilterChange, selectedDate }: EventFiltersProps
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Fecha</label>
-            <EventCalendar onSelect={setDate} selectedDate={date} />
+            <EventCalendar onSelect={setDate} selectedDate={date} events={events} />
           </div>
           
           <div className="space-y-2">

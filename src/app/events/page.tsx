@@ -148,7 +148,11 @@ export default function EventsPage() {
       </header>
 
       <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-        <EventFilters onFilterChange={handleFilterChange} selectedDate={selectedDate} />
+        <EventFilters 
+          onFilterChange={handleFilterChange} 
+          selectedDate={selectedDate} 
+          events={mockEvents}
+        />
 
         {/* Lista de Eventos */}
         <div className="space-y-4">
