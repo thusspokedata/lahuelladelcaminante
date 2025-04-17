@@ -3,7 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { EventCalendar } from "@/components/EventCalendar";
 import { useState } from "react";
 
@@ -56,7 +62,7 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
             <label className="text-sm font-medium">Fecha</label>
             <EventCalendar onSelect={setDate} selectedDate={date} events={events} />
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Género</label>
             <Select value={genre} onValueChange={setGenre}>
@@ -76,8 +82,8 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Artista</label>
-            <Input 
-              placeholder="Buscar artista..." 
+            <Input
+              placeholder="Buscar artista..."
               value={artist}
               onChange={(e) => setArtist(e.target.value)}
             />
@@ -87,11 +93,7 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
             <Button className="flex-1" onClick={handleApplyFilters}>
               Aplicar Filtros
             </Button>
-            <Button 
-              variant="outline" 
-              className="flex-1" 
-              onClick={handleShowAll}
-            >
+            <Button variant="outline" className="flex-1" onClick={handleShowAll}>
               Mostrar Todos
             </Button>
           </div>
@@ -99,4 +101,4 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
       </Card>
     </div>
   );
-} 
+}

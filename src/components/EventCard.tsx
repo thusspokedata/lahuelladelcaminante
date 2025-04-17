@@ -42,7 +42,7 @@ export function EventCard({
               <Image
                 src={images[0].url}
                 alt={images[0].alt}
-                className="object-cover rounded-md"
+                className="rounded-md object-cover"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
@@ -50,7 +50,7 @@ export function EventCard({
               <ImagePlaceholder className="h-full" />
             )}
           </div>
-          <div className="flex-1 flex flex-col justify-between">
+          <div className="flex flex-1 flex-col justify-between">
             <div>
               <h3 className="text-xl font-semibold">{artist}</h3>
               <p className="text-muted-foreground">Género: {genre}</p>
@@ -58,10 +58,10 @@ export function EventCard({
               <p className="text-muted-foreground">Hora: {time}</p>
               {price && <p className="text-muted-foreground">Precio: €{price}</p>}
             </div>
-            <Button className="self-start mt-4">Ver Detalles</Button>
+            <Button className="mt-4 self-start">Ver Detalles</Button>
           </div>
         </div>
       </CardContent>
     </Card>
   );
-} 
+}
