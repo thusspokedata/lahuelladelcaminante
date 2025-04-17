@@ -1,43 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
+import { Artist } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 
-interface ArtistImage {
-  url: string;
-  alt: string;
+export interface ArtistCardProps {
+  artist: Artist;
 }
 
-interface ArtistCardProps {
-  id: string;
-  name: string;
-  genres: string[];
-  bio: string;
-  origin: string;
-  images?: ArtistImage[];
-  socialMedia?: {
-    instagram?: string;
-    spotify?: string;
-    youtube?: string;
-    website?: string;
-  };
-}
+export function ArtistCard({ artist }: ArtistCardProps) {
+  const { id, name, genres = [], bio, origin, images = [], socialMedia } = artist;
 
-export function ArtistCard({
-  id,
-  name,
-  genres,
-  bio,
-  origin,
-  images = [],
-  socialMedia,
-}: ArtistCardProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
-        <CardDescription>{genres.join(", ")}</CardDescription>
+        <CardDescription>{genres?.join(", ") || "Sin géneros"}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex gap-4">
