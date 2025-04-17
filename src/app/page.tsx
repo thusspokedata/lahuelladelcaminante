@@ -31,7 +31,9 @@ export default function Home() {
             <CardDescription>Conoce a los artistas argentinos que actúan en Berlín</CardDescription>
           </CardHeader>
           <CardContent className="mt-auto">
-            <Button className="w-full">Explorar Artistas</Button>
+            <Link href="/artists">
+              <Button className="w-full">Explorar Artistas</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
