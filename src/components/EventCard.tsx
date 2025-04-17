@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
+import Link from "next/link";
 
 interface EventImage {
   url: string;
@@ -9,6 +10,7 @@ interface EventImage {
 }
 
 interface EventCardProps {
+  id: string;
   title: string;
   date: string;
   artist: string;
@@ -20,6 +22,7 @@ interface EventCardProps {
 }
 
 export function EventCard({
+  id,
   title,
   date,
   artist,
@@ -58,7 +61,9 @@ export function EventCard({
               <p className="text-muted-foreground">Hora: {time}</p>
               {price && <p className="text-muted-foreground">Precio: €{price}</p>}
             </div>
-            <Button className="mt-4 self-start">Ver Detalles</Button>
+            <Link href={`/events/${id}`}>
+              <Button className="mt-4">Ver Detalles</Button>
+            </Link>
           </div>
         </div>
       </CardContent>

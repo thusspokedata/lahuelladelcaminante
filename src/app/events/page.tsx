@@ -118,6 +118,7 @@ export default function EventsPage() {
             sortedEvents.map((event, index) => (
               <EventCard
                 key={`${event.id}-${index}`}
+                id={event.id}
                 title={event.title}
                 date={event.date}
                 artist={event.artist}

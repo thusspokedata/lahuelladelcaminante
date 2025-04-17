@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ArtistImage {
   url: string;
@@ -9,6 +10,7 @@ interface ArtistImage {
 }
 
 interface ArtistCardProps {
+  id: string;
   name: string;
   genres: string[];
   bio: string;
@@ -23,6 +25,7 @@ interface ArtistCardProps {
 }
 
 export function ArtistCard({
+  id,
   name,
   genres,
   bio,
@@ -104,7 +107,9 @@ export function ArtistCard({
                 </div>
               )}
             </div>
-            <Button className="mt-4 self-start">Ver Perfil</Button>
+            <Link href={`/artists/${id}`}>
+              <Button className="mt-4">Ver Perfil</Button>
+            </Link>
           </div>
         </div>
       </CardContent>
