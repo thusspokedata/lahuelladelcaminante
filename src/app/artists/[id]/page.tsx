@@ -76,9 +76,16 @@ export default function ArtistPage({ params }: { params: { id: string } }) {
                           <div>
                             <h3 className="text-xl font-medium">{event.title}</h3>
                             <div className="text-muted-foreground mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                              <div className="flex items-center">
-                                <Calendar size={16} className="mr-1" />
-                                <span>{event.dates[0].date}</span>
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center">
+                                  <Calendar size={16} className="mr-1" />
+                                  <span>Fechas:</span>
+                                </div>
+                                <ul className="ml-6 list-disc text-xs">
+                                  {event.dates.map((date, idx) => (
+                                    <li key={idx}>{date.date}</li>
+                                  ))}
+                                </ul>
                               </div>
                               <div className="flex items-center">
                                 <Music size={16} className="mr-1" />
