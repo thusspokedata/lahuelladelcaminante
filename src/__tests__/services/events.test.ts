@@ -94,6 +94,7 @@ describe("Events Service", () => {
         },
         where: {
           isActive: true,
+          isDeleted: false,
         },
       });
 
@@ -118,6 +119,7 @@ describe("Events Service", () => {
         where: {
           id: "event1",
           isActive: true,
+          isDeleted: false,
         },
         include: {
           dates: true,
@@ -157,6 +159,7 @@ describe("Events Service", () => {
         where: {
           slug: "test-event",
           isActive: true,
+          isDeleted: false,
         },
         include: {
           dates: true,
@@ -184,6 +187,7 @@ describe("Events Service", () => {
         where: {
           genre: "Tango",
           isActive: true,
+          isDeleted: false,
         },
         include: {
           dates: true,
@@ -216,6 +220,7 @@ describe("Events Service", () => {
             },
           },
           isActive: true,
+          isDeleted: false,
         },
         include: {
           images: true,
@@ -243,6 +248,7 @@ describe("Events Service", () => {
         where: {
           artistId: "artist1",
           isActive: true,
+          isDeleted: false,
         },
         include: {
           dates: true,
@@ -276,6 +282,7 @@ describe("Events Service", () => {
         where: {
           artistId: "artist1",
           isActive: true,
+          isDeleted: false,
         },
         include: {
           dates: true,
@@ -331,6 +338,7 @@ describe("Events Service", () => {
               },
             },
             isActive: true,
+            isDeleted: false,
           },
         })
       );
