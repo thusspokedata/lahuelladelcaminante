@@ -1,20 +1,14 @@
 import { SignUp } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
-export default function SignUpPage() {
+export default function Page() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <SignUp
-          appearance={{
-            elements: {
-              formButtonPrimary: "bg-primary hover:bg-primary/90",
-              footerActionLink: "text-primary hover:text-primary/90",
-            },
-          }}
-        />
+    <div className="flex min-h-screen items-center justify-center py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">Crear Cuenta</h2>
+        </div>
+        <SignUp />
       </div>
     </div>
   );
-} 
+}

@@ -2,7 +2,18 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { Suspense, useState } from "react";
-import { DayContent } from "react-day-picker";
+import { DayContent, DayContentProps } from "react-day-picker";
+
+// Defining this interface for potential future use or documentation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface Event {
+  id: string;
+  title: string;
+  date: Date;
+  description: string;
+  location: string;
+  image: string;
+}
 
 interface EventCalendarProps {
   onSelect?: (date: Date | undefined) => void;
@@ -23,26 +34,25 @@ function CalendarComponent({ onSelect, selectedDate, events }: EventCalendarProp
   };
 
   // Get all unique dates that have events
-  const eventDates = events?.flatMap(event => 
-    event.dates.map(d => d.dateObj)
-  ) || [];
+  const eventDates = events?.flatMap((event) => event.dates.map((d) => d.dateObj)) || [];
 
   // Function to check if a date has events
   const hasEvents = (date: Date) => {
-    return eventDates.some(eventDate => 
-      eventDate.getDate() === date.getDate() &&
-      eventDate.getMonth() === date.getMonth() &&
-      eventDate.getFullYear() === date.getFullYear()
+    return eventDates.some(
+      (eventDate) =>
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
     );
   };
 
-  const DayContentWithDot = (props: any) => {
+  const DayContentWithDot = (props: DayContentProps) => {
     const hasEvent = hasEvents(props.date);
     return (
       <div className="relative">
         <DayContent {...props} />
         {hasEvent && (
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-green-500" />
+          <div className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-green-500" />
         )}
       </div>
     );
@@ -63,10 +73,10 @@ function CalendarComponent({ onSelect, selectedDate, events }: EventCalendarProp
 
 export function EventCalendar(props: EventCalendarProps) {
   return (
-    <Suspense fallback={
-      <div className="h-[240px] w-full rounded-md border bg-muted animate-pulse" />
-    }>
+    <Suspense
+      fallback={<div className="bg-muted h-[240px] w-full animate-pulse rounded-md border" />}
+    >
       <CalendarComponent {...props} />
     </Suspense>
   );
-} 
+}
