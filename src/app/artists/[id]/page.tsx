@@ -7,9 +7,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
-export default async function ArtistPage({ params }: { params: { id: string } }) {
-  // No need to await params as it's not a promise
-  const { id } = params;
+export default async function ArtistPage({ params }: { params: Promise<{ id: string }> }) {
+  // In Next.js 15, params is now async and must be awaited
+  const { id } = await params;
   const artist = mockArtists.find((artist) => artist.id === id);
 
   // If artist not found, show 404
