@@ -5,7 +5,7 @@ import { UserRole, UserStatus } from "@/generated/prisma";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-// Verificar que el usuario actual es admin
+// Verify that the current user is admin
 async function verifyAdmin() {
   const { userId } = auth();
 
@@ -24,9 +24,9 @@ async function verifyAdmin() {
   return user;
 }
 
-// Actualizar el rol de un usuario
+// Update a user's role
 export async function updateUserRoleAction(userId: string, role: UserRole) {
-  // Verificar que el usuario que hace la acción es admin
+  // Verify that the user performing the action is admin
   await verifyAdmin();
 
   try {
@@ -42,9 +42,9 @@ export async function updateUserRoleAction(userId: string, role: UserRole) {
   }
 }
 
-// Actualizar el estado de un usuario
+// Update a user's status
 export async function updateUserStatusAction(userId: string, status: UserStatus) {
-  // Verificar que el usuario que hace la acción es admin
+  // Verify that the user performing the action is admin
   await verifyAdmin();
 
   try {
@@ -60,9 +60,9 @@ export async function updateUserStatusAction(userId: string, status: UserStatus)
   }
 }
 
-// Obtener todos los usuarios
+// Get all users
 export async function getAllUsersAction() {
-  // Verificar que el usuario que hace la acción es admin
+  // Verify that the user performing the action is admin
   await verifyAdmin();
 
   try {
@@ -79,9 +79,9 @@ export async function getAllUsersAction() {
   }
 }
 
-// Obtener usuarios pendientes
+// Get pending users
 export async function getPendingUsersAction() {
-  // Verificar que el usuario que hace la acción es admin
+  // Verify that the user performing the action is admin
   await verifyAdmin();
 
   try {

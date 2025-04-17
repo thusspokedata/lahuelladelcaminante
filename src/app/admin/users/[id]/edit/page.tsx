@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { UserRoleForm } from "./UserRoleForm";
 import { UserStatusForm } from "./UserStatusForm";
 
-// Props para la página
+// Props for the page
 interface EditUserPageProps {
   params: {
     id: string;
@@ -14,18 +14,18 @@ interface EditUserPageProps {
 }
 
 export default async function EditUserPage({ params }: EditUserPageProps) {
-  // Verificar que el usuario actual es un administrador
+  // Check if the current user is an administrator
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "ADMIN") {
     redirect("/dashboard");
   }
 
-  // Obtener el usuario a editar
+  // Get the user to edit
   const user = await db.user.findUnique({
     where: { id: params.id },
   });
 
-  // Si el usuario no existe, redirigir
+  // If the user doesn't exist, redirect
   if (!user) {
     redirect("/admin/users");
   }
@@ -40,7 +40,7 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Información del usuario */}
+        {/* User information */}
         <div className="rounded-lg border p-6">
           <h2 className="mb-4 text-xl font-semibold">Información del Usuario</h2>
           <dl className="space-y-4">
@@ -71,15 +71,15 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
           </dl>
         </div>
 
-        {/* Formularios para editar el usuario */}
+        {/* Forms to edit the user */}
         <div className="space-y-6">
-          {/* Formulario para editar el rol */}
+          {/* Form to edit the role */}
           <div className="rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">Rol de Usuario</h2>
             <UserRoleForm userId={user.id} currentRole={user.role} />
           </div>
 
-          {/* Formulario para editar el estado */}
+          {/* Form to edit the status */}
           <div className="rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">Estado de Usuario</h2>
             <UserStatusForm userId={user.id} currentStatus={user.status} />

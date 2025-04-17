@@ -16,24 +16,24 @@ export function UserRoleForm({ userId, currentRole }: UserRoleFormProps) {
   const [role, setRole] = useState<UserRole>(currentRole);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Manejar el cambio de rol
+  // Handle role change
   const handleRoleChange = (newRole: UserRole) => {
     setRole(newRole);
   };
 
-  // Enviar el formulario
+  // Submit the form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (role === currentRole) {
-      return; // No hay cambios que guardar
+      return; // No changes to save
     }
 
     setIsSubmitting(true);
 
     try {
       await updateUserRole(userId, role);
-      router.refresh(); // Actualizar la página para mostrar los cambios
+      router.refresh(); // Refresh the page to show changes
     } catch (error) {
       console.error("Error al actualizar el rol:", error);
       alert("Ocurrió un error al actualizar el rol. Por favor, inténtelo de nuevo.");
@@ -76,7 +76,7 @@ export function UserRoleForm({ userId, currentRole }: UserRoleFormProps) {
   );
 }
 
-// Componente para cada opción de rol
+// Component for each role option
 function RoleOption({
   role,
   currentRole,

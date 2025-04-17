@@ -16,24 +16,24 @@ export function UserStatusForm({ userId, currentStatus }: UserStatusFormProps) {
   const [status, setStatus] = useState<UserStatus>(currentStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Manejar el cambio de estado
+  // Handle status change
   const handleStatusChange = (newStatus: UserStatus) => {
     setStatus(newStatus);
   };
 
-  // Enviar el formulario
+  // Submit the form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (status === currentStatus) {
-      return; // No hay cambios que guardar
+      return; // No changes to save
     }
 
     setIsSubmitting(true);
 
     try {
       await updateUserStatus(userId, status);
-      router.refresh(); // Actualizar la página para mostrar los cambios
+      router.refresh(); // Refresh the page to show changes
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
       alert("Ocurrió un error al actualizar el estado. Por favor, inténtelo de nuevo.");
@@ -76,7 +76,7 @@ export function UserStatusForm({ userId, currentStatus }: UserStatusFormProps) {
   );
 }
 
-// Componente para cada opción de estado
+// Component for each status option
 function StatusOption({
   status,
   currentStatus,
@@ -92,7 +92,7 @@ function StatusOption({
 }) {
   const isSelected = status === currentStatus;
 
-  // Diferentes colores según el estado
+  // Different colors based on status
   let colorClass = "";
   switch (status) {
     case "ACTIVE":

@@ -4,15 +4,15 @@ import { getAllUsers, getCurrentUser, updateUserRole, updateUserStatus } from "@
 import { Button } from "@/components/ui/button";
 import { UserRole, UserStatus } from "@/generated/prisma";
 
-// Componente para gestionar usuarios
+// Component to manage users
 export default async function AdminUsersPage() {
-  // Verificamos que el usuario actual sea administrador
+  // Check that the current user is an admin
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "ADMIN") {
     redirect("/dashboard");
   }
 
-  // Obtenemos todos los usuarios
+  // Get all users
   const users = await getAllUsers();
 
   return (
@@ -24,7 +24,7 @@ export default async function AdminUsersPage() {
         </Link>
       </div>
 
-      {/* Tabla de usuarios */}
+      {/* User table */}
       <div className="overflow-x-auto rounded-lg border">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -147,7 +147,7 @@ export default async function AdminUsersPage() {
   );
 }
 
-// Componente para mostrar el rol con un badge colorido
+// Component to display role with a colorful badge
 function UserRoleBadge({ role }: { role: UserRole }) {
   let badgeClass = "inline-flex rounded-full px-2 text-xs font-semibold leading-5 ";
 
@@ -168,7 +168,7 @@ function UserRoleBadge({ role }: { role: UserRole }) {
   return <span className={badgeClass}>{role}</span>;
 }
 
-// Componente para mostrar el estado con un badge colorido
+// Component to display status with a colorful badge
 function UserStatusBadge({ status }: { status: UserStatus }) {
   let badgeClass = "inline-flex rounded-full px-2 text-xs font-semibold leading-5 ";
 

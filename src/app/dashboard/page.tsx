@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  // Obtener el usuario actual con información de nuestra BD
+  // Get the current user with information from our DB
   const user = await getCurrentUser();
 
-  // Esto no debería ocurrir debido al middleware, pero por si acaso
+  // This shouldn't happen due to the middleware, but just in case
   if (!user || user.status !== "ACTIVE") {
     redirect("/");
   }
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
         </dl>
       </div>
 
-      {/* Enlaces específicos por rol */}
+      {/* Role-specific links */}
       <div className="space-y-4">
         {user.role === "ADMIN" && (
           <div className="rounded-lg border p-6">
