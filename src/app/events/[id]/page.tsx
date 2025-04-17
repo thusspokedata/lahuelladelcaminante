@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockEvents, findArtistByEvent, Event, Artist } from "@/mockData";
+import { Event, Artist, findArtistByEvent } from "@/services";
 import {
   CalendarIcon,
   ClockIcon,
@@ -15,6 +15,7 @@ import {
   MusicIcon,
   ArrowLeftIcon,
 } from "lucide-react";
+import { getEventById } from "@/services/events";
 
 export default function EventDetails() {
   const params = useParams();
@@ -23,17 +24,27 @@ export default function EventDetails() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would be a fetch request to the API
-    const eventId = params.id as string;
-    const foundEvent = mockEvents.find((e) => e.id === eventId);
-    setEvent(foundEvent);
+    async function loadEventData() {
+      try {
+        const eventId = params.id as string;
 
-    if (foundEvent) {
-      const foundArtist = findArtistByEvent(eventId);
-      setArtist(foundArtist);
+        // Fetch event from database
+        const foundEvent = await getEventById(eventId);
+        setEvent(foundEvent || undefined);
+
+        if (foundEvent) {
+          // Fetch artist associated with the event
+          const foundArtist = await findArtistByEvent(eventId);
+          setArtist(foundArtist);
+        }
+      } catch (error) {
+        console.error("Error fetching event data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    setIsLoading(false);
+    loadEventData();
   }, [params.id]);
 
   if (isLoading) {

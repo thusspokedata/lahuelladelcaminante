@@ -1,7 +1,10 @@
+import { getAllEvents } from "@/services/events";
 import { EventsClient } from "./ui";
-import { mockEvents } from "@/mockData";
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  // Fetch events from the database
+  const events = await getAllEvents();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
@@ -14,7 +17,7 @@ export default function EventsPage() {
       </header>
 
       {/* Pass events to client component */}
-      <EventsClient initialEvents={mockEvents} />
+      <EventsClient initialEvents={events} />
     </div>
   );
 }
