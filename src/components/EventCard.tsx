@@ -31,25 +31,28 @@ export function EventCard({
       </CardHeader>
       <CardContent>
         <div className="flex gap-4">
-          <div className="w-32 h-32 relative">
+          <div className="relative w-48">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={title}
-                fill
                 className="object-cover rounded-md"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
               <div className="w-full h-full bg-gray-200 rounded-md"></div>
             )}
           </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-semibold">{artist}</h3>
-            <p className="text-muted-foreground">Género: {genre}</p>
-            <p className="text-muted-foreground">Lugar: {location}</p>
-            <p className="text-muted-foreground">Hora: {time}</p>
-            {price && <p className="text-muted-foreground">Precio: €{price}</p>}
-            <Button className="mt-4">Ver Detalles</Button>
+          <div className="flex-1 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-semibold">{artist}</h3>
+              <p className="text-muted-foreground">Género: {genre}</p>
+              <p className="text-muted-foreground">Lugar: {location}</p>
+              <p className="text-muted-foreground">Hora: {time}</p>
+              {price && <p className="text-muted-foreground">Precio: €{price}</p>}
+            </div>
+            <Button className="self-start mt-4">Ver Detalles</Button>
           </div>
         </div>
       </CardContent>
