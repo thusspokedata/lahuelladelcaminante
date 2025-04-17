@@ -12,6 +12,7 @@ interface EventImage {
 interface EventCardProps {
   id: string;
   title: string;
+  slug: string;
   date: string;
   artist: string;
   genre: string;
@@ -22,8 +23,8 @@ interface EventCardProps {
 }
 
 export function EventCard({
-  id,
   title,
+  slug,
   date,
   artist,
   genre,
@@ -61,7 +62,7 @@ export function EventCard({
               <p className="text-muted-foreground">Hora: {time}</p>
               {price && <p className="text-muted-foreground">Precio: €{price}</p>}
             </div>
-            <Link href={`/events/${id}`}>
+            <Link href={`/events/${slug}`}>
               <Button className="mt-4">Ver Detalles</Button>
             </Link>
           </div>
