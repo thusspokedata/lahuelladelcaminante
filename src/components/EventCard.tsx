@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
 
 interface EventCardProps {
@@ -41,7 +42,7 @@ export function EventCard({
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 rounded-md"></div>
+              <ImagePlaceholder className="h-full" />
             )}
           </div>
           <div className="flex-1 flex flex-col justify-between">
