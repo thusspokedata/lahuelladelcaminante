@@ -29,7 +29,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
 
     if (filters.artist) {
       filtered = filtered.filter((event) =>
-        event.artist.toLowerCase().includes(filters.artist.toLowerCase())
+        event.artist.name.toLowerCase().includes(filters.artist.toLowerCase())
       );
     }
 
@@ -37,7 +37,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
       filtered = filtered.filter((event) => {
         // Check if any of the event's dates match the selected date
         return event.dates.some((eventDate) => {
-          const eventDateObj = eventDate.dateObj;
+          const eventDateObj = new Date(eventDate.date);
           const filterDate = filters.date;
           if (!filterDate) return false;
           return (
@@ -52,7 +52,11 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     // Sort events chronologically
     filtered = filtered.map((event) => ({
       ...event,
-      dates: [...event.dates].sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime()),
+      dates: [...event.dates].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      }),
     }));
 
     setFilteredEvents(filtered);
@@ -64,7 +68,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
       // If a date filter is applied, only show the matching date
       if (selectedDate) {
         const matchingDate = event.dates.find((d) => {
-          const eventDate = d.dateObj;
+          const eventDate = new Date(d.date);
           return (
             eventDate.getDate() === selectedDate.getDate() &&
             eventDate.getMonth() === selectedDate.getMonth() &&
@@ -76,19 +80,28 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               {
                 ...event,
                 date: matchingDate.date,
-                dateObj: matchingDate.dateObj,
               },
             ]
           : [];
       }
       // Otherwise show all dates
-      return event.dates.map((dateObj) => ({
+      return event.dates.map((dateInfo) => ({
         ...event,
-        date: dateObj.date,
-        dateObj: dateObj.dateObj,
+        date: dateInfo.date,
       }));
     })
-    .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // Function to format dates in a user-friendly way
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="grid gap-8 md:grid-cols-[300px_1fr]">
@@ -98,7 +111,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         events={initialEvents}
       />
 
-      {/* Lista de Eventos */}
+      {/* Events List */}
       <div className="space-y-4">
         {sortedEvents.length === 0 ? (
           <Card>
@@ -114,13 +127,14 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               key={`${event.id}-${index}`}
               id={event.id}
               title={event.title}
-              date={event.date}
-              artist={event.artist}
+              date={formatDate(event.date)}
+              artist={event.artist.name}
               genre={event.genre}
               location={event.location}
               time={event.time}
               price={typeof event.price === "string" ? Number(event.price) : event.price}
               images={event.images}
+              slug={event.slug}
             />
           ))
         )}

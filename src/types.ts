@@ -6,6 +6,7 @@ export interface ArtistImage {
 export interface Artist {
   id: string;
   name: string;
+  slug: string;
   genres: string[];
   bio: string;
   origin: string;
@@ -26,14 +27,18 @@ export interface EventImage {
 
 export interface EventDate {
   date: string;
-  dateObj: Date;
 }
 
 export interface Event {
   id: string;
   title: string;
+  slug: string;
   dates: EventDate[];
-  artist: string;
+  artist: {
+    id: string;
+    name: string;
+    slug: string;
+  };
   genre: string;
   location: string;
   time: string;
@@ -42,5 +47,4 @@ export interface Event {
   images: EventImage[];
   // For events that have already gone through date processing
   date?: string;
-  dateObj?: Date;
 }

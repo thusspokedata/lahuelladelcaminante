@@ -10,7 +10,7 @@ export interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
-  const { id, name, genres = [], bio, origin, images = [], socialMedia } = artist;
+  const { name, genres = [], bio, origin, images = [], socialMedia, slug } = artist;
 
   return (
     <Card>
@@ -86,7 +86,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
                 </div>
               )}
             </div>
-            <Link href={`/artists/${id}`}>
+            <Link href={`/artists/${slug}`}>
               <Button className="mt-4">Ver Perfil</Button>
             </Link>
           </div>

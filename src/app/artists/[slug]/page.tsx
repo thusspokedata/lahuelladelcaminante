@@ -1,16 +1,27 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
-import { findEventsByArtist, mockArtists } from "@/mockData";
+import { getArtistBySlug } from "@/services/artists";
+import { getEventsByArtistId } from "@/services/events";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
-export default async function ArtistPage({ params }: { params: Promise<{ id: string }> }) {
-  // In Next.js 15, params is now async and must be awaited
-  const { id } = await params;
-  const artist = mockArtists.find((artist) => artist.id === id);
+// En Next.js 15, params debe ser await correctamente
+interface ArtistPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ArtistPage({ params }: ArtistPageProps) {
+  // Await params para acceder a sus propiedades
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+
+  console.log("Looking for artist with slug:", slug);
+
+  // Obtener artista de la base de datos
+  const artist = await getArtistBySlug(slug);
 
   // If artist not found, show 404
   if (!artist) {
@@ -18,18 +29,18 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
   }
 
   // Get upcoming events for this artist
-  const artistEvents = findEventsByArtist(artist.id);
+  const artistEvents = await getEventsByArtistId(artist.id);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <Link href="/artists" className="text-primary hover:underline">
-          ← Back to artists
+          ← Volver a artistas
         </Link>
       </div>
 
       <div className="grid gap-8 md:grid-cols-[1fr_400px]">
-        {/* Main content */}
+        {/* Main Content */}
         <div>
           <div className="mb-8 flex items-center gap-6">
             <div className="relative h-48 w-48 shrink-0 overflow-hidden rounded-full">
@@ -62,15 +73,15 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          <h2 className="mb-4 text-2xl font-semibold">Biography</h2>
+          <h2 className="mb-4 text-2xl font-semibold">Biografía</h2>
           <div className="mb-8 text-lg whitespace-pre-line">{artist.bio}</div>
 
           {artistEvents.length > 0 && (
             <>
-              <h2 className="mb-4 text-2xl font-semibold">Upcoming Events</h2>
+              <h2 className="mb-4 text-2xl font-semibold">Próximos Eventos</h2>
               <div className="space-y-4">
                 {artistEvents.map((event) => (
-                  <Link key={event.id} href={`/events/${event.id}`}>
+                  <Link key={event.id} href={`/events/${event.slug}`}>
                     <Card className="hover:bg-secondary/30 transition-colors">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
@@ -80,11 +91,11 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center">
                                   <Calendar size={16} className="mr-1" />
-                                  <span>Dates:</span>
+                                  <span>Fechas:</span>
                                 </div>
                                 <ul className="ml-6 list-disc text-xs">
                                   {event.dates.map((date, idx) => (
-                                    <li key={idx}>{date.date}</li>
+                                    <li key={idx}>{date.date.toLocaleDateString()}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -99,7 +110,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {event.price ? `${event.price}€` : "Free"}
+                            {event.price ? `${event.price}€` : "Gratis"}
                           </div>
                         </div>
                       </CardContent>
@@ -116,7 +127,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
           {artist.socialMedia && Object.values(artist.socialMedia).some(Boolean) && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="mb-4 text-xl font-semibold">Links</h2>
+                <h2 className="mb-4 text-xl font-semibold">Enlaces</h2>
                 <div className="flex flex-col space-y-3">
                   {artist.socialMedia.instagram && (
                     <a
@@ -193,7 +204,25 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
                           d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"
                         />
                       </svg>
-                      Website
+                      Sitio Web
+                    </a>
+                  )}
+                  {artist.socialMedia.tiktok && (
+                    <a
+                      href={artist.socialMedia.tiktok}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-black hover:underline"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2 h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                      </svg>
+                      TikTok
                     </a>
                   )}
                 </div>
@@ -204,7 +233,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
           {artist.images && artist.images.length > 0 && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="mb-4 text-xl font-semibold">Gallery</h2>
+                <h2 className="mb-4 text-xl font-semibold">Galería</h2>
                 <div className="grid grid-cols-2 gap-2">
                   {artist.images.map((image, index) => (
                     <div key={index} className="relative aspect-square overflow-hidden rounded-md">

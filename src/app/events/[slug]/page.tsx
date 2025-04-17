@@ -1,12 +1,9 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { getEventBySlug } from "@/services/events";
+import { getArtistById } from "@/services/artists";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockEvents, findArtistByEvent, Event, Artist } from "@/mockData";
 import {
   CalendarIcon,
   ClockIcon,
@@ -16,34 +13,24 @@ import {
   ArrowLeftIcon,
 } from "lucide-react";
 
-export default function EventDetails() {
-  const params = useParams();
-  const [event, setEvent] = useState<Event | undefined>(undefined);
-  const [artist, setArtist] = useState<Artist | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function EventDetails({ params }: { params: Promise<{ slug: string }> }) {
+  // Await params to access its properties
+  const resolvedParams = await params;
+  const eventSlug = resolvedParams.slug;
 
-  useEffect(() => {
-    // In a real app, this would be a fetch request to the API
-    const eventId = params.id as string;
-    const foundEvent = mockEvents.find((e) => e.id === eventId);
-    setEvent(foundEvent);
+  console.log("Looking for event with slug:", eventSlug);
 
-    if (foundEvent) {
-      const foundArtist = findArtistByEvent(eventId);
-      setArtist(foundArtist);
+  // Fetch data on the server
+  let event = null;
+  let artist = null;
+
+  try {
+    event = await getEventBySlug(eventSlug);
+    if (event) {
+      artist = await getArtistById(event.artist.id);
     }
-
-    setIsLoading(false);
-  }, [params.id]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <p>Cargando información del evento...</p>
-        </div>
-      </div>
-    );
+  } catch (error) {
+    console.error("Error fetching event data:", error);
   }
 
   if (!event) {
@@ -75,7 +62,7 @@ export default function EventDetails() {
         <div className="space-y-6">
           <div>
             <h1 className="mb-2 text-4xl font-bold">{event.title}</h1>
-            <p className="text-muted-foreground text-xl">{event.artist}</p>
+            <p className="text-muted-foreground text-xl">{event.artist.name}</p>
           </div>
 
           {/* Event Image */}
@@ -95,7 +82,7 @@ export default function EventDetails() {
             )}
           </div>
 
-          {/* Event Description */}
+          {/* About this Event */}
           <Card>
             <CardHeader>
               <CardTitle>Sobre este evento</CardTitle>
@@ -107,7 +94,7 @@ export default function EventDetails() {
             </CardContent>
           </Card>
 
-          {/* Other Images */}
+          {/* Gallery */}
           {event.images && event.images.length > 1 && (
             <Card>
               <CardHeader>
@@ -146,9 +133,19 @@ export default function EventDetails() {
                 <div>
                   <p className="font-medium">Fechas</p>
                   <ul className="text-muted-foreground">
-                    {event.dates.map((d, idx) => (
-                      <li key={idx}>{d.date}</li>
-                    ))}
+                    {event.dates.map((d, idx) => {
+                      const date = new Date(d.date);
+                      return (
+                        <li key={idx}>
+                          {date.toLocaleDateString("es-ES", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
@@ -213,7 +210,7 @@ export default function EventDetails() {
                   </div>
                 </div>
                 <p className="line-clamp-4 text-sm">{artist.bio}</p>
-                <Link href={`/artists/${artist.id}`}>
+                <Link href={`/artists/${artist.slug}`}>
                   <Button variant="outline" className="w-full">
                     Ver perfil completo
                   </Button>
@@ -222,7 +219,7 @@ export default function EventDetails() {
             </Card>
           )}
 
-          {/* Tickets Button */}
+          {/* Buy Tickets */}
           <Button className="w-full" size="lg">
             Comprar entradas
           </Button>

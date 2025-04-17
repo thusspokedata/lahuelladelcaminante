@@ -1,7 +1,10 @@
 import { ArtistsClient } from "./ui";
-import { mockArtists } from "@/mockData";
+import { getAllArtists } from "@/services/artists";
 
-export default function ArtistsPage() {
+export default async function ArtistsPage() {
+  // Fetch artists from database
+  const artists = await getAllArtists();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
@@ -14,7 +17,7 @@ export default function ArtistsPage() {
       </header>
 
       {/* Client component handles all interactive functionality */}
-      <ArtistsClient initialArtists={mockArtists} />
+      <ArtistsClient initialArtists={artists} />
     </div>
   );
 }

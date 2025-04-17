@@ -20,7 +20,7 @@ interface EventCalendarProps {
   selectedDate?: Date | undefined;
   events?: {
     dates: {
-      dateObj: Date;
+      date: string;
     }[];
   }[];
 }
@@ -34,7 +34,7 @@ function CalendarComponent({ onSelect, selectedDate, events }: EventCalendarProp
   };
 
   // Get all unique dates that have events
-  const eventDates = events?.flatMap((event) => event.dates.map((d) => d.dateObj)) || [];
+  const eventDates = events?.flatMap((event) => event.dates.map((d) => new Date(d.date))) || [];
 
   // Function to check if a date has events
   const hasEvents = (date: Date) => {
