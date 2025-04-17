@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils"
-import { ImageIcon } from "lucide-react"
+import { cn } from "@/lib/utils";
+import { ImageIcon } from "lucide-react";
 
 interface ImagePlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {
-  aspectRatio?: "square" | "video" | "wide" | number
+  aspectRatio?: "square" | "video" | "wide" | number;
 }
 
 export function ImagePlaceholder({
@@ -13,7 +13,7 @@ export function ImagePlaceholder({
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-md border bg-muted",
+        "bg-muted flex items-center justify-center rounded-md border",
         {
           "aspect-square": aspectRatio === "square",
           "aspect-video": aspectRatio === "video",
@@ -23,10 +23,10 @@ export function ImagePlaceholder({
       )}
       {...props}
     >
-      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+      <div className="text-muted-foreground flex flex-col items-center gap-2">
         <ImageIcon className="h-8 w-8" />
         <p className="text-sm">Imagen no provista</p>
       </div>
     </div>
-  )
-} 
+  );
+}
