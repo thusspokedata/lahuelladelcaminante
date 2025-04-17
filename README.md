@@ -15,12 +15,16 @@ A web platform that showcases and promotes Latin American music events in Berlin
 - **Framework**: [Next.js 15](https://nextjs.org/) with App Router
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Database**: [Prisma](https://www.prisma.io/) with PostgreSQL
+- **Authentication**: [Clerk](https://clerk.com/) - User authentication and management
 - **Styling**:
   - [Tailwind CSS](https://tailwindcss.com/)
   - [shadcn/ui](https://ui.shadcn.com/)
 - **Date Handling**: [date-fns](https://date-fns.org/)
 - **Form Management**: [React Hook Form](https://react-hook-form.com/)
 - **Validation**: [Zod](https://zod.dev/)
+- **Testing**:
+  - [Vitest](https://vitest.dev/) - Unit and component testing
+  - [Testing Library](https://testing-library.com/) - React component testing
 - **Container**: [Docker](https://www.docker.com/)
 
 ## Getting Started
@@ -30,7 +34,7 @@ A web platform that showcases and promotes Latin American music events in Berlin
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/thusspokedata/lahuelladelcaminante.git
+git clone https://github.com/yourusername/lahuelladelcaminante.git
 ```
 
 2. Install dependencies:
@@ -42,6 +46,8 @@ npm install
 3. Create a `.env` file in the root directory with the following variables:
 
 ```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 DATABASE_URL=your_database_url
 ```
 
@@ -88,6 +94,36 @@ This will start:
 
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Testing
+
+The project uses Vitest and Testing Library for unit and component testing.
+
+### Running Tests
+
+Run all tests:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Run tests with a UI:
+
+```bash
+npm run test:ui
+```
+
+Generate test coverage report:
+
+```bash
+npm run test:coverage
+```
+
 ## Project Structure
 
 ```
@@ -97,6 +133,7 @@ src/
 ├── lib/                # Utility functions and configurations
 ├── services/           # Data access and business logic layer
 ├── types/              # TypeScript type definitions
+├── __tests__/          # Test files
 └── generated/          # Generated Prisma client
 prisma/
 ├── migrations/         # Database migrations
