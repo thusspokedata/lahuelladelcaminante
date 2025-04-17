@@ -15,19 +15,49 @@ datasource db {
 }
 
 model Event {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   title       String
-  description String
-  date        DateTime
-  time        String
+  description String? // Optional description
+  dates       EventDate[] // Multiple dates for an event
   location    String
-  address     String
-  city        String   @default("Berlin")
-  price       Float?
-  imageUrl    String?
+  time        String
+  price       Float? // Optional price
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  artistId    String
+  artist      Artist      @relation(fields: [artistId], references: [id])
+  genre       String
+  images      Image[] // Multiple images for an event
+  isActive    Boolean     @default(true)
+}
+
+model EventDate {
+  id      String   @id @default(cuid())
+  date    DateTime
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+}
+
+model Artist {
+  id          String   @id @default(cuid())
+  name        String
+  genres      String[] // Array of genre strings
+  bio         String
+  origin      String
+  images      Image[]
+  socialMedia Json? // Store social media links as JSON
+  events      Event[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  artist      String
-  genre       String
-  isActive    Boolean  @default(true)
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String?
+  artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  artistId  String?
+  createdAt DateTime @default(now())
 }
