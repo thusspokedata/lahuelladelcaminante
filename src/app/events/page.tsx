@@ -1,4 +1,4 @@
-import { EventsClient } from "./components/EventsClient";
+import { EventsClient } from "./ui";
 import { mockEvents } from "@/mockData";
 
 export default function EventsPage() {

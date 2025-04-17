@@ -1,4 +1,4 @@
-import { ArtistsClient } from "./components/ArtistsClient";
+import { ArtistsClient } from "./ui";
 import { mockArtists } from "@/mockData";
 
 export default function ArtistsPage() {
