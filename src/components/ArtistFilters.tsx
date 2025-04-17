@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface ArtistFiltersProps {
   onFilterChange: (filters: { genre: string | undefined; name: string }) => void;
@@ -18,13 +18,24 @@ export function ArtistFilters({ onFilterChange }: ArtistFiltersProps) {
   const [name, setName] = useState("");
   const [genre, setGenre] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
+  // Using useCallback to prevent recreating the filter function on each render
+  const applyFilters = useCallback(() => {
     onFilterChange({ genre, name });
   }, [genre, name, onFilterChange]);
+
+  // Effect will only run when genre or name changes
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const handleResetFilters = () => {
     setName("");
     setGenre(undefined);
+  };
+
+  // Handle genre change separately to avoid Select component issues
+  const handleGenreChange = (value: string) => {
+    setGenre(value === "all" ? undefined : value);
   };
 
   return (
@@ -34,10 +45,7 @@ export function ArtistFilters({ onFilterChange }: ArtistFiltersProps) {
       <div className="space-y-3">
         <div className="space-y-2">
           <Label htmlFor="genre">Género</Label>
-          <Select
-            value={genre || "all"}
-            onValueChange={(value) => setGenre(value === "all" ? undefined : value)}
-          >
+          <Select value={genre || "all"} onValueChange={handleGenreChange}>
             <SelectTrigger id="genre">
               <SelectValue placeholder="Todos los géneros" />
             </SelectTrigger>
