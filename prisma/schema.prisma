@@ -14,6 +14,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User role enum
+enum UserRole {
+  USER
+  ARTIST
+  ADMIN
+}
+
+// User status enum
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  clerkId       String     @unique // ID from Clerk authentication
+  email         String     @unique
+  name          String?
+  role          UserRole   @default(USER)
+  status        UserStatus @default(PENDING)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  createdEvents Event[]    @relation("CreatedBy") // Events created by this user
+  artistProfile Artist?    @relation("UserToArtist") // Optional artist profile
+}
+
 model Event {
   id          String      @id @default(cuid())
   title       String
@@ -30,6 +57,10 @@ model Event {
   genre       String
   images      Image[] // Multiple images for an event
   isActive    Boolean     @default(true)
+
+  // New fields for user-related functionality
+  createdById String?
+  createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
 }
 
 model EventDate {
@@ -51,6 +82,10 @@ model Artist {
   events      Event[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // New fields for user association
+  userId String? @unique
+  user   User?   @relation("UserToArtist", fields: [userId], references: [id])
 }
 
 model Image {

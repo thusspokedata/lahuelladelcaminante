@@ -31,3 +31,8 @@ export async function findArtistByEvent(eventId: string): Promise<Artist | undef
 export async function findEventsByArtist(artistId: string): Promise<Event[]> {
   return getEventsByArtistId(artistId);
 }
+
+// Export all services
+export * from "./artists";
+export * from "./events";
+export * from "./users";
