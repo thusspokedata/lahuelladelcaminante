@@ -1,88 +1,82 @@
 import { prisma } from "@/lib/db";
-import { Artist as PrismaArtist, Image as PrismaImage } from "@/generated/prisma";
+import {
+  Artist as PrismaArtist,
+  Image as PrismaImage,
+  Event as PrismaEvent,
+} from "@/generated/prisma";
 
 export interface Artist {
   id: string;
   name: string;
+  slug: string;
   genres: string[];
   bio: string;
   origin: string;
-  images: {
-    url: string;
-    alt: string;
-  }[];
-  socialMedia?: {
-    instagram?: string;
-    spotify?: string;
-    youtube?: string;
-    website?: string;
-    tiktok?: string;
-  };
-  upcomingEvents?: string[]; // References to event IDs
+  images: { url: string; alt: string }[];
+  socialMedia?: { [key: string]: string };
+  upcomingEvents?: string[]; // Array of event IDs
 }
 
-// Define type for social media to avoid using 'any'
-type SocialMedia = {
-  instagram?: string;
-  spotify?: string;
-  youtube?: string;
-  website?: string;
-  tiktok?: string;
+type ArtistWithRelations = PrismaArtist & {
+  images: PrismaImage[];
+  events?: PrismaEvent[];
 };
 
-// Map Prisma Artist model to our application Artist model
-function mapPrismaArtistToArtist(
-  artist: PrismaArtist & { images: PrismaImage[]; events?: { id: string }[] }
-): Artist {
+const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
   return {
     id: artist.id,
     name: artist.name,
+    slug: artist.slug,
     genres: artist.genres,
     bio: artist.bio,
     origin: artist.origin,
-    images: artist.images.map((image) => ({
-      url: image.url,
-      alt: image.alt,
+    images: artist.images.map((img) => ({
+      url: img.url,
+      alt: img.alt,
     })),
-    // Parse JSON field from database to object
-    socialMedia: artist.socialMedia ? (artist.socialMedia as SocialMedia) : undefined,
-    // Map event IDs if they are included
-    upcomingEvents: artist.events ? artist.events.map((event) => event.id) : [],
+    socialMedia: artist.socialMedia as { [key: string]: string } | undefined,
+    upcomingEvents: artist.events?.map((event) => event.id) || [],
   };
-}
+};
 
-// Get all artists
-export async function getAllArtists(): Promise<Artist[]> {
+export const getAllArtists = async (): Promise<Artist[]> => {
   const artists = await prisma.artist.findMany({
     include: {
       images: true,
+      events: true,
     },
   });
 
   return artists.map(mapPrismaArtistToArtist);
-}
+};
 
-// Get artist by ID
-export async function getArtistById(id: string): Promise<Artist | null> {
+export const getArtistById = async (id: string): Promise<Artist | null> => {
   const artist = await prisma.artist.findUnique({
     where: { id },
     include: {
       images: true,
-      events: {
-        select: {
-          id: true,
-        },
-      },
+      events: true,
     },
   });
 
   if (!artist) return null;
-
   return mapPrismaArtistToArtist(artist);
-}
+};
 
-// Get artists by genre
-export async function getArtistsByGenre(genre: string): Promise<Artist[]> {
+export const getArtistBySlug = async (slug: string): Promise<Artist | null> => {
+  const artist = await prisma.artist.findUnique({
+    where: { slug },
+    include: {
+      images: true,
+      events: true,
+    },
+  });
+
+  if (!artist) return null;
+  return mapPrismaArtistToArtist(artist);
+};
+
+export const getArtistsByGenre = async (genre: string): Promise<Artist[]> => {
   const artists = await prisma.artist.findMany({
     where: {
       genres: {
@@ -91,25 +85,26 @@ export async function getArtistsByGenre(genre: string): Promise<Artist[]> {
     },
     include: {
       images: true,
+      events: true,
     },
   });
 
   return artists.map(mapPrismaArtistToArtist);
-}
+};
 
-// Search artists by name
-export async function searchArtistsByName(name: string): Promise<Artist[]> {
+export const searchArtistsByName = async (name: string): Promise<Artist[]> => {
   const artists = await prisma.artist.findMany({
     where: {
       name: {
         contains: name,
-        mode: "insensitive", // Case-insensitive search
+        mode: "insensitive",
       },
     },
     include: {
       images: true,
+      events: true,
     },
   });
 
   return artists.map(mapPrismaArtistToArtist);
-}
+};

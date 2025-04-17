@@ -17,6 +17,7 @@ datasource db {
 model Event {
   id          String      @id @default(cuid())
   title       String
+  slug        String      @unique
   description String? // Optional description
   dates       EventDate[] // Multiple dates for an event
   location    String
@@ -41,6 +42,7 @@ model EventDate {
 model Artist {
   id          String   @id @default(cuid())
   name        String
+  slug        String   @unique
   genres      String[] // Array of genre strings
   bio         String
   origin      String

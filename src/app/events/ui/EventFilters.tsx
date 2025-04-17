@@ -22,7 +22,7 @@ interface EventFiltersProps {
   selectedDate: Date | undefined;
   events: {
     dates: {
-      dateObj: Date;
+      date: string;
     }[];
   }[];
 }

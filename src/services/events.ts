@@ -9,11 +9,16 @@ import {
 export interface Event {
   id: string;
   title: string;
+  slug: string;
   dates: {
-    date: string;
-    dateObj: Date;
+    id: string;
+    date: Date;
   }[];
-  artist: string;
+  artist: {
+    id: string;
+    name: string;
+    slug: string;
+  };
   genre: string;
   location: string;
   time: string;
@@ -25,93 +30,107 @@ export interface Event {
   }[];
 }
 
+type EventWithRelations = PrismaEvent & {
+  dates: PrismaEventDate[];
+  artist: PrismaArtist;
+  images: PrismaImage[];
+};
+
 // Map Prisma Event model to our application Event model
-function mapPrismaEventToEvent(
-  event: PrismaEvent & {
-    images: PrismaImage[];
-    dates: PrismaEventDate[];
-    artist: PrismaArtist;
-  }
-): Event {
+const mapPrismaEventToEvent = (event: EventWithRelations): Event => {
   return {
     id: event.id,
     title: event.title,
-    description: event.description || undefined,
-    artist: event.artist.name,
+    slug: event.slug,
+    dates: event.dates.map((date) => ({
+      id: date.id,
+      date: date.date,
+    })),
+    artist: {
+      id: event.artist.id,
+      name: event.artist.name,
+      slug: event.artist.slug,
+    },
     genre: event.genre,
     location: event.location,
     time: event.time,
     price: event.price || undefined,
+    description: event.description || undefined,
     images: event.images.map((image) => ({
       url: image.url,
       alt: image.alt,
     })),
-    dates: event.dates.map((dateItem) => ({
-      date: dateItem.date.toLocaleDateString(),
-      dateObj: dateItem.date,
-    })),
   };
-}
+};
 
 // Get all events
-export async function getAllEvents(): Promise<Event[]> {
+export const getAllEvents = async (): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     include: {
-      images: true,
       dates: true,
       artist: true,
+      images: true,
     },
     where: {
       isActive: true,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
   });
 
   return events.map(mapPrismaEventToEvent);
-}
+};
 
 // Get event by ID
-export async function getEventById(id: string): Promise<Event | null> {
-  try {
-    const event = await prisma.event.findUnique({
-      where: {
-        id,
-        isActive: true,
-      },
-      include: {
-        images: true,
-        dates: true,
-        artist: true,
-      },
-    });
+export const getEventById = async (id: string): Promise<Event | null> => {
+  const event = await prisma.event.findUnique({
+    where: {
+      id,
+      isActive: true,
+    },
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+  });
 
-    if (!event) return null;
+  if (!event) return null;
+  return mapPrismaEventToEvent(event);
+};
 
-    return mapPrismaEventToEvent(event);
-  } catch (error) {
-    console.error("Error getting event by ID:", error);
-    return null;
-  }
-}
+// Get event by slug
+export const getEventBySlug = async (slug: string): Promise<Event | null> => {
+  const event = await prisma.event.findUnique({
+    where: {
+      slug,
+      isActive: true,
+    },
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+  });
+
+  if (!event) return null;
+  return mapPrismaEventToEvent(event);
+};
 
 // Get events by genre
-export async function getEventsByGenre(genre: string): Promise<Event[]> {
+export const getEventsByGenre = async (genre: string): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     where: {
       genre,
       isActive: true,
     },
     include: {
-      images: true,
       dates: true,
       artist: true,
+      images: true,
     },
   });
 
   return events.map(mapPrismaEventToEvent);
-}
+};
 
 // Search events by artist name
 export async function getEventsByArtistName(artistName: string): Promise<Event[]> {
@@ -136,25 +155,37 @@ export async function getEventsByArtistName(artistName: string): Promise<Event[]
 }
 
 // Get events by artist ID
-export async function getEventsByArtistId(artistId: string): Promise<Event[]> {
+export const getEventsByArtistId = async (artistId: string): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     where: {
       artistId,
       isActive: true,
     },
     include: {
-      images: true,
       dates: true,
       artist: true,
+      images: true,
     },
   });
 
   return events.map(mapPrismaEventToEvent);
-}
+};
+
+// Get events by artist slug
+export const getEventsByArtistSlug = async (artistSlug: string): Promise<Event[]> => {
+  const artist = await prisma.artist.findUnique({
+    where: { slug: artistSlug },
+    select: { id: true },
+  });
+
+  if (!artist) return [];
+
+  return getEventsByArtistId(artist.id);
+};
 
 // Get events by date
-export async function getEventsByDate(date: Date): Promise<Event[]> {
-  // Create range for the whole day
+export const getEventsByDate = async (date: Date): Promise<Event[]> => {
+  // Get the date without time component
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
 
@@ -174,11 +205,11 @@ export async function getEventsByDate(date: Date): Promise<Event[]> {
       isActive: true,
     },
     include: {
-      images: true,
       dates: true,
       artist: true,
+      images: true,
     },
   });
 
   return events.map(mapPrismaEventToEvent);
-}
+};
