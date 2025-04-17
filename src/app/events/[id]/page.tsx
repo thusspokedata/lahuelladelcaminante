@@ -1,12 +1,9 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { getEventById } from "@/services/events";
+import { findArtistByEvent } from "@/services";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Event, Artist, findArtistByEvent } from "@/services";
 import {
   CalendarIcon,
   ClockIcon,
@@ -15,46 +12,25 @@ import {
   MusicIcon,
   ArrowLeftIcon,
 } from "lucide-react";
-import { getEventById } from "@/services/events";
 
-export default function EventDetails() {
-  const params = useParams();
-  const [event, setEvent] = useState<Event | undefined>(undefined);
-  const [artist, setArtist] = useState<Artist | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function EventDetails({ params }: { params: { id: string } }) {
+  // Ensure params.id is a string
+  const eventId =
+    typeof params.id === "string" ? params.id : Array.isArray(params.id) ? params.id[0] : "";
 
-  useEffect(() => {
-    async function loadEventData() {
-      try {
-        const eventId = params.id as string;
+  console.log("Looking for event with ID:", eventId);
 
-        // Fetch event from database
-        const foundEvent = await getEventById(eventId);
-        setEvent(foundEvent || undefined);
+  // Fetch data on the server
+  let event = null;
+  let artist = null;
 
-        if (foundEvent) {
-          // Fetch artist associated with the event
-          const foundArtist = await findArtistByEvent(eventId);
-          setArtist(foundArtist);
-        }
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  try {
+    event = await getEventById(eventId);
+    if (event) {
+      artist = await findArtistByEvent(eventId);
     }
-
-    loadEventData();
-  }, [params.id]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <p>Cargando información del evento...</p>
-        </div>
-      </div>
-    );
+  } catch (error) {
+    console.error("Error fetching event data:", error);
   }
 
   if (!event) {

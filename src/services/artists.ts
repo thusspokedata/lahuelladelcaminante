@@ -16,9 +16,19 @@ export interface Artist {
     spotify?: string;
     youtube?: string;
     website?: string;
+    tiktok?: string;
   };
   upcomingEvents?: string[]; // References to event IDs
 }
+
+// Define type for social media to avoid using 'any'
+type SocialMedia = {
+  instagram?: string;
+  spotify?: string;
+  youtube?: string;
+  website?: string;
+  tiktok?: string;
+};
 
 // Map Prisma Artist model to our application Artist model
 function mapPrismaArtistToArtist(
@@ -35,7 +45,7 @@ function mapPrismaArtistToArtist(
       alt: image.alt,
     })),
     // Parse JSON field from database to object
-    socialMedia: artist.socialMedia ? (artist.socialMedia as any) : undefined,
+    socialMedia: artist.socialMedia ? (artist.socialMedia as SocialMedia) : undefined,
     // Map event IDs if they are included
     upcomingEvents: artist.events ? artist.events.map((event) => event.id) : [],
   };

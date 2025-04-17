@@ -74,21 +74,26 @@ export async function getAllEvents(): Promise<Event[]> {
 
 // Get event by ID
 export async function getEventById(id: string): Promise<Event | null> {
-  const event = await prisma.event.findUnique({
-    where: {
-      id,
-      isActive: true,
-    },
-    include: {
-      images: true,
-      dates: true,
-      artist: true,
-    },
-  });
+  try {
+    const event = await prisma.event.findUnique({
+      where: {
+        id,
+        isActive: true,
+      },
+      include: {
+        images: true,
+        dates: true,
+        artist: true,
+      },
+    });
 
-  if (!event) return null;
+    if (!event) return null;
 
-  return mapPrismaEventToEvent(event);
+    return mapPrismaEventToEvent(event);
+  } catch (error) {
+    console.error("Error getting event by ID:", error);
+    return null;
+  }
 }
 
 // Get events by genre

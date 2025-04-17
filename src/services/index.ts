@@ -1,21 +1,30 @@
 import { getArtistById } from "./artists";
-import { getEventById, getEventsByArtistId } from "./events";
+import { getEventsByArtistId } from "./events";
 import type { Artist } from "./artists";
 import type { Event } from "./events";
+import { prisma } from "@/lib/db";
 
 // Re-export types and services
 export type { Artist, Event };
 
 // Helper function to find artist by event (replacement for mockData function)
 export async function findArtistByEvent(eventId: string): Promise<Artist | undefined> {
-  const event = await getEventById(eventId);
-  if (!event) return undefined;
+  try {
+    // Get full event with artist relation from the database
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: { artist: true },
+    });
 
-  // Get event's artist using the artist name
-  const artistName = event.artist;
-  const artist = await getArtistById(artistName);
+    if (!event) return undefined;
 
-  return artist || undefined;
+    // Get artist by ID
+    const artist = await getArtistById(event.artistId);
+    return artist || undefined;
+  } catch (error) {
+    console.error("Error finding artist by event:", error);
+    return undefined;
+  }
 }
 
 // Helper function to find events by artist (replacement for mockData function)
