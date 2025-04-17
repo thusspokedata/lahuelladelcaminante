@@ -11,26 +11,26 @@ export default function Home() {
       </header>
 
       <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="flex min-h-[200px] flex-col">
           <CardHeader>
             <CardTitle>Próximos Eventos</CardTitle>
             <CardDescription>
               Descubre los próximos shows de música argentina en Berlín
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="mt-auto">
             <Link href="/events">
               <Button className="w-full">Ver Eventos</Button>
             </Link>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="flex min-h-[200px] flex-col">
           <CardHeader>
             <CardTitle>Artistas</CardTitle>
             <CardDescription>Conoce a los artistas argentinos que actúan en Berlín</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="mt-auto">
             <Button className="w-full">Explorar Artistas</Button>
           </CardContent>
         </Card>
