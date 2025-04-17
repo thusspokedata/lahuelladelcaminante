@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
@@ -9,8 +8,8 @@ import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
 export default async function ArtistPage({ params }: { params: { id: string } }) {
-  // Hacer await a params antes de acceder a sus propiedades
-  const { id } = await params;
+  // No need to await params as it's not a promise
+  const { id } = params;
   const artist = mockArtists.find((artist) => artist.id === id);
 
   // If artist not found, show 404
@@ -25,7 +24,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <Link href="/artists" className="text-primary hover:underline">
-          ← Volver a artistas
+          ← Back to artists
         </Link>
       </div>
 
@@ -63,12 +62,12 @@ export default async function ArtistPage({ params }: { params: { id: string } })
             </div>
           </div>
 
-          <h2 className="mb-4 text-2xl font-semibold">Biografía</h2>
+          <h2 className="mb-4 text-2xl font-semibold">Biography</h2>
           <div className="mb-8 text-lg whitespace-pre-line">{artist.bio}</div>
 
           {artistEvents.length > 0 && (
             <>
-              <h2 className="mb-4 text-2xl font-semibold">Próximos Eventos</h2>
+              <h2 className="mb-4 text-2xl font-semibold">Upcoming Events</h2>
               <div className="space-y-4">
                 {artistEvents.map((event) => (
                   <Link key={event.id} href={`/events/${event.id}`}>
@@ -81,7 +80,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center">
                                   <Calendar size={16} className="mr-1" />
-                                  <span>Fechas:</span>
+                                  <span>Dates:</span>
                                 </div>
                                 <ul className="ml-6 list-disc text-xs">
                                   {event.dates.map((date, idx) => (
@@ -100,7 +99,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {event.price ? `${event.price}€` : "Gratis"}
+                            {event.price ? `${event.price}€` : "Free"}
                           </div>
                         </div>
                       </CardContent>
@@ -117,7 +116,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
           {artist.socialMedia && Object.values(artist.socialMedia).some(Boolean) && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="mb-4 text-xl font-semibold">Enlaces</h2>
+                <h2 className="mb-4 text-xl font-semibold">Links</h2>
                 <div className="flex flex-col space-y-3">
                   {artist.socialMedia.instagram && (
                     <a
@@ -194,7 +193,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
                           d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"
                         />
                       </svg>
-                      Sitio Web
+                      Website
                     </a>
                   )}
                 </div>
@@ -205,7 +204,7 @@ export default async function ArtistPage({ params }: { params: { id: string } })
           {artist.images && artist.images.length > 0 && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="mb-4 text-xl font-semibold">Galería</h2>
+                <h2 className="mb-4 text-xl font-semibold">Gallery</h2>
                 <div className="grid grid-cols-2 gap-2">
                   {artist.images.map((image, index) => (
                     <div key={index} className="relative aspect-square overflow-hidden rounded-md">
