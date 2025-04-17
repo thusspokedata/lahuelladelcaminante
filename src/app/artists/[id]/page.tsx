@@ -8,8 +8,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
-export default function ArtistPage({ params }: { params: { id: string } }) {
-  const artist = mockArtists.find((artist) => artist.id === params.id);
+export default async function ArtistPage({ params }: { params: { id: string } }) {
+  // Hacer await a params antes de acceder a sus propiedades
+  const { id } = await params;
+  const artist = mockArtists.find((artist) => artist.id === id);
 
   // If artist not found, show 404
   if (!artist) {
