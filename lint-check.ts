@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 
 // Define directories to include (only lint these)
 // Remove 'src/hooks' since it doesn't exist
-const includeDirs = ["src/app", "src/components", "src/lib"];
+const includeDirs: string[] = ["src/app", "src/components", "src/lib"];
 
 try {
   // Create a command that only targets specific directories
