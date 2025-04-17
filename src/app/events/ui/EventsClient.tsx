@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Event } from "@/types";
 import { EventCard } from "./EventCard";
 import { EventFilters } from "./EventFilters";
+import { formatDateWithWeekday } from "@/lib/utils";
 
 interface EventsClientProps {
   initialEvents: Event[];
@@ -92,17 +93,6 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Function to format dates in a user-friendly way
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="grid gap-8 md:grid-cols-[300px_1fr]">
       <EventFilters
@@ -127,7 +117,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               key={`${event.id}-${index}`}
               id={event.id}
               title={event.title}
-              date={formatDate(event.date)}
+              date={formatDateWithWeekday(event.date)}
               artist={event.artist.name}
               genre={event.genre}
               location={event.location}

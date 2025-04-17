@@ -12,6 +12,7 @@ import {
   MusicIcon,
   ArrowLeftIcon,
 } from "lucide-react";
+import { formatDateWithWeekday } from "@/lib/utils";
 
 export default async function EventDetails({ params }: { params: Promise<{ slug: string }> }) {
   // Await params to access its properties
@@ -82,7 +83,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
             )}
           </div>
 
-          {/* About this Event */}
+          {/* Event Description */}
           <Card>
             <CardHeader>
               <CardTitle>Sobre este evento</CardTitle>
@@ -133,19 +134,9 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
                 <div>
                   <p className="font-medium">Fechas</p>
                   <ul className="text-muted-foreground">
-                    {event.dates.map((d, idx) => {
-                      const date = new Date(d.date);
-                      return (
-                        <li key={idx}>
-                          {date.toLocaleDateString("es-ES", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </li>
-                      );
-                    })}
+                    {event.dates.map((d, idx) => (
+                      <li key={idx}>{formatDateWithWeekday(d.date)}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
