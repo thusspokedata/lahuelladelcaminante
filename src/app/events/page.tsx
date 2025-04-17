@@ -28,7 +28,16 @@ const mockEvents = [
     location: "Café Tango",
     time: "20:00",
     price: 15,
-    imageUrl: "https://picsum.photos/seed/tango/400/300"
+    images: [
+      {
+        url: "https://picsum.photos/seed/tango1/400/300",
+        alt: "Pareja bailando tango"
+      },
+      {
+        url: "https://picsum.photos/seed/tango2/400/300",
+        alt: "Músicos de tango"
+      }
+    ]
   },
   {
     id: "2",
@@ -44,7 +53,12 @@ const mockEvents = [
     location: "La Peña",
     time: "21:00",
     price: 12,
-    imageUrl: "https://picsum.photos/seed/folklore/400/300"
+    images: [
+      {
+        url: "https://picsum.photos/seed/folklore1/400/300",
+        alt: "Grupo de folklore en escenario"
+      }
+    ]
   },
   {
     id: "3",
@@ -60,7 +74,16 @@ const mockEvents = [
     location: "Rock Bar",
     time: "19:00",
     price: 10,
-    imageUrl: "https://picsum.photos/seed/rock/400/300"
+    images: [
+      {
+        url: "https://picsum.photos/seed/rock1/400/300",
+        alt: "Banda de rock en vivo"
+      },
+      {
+        url: "https://picsum.photos/seed/rock2/400/300",
+        alt: "Público en concierto de rock"
+      }
+    ]
   },
   {
     id: "4",
@@ -76,7 +99,16 @@ const mockEvents = [
     location: "Kulturhaus",
     time: "20:30",
     price: 15,
-    imageUrl: "https://picsum.photos/seed/milena/400/300"
+    images: [
+      {
+        url: "https://picsum.photos/seed/milena1/400/300",
+        alt: "Milena Salamanca en concierto"
+      },
+      {
+        url: "https://picsum.photos/seed/milena2/400/300",
+        alt: "Bailarines de chacarera"
+      }
+    ]
   },
   {
     id: "5",
@@ -91,7 +123,8 @@ const mockEvents = [
     genre: "folklore",
     location: "Theater am Potsdamer Platz",
     time: "21:00",
-    price: 25
+    price: 25,
+    images: []
   },
   {
     id: "6",
@@ -107,7 +140,16 @@ const mockEvents = [
     location: "Passionskirche",
     time: "19:30",
     price: 18,
-    imageUrl: "https://picsum.photos/seed/clara/400/300"
+    images: [
+      {
+        url: "https://picsum.photos/seed/clara1/400/300",
+        alt: "Clara Cantore tocando la guitarra"
+      },
+      {
+        url: "https://picsum.photos/seed/clara2/400/300",
+        alt: "Ensamble de música folklórica"
+      }
+    ]
   }
 ];
 
@@ -216,7 +258,7 @@ export default function EventsPage() {
                 location={event.location}
                 time={event.time}
                 price={event.price}
-                imageUrl={event.imageUrl}
+                images={event.images}
               />
             ))
           )}

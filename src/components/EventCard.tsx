@@ -3,6 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
 
+interface EventImage {
+  url: string;
+  alt: string;
+}
+
 interface EventCardProps {
   title: string;
   date: string;
@@ -11,7 +16,7 @@ interface EventCardProps {
   location: string;
   time: string;
   price?: number;
-  imageUrl?: string;
+  images?: EventImage[];
 }
 
 export function EventCard({
@@ -22,7 +27,7 @@ export function EventCard({
   location,
   time,
   price,
-  imageUrl,
+  images = [],
 }: EventCardProps) {
   return (
     <Card>
@@ -33,10 +38,10 @@ export function EventCard({
       <CardContent>
         <div className="flex gap-4">
           <div className="relative w-48">
-            {imageUrl ? (
+            {images.length > 0 ? (
               <Image
-                src={imageUrl}
-                alt={title}
+                src={images[0].url}
+                alt={images[0].alt}
                 className="object-cover rounded-md"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
