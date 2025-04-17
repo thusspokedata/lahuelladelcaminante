@@ -2,12 +2,21 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ArtistFilters } from "@/app/artists/ui/ArtistFilters";
+import { ReactNode } from "react";
 
 // Mock the Select component since it's difficult to test with jsdom
 vi.mock("@/components/ui/select", () => {
   // Return a simplified select component that we can interact with in tests
   return {
-    Select: ({ children, value, onValueChange }: any) => (
+    Select: ({
+      children,
+      value,
+      onValueChange,
+    }: {
+      children: ReactNode;
+      value?: string;
+      onValueChange: (value: string) => void;
+    }) => (
       <div data-testid="select-mock">
         <select
           value={value}
@@ -24,10 +33,10 @@ vi.mock("@/components/ui/select", () => {
         {children}
       </div>
     ),
-    SelectContent: ({ children }: any) => <div>{children}</div>,
-    SelectTrigger: ({ children }: any) => <div>{children}</div>,
-    SelectValue: ({ children }: any) => <div>{children}</div>,
-    SelectItem: ({ children }: any) => <div>{children}</div>,
+    SelectContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    SelectTrigger: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    SelectValue: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    SelectItem: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   };
 });
 
