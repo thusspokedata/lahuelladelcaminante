@@ -61,6 +61,53 @@ const mockEvents = [
     time: "19:00",
     price: 10,
     imageUrl: "https://picsum.photos/seed/rock/400/300"
+  },
+  {
+    id: "4",
+    title: "Noche de Chacarera",
+    dates: [
+      {
+        date: "Viernes 26 de Abril, 2025",
+        dateObj: new Date(2025, 3, 26, 0, 0, 0)
+      }
+    ],
+    artist: "Milena Salamanca",
+    genre: "folklore",
+    location: "Kulturhaus",
+    time: "20:30",
+    price: 15,
+    imageUrl: "https://picsum.photos/seed/milena/400/300"
+  },
+  {
+    id: "5",
+    title: "Peteco en Berlín",
+    dates: [
+      {
+        date: "Sábado 27 de Abril, 2025",
+        dateObj: new Date(2025, 3, 27, 0, 0, 0)
+      }
+    ],
+    artist: "Peteco Carabajal",
+    genre: "folklore",
+    location: "Theater am Potsdamer Platz",
+    time: "21:00",
+    price: 25
+  },
+  {
+    id: "6",
+    title: "Folklore Contemporáneo",
+    dates: [
+      {
+        date: "Domingo 28 de Abril, 2025",
+        dateObj: new Date(2025, 3, 28, 0, 0, 0)
+      }
+    ],
+    artist: "Clara Cantore",
+    genre: "folklore",
+    location: "Passionskirche",
+    time: "19:30",
+    price: 18,
+    imageUrl: "https://picsum.photos/seed/clara/400/300"
   }
 ];
 
@@ -93,6 +140,7 @@ export default function EventsPage() {
         return event.dates.some(eventDate => {
           const eventDateObj = eventDate.dateObj;
           const filterDate = filters.date;
+          if (!filterDate) return false;
           return eventDateObj.getDate() === filterDate.getDate() &&
                  eventDateObj.getMonth() === filterDate.getMonth() &&
                  eventDateObj.getFullYear() === filterDate.getFullYear();
