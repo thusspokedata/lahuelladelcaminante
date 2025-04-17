@@ -1,9 +1,9 @@
 "use client";
 
-import { ArtistCard } from "@/components/ArtistCard";
-import { ArtistFilters } from "@/components/ArtistFilters";
 import { useCallback, useState } from "react";
 import { Artist } from "@/types";
+import { ArtistCard } from "./ArtistCard";
+import { ArtistFilters } from "./ArtistFilters";
 
 interface ArtistsClientProps {
   initialArtists: Artist[];
