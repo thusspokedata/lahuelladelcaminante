@@ -28,6 +28,8 @@ export interface Event {
     url: string;
     alt: string;
   }[];
+  isDeleted?: boolean;
+  deletedAt?: Date | null;
 }
 
 type EventWithRelations = PrismaEvent & {
@@ -60,11 +62,13 @@ const mapPrismaEventToEvent = (event: EventWithRelations): Event => {
       url: image.url,
       alt: image.alt,
     })),
+    isDeleted: event.isDeleted,
+    deletedAt: event.deletedAt,
   };
 };
 
 // Get all events
-export const getAllEvents = async (): Promise<Event[]> => {
+export const getAllEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     include: {
       dates: true,
@@ -73,6 +77,7 @@ export const getAllEvents = async (): Promise<Event[]> => {
     },
     where: {
       isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
     },
   });
 
@@ -80,11 +85,15 @@ export const getAllEvents = async (): Promise<Event[]> => {
 };
 
 // Get event by ID
-export const getEventById = async (id: string): Promise<Event | null> => {
+export const getEventById = async (
+  id: string,
+  { includeDeleted = false } = {}
+): Promise<Event | null> => {
   const event = await prisma.event.findUnique({
     where: {
       id,
       isActive: true,
+      ...(includeDeleted ? {} : { isDeleted: false }),
     },
     include: {
       dates: true,
@@ -98,11 +107,15 @@ export const getEventById = async (id: string): Promise<Event | null> => {
 };
 
 // Get event by slug
-export const getEventBySlug = async (slug: string): Promise<Event | null> => {
+export const getEventBySlug = async (
+  slug: string,
+  { includeDeleted = false } = {}
+): Promise<Event | null> => {
   const event = await prisma.event.findUnique({
     where: {
       slug,
       isActive: true,
+      ...(includeDeleted ? {} : { isDeleted: false }),
     },
     include: {
       dates: true,
@@ -116,11 +129,15 @@ export const getEventBySlug = async (slug: string): Promise<Event | null> => {
 };
 
 // Get events by genre
-export const getEventsByGenre = async (genre: string): Promise<Event[]> => {
+export const getEventsByGenre = async (
+  genre: string,
+  { includeDeleted = false } = {}
+): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     where: {
       genre,
       isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
     },
     include: {
       dates: true,
@@ -133,7 +150,10 @@ export const getEventsByGenre = async (genre: string): Promise<Event[]> => {
 };
 
 // Search events by artist name
-export async function getEventsByArtistName(artistName: string): Promise<Event[]> {
+export async function getEventsByArtistName(
+  artistName: string,
+  { includeDeleted = false } = {}
+): Promise<Event[]> {
   const events = await prisma.event.findMany({
     where: {
       artist: {
@@ -143,6 +163,7 @@ export async function getEventsByArtistName(artistName: string): Promise<Event[]
         },
       },
       isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
     },
     include: {
       images: true,
@@ -155,11 +176,15 @@ export async function getEventsByArtistName(artistName: string): Promise<Event[]
 }
 
 // Get events by artist ID
-export const getEventsByArtistId = async (artistId: string): Promise<Event[]> => {
+export const getEventsByArtistId = async (
+  artistId: string,
+  { includeDeleted = false } = {}
+): Promise<Event[]> => {
   const events = await prisma.event.findMany({
     where: {
       artistId,
       isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
     },
     include: {
       dates: true,
@@ -172,7 +197,10 @@ export const getEventsByArtistId = async (artistId: string): Promise<Event[]> =>
 };
 
 // Get events by artist slug
-export const getEventsByArtistSlug = async (artistSlug: string): Promise<Event[]> => {
+export const getEventsByArtistSlug = async (
+  artistSlug: string,
+  { includeDeleted = false } = {}
+): Promise<Event[]> => {
   const artist = await prisma.artist.findUnique({
     where: { slug: artistSlug },
     select: { id: true },
@@ -180,11 +208,14 @@ export const getEventsByArtistSlug = async (artistSlug: string): Promise<Event[]
 
   if (!artist) return [];
 
-  return getEventsByArtistId(artist.id);
+  return getEventsByArtistId(artist.id, { includeDeleted });
 };
 
 // Get events by date
-export const getEventsByDate = async (date: Date): Promise<Event[]> => {
+export const getEventsByDate = async (
+  date: Date,
+  { includeDeleted = false } = {}
+): Promise<Event[]> => {
   // Get the date without time component
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
@@ -203,6 +234,7 @@ export const getEventsByDate = async (date: Date): Promise<Event[]> => {
         },
       },
       isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
     },
     include: {
       dates: true,
@@ -212,4 +244,65 @@ export const getEventsByDate = async (date: Date): Promise<Event[]> => {
   });
 
   return events.map(mapPrismaEventToEvent);
+};
+
+// Mark an event as deleted (soft delete)
+export const deleteEvent = async (id: string): Promise<Event | null> => {
+  const event = await prisma.event.update({
+    where: { id },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+  });
+
+  if (!event) return null;
+  return mapPrismaEventToEvent(event);
+};
+
+// Restore a deleted event
+export const restoreEvent = async (id: string): Promise<Event | null> => {
+  const event = await prisma.event.update({
+    where: { id },
+    data: {
+      isDeleted: false,
+      deletedAt: null,
+    },
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+  });
+
+  if (!event) return null;
+  return mapPrismaEventToEvent(event);
+};
+
+// Get all deleted events
+export const getDeletedEvents = async (): Promise<Event[]> => {
+  const events = await prisma.event.findMany({
+    where: {
+      isDeleted: true,
+    },
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+  });
+
+  return events.map(mapPrismaEventToEvent);
+};
+
+// Permanently delete an event (hard delete - for admin use only)
+export const permanentlyDeleteEvent = async (id: string): Promise<void> => {
+  await prisma.event.delete({
+    where: { id },
+  });
 };

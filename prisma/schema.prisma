@@ -57,8 +57,10 @@ model Event {
   genre       String
   images      Image[] // Multiple images for an event
   isActive    Boolean     @default(true)
+  isDeleted   Boolean     @default(false) // Soft delete flag
+  deletedAt   DateTime? // When the event was deleted
 
-  // New fields for user-related functionality
+  // User-related functionality
   createdById String?
   createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
 }
