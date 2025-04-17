@@ -20,8 +20,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Using suppressHydrationWarning to prevent errors from browser extensions (like password managers)
-    // that might modify the DOM before React hydration
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
