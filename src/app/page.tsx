@@ -6,15 +6,17 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-2">La Huella del Caminante</h1>
-        <p className="text-xl text-muted-foreground">Música Argentina en Berlín</p>
+        <h1 className="mb-2 text-4xl font-bold">La Huella del Caminante</h1>
+        <p className="text-muted-foreground text-xl">Música Argentina en Berlín</p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+      <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Próximos Eventos</CardTitle>
-            <CardDescription>Descubre los próximos shows de música argentina en Berlín</CardDescription>
+            <CardDescription>
+              Descubre los próximos shows de música argentina en Berlín
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/events">
