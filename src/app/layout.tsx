@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${inter.className} flex min-h-screen flex-col`} suppressHydrationWarning>
         <Providers>
           <ThemeProvider
             attribute="class"
@@ -47,7 +48,8 @@ export default function RootLayout({
                 </SignedIn>
               </div>
             </header>
-            {children}
+            <main className="flex-1">{children}</main>
+            <Footer />
           </ThemeProvider>
         </Providers>
       </body>
