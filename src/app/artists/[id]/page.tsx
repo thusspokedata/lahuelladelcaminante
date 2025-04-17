@@ -8,14 +8,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
-// In Next.js 15, params may come as a promise
+// In Next.js 15, params should be awaited properly
 interface ArtistPageProps {
-  params: Promise<{ id: string }> | { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ArtistPage({ params }: ArtistPageProps) {
-  // Wait for params to resolve if they're a promise
-  const resolvedParams = params instanceof Promise ? await params : params;
+  // Await params to access its properties
+  const resolvedParams = await params;
   const id = resolvedParams.id;
 
   console.log("Looking for artist with ID:", id);

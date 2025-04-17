@@ -13,10 +13,10 @@ import {
   ArrowLeftIcon,
 } from "lucide-react";
 
-export default async function EventDetails({ params }: { params: { id: string } }) {
-  // Ensure params.id is a string
-  const eventId =
-    typeof params.id === "string" ? params.id : Array.isArray(params.id) ? params.id[0] : "";
+export default async function EventDetails({ params }: { params: Promise<{ id: string }> }) {
+  // Await params to access its properties
+  const resolvedParams = await params;
+  const eventId = resolvedParams.id;
 
   console.log("Looking for event with ID:", eventId);
 
