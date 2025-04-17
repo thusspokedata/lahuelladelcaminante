@@ -1,4 +1,4 @@
-import { EventsClient } from "@/components/EventsClient";
+import { EventsClient } from "./components/EventsClient";
 import { mockEvents } from "@/mockData";
 
 export default function EventsPage() {
@@ -13,7 +13,7 @@ export default function EventsPage() {
         </div>
       </header>
 
-      {/* Pasamos los eventos al componente cliente */}
+      {/* Pass events to client component */}
       <EventsClient initialEvents={mockEvents} />
     </div>
   );
