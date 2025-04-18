@@ -7,6 +7,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { UserSync } from "@/components/UserSync";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,8 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className={`${inter.className} flex min-h-screen flex-col`} suppressHydrationWarning>
         <Providers>
+          {/* UserSync component to synchronize users during development */}
+          <UserSync />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
