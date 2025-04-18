@@ -37,7 +37,8 @@ describe("Users Service", () => {
     id: "user1",
     clerkId: "clerk_user1",
     email: "user1@example.com",
-    name: "Test User",
+    firstName: "Test",
+    lastName: "User",
     role: UserRole.USER,
     status: UserStatus.ACTIVE,
     createdAt: new Date(),
@@ -264,14 +265,16 @@ describe("Users Service", () => {
     it("should update user fields", async () => {
       // Mock user data to update
       const updateData = {
-        name: "Updated Name",
+        firstName: "Updated",
+        lastName: "Name",
         role: UserRole.ADMIN,
       };
 
       // Expected updated user
       const updatedUser = {
         ...mockUser,
-        name: "Updated Name",
+        firstName: "Updated",
+        lastName: "Name",
         role: UserRole.ADMIN,
         updatedAt: expect.any(Date),
       };

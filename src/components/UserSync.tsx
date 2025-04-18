@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { createUser, getUserByClerkId } from "@/services/users";
 
 export function UserSync() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -18,21 +17,25 @@ export function UserSync() {
             return;
           }
 
-          // Check if user exists in database
-          const existingUser = await getUserByClerkId(user.id);
-
-          // If user doesn't exist, create it
-          if (!existingUser) {
-            console.log("Creating user in database...");
-            await createUser({
-              clerkId: user.id,
+          // Call our API route to sync user
+          const response = await fetch(`/api/sync-user`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
               email: primaryEmail,
               firstName: user.firstName || undefined,
               lastName: user.lastName || undefined,
-            });
-            console.log("User successfully synchronized");
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            console.log(data.message);
           } else {
-            console.log("User already exists in database");
+            console.error("Error syncing user:", data.error);
           }
         } catch (error) {
           console.error("Error synchronizing user:", error);
