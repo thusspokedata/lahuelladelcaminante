@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { UserSync } from "@/components/UserSync";
 import { AdminNavLink } from "@/components/AdminNavLink";
+import { DashboardLink } from "@/components/DashboardLink";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,9 +51,8 @@ export default function RootLayout({
                 <SignedIn>
                   {/* Admin Navigation Link - Only visible for administrators */}
                   <AdminNavLink />
-                  <Link href="/dashboard">
-                    <Button variant="outline">Dashboard</Button>
-                  </Link>
+                  {/* Dashboard link with pending user modal */}
+                  <DashboardLink />
                   <UserButton />
                 </SignedIn>
               </div>
