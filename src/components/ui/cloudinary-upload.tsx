@@ -33,16 +33,41 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<CloudinaryUploadWidgetResults | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [localImages, setLocalImages] = useState<ImageObject[]>([]);
 
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
     console.log("CloudinaryUpload mounted with values:", {
       value,
+      valueLength: value?.length || 0,
+      valueIsArray: Array.isArray(value),
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
       uploadPreset: uploadPreset,
     });
-  }, []);
+
+    // Inicializar imágenes locales con el valor prop
+    if (Array.isArray(value)) {
+      setLocalImages(value);
+    }
+
+    // Log individual images if they exist
+    if (Array.isArray(value) && value.length > 0) {
+      console.log("Initial images:", JSON.stringify(value, null, 2));
+    }
+  }, [uploadPreset, value]);
+
+  // Sincronizar cambios de value prop con estado local
+  useEffect(() => {
+    if (isMounted && Array.isArray(value)) {
+      setLocalImages(value);
+      console.log("CloudinaryUpload value changed:", {
+        valueLength: value?.length || 0,
+        valueIsArray: Array.isArray(value),
+        localImagesLength: localImages.length,
+      });
+    }
+  }, [value, isMounted]);
 
   if (!isMounted) {
     return null;
@@ -85,6 +110,11 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       };
 
       console.log("Successfully extracted image data:", imageData);
+      console.log("Current images before adding new one:", JSON.stringify(localImages, null, 2));
+
+      // Actualizar imágenes locales
+      const updatedImages = [...localImages, imageData];
+      setLocalImages(updatedImages);
 
       // Call the onChange handler
       onChange(imageData.url, imageData.alt, imageData.public_id);
@@ -96,7 +126,19 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     }
   };
 
-  const hasReachedLimit = maxImages > 0 && value.length >= maxImages;
+  const handleRemoveImage = (url: string) => {
+    console.log("Removing image with URL:", url);
+    console.log("Current images before removing:", JSON.stringify(localImages, null, 2));
+
+    // Actualizar imágenes locales
+    const updatedImages = localImages.filter((img) => img.url !== url);
+    setLocalImages(updatedImages);
+
+    // Call the onRemove handler provided by parent
+    onRemove(url);
+  };
+
+  const hasReachedLimit = maxImages > 0 && localImages.length >= maxImages;
 
   // Debug information display
   const debugInfo = (
@@ -108,7 +150,11 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         <strong>UploadPreset:</strong> {uploadPreset}
       </p>
       <p>
-        <strong>Current images:</strong> {value?.length || 0}
+        <strong>Current images:</strong> {localImages?.length || 0} (prop value:{" "}
+        {value?.length || 0})
+      </p>
+      <p>
+        <strong>Is Array:</strong> {Array.isArray(localImages) ? "Yes" : "No"}
       </p>
       {error && (
         <p className="text-red-500">
@@ -121,6 +167,12 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
           <pre className="max-h-32 overflow-auto">{JSON.stringify(uploadResult, null, 2)}</pre>
         </details>
       )}
+      {Array.isArray(localImages) && localImages.length > 0 && (
+        <details>
+          <summary>Current Images Data</summary>
+          <pre className="max-h-32 overflow-auto">{JSON.stringify(localImages, null, 2)}</pre>
+        </details>
+      )}
     </div>
   );
 
@@ -129,16 +181,16 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       {debugInfo}
 
       <div className="mb-4 flex flex-wrap items-center gap-4">
-        {Array.isArray(value) &&
-          value.map((image, idx) => (
+        {Array.isArray(localImages) && localImages.length > 0 ? (
+          localImages.map((image, idx) => (
             <div
               key={`${image.url}-${idx}`}
-              className="relative h-[200px] w-[200px] overflow-hidden rounded-md"
+              className="relative h-[200px] w-[200px] overflow-hidden rounded-md border-2 border-gray-300"
             >
               <div className="absolute top-2 right-2 z-10">
                 <Button
                   type="button"
-                  onClick={() => onRemove(image.url)}
+                  onClick={() => handleRemoveImage(image.url)}
                   variant="destructive"
                   size="icon"
                   className="h-7 w-7 rounded-full"
@@ -154,13 +206,21 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                 src={image.url}
                 sizes="200px"
               />
-              {image.public_id && (
-                <div className="absolute right-0 bottom-0 left-0 bg-black/50 p-1 text-[10px] text-white">
-                  ID: {image.public_id.substring(0, 15)}...
-                </div>
-              )}
+              <div className="absolute right-0 bottom-0 left-0 flex flex-col bg-black/60 p-1 text-[10px] text-white">
+                <span className="truncate font-medium">{image.alt || "Sin nombre"}</span>
+                {image.public_id && (
+                  <span className="truncate text-[9px] opacity-70">
+                    ID: {image.public_id.substring(0, 15)}...
+                  </span>
+                )}
+              </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <div className="flex h-[200px] w-full items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center text-sm text-gray-500">
+            No hay imágenes. Haz clic en &ldquo;Subir imagen&rdquo; para agregar.
+          </div>
+        )}
       </div>
 
       {!hasReachedLimit && (
@@ -183,13 +243,14 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                   console.log("Opening Cloudinary widget with:", {
                     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
                     uploadPreset,
+                    currentImagesCount: localImages?.length || 0,
                   });
                   open();
                 }}
                 className="gap-2"
               >
                 <ImagePlus className="h-4 w-4" />
-                Subir imagen
+                Subir imagen {isUploading && "(Subiendo...)"}
               </Button>
             );
           }}
