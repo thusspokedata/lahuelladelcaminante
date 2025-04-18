@@ -21,7 +21,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   value = [],
   disabled,
   maxImages = 5,
-  uploadPreset = "la_huella",
+  uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
 }) => {
   const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
@@ -67,7 +67,11 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         ))}
       </div>
       {!hasReachedLimit && (
-        <CldUploadWidget uploadPreset={uploadPreset} onUpload={onUpload}>
+        <CldUploadWidget
+          uploadPreset={uploadPreset}
+          onUpload={onUpload}
+          options={{ cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+        >
           {({ open }) => {
             return (
               <Button

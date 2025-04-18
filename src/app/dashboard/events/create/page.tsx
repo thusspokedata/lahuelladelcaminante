@@ -235,6 +235,7 @@ export default function CreateEventPage() {
         price: "10",
         genre: "Test",
         organizerName: "Test Organizer",
+        images: [], // Add empty images array
       };
 
       const response = await fetch("/api/events", {
