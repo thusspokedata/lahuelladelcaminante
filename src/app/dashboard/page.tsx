@@ -33,7 +33,11 @@ export default async function DashboardPage() {
         <dl className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <dt className="text-sm font-medium text-gray-500">Nombre</dt>
-            <dd className="text-base">{user.name || "No especificado"}</dd>
+            <dd className="text-base">
+              {user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}`
+                : "No especificado"}
+            </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Email</dt>
@@ -105,6 +109,25 @@ export default async function DashboardPage() {
             </div>
           </div>
         )}
+
+        <div className="rounded-lg border p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Eventos</h2>
+            <Link href="/dashboard/events/create">
+              <Button>Crear Evento</Button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Link href="/dashboard/events">
+              <Button variant="outline" className="h-24 w-full justify-start p-4">
+                <div className="text-left">
+                  <div className="font-medium">Mis Eventos</div>
+                  <div className="mt-1 text-sm text-gray-500">Ver y gestionar tus eventos</div>
+                </div>
+              </Button>
+            </Link>
+          </div>
+        </div>
 
         <div className="rounded-lg border p-6">
           <h2 className="mb-4 text-xl font-semibold">Mi Cuenta</h2>
