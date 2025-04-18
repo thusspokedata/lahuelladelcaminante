@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Plus, AlertCircle } from "lucide-react";
+import { Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserStore, useCanCreateEvents } from "@/stores/userStore";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import CloudinaryUpload from "@/components/ui/cloudinary-upload";
 
 // Define types for debug info
 interface DebugInfo {
@@ -71,6 +72,7 @@ const formSchema = z.object({
   organizerName: z.string().min(3, {
     message: "El nombre del organizador debe tener al menos 3 caracteres",
   }),
+  images: z.array(z.string()).optional(),
 });
 
 // Type for the form
@@ -137,6 +139,7 @@ export default function CreateEventPage() {
       price: "",
       genre: "",
       organizerName: "",
+      images: [],
     },
   });
 
@@ -561,13 +564,30 @@ export default function CreateEventPage() {
                 )}
               />
 
-              {/* Images - Placeholder for future implementation */}
-              <div className="rounded-md border border-dashed p-6 text-center">
-                <Plus className="text-muted-foreground mx-auto h-8 w-8" />
-                <p className="text-muted-foreground mt-2 text-sm">
-                  Próximamente: Subida de imágenes para el evento
-                </p>
-              </div>
+              {/* Images */}
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Imágenes</FormLabel>
+                    <FormControl>
+                      <CloudinaryUpload
+                        value={field.value || []}
+                        disabled={isSubmitting}
+                        onChange={(url) => {
+                          field.onChange([...(field.value || []), url]);
+                        }}
+                        onRemove={(url) => {
+                          field.onChange((field.value || []).filter((current) => current !== url));
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription>Sube hasta 5 imágenes para tu evento.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Creando evento..." : "Crear Evento"}

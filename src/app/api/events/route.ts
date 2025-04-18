@@ -69,6 +69,10 @@ export async function POST(request: NextRequest) {
       organizerName:
         data.organizerName || `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim(),
       createdById: currentUser.id,
+      images: data.images?.map((url: string) => ({
+        url,
+        alt: data.title || "Event image",
+      })),
     };
 
     // Create the event
