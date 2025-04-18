@@ -8,7 +8,8 @@ export interface User {
   id: string;
   clerkId: string;
   email: string;
-  name: string | null;
+  firstName: string | null;
+  lastName: string | null;
   role: UserRole;
   status: UserStatus;
   createdAt: Date;
@@ -63,7 +64,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 export async function createUser(data: {
   clerkId: string;
   email: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   role?: UserRole;
   status?: UserStatus;
 }): Promise<User> {
@@ -71,7 +73,8 @@ export async function createUser(data: {
     data: {
       clerkId: data.clerkId,
       email: data.email,
-      name: data.name || null,
+      firstName: data.firstName || null,
+      lastName: data.lastName || null,
       role: data.role || UserRole.USER,
       status: data.status || UserStatus.PENDING,
     },
@@ -85,7 +88,8 @@ export async function createUser(data: {
 export async function updateUser(
   id: string,
   data: {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     role?: UserRole;
     status?: UserStatus;
