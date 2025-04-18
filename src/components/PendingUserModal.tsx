@@ -36,17 +36,14 @@ export function PendingUserModal({ open, onOpenChange }: PendingUserModalProps) 
           <DialogDescription className="text-center">
             Tu cuenta está pendiente de aprobación por un administrador. Podrás acceder al panel de
             control una vez que tu cuenta haya sido aprobada.
-            <p className="mt-2">
-              Si deseas agilizar el proceso, puedes enviar un correo a
-              <a
-                href="mailto:info@lahuelladelcaminante.de"
-                className="text-primary ml-1 font-medium"
-              >
-                info@lahuelladelcaminante.de
-              </a>{" "}
-              para solicitar la revisión de tu cuenta.
-            </p>
           </DialogDescription>
+          <div className="text-muted-foreground mt-2 text-center text-sm">
+            Si deseas agilizar el proceso, puedes enviar un correo a
+            <a href="mailto:info@lahuelladelcaminante.de" className="text-primary ml-1 font-medium">
+              info@lahuelladelcaminante.de
+            </a>{" "}
+            para solicitar la revisión de tu cuenta.
+          </div>
         </DialogHeader>
         <DialogFooter className="flex justify-center">
           <Button onClick={handleClose}>Volver al Inicio</Button>
