@@ -6,7 +6,8 @@ export type AuthUser = {
   id: string;
   clerkId: string;
   email: string;
-  name: string | null;
+  firstName: string | null;
+  lastName: string | null;
   role: UserRole;
   status: UserStatus;
   createdAt: Date;

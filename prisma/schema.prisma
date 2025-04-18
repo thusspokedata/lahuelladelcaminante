@@ -32,7 +32,8 @@ model User {
   id            String     @id @default(cuid())
   clerkId       String     @unique // ID from Clerk authentication
   email         String     @unique
-  name          String?
+  firstName     String?
+  lastName      String?
   role          UserRole   @default(USER)
   status        UserStatus @default(PENDING)
   createdAt     DateTime   @default(now())

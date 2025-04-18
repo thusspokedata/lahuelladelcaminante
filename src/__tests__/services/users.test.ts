@@ -37,7 +37,8 @@ describe("Users Service", () => {
     id: "user1",
     clerkId: "clerk_user1",
     email: "user1@example.com",
-    name: "Test User",
+    firstName: "Test",
+    lastName: "User",
     role: UserRole.USER,
     status: UserStatus.ACTIVE,
     createdAt: new Date(),
@@ -195,7 +196,8 @@ describe("Users Service", () => {
         id: "new1",
         clerkId: "new_clerk_id",
         email: "new@example.com",
-        name: null,
+        firstName: null,
+        lastName: null,
         role: UserRole.USER,
         status: UserStatus.PENDING,
         createdAt: expect.any(Date),
@@ -213,7 +215,8 @@ describe("Users Service", () => {
         data: {
           clerkId: "new_clerk_id",
           email: "new@example.com",
-          name: null,
+          firstName: null,
+          lastName: null,
           role: UserRole.USER,
           status: UserStatus.PENDING,
         },
@@ -228,7 +231,8 @@ describe("Users Service", () => {
       const newUserData = {
         clerkId: "artist_clerk_id",
         email: "artist@example.com",
-        name: "New Artist",
+        firstName: "New",
+        lastName: "Artist",
         role: UserRole.ARTIST,
         status: UserStatus.ACTIVE,
       };
@@ -261,14 +265,16 @@ describe("Users Service", () => {
     it("should update user fields", async () => {
       // Mock user data to update
       const updateData = {
-        name: "Updated Name",
+        firstName: "Updated",
+        lastName: "Name",
         role: UserRole.ADMIN,
       };
 
       // Expected updated user
       const updatedUser = {
         ...mockUser,
-        name: "Updated Name",
+        firstName: "Updated",
+        lastName: "Name",
         role: UserRole.ADMIN,
         updatedAt: expect.any(Date),
       };
