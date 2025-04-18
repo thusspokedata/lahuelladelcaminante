@@ -6,10 +6,16 @@ import Image from "next/image";
 import { X, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+export interface ImageObject {
+  url: string;
+  alt?: string;
+  public_id?: string;
+}
+
 interface CloudinaryUploadProps {
-  onChange: (value: string) => void;
-  onRemove: (value: string) => void;
-  value: string[];
+  onChange: (url: string, alt?: string, public_id?: string) => void;
+  onRemove: (url: string) => void;
+  value: ImageObject[];
   disabled?: boolean;
   maxImages?: number;
   uploadPreset?: string;
@@ -38,7 +44,18 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   const onUpload = (result: CloudinaryUploadWidgetResults) => {
     startTransition(() => {
       if (result?.info && typeof result.info === "object" && "secure_url" in result.info) {
-        onChange(result.info.secure_url as string);
+        // Extract the public_id
+        const publicId = "public_id" in result.info ? (result.info.public_id as string) : "";
+        // Extract filename from public_id for the alt text
+        const filename = publicId.split("/").pop() || "";
+
+        console.log("Cloudinary upload result:", {
+          secure_url: result.info.secure_url,
+          public_id: publicId,
+          filename,
+        });
+
+        onChange(result.info.secure_url as string, filename, publicId);
       }
     });
   };
@@ -48,12 +65,12 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   return (
     <div>
       <div className="mb-4 flex items-center gap-4">
-        {value.map((url) => (
-          <div key={url} className="relative h-[200px] w-[200px] overflow-hidden rounded-md">
+        {value.map((image) => (
+          <div key={image.url} className="relative h-[200px] w-[200px] overflow-hidden rounded-md">
             <div className="absolute top-2 right-2 z-10">
               <Button
                 type="button"
-                onClick={() => onRemove(url)}
+                onClick={() => onRemove(image.url)}
                 variant="destructive"
                 size="icon"
                 className="h-7 w-7 rounded-full"
@@ -62,7 +79,18 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <Image fill className="object-cover" alt="Event image" src={url} sizes="200px" />
+            <Image
+              fill
+              className="object-cover"
+              alt={image.alt || "Event image"}
+              src={image.url}
+              sizes="200px"
+            />
+            {image.public_id && (
+              <div className="absolute right-0 bottom-0 left-0 bg-black/50 p-1 text-[10px] text-white">
+                ID: {image.public_id.substring(0, 12)}...
+              </div>
+            )}
           </div>
         ))}
       </div>

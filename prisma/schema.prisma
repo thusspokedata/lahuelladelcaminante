@@ -96,6 +96,7 @@ model Image {
   id        String   @id @default(cuid())
   url       String
   alt       String
+  public_id String?
   event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String?
   artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)

@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserStore, useCanCreateEvents } from "@/stores/userStore";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import CloudinaryUpload from "@/components/ui/cloudinary-upload";
+import CloudinaryUpload, { ImageObject } from "@/components/ui/cloudinary-upload";
 
 // Define types for debug info
 interface DebugInfo {
@@ -72,7 +72,15 @@ const formSchema = z.object({
   organizerName: z.string().min(3, {
     message: "El nombre del organizador debe tener al menos 3 caracteres",
   }),
-  images: z.array(z.string()).optional(),
+  images: z
+    .array(
+      z.object({
+        url: z.string(),
+        alt: z.string().optional(),
+        public_id: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 // Type for the form
@@ -235,7 +243,7 @@ export default function CreateEventPage() {
         price: "10",
         genre: "Test",
         organizerName: "Test Organizer",
-        images: [], // Add empty images array
+        images: [{ url: "https://example.com/test.jpg", alt: "Test Image" }], // Update to use image objects
       };
 
       const response = await fetch("/api/events", {
@@ -574,13 +582,21 @@ export default function CreateEventPage() {
                     <FormLabel>Imágenes</FormLabel>
                     <FormControl>
                       <CloudinaryUpload
-                        value={field.value || []}
+                        value={(field.value as ImageObject[]) || []}
                         disabled={isSubmitting}
-                        onChange={(url) => {
-                          field.onChange([...(field.value || []), url]);
+                        onChange={(url: string, alt?: string, public_id?: string) => {
+                          console.log("Imagen subida:", { url, alt, public_id });
+                          const newImage: ImageObject = {
+                            url,
+                            alt: alt || form.getValues().title || "Event image",
+                            public_id,
+                          };
+                          field.onChange([...(field.value || []), newImage]);
                         }}
-                        onRemove={(url) => {
-                          field.onChange((field.value || []).filter((current) => current !== url));
+                        onRemove={(url: string) => {
+                          field.onChange(
+                            (field.value || []).filter((img: ImageObject) => img.url !== url)
+                          );
                         }}
                       />
                     </FormControl>

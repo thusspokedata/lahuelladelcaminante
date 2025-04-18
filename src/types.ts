@@ -34,6 +34,7 @@ export interface Event {
   title: string;
   slug: string;
   dates: EventDate[];
+  organizer: string;
   artist: {
     id: string;
     name: string;

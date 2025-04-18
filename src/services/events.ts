@@ -29,6 +29,7 @@ export interface Event {
   images: {
     url: string;
     alt: string;
+    public_id?: string;
   }[];
   isDeleted?: boolean;
   deletedAt?: Date | null;
@@ -48,6 +49,7 @@ export interface CreateEventInput {
   images?: {
     url: string;
     alt: string;
+    public_id?: string;
   }[];
   organizerName: string;
   createdById?: string;
@@ -87,6 +89,7 @@ const mapPrismaEventToEvent = (event: EventWithRelations): Event => {
     images: event.images.map((image) => ({
       url: image.url,
       alt: image.alt,
+      public_id: image.public_id || undefined,
     })),
     isDeleted: event.isDeleted,
     deletedAt: event.deletedAt,
@@ -141,6 +144,7 @@ export const createEvent = async (data: CreateEventInput): Promise<Event> => {
                 create: images.map((img) => ({
                   url: img.url,
                   alt: img.alt || title,
+                  public_id: img.public_id,
                 })),
               },
             }
