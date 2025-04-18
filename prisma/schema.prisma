@@ -51,10 +51,11 @@ model Event {
   location    String
   time        String
   price       Float? // Optional price
+  organizer   String // Who is organizing the event
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  artistId    String
-  artist      Artist      @relation(fields: [artistId], references: [id])
+  artistId    String? // Make artistId optional
+  artist      Artist?     @relation(fields: [artistId], references: [id]) // Make artist optional
   genre       String
   images      Image[] // Multiple images for an event
   isActive    Boolean     @default(true)
