@@ -113,12 +113,34 @@ export const createEvent = async (data: CreateEventInput): Promise<Event> => {
     createdById,
   } = data;
 
+  // Verify received image data
+  console.log("Service received images:", images ? JSON.stringify(images, null, 2) : "No images");
+
   // Create a unique slug from the title
   const baseSlug = slugify(title);
   const slug = await generateUniqueSlug(baseSlug);
 
   // Create the event with transaction to ensure all related data is created
   const event = await prisma.$transaction(async (tx) => {
+    // Prepare image data for creation
+    const imageData =
+      images && images.length > 0
+        ? {
+            images: {
+              create: images.map((img) => {
+                console.log("Creating image:", img);
+                return {
+                  url: img.url,
+                  alt: img.alt || title,
+                  public_id: img.public_id,
+                };
+              }),
+            },
+          }
+        : {};
+
+    console.log("Image data for creation:", JSON.stringify(imageData, null, 2));
+
     // Create the event
     const newEvent = await tx.event.create({
       data: {
@@ -138,17 +160,7 @@ export const createEvent = async (data: CreateEventInput): Promise<Event> => {
           create: dates.map((date) => ({ date })),
         },
         // Create image entries if provided
-        ...(images && images.length > 0
-          ? {
-              images: {
-                create: images.map((img) => ({
-                  url: img.url,
-                  alt: img.alt || title,
-                  public_id: img.public_id,
-                })),
-              },
-            }
-          : {}),
+        ...imageData,
       } as unknown as import("@/generated/prisma").Prisma.EventCreateInput,
       include: {
         dates: true,
@@ -157,6 +169,7 @@ export const createEvent = async (data: CreateEventInput): Promise<Event> => {
       },
     });
 
+    console.log("Event created with images:", newEvent.images.length);
     return newEvent;
   });
 

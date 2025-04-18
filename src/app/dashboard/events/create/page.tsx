@@ -152,7 +152,7 @@ export default function CreateEventPage() {
   });
 
   // Handle form submission
-  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+  const onSubmit: SubmitHandler<FormValues> = async (_values) => {
     // Check if user can create events before submitting
     if (!canCreateEvents) {
       setError("No tienes permiso para crear eventos. Tu cuenta debe estar activa.");
@@ -162,11 +162,31 @@ export default function CreateEventPage() {
     setIsSubmitting(true);
     setError(null);
     try {
+      // Get all form values directly from form to ensure we have the latest
+      const formValues = form.getValues();
+
       // Transform price to number before sending
       const dataToSend = {
-        ...values,
-        price: values.price ? parseFloat(values.price) : undefined,
+        ...formValues,
+        price: formValues.price ? parseFloat(formValues.price) : undefined,
       };
+
+      // Verify images before sending
+      console.log("IMAGES TO SEND:", JSON.stringify(dataToSend.images, null, 2));
+
+      // Make sure images have the correct structure
+      if (
+        !dataToSend.images ||
+        !Array.isArray(dataToSend.images) ||
+        dataToSend.images.length === 0
+      ) {
+        console.warn("No images to send or incorrect format");
+      } else {
+        console.log(
+          `Sending ${dataToSend.images.length} images with structure:`,
+          dataToSend.images[0]
+        );
+      }
 
       // Send data to the server with credentials
       const response = await fetch("/api/events", {
@@ -175,7 +195,13 @@ export default function CreateEventPage() {
           "Content-Type": "application/json",
         },
         credentials: "include", // Important to include credentials for auth
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(dataToSend, (key, value) => {
+          // Check any transformations during serialization
+          if (key === "images") {
+            console.log("Images during serialization:", value);
+          }
+          return value;
+        }),
       });
 
       if (!response.ok) {
@@ -184,7 +210,8 @@ export default function CreateEventPage() {
       }
 
       const eventData = await response.json();
-      console.log("Evento creado:", eventData);
+      console.log("Event created:", eventData);
+      console.log("Saved images:", eventData.images);
 
       // Redirect to dashboard after creating the event
       router.push("/dashboard");
@@ -579,24 +606,63 @@ export default function CreateEventPage() {
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Imágenes</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Imágenes</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          console.log("Current images state:", field.value);
+                          alert(`${field.value?.length || 0} imágenes en el formulario`);
+                        }}
+                      >
+                        Verificar imágenes
+                      </Button>
+                    </div>
                     <FormControl>
                       <CloudinaryUpload
                         value={(field.value as ImageObject[]) || []}
                         disabled={isSubmitting}
                         onChange={(url: string, alt?: string, public_id?: string) => {
-                          console.log("Imagen subida:", { url, alt, public_id });
+                          console.log("Image uploaded:", { url, alt, public_id });
                           const newImage: ImageObject = {
                             url,
                             alt: alt || form.getValues().title || "Event image",
                             public_id,
                           };
-                          field.onChange([...(field.value || []), newImage]);
+                          console.log("Adding image:", newImage);
+
+                          const currentImages = Array.isArray(field.value) ? field.value : [];
+                          const updatedImages = [...currentImages, newImage];
+
+                          field.onChange(updatedImages);
+
+                          form.setValue("images", updatedImages, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+
+                          setTimeout(() => {
+                            console.log("Images after adding:", form.getValues().images);
+                          }, 100);
                         }}
                         onRemove={(url: string) => {
-                          field.onChange(
-                            (field.value || []).filter((img: ImageObject) => img.url !== url)
+                          const currentImages = Array.isArray(field.value) ? field.value : [];
+                          const updatedImages = currentImages.filter(
+                            (img: ImageObject) => img.url !== url
                           );
+
+                          field.onChange(updatedImages);
+
+                          form.setValue("images", updatedImages, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+
+                          setTimeout(() => {
+                            console.log("Images after removing:", form.getValues().images);
+                          }, 100);
                         }}
                       />
                     </FormControl>

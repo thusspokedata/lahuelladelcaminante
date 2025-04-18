@@ -44,18 +44,27 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   const onUpload = (result: CloudinaryUploadWidgetResults) => {
     startTransition(() => {
       if (result?.info && typeof result.info === "object" && "secure_url" in result.info) {
+        // Show all information received from Cloudinary
+        console.log("Complete Cloudinary result:", result.info);
+
         // Extract the public_id
         const publicId = "public_id" in result.info ? (result.info.public_id as string) : "";
         // Extract filename from public_id for the alt text
         const filename = publicId.split("/").pop() || "";
 
-        console.log("Cloudinary upload result:", {
-          secure_url: result.info.secure_url,
+        // Create complete image object with all required properties
+        const imageData = {
+          url: result.info.secure_url as string,
           public_id: publicId,
-          filename,
-        });
+          alt: filename || "Event image",
+        };
 
-        onChange(result.info.secure_url as string, filename, publicId);
+        console.log("Data extracted from Cloudinary:", imageData);
+
+        // Pass complete image object to parent component
+        onChange(imageData.url, imageData.alt, imageData.public_id);
+      } else {
+        console.error("Error: No secure_url received from Cloudinary", result);
       }
     });
   };
@@ -64,7 +73,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
         {value.map((image) => (
           <div key={image.url} className="relative h-[200px] w-[200px] overflow-hidden rounded-md">
             <div className="absolute top-2 right-2 z-10">
@@ -88,11 +97,20 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
             />
             {image.public_id && (
               <div className="absolute right-0 bottom-0 left-0 bg-black/50 p-1 text-[10px] text-white">
-                ID: {image.public_id.substring(0, 12)}...
+                ID: {image.public_id.substring(0, 15)}...
               </div>
             )}
           </div>
         ))}
+
+        {value.length > 0 && (
+          <div className="text-muted-foreground flex h-[200px] w-[200px] flex-col items-center justify-center rounded-md border border-dashed p-2 text-center text-sm">
+            <p className="font-medium">
+              {value.length} {value.length === 1 ? "imagen" : "imágenes"}
+            </p>
+            <p>seleccionada{value.length !== 1 ? "s" : ""}</p>
+          </div>
+        )}
       </div>
       {!hasReachedLimit && (
         <CldUploadWidget

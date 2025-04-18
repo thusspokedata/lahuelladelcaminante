@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          error: "No autorizado. Debes iniciar sesión para crear eventos.",
+          error: "No authorized. You must log in to create events.",
           cookies: hasCookies,
         },
         { status: 401 }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       console.log("API Events: User not found in database for userId:", userId);
       return NextResponse.json(
         {
-          error: "Usuario no encontrado en la base de datos.",
+          error: "User not found in database.",
           clerk_user_id: userId,
         },
         { status: 404 }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Tu cuenta debe estar activa para crear eventos. Estado actual: " + currentUser.status,
+            "Your account must be active to create events. Current status: " + currentUser.status,
         },
         { status: 403 }
       );
@@ -55,6 +55,16 @@ export async function POST(request: NextRequest) {
 
     // Get event data from request body
     const data = await request.json();
+
+    // Verify image data
+    console.log("API received event data:", {
+      title: data.title,
+      hasImages: !!data.images,
+      imagesCount: data.images ? data.images.length : 0,
+      imagesExample: data.images && data.images.length > 0 ? data.images[0] : null,
+      // Log full raw data for debugging
+      rawImages: JSON.stringify(data.images),
+    });
 
     // Prepare data for event creation
     const eventData: CreateEventInput = {
@@ -69,8 +79,15 @@ export async function POST(request: NextRequest) {
       organizerName:
         data.organizerName || `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim(),
       createdById: currentUser.id,
+      // Images already come as objects with url and alt
       images: data.images || [],
     };
+
+    // Verify image data after transformation
+    console.log(
+      "Image data prepared for event creation:",
+      eventData.images ? JSON.stringify(eventData.images, null, 2) : "No images"
+    );
 
     // Create the event
     console.log("API Events: Creating event for user:", currentUser.id);
@@ -81,7 +98,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("API Events: Error creating event:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Error al crear el evento" },
+      { error: error instanceof Error ? error.message : "Error creating event" },
       { status: 500 }
     );
   }
