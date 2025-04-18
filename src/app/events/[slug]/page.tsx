@@ -28,7 +28,9 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
   try {
     event = await getEventBySlug(eventSlug);
     if (event) {
-      artist = await getArtistById(event.artist.id);
+      if (event.artist) {
+        artist = await getArtistById(event.artist.id);
+      }
     }
   } catch (error) {
     console.error("Error fetching event data:", error);
@@ -63,7 +65,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
         <div className="space-y-6">
           <div>
             <h1 className="mb-2 text-4xl font-bold">{event.title}</h1>
-            <p className="text-muted-foreground text-xl">{event.artist.name}</p>
+            {event.artist && <p className="text-muted-foreground text-xl">{event.artist.name}</p>}
           </div>
 
           {/* Event Image */}
