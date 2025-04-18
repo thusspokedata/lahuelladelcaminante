@@ -8,8 +8,14 @@ export default async function DashboardPage() {
   // Get the current user with information from our DB
   const user = await getCurrentUser();
 
-  // This shouldn't happen due to the middleware, but just in case
-  if (!user || user.status !== "ACTIVE") {
+  // Redirect if user doesn't exist
+  if (!user) {
+    redirect("/");
+  }
+
+  // When users with PENDING or BLOCKED status try to access directly,
+  // redirect them to homepage (they should see the modal via our DashboardLink component)
+  if (user.status !== "ACTIVE") {
     redirect("/");
   }
 
