@@ -195,7 +195,8 @@ describe("Users Service", () => {
         id: "new1",
         clerkId: "new_clerk_id",
         email: "new@example.com",
-        name: null,
+        firstName: null,
+        lastName: null,
         role: UserRole.USER,
         status: UserStatus.PENDING,
         createdAt: expect.any(Date),
@@ -213,7 +214,8 @@ describe("Users Service", () => {
         data: {
           clerkId: "new_clerk_id",
           email: "new@example.com",
-          name: null,
+          firstName: null,
+          lastName: null,
           role: UserRole.USER,
           status: UserStatus.PENDING,
         },
@@ -228,7 +230,8 @@ describe("Users Service", () => {
       const newUserData = {
         clerkId: "artist_clerk_id",
         email: "artist@example.com",
-        name: "New Artist",
+        firstName: "New",
+        lastName: "Artist",
         role: UserRole.ARTIST,
         status: UserStatus.ACTIVE,
       };
