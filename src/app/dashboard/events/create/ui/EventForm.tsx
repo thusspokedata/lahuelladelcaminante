@@ -23,6 +23,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import DateSelector from "./DateSelector";
 import ImageUploadField from "./ImageUploadField";
+import { ArtistSelector } from "./ArtistSelector";
+
+// Simplified Artist type for form use
+type FormArtist = {
+  id: string;
+  name: string;
+  bio?: string;
+};
 
 // Validation schema for event creation form
 const formSchema = z.object({
@@ -32,6 +40,13 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "La descripción debe tener al menos 10 caracteres",
   }),
+  artists: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      bio: z.string().optional(),
+    })
+  ),
   dates: z.array(z.date()).min(1, {
     message: "Selecciona al menos una fecha",
   }),
@@ -81,7 +96,8 @@ export default function EventForm({
     defaultValues: {
       title: "",
       description: "",
-      dates: [],
+      artists: [] as FormArtist[],
+      dates: [] as Date[],
       location: "",
       time: "",
       price: "",
@@ -151,6 +167,20 @@ export default function EventForm({
                 )}
               />
             </div>
+
+            {/* Artist Selector */}
+            <FormField
+              control={form.control}
+              name="artists"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <ArtistSelector value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Description */}
             <FormField
