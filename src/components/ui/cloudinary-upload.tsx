@@ -46,7 +46,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       uploadPreset: uploadPreset,
     });
 
-    // Inicializar imágenes locales con el valor prop
+    // Initialize local images with prop value
     if (Array.isArray(value)) {
       setLocalImages(value);
     }
@@ -57,14 +57,13 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     }
   }, [uploadPreset, value]);
 
-  // Sincronizar cambios de value prop con estado local
+  // Synchronize value prop changes with local state
   useEffect(() => {
     if (isMounted && Array.isArray(value)) {
       setLocalImages(value);
       console.log("CloudinaryUpload value changed:", {
         valueLength: value?.length || 0,
         valueIsArray: Array.isArray(value),
-        localImagesLength: localImages.length,
       });
     }
   }, [value, isMounted]);
@@ -79,6 +78,8 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     setIsUploading(true);
 
     try {
+      console.log("Raw upload result:", JSON.stringify(result, null, 2));
+
       if (!result?.info) {
         setError("No upload result info received");
         console.error("No upload result info received", result);
@@ -91,32 +92,52 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         return;
       }
 
+      // Log all the properties in result.info
+      console.log("Cloudinary result.info properties:", Object.keys(result.info));
+
       if (!("secure_url" in result.info)) {
         setError("No secure_url in upload result");
         console.error("No secure_url in upload result", result);
         return;
       }
 
-      // Extract the public_id
-      const publicId = "public_id" in result.info ? (result.info.public_id as string) : "";
+      // Extract the public_id (ensure public_id exists)
+      let publicId = "";
+      if ("public_id" in result.info) {
+        publicId = result.info.public_id as string;
+        console.log("Found public_id:", publicId);
+      } else {
+        console.warn("No public_id in upload result, searching in other properties...");
+        // Try to find public_id in other properties
+        const info = result.info as Record<string, string | number | boolean | unknown>;
+        for (const key in info) {
+          if (typeof info[key] === "string" && key.includes("id")) {
+            console.log(`Possible ID field found in ${key}:`, info[key]);
+          }
+        }
+      }
+
       // Extract filename for alt text
       const filename = publicId.split("/").pop() || "Image";
 
-      // Create the image object
+      // Log secure_url value
+      console.log("Secure URL from result:", result.info.secure_url);
+
+      // Create the image object with all possible data
       const imageData = {
         url: result.info.secure_url as string,
         public_id: publicId,
         alt: filename,
       };
 
-      console.log("Successfully extracted image data:", imageData);
+      console.log("Final extracted image data:", imageData);
       console.log("Current images before adding new one:", JSON.stringify(localImages, null, 2));
 
-      // Actualizar imágenes locales
+      // Update local images
       const updatedImages = [...localImages, imageData];
       setLocalImages(updatedImages);
 
-      // Call the onChange handler
+      // Call the onChange handler - explicitly passing all values
       onChange(imageData.url, imageData.alt, imageData.public_id);
     } catch (err) {
       setError(`Error processing upload: ${err instanceof Error ? err.message : String(err)}`);
@@ -130,7 +151,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     console.log("Removing image with URL:", url);
     console.log("Current images before removing:", JSON.stringify(localImages, null, 2));
 
-    // Actualizar imágenes locales
+    // Update local images
     const updatedImages = localImages.filter((img) => img.url !== url);
     setLocalImages(updatedImages);
 
@@ -226,7 +247,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       {!hasReachedLimit && (
         <CldUploadWidget
           uploadPreset={uploadPreset}
-          onUpload={onUpload}
+          onSuccess={onUpload} // this fixed the error, dont use "onUpload"
           options={{
             cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
             sources: ["local", "url", "camera"],
