@@ -29,25 +29,6 @@ import { useUserStore, useCanCreateEvents } from "@/stores/userStore";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import CloudinaryUpload, { ImageObject } from "@/components/ui/cloudinary-upload";
 
-// Define types for debug info
-interface DebugInfo {
-  storeState?: Record<string, unknown>;
-  error?: string;
-  timestamp: string;
-  clerkAuth?: {
-    isLoaded?: boolean;
-    isSignedIn?: boolean;
-    userId?: string | null;
-  };
-}
-
-interface AuthDebugInfo {
-  user?: Record<string, unknown>;
-  error?: string;
-  session?: Record<string, unknown>;
-  [key: string]: unknown;
-}
-
 // Validation schema for event creation form
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -91,9 +72,6 @@ export default function CreateEventPage() {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
-  const [authDebugInfo, setAuthDebugInfo] = useState<AuthDebugInfo | null>(null);
-  // Add a ref to prevent multiple data loads
   const dataLoadedRef = useRef(false);
 
   // Get user state from Zustand store
@@ -105,35 +83,15 @@ export default function CreateEventPage() {
 
   // Load user data when component mounts
   useEffect(() => {
-    // Prevent multiple data loads and infinite loops
+    // Prevent multiple data loads
     if (dataLoadedRef.current) return;
-
     dataLoadedRef.current = true;
-    console.log("Loading user data...");
 
-    // Log direct Clerk auth state
-    console.log("Direct Clerk Auth:", { isLoaded, isSignedIn, userId });
-
-    // Attempt to load data and capture for debugging
-    user
-      .loadUserData()
-      .then(() => {
-        setDebugInfo({
-          storeState: { ...user },
-          timestamp: new Date().toISOString(),
-          clerkAuth: { isLoaded, isSignedIn, userId },
-        });
-        console.log("User data loaded successfully");
-      })
-      .catch((err) => {
-        setDebugInfo({
-          error: err.message,
-          timestamp: new Date().toISOString(),
-          clerkAuth: { isLoaded, isSignedIn, userId },
-        });
-        console.error("Error loading user data:", err);
-      });
-  }, [isLoaded, isSignedIn, userId]); // Add Clerk auth state dependencies
+    // Load user data
+    user.loadUserData().catch((err) => {
+      console.error("Error loading user data:", err);
+    });
+  }, [isLoaded, isSignedIn, userId, user]);
 
   // Initialize form with React Hook Form and Zod
   const form = useForm<FormValues>({
@@ -162,23 +120,14 @@ export default function CreateEventPage() {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Get all form values directly from form to ensure we have the latest
+      // Get form values directly, including images
       const formValues = form.getValues();
-
-      // IMPORTANTE: Obtener directamente el campo images, no a través de formValues
-      // porque podría haber un problema de referencia
       const images = form.getValues("images") || [];
 
-      console.log("Form object:", form);
-      console.log("Form values method:", form.getValues());
-      console.log("Form images specific:", form.getValues("images"));
-      console.log("Raw form values:", JSON.stringify(formValues, null, 2));
-      console.log("Raw images from form:", JSON.stringify(images, null, 2));
-
-      // Crear una copia independiente de las imágenes para evitar problemas de referencia
+      // Create independent copy of images to avoid reference issues
       const imagesCopy = JSON.parse(JSON.stringify(images));
 
-      // Transform price to number before sending
+      // Prepare data to send
       const dataToSend = {
         title: formValues.title,
         description: formValues.description,
@@ -188,7 +137,6 @@ export default function CreateEventPage() {
         price: formValues.price ? parseFloat(formValues.price) : undefined,
         genre: formValues.genre,
         organizerName: formValues.organizerName,
-        // Explicitly set images using our copied array
         images: imagesCopy.map((img: ImageObject) => ({
           url: img.url,
           alt: img.alt || "Event image",
@@ -196,31 +144,18 @@ export default function CreateEventPage() {
         })),
       };
 
-      // Verify images before sending
-      console.log("IMAGES TO SEND:", JSON.stringify(dataToSend.images, null, 2));
-      console.log("FULL DATA TO SEND:", JSON.stringify(dataToSend, null, 2));
-
-      // Make sure images have the correct structure
-      if (
-        !dataToSend.images ||
-        !Array.isArray(dataToSend.images) ||
-        dataToSend.images.length === 0
-      ) {
-        console.warn("No images to send or incorrect format");
-      } else {
-        console.log(
-          `Sending ${dataToSend.images.length} images with structure:`,
-          dataToSend.images[0]
-        );
+      // Log image data for debug purposes
+      if (dataToSend.images.length > 0) {
+        console.log(`Sending ${dataToSend.images.length} images`);
       }
 
-      // Send data to the server with credentials
+      // Send data to the server
       const response = await fetch("/api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Important to include credentials for auth
+        credentials: "include",
         body: JSON.stringify(dataToSend),
       });
 
@@ -229,11 +164,7 @@ export default function CreateEventPage() {
         throw new Error(errorData.error || "Error al crear el evento");
       }
 
-      const eventData = await response.json();
-      console.log("Event created:", eventData);
-      console.log("Saved images:", eventData.images);
-
-      // Redirect to dashboard after creating the event
+      // Success - redirect to dashboard
       router.push("/dashboard");
     } catch (error: unknown) {
       console.error("Error al crear el evento:", error);
@@ -263,71 +194,7 @@ export default function CreateEventPage() {
     }
   };
 
-  // Function to fetch auth debug information
-  const fetchAuthDebugInfo = async () => {
-    try {
-      const response = await fetch("/api/auth-debug", {
-        credentials: "include",
-      });
-      const data = await response.json();
-      setAuthDebugInfo(data);
-      console.log("Auth debug info:", data);
-    } catch (err) {
-      console.error("Error fetching auth debug info:", err);
-      setAuthDebugInfo({ error: err instanceof Error ? err.message : "Unknown error" });
-    }
-  };
-
-  // Test event creation API directly
-  const testEventAPI = async () => {
-    try {
-      const testImages = [
-        {
-          url: "https://example.com/test.jpg",
-          alt: "Test Image",
-          public_id: "test/image1",
-        },
-      ];
-
-      const testData = {
-        title: "Test Event",
-        description: "Test Description that is at least 10 characters long",
-        dates: [new Date()],
-        location: "Test Location",
-        time: "12:00",
-        price: "10",
-        genre: "Test",
-        organizerName: "Test Organizer",
-        images: testImages,
-      };
-
-      console.log("Test data images:", JSON.stringify(testData.images, null, 2));
-
-      const response = await fetch("/api/events", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(testData),
-      });
-
-      const result = await response.json();
-      console.log("Event API test result:", result);
-
-      if (!response.ok) {
-        setError(`API Test error: ${result.error || "Unknown error"}`);
-      } else {
-        setError(null);
-        alert("API test successful! Event created");
-      }
-    } catch (err) {
-      console.error("Error testing event API:", err);
-      setError(`API Test exception: ${err instanceof Error ? err.message : "Unknown error"}`);
-    }
-  };
-
-  // If user is not authenticated, show login message with a bypass option for debug
+  // If user is not authenticated, show login message
   if (!user.isAuthenticated) {
     return (
       <div className="container mx-auto py-10">
@@ -338,8 +205,6 @@ export default function CreateEventPage() {
             Debes iniciar sesión para crear eventos.
             <div className="mt-4">
               <Button onClick={() => router.push("/sign-in")}>Iniciar sesión</Button>
-
-              {/* Temporary bypass button if Clerk shows user is authenticated but API doesn't */}
               {isSignedIn && userId && (
                 <Button
                   variant="outline"
@@ -352,52 +217,6 @@ export default function CreateEventPage() {
             </div>
           </AlertDescription>
         </Alert>
-
-        {/* Debug information */}
-        <div className="mt-8 overflow-auto rounded border bg-slate-100 p-4 text-xs">
-          <div className="flex items-center justify-between">
-            <h3 className="mb-2 font-bold">Información de depuración:</h3>
-            <div className="space-x-2">
-              <Button size="sm" variant="outline" onClick={fetchAuthDebugInfo}>
-                Verificar autenticación
-              </Button>
-              <Button size="sm" variant="outline" onClick={testEventAPI}>
-                Probar API eventos
-              </Button>
-            </div>
-          </div>
-
-          <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-          <h3 className="mt-4 mb-2 font-bold">Estado del store:</h3>
-          <pre>{JSON.stringify(user, null, 2)}</pre>
-          <h3 className="mt-4 mb-2 font-bold">Estado de Clerk directo:</h3>
-          <pre>{JSON.stringify({ isLoaded, isSignedIn, userId }, null, 2)}</pre>
-
-          {authDebugInfo && (
-            <>
-              <h3 className="mt-4 mb-2 font-bold">Información de autenticación (API):</h3>
-              <pre>{JSON.stringify(authDebugInfo, null, 2)}</pre>
-            </>
-          )}
-
-          {/* Show a message about authentication mismatch */}
-          {isSignedIn && userId && !user.isAuthenticated && (
-            <div className="mt-4 rounded border border-yellow-500 bg-yellow-100 p-3 text-yellow-800">
-              <strong>Problema detectado:</strong> Estás autenticado en Clerk pero la API no
-              reconoce tu sesión. Esto puede suceder por problemas con cookies o por un error en la
-              configuración.
-              <br />
-              <br />
-              Por favor, intenta:
-              <ul className="mt-2 list-disc pl-5">
-                <li>Cerrar sesión y volver a iniciarla</li>
-                <li>Borrar cookies del navegador</li>
-                <li>Usar una ventana de navegación privada</li>
-                <li>Contactar al administrador si el problema persiste</li>
-              </ul>
-            </div>
-          )}
-        </div>
       </div>
     );
   }
@@ -636,49 +455,43 @@ export default function CreateEventPage() {
                 name="images"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Imágenes</FormLabel>
                     <FormControl>
                       <CloudinaryUpload
                         value={(field.value as ImageObject[]) || []}
                         disabled={isSubmitting}
                         onChange={(url: string, alt?: string, public_id?: string) => {
-                          console.log("Image uploaded:", { url, alt, public_id });
+                          // Create new image object
                           const newImage: ImageObject = {
                             url,
                             alt: alt || form.getValues().title || "Event image",
                             public_id,
                           };
-                          console.log("Adding image:", newImage);
 
+                          // Add to existing images
                           const currentImages = Array.isArray(field.value) ? field.value : [];
                           const updatedImages = [...currentImages, newImage];
 
+                          // Update form field
                           field.onChange(updatedImages);
-
                           form.setValue("images", updatedImages, {
                             shouldValidate: true,
                             shouldDirty: true,
                           });
-
-                          setTimeout(() => {
-                            console.log("Images after adding:", form.getValues().images);
-                          }, 100);
                         }}
                         onRemove={(url: string) => {
+                          // Filter out removed image
                           const currentImages = Array.isArray(field.value) ? field.value : [];
                           const updatedImages = currentImages.filter(
                             (img: ImageObject) => img.url !== url
                           );
 
+                          // Update form field
                           field.onChange(updatedImages);
-
                           form.setValue("images", updatedImages, {
                             shouldValidate: true,
                             shouldDirty: true,
                           });
-
-                          setTimeout(() => {
-                            console.log("Images after removing:", form.getValues().images);
-                          }, 100);
                         }}
                       />
                     </FormControl>
