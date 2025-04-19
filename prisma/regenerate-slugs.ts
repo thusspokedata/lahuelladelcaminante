@@ -1,16 +1,7 @@
 import { PrismaClient } from "../src/generated/prisma";
+import { slugify } from "../src/lib/utils";
 
 const prisma = new PrismaClient();
-
-// Function to generate slugs from names
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // Remove special characters
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
-    .trim();
-}
 
 // Function to ensure unique artist slug
 async function ensureUniqueArtistSlug(slug: string, existingId?: string): Promise<string> {
@@ -19,7 +10,7 @@ async function ensureUniqueArtistSlug(slug: string, existingId?: string): Promis
   let exists = true;
 
   while (exists) {
-    const where: any = { slug: uniqueSlug };
+    const where: { slug: string; id?: { not: string } } = { slug: uniqueSlug };
 
     // Exclude the current entity when updating
     if (existingId) {
@@ -46,7 +37,7 @@ async function ensureUniqueEventSlug(slug: string, existingId?: string): Promise
   let exists = true;
 
   while (exists) {
-    const where: any = { slug: uniqueSlug };
+    const where: { slug: string; id?: { not: string } } = { slug: uniqueSlug };
 
     // Exclude the current entity when updating
     if (existingId) {
@@ -71,7 +62,7 @@ async function regenerateArtistSlugs() {
   console.log(`Found ${artists.length} artists to update`);
 
   for (const artist of artists) {
-    const baseSlug = generateSlug(artist.name);
+    const baseSlug = slugify(artist.name);
     const uniqueSlug = await ensureUniqueArtistSlug(baseSlug, artist.id);
 
     await prisma.artist.update({
@@ -88,7 +79,7 @@ async function regenerateEventSlugs() {
   console.log(`Found ${events.length} events to update`);
 
   for (const event of events) {
-    const baseSlug = generateSlug(event.title);
+    const baseSlug = slugify(event.title);
     const uniqueSlug = await ensureUniqueEventSlug(baseSlug, event.id);
 
     await prisma.event.update({
