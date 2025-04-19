@@ -20,7 +20,7 @@ interface EventCalendarProps {
   selectedDate?: Date | undefined;
   events?: {
     dates: {
-      date: string;
+      date: string | Date;
     }[];
   }[];
 }

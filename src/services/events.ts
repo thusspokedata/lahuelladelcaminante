@@ -5,6 +5,7 @@ import {
   EventDate as PrismaEventDate,
   Artist as PrismaArtist,
 } from "@/generated/prisma";
+import { slugify } from "@/lib/utils";
 
 export interface Event {
   id: string;
@@ -23,18 +24,41 @@ export interface Event {
   location: string;
   time: string;
   price?: number;
+  organizer: string;
   description?: string;
   images: {
     url: string;
     alt: string;
+    public_id?: string;
   }[];
   isDeleted?: boolean;
   deletedAt?: Date | null;
+  createdById?: string | null;
 }
 
+// Type for creating a new event
+export interface CreateEventInput {
+  title: string;
+  artistId: string;
+  dates: Date[];
+  location: string;
+  time: string;
+  price?: number;
+  description?: string;
+  genre: string;
+  images?: {
+    url: string;
+    alt: string;
+    public_id?: string;
+  }[];
+  organizerName: string;
+  createdById?: string;
+}
+
+// Type definition for EventWithRelations
 type EventWithRelations = PrismaEvent & {
   dates: PrismaEventDate[];
-  artist: PrismaArtist;
+  artist?: PrismaArtist | null;
   images: PrismaImage[];
 };
 
@@ -48,24 +72,134 @@ const mapPrismaEventToEvent = (event: EventWithRelations): Event => {
       id: date.id,
       date: date.date,
     })),
-    artist: {
-      id: event.artist.id,
-      name: event.artist.name,
-      slug: event.artist.slug,
-    },
+    artist: event.artist
+      ? {
+          id: event.artist.id,
+          name: event.artist.name,
+          slug: event.artist.slug,
+        }
+      : {
+          id: "unknown",
+          name: event.organizer || "Organizador Desconocido",
+          slug: "unknown-artist",
+        },
     genre: event.genre,
     location: event.location,
     time: event.time,
     price: event.price || undefined,
+    organizer: event.organizer,
     description: event.description || undefined,
     images: event.images.map((image) => ({
       url: image.url,
       alt: image.alt,
+      public_id: image.public_id || undefined,
     })),
     isDeleted: event.isDeleted,
     deletedAt: event.deletedAt,
+    createdById: event.createdById,
   };
 };
+
+// Create a new event
+export const createEvent = async (data: CreateEventInput): Promise<Event> => {
+  const {
+    title,
+    artistId,
+    dates,
+    location,
+    time,
+    price,
+    description,
+    genre,
+    images,
+    organizerName,
+    createdById,
+  } = data;
+
+  // Verify received image data
+  console.log("Service received images:", images ? JSON.stringify(images, null, 2) : "No images");
+
+  // Create a unique slug from the title
+  const baseSlug = slugify(title);
+  const slug = await generateUniqueSlug(baseSlug);
+
+  // Create the event with transaction to ensure all related data is created
+  const event = await prisma.$transaction(async (tx) => {
+    // Prepare image data for creation
+    const imageData =
+      images && images.length > 0
+        ? {
+            images: {
+              create: images.map((img) => {
+                console.log("Creating image:", img);
+                return {
+                  url: img.url,
+                  alt: img.alt || title,
+                  public_id: img.public_id,
+                };
+              }),
+            },
+          }
+        : {};
+
+    console.log("Image data for creation:", JSON.stringify(imageData, null, 2));
+
+    // Create the event
+    const newEvent = await tx.event.create({
+      data: {
+        title,
+        slug,
+        location,
+        time,
+        price,
+        description,
+        genre,
+        organizer: organizerName,
+        createdById,
+        // Only include artistId if provided
+        artistId,
+        // Create date entries
+        dates: {
+          create: dates.map((date) => ({ date })),
+        },
+        // Create image entries if provided
+        ...imageData,
+      } as unknown as import("@/generated/prisma").Prisma.EventCreateInput,
+      include: {
+        dates: true,
+        artist: true,
+        images: true,
+      },
+    });
+
+    console.log("Event created with images:", newEvent.images.length);
+    return newEvent;
+  });
+
+  return mapPrismaEventToEvent(event);
+};
+
+// Helper function to generate a unique slug
+async function generateUniqueSlug(baseSlug: string): Promise<string> {
+  let slug = baseSlug;
+  let counter = 0;
+
+  // Check if slug exists
+  while (true) {
+    const existingEvent = await prisma.event.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (!existingEvent) break;
+
+    // If slug exists, append counter and try again
+    counter++;
+    slug = `${baseSlug}-${counter}`;
+  }
+
+  return slug;
+}
 
 // Get all events
 export const getAllEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {

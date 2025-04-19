@@ -26,7 +26,7 @@ export interface EventImage {
 }
 
 export interface EventDate {
-  date: string;
+  date: string | Date;
 }
 
 export interface Event {
@@ -34,6 +34,7 @@ export interface Event {
   title: string;
   slug: string;
   dates: EventDate[];
+  organizer: string;
   artist: {
     id: string;
     name: string;
@@ -46,5 +47,5 @@ export interface Event {
   description?: string;
   images: EventImage[];
   // For events that have already gone through date processing
-  date?: string;
+  date?: string | Date;
 }

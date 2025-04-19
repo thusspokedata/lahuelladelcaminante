@@ -119,3 +119,21 @@ export function formatTime(timeString: string, locale: string = "es-ES"): string
     hour12: locale === "en-US", // Use 12h format for English, 24h for others
   });
 }
+
+/**
+ * Convert a string to a URL-friendly slug
+ * @param text The text to convert to a slug
+ * @returns A URL-friendly slug
+ */
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .normalize("NFD") // Split accented characters into base character and accent
+    .replace(/[\u0300-\u036f]/g, "") // Remove accented characters
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w-]+/g, "") // Remove non-word characters except -
+    .replace(/--+/g, "-") // Replace multiple - with single -
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing -
+}
