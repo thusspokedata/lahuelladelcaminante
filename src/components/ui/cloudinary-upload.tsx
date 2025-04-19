@@ -5,6 +5,7 @@ import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary"
 import Image from "next/image";
 import { X, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { deleteCloudinaryImage } from "@/services/cloudinary";
 
 export interface ImageObject {
   url: string;
@@ -19,6 +20,7 @@ interface CloudinaryUploadProps {
   disabled?: boolean;
   maxImages?: number;
   uploadPreset?: string;
+  deleteFromCloudinary?: boolean;
 }
 
 const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
@@ -28,11 +30,13 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   disabled,
   maxImages = 5,
   uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+  deleteFromCloudinary = true,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [localImages, setLocalImages] = useState<ImageObject[]>(value);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const maxReached = maxImages > 0 && localImages.length >= maxImages;
 
@@ -105,13 +109,35 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     }
   };
 
-  const handleRemoveImage = (url: string) => {
-    // Update local images
-    const updatedImages = localImages.filter((img) => img.url !== url);
-    setLocalImages(updatedImages);
+  const handleRemoveImage = async (url: string) => {
+    try {
+      setIsDeleting(true);
 
-    // Call the onRemove handler provided by parent
-    onRemove(url);
+      // Find the image to remove
+      const imageToRemove = localImages.find((img) => img.url === url);
+
+      // Delete from Cloudinary if enabled and we have a public_id
+      if (deleteFromCloudinary && imageToRemove?.public_id) {
+        const result = await deleteCloudinaryImage(imageToRemove.public_id);
+
+        if (!result.success) {
+          console.warn("Could not delete image from Cloudinary:", result.message);
+          // Continue with removal even if Cloudinary deletion failed
+        }
+      }
+
+      // Update local images
+      const updatedImages = localImages.filter((img) => img.url !== url);
+      setLocalImages(updatedImages);
+
+      // Call the onRemove handler provided by parent
+      onRemove(url);
+    } catch (err) {
+      setError(`Error removing image: ${err instanceof Error ? err.message : String(err)}`);
+      console.error("Error removing image:", err);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -130,7 +156,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                   variant="destructive"
                   size="icon"
                   className="h-7 w-7 rounded-full"
-                  disabled={disabled}
+                  disabled={disabled || isDeleting}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -162,7 +188,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
             return (
               <Button
                 type="button"
-                disabled={disabled || isUploading}
+                disabled={disabled || isUploading || isDeleting}
                 variant="outline"
                 onClick={() => {
                   open();
@@ -170,7 +196,7 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                 className="gap-2"
               >
                 <ImagePlus className="h-4 w-4" />
-                Subir imagen {isUploading && "(Subiendo...)"}
+                Subir imagen {isUploading && "(Subiendo...)"} {isDeleting && "(Eliminando...)"}
               </Button>
             );
           }}
