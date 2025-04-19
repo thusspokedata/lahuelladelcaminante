@@ -5,7 +5,6 @@ import {
   getArtistBySlug,
   getArtistsByGenre,
   searchArtistsByName,
-  Artist,
 } from "@/services/artists";
 import { prisma } from "@/lib/db";
 
@@ -31,6 +30,9 @@ describe("Artists Service", () => {
       images: [{ id: "1", url: "test.jpg", alt: "Test image", artistId: "1" }],
       events: [{ id: "event1" }],
       socialMedia: { instagram: "testartist" },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: "user1",
     },
     {
       id: "2",
@@ -42,6 +44,9 @@ describe("Artists Service", () => {
       images: [{ id: "2", url: "another.jpg", alt: "Another image", artistId: "2" }],
       events: [],
       socialMedia: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: "user2",
     },
   ];
 
