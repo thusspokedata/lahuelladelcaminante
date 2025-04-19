@@ -165,14 +165,40 @@ export default function CreateEventPage() {
       // Get all form values directly from form to ensure we have the latest
       const formValues = form.getValues();
 
+      // IMPORTANTE: Obtener directamente el campo images, no a través de formValues
+      // porque podría haber un problema de referencia
+      const images = form.getValues("images") || [];
+
+      console.log("Form object:", form);
+      console.log("Form values method:", form.getValues());
+      console.log("Form images specific:", form.getValues("images"));
+      console.log("Raw form values:", JSON.stringify(formValues, null, 2));
+      console.log("Raw images from form:", JSON.stringify(images, null, 2));
+
+      // Crear una copia independiente de las imágenes para evitar problemas de referencia
+      const imagesCopy = JSON.parse(JSON.stringify(images));
+
       // Transform price to number before sending
       const dataToSend = {
-        ...formValues,
+        title: formValues.title,
+        description: formValues.description,
+        dates: formValues.dates,
+        location: formValues.location,
+        time: formValues.time,
         price: formValues.price ? parseFloat(formValues.price) : undefined,
+        genre: formValues.genre,
+        organizerName: formValues.organizerName,
+        // Explicitly set images using our copied array
+        images: imagesCopy.map((img: ImageObject) => ({
+          url: img.url,
+          alt: img.alt || "Event image",
+          public_id: img.public_id || undefined,
+        })),
       };
 
       // Verify images before sending
       console.log("IMAGES TO SEND:", JSON.stringify(dataToSend.images, null, 2));
+      console.log("FULL DATA TO SEND:", JSON.stringify(dataToSend, null, 2));
 
       // Make sure images have the correct structure
       if (
@@ -195,13 +221,7 @@ export default function CreateEventPage() {
           "Content-Type": "application/json",
         },
         credentials: "include", // Important to include credentials for auth
-        body: JSON.stringify(dataToSend, (key, value) => {
-          // Check any transformations during serialization
-          if (key === "images") {
-            console.log("Images during serialization:", value);
-          }
-          return value;
-        }),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
@@ -261,6 +281,14 @@ export default function CreateEventPage() {
   // Test event creation API directly
   const testEventAPI = async () => {
     try {
+      const testImages = [
+        {
+          url: "https://example.com/test.jpg",
+          alt: "Test Image",
+          public_id: "test/image1",
+        },
+      ];
+
       const testData = {
         title: "Test Event",
         description: "Test Description that is at least 10 characters long",
@@ -270,8 +298,10 @@ export default function CreateEventPage() {
         price: "10",
         genre: "Test",
         organizerName: "Test Organizer",
-        images: [{ url: "https://example.com/test.jpg", alt: "Test Image" }], // Update to use image objects
+        images: testImages,
       };
+
+      console.log("Test data images:", JSON.stringify(testData.images, null, 2));
 
       const response = await fetch("/api/events", {
         method: "POST",
@@ -606,20 +636,6 @@ export default function CreateEventPage() {
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Imágenes</FormLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          console.log("Current images state:", field.value);
-                          alert(`${field.value?.length || 0} imágenes en el formulario`);
-                        }}
-                      >
-                        Verificar imágenes
-                      </Button>
-                    </div>
                     <FormControl>
                       <CloudinaryUpload
                         value={(field.value as ImageObject[]) || []}
