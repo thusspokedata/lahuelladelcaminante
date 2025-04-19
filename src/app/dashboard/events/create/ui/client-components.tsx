@@ -3,13 +3,19 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import EventForm, { EventFormValues } from "./EventForm";
-import { createEvent } from "../actions";
+import { createEventHandler, EventFormData } from "../actions";
 
 export function EventFormContainerClient() {
   const router = useRouter();
 
   const handleSubmit = async (values: EventFormValues) => {
-    await createEvent(values);
+    // Ensure price is always a string (even if empty)
+    const formData: EventFormData = {
+      ...values,
+      price: values.price || "",
+    };
+
+    await createEventHandler(formData);
     router.push("/dashboard");
   };
 
