@@ -30,30 +30,19 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState<CloudinaryUploadWidgetResults | null>(null);
+  const [localImages, setLocalImages] = useState<ImageObject[]>(value);
   const [error, setError] = useState<string | null>(null);
-  const [localImages, setLocalImages] = useState<ImageObject[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const maxReached = maxImages > 0 && localImages.length >= maxImages;
 
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
-    console.log("CloudinaryUpload mounted with values:", {
-      value,
-      valueLength: value?.length || 0,
-      valueIsArray: Array.isArray(value),
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      uploadPreset: uploadPreset,
-    });
 
     // Initialize local images with prop value
     if (Array.isArray(value)) {
       setLocalImages(value);
-    }
-
-    // Log individual images if they exist
-    if (Array.isArray(value) && value.length > 0) {
-      console.log("Initial images:", JSON.stringify(value, null, 2));
     }
   }, [uploadPreset, value]);
 
@@ -61,10 +50,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   useEffect(() => {
     if (isMounted && Array.isArray(value)) {
       setLocalImages(value);
-      console.log("CloudinaryUpload value changed:", {
-        valueLength: value?.length || 0,
-        valueIsArray: Array.isArray(value),
-      });
     }
   }, [value, isMounted]);
 
@@ -73,31 +58,21 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   }
 
   const onUpload = (result: CloudinaryUploadWidgetResults) => {
-    // Store the raw result for debugging
-    setUploadResult(result);
-    setIsUploading(true);
-
     try {
-      console.log("Raw upload result:", JSON.stringify(result, null, 2));
+      setIsUploading(true);
 
       if (!result?.info) {
         setError("No upload result info received");
-        console.error("No upload result info received", result);
         return;
       }
 
       if (typeof result.info !== "object") {
         setError("Invalid upload result format");
-        console.error("Invalid upload result format", result);
         return;
       }
 
-      // Log all the properties in result.info
-      console.log("Cloudinary result.info properties:", Object.keys(result.info));
-
       if (!("secure_url" in result.info)) {
         setError("No secure_url in upload result");
-        console.error("No secure_url in upload result", result);
         return;
       }
 
@@ -105,23 +80,10 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       let publicId = "";
       if ("public_id" in result.info) {
         publicId = result.info.public_id as string;
-        console.log("Found public_id:", publicId);
-      } else {
-        console.warn("No public_id in upload result, searching in other properties...");
-        // Try to find public_id in other properties
-        const info = result.info as Record<string, string | number | boolean | unknown>;
-        for (const key in info) {
-          if (typeof info[key] === "string" && key.includes("id")) {
-            console.log(`Possible ID field found in ${key}:`, info[key]);
-          }
-        }
       }
 
       // Extract filename for alt text
       const filename = publicId.split("/").pop() || "Image";
-
-      // Log secure_url value
-      console.log("Secure URL from result:", result.info.secure_url);
 
       // Create the image object with all possible data
       const imageData = {
@@ -129,9 +91,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         public_id: publicId,
         alt: filename,
       };
-
-      console.log("Final extracted image data:", imageData);
-      console.log("Current images before adding new one:", JSON.stringify(localImages, null, 2));
 
       // Update local images
       const updatedImages = [...localImages, imageData];
@@ -141,16 +100,12 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       onChange(imageData.url, imageData.alt, imageData.public_id);
     } catch (err) {
       setError(`Error processing upload: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("Error processing upload:", err);
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleRemoveImage = (url: string) => {
-    console.log("Removing image with URL:", url);
-    console.log("Current images before removing:", JSON.stringify(localImages, null, 2));
-
     // Update local images
     const updatedImages = localImages.filter((img) => img.url !== url);
     setLocalImages(updatedImages);
@@ -159,53 +114,13 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     onRemove(url);
   };
 
-  const hasReachedLimit = maxImages > 0 && localImages.length >= maxImages;
-
-  // Debug information display
-  const debugInfo = (
-    <div className="mb-4 rounded bg-gray-100 p-2 text-xs">
-      <p>
-        <strong>CloudName:</strong> {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-      </p>
-      <p>
-        <strong>UploadPreset:</strong> {uploadPreset}
-      </p>
-      <p>
-        <strong>Current images:</strong> {localImages?.length || 0} (prop value:{" "}
-        {value?.length || 0})
-      </p>
-      <p>
-        <strong>Is Array:</strong> {Array.isArray(localImages) ? "Yes" : "No"}
-      </p>
-      {error && (
-        <p className="text-red-500">
-          <strong>Error:</strong> {error}
-        </p>
-      )}
-      {uploadResult && (
-        <details>
-          <summary>Last Upload Result</summary>
-          <pre className="max-h-32 overflow-auto">{JSON.stringify(uploadResult, null, 2)}</pre>
-        </details>
-      )}
-      {Array.isArray(localImages) && localImages.length > 0 && (
-        <details>
-          <summary>Current Images Data</summary>
-          <pre className="max-h-32 overflow-auto">{JSON.stringify(localImages, null, 2)}</pre>
-        </details>
-      )}
-    </div>
-  );
-
   return (
-    <div>
-      {debugInfo}
-
-      <div className="mb-4 flex flex-wrap items-center gap-4">
-        {Array.isArray(localImages) && localImages.length > 0 ? (
-          localImages.map((image, idx) => (
+    <div className="w-full space-y-4">
+      {localImages.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {localImages.map((image) => (
             <div
-              key={`${image.url}-${idx}`}
+              key={image.url}
               className="relative h-[200px] w-[200px] overflow-hidden rounded-md border-2 border-gray-300"
             >
               <div className="absolute top-2 right-2 z-10">
@@ -222,32 +137,21 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
               </div>
               <Image
                 fill
-                className="object-cover"
-                alt={image.alt || "Event image"}
+                alt={image.alt || "Uploaded image"}
                 src={image.url}
-                sizes="200px"
+                className="object-cover"
               />
-              <div className="absolute right-0 bottom-0 left-0 flex flex-col bg-black/60 p-1 text-[10px] text-white">
-                <span className="truncate font-medium">{image.alt || "Sin nombre"}</span>
-                {image.public_id && (
-                  <span className="truncate text-[9px] opacity-70">
-                    ID: {image.public_id.substring(0, 15)}...
-                  </span>
-                )}
-              </div>
             </div>
-          ))
-        ) : (
-          <div className="flex h-[200px] w-full items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center text-sm text-gray-500">
-            No hay imágenes. Haz clic en &ldquo;Subir imagen&rdquo; para agregar.
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {!hasReachedLimit && (
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      {!maxReached && (
         <CldUploadWidget
           uploadPreset={uploadPreset}
-          onSuccess={onUpload} // this fixed the error, dont use "onUpload"
+          onSuccess={onUpload}
           options={{
             cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
             sources: ["local", "url", "camera"],
@@ -261,11 +165,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                 disabled={disabled || isUploading}
                 variant="outline"
                 onClick={() => {
-                  console.log("Opening Cloudinary widget with:", {
-                    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-                    uploadPreset,
-                    currentImagesCount: localImages?.length || 0,
-                  });
                   open();
                 }}
                 className="gap-2"
