@@ -15,7 +15,7 @@ export interface Event {
     id: string;
     date: Date;
   }[];
-  artist?: {
+  artist: {
     id: string;
     name: string;
     slug: string;
@@ -39,7 +39,7 @@ export interface Event {
 // Type for creating a new event
 export interface CreateEventInput {
   title: string;
-  artistId?: string;
+  artistId: string;
   dates: Date[];
   location: string;
   time: string;
@@ -55,6 +55,7 @@ export interface CreateEventInput {
   createdById?: string;
 }
 
+// Type definition for EventWithRelations
 type EventWithRelations = PrismaEvent & {
   dates: PrismaEventDate[];
   artist?: PrismaArtist | null;
@@ -71,15 +72,17 @@ const mapPrismaEventToEvent = (event: EventWithRelations): Event => {
       id: date.id,
       date: date.date,
     })),
-    ...(event.artist
+    artist: event.artist
       ? {
-          artist: {
-            id: event.artist.id,
-            name: event.artist.name,
-            slug: event.artist.slug,
-          },
+          id: event.artist.id,
+          name: event.artist.name,
+          slug: event.artist.slug,
         }
-      : {}),
+      : {
+          id: "unknown",
+          name: event.organizer || "Organizador Desconocido",
+          slug: "unknown-artist",
+        },
     genre: event.genre,
     location: event.location,
     time: event.time,
@@ -154,7 +157,7 @@ export const createEvent = async (data: CreateEventInput): Promise<Event> => {
         organizer: organizerName,
         createdById,
         // Only include artistId if provided
-        ...(artistId ? { artistId } : {}),
+        artistId,
         // Create date entries
         dates: {
           create: dates.map((date) => ({ date })),
