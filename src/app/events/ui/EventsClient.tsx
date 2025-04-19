@@ -118,7 +118,8 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               id={event.id}
               title={event.title}
               date={formatDateWithWeekday(event.date)}
-              artist={event.artist?.name || "Organizador: " + event.organizer}
+              artist={event.artist.name}
+              organizer={event.organizer}
               genre={event.genre}
               location={event.location}
               time={event.time}

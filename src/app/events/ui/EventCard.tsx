@@ -15,6 +15,7 @@ interface EventCardProps {
   slug: string;
   date: string;
   artist: string;
+  organizer: string;
   genre: string;
   location: string;
   time: string;
@@ -27,6 +28,7 @@ export function EventCard({
   slug,
   date,
   artist,
+  organizer,
   genre,
   location,
   time,
@@ -57,6 +59,7 @@ export function EventCard({
           <div className="flex flex-1 flex-col justify-between">
             <div>
               <h3 className="text-xl font-semibold">{artist}</h3>
+              <p className="font-semibold">Organiza: {organizer}</p>
               <p className="text-muted-foreground">Género: {genre}</p>
               <p className="text-muted-foreground">Lugar: {location}</p>
               <p className="text-muted-foreground">Hora: {time}</p>
