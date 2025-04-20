@@ -86,7 +86,7 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {(user.role === "ADMIN") && (
+        {user.role === "ADMIN" && (
           <div className="rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">Gestión de Artista</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -123,6 +123,27 @@ export default async function DashboardPage() {
                 <div className="text-left">
                   <div className="font-medium">Mis Eventos</div>
                   <div className="mt-1 text-sm text-gray-500">Ver y gestionar tus eventos</div>
+                </div>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-lg border p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Artistas</h2>
+            <Link href="/dashboard/artists/create">
+              <Button>Agregar Artista</Button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Link href="/dashboard/artists">
+              <Button variant="outline" className="h-24 w-full justify-start p-4">
+                <div className="text-left">
+                  <div className="font-medium">Mis Artistas</div>
+                  <div className="mt-1 text-sm text-gray-500">
+                    Ver y gestionar tus perfiles de artista
+                  </div>
                 </div>
               </Button>
             </Link>
