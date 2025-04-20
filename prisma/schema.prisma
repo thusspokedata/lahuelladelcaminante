@@ -29,17 +29,17 @@ enum UserStatus {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  clerkId       String     @unique // ID from Clerk authentication
-  email         String     @unique
-  firstName     String?
-  lastName      String?
-  role          UserRole   @default(USER)
-  status        UserStatus @default(PENDING)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  createdEvents Event[]    @relation("CreatedBy") // Events created by this user
-  artistProfile Artist?    @relation("UserToArtist") // Optional artist profile
+  id             String     @id @default(cuid())
+  clerkId        String     @unique // ID from Clerk authentication
+  email          String     @unique
+  firstName      String?
+  lastName       String?
+  role           UserRole   @default(USER)
+  status         UserStatus @default(PENDING)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  createdEvents  Event[]    @relation("CreatedBy") // Events created by this user
+  artistProfiles Artist[]   @relation("UserToArtist") // Multiple artist profiles
 }
 
 model Event {
@@ -88,7 +88,7 @@ model Artist {
   updatedAt   DateTime @updatedAt
 
   // New fields for user association
-  userId String? @unique
+  userId String?
   user   User?   @relation("UserToArtist", fields: [userId], references: [id])
 }
 
