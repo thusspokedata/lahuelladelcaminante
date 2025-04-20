@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EventCalendar } from "./EventCalendar";
 
 interface EventFiltersProps {
@@ -18,12 +18,14 @@ interface EventFiltersProps {
     date: Date | undefined;
     genre: string | undefined;
     artist: string;
+    organizer: string;
   }) => void;
   selectedDate: Date | undefined;
   events: {
     dates: {
       date: string | Date;
     }[];
+    organizer?: string;
   }[];
 }
 
@@ -31,12 +33,26 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
   const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [genre, setGenre] = useState<string>("all");
   const [artist, setArtist] = useState("");
+  const [organizer, setOrganizer] = useState("all");
+  const [uniqueOrganizers, setUniqueOrganizers] = useState<string[]>([]);
+
+  // Extract unique organizers from events
+  useEffect(() => {
+    const organizers = new Set<string>();
+    events.forEach((event) => {
+      if (event.organizer) {
+        organizers.add(event.organizer);
+      }
+    });
+    setUniqueOrganizers(Array.from(organizers).sort());
+  }, [events]);
 
   const handleApplyFilters = () => {
     onFilterChange({
       date,
       genre,
       artist,
+      organizer: organizer === "all" ? "" : organizer,
     });
   };
 
@@ -44,10 +60,12 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
     setDate(undefined);
     setGenre("all");
     setArtist("");
+    setOrganizer("all");
     onFilterChange({
       date: undefined,
       genre: "all",
       artist: "",
+      organizer: "",
     });
   };
 
@@ -87,6 +105,23 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
               value={artist}
               onChange={(e) => setArtist(e.target.value)}
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Organizador</label>
+            <Select value={organizer} onValueChange={setOrganizer}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar organizador" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los organizadores</SelectItem>
+                {uniqueOrganizers.map((org) => (
+                  <SelectItem key={org} value={org}>
+                    {org}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-2">

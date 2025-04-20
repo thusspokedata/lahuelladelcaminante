@@ -19,6 +19,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     date: Date | undefined;
     genre: string | undefined;
     artist: string;
+    organizer: string;
   }) => {
     let filtered = [...initialEvents];
     setSelectedDate(filters.date);
@@ -31,6 +32,13 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     if (filters.artist) {
       filtered = filtered.filter((event) =>
         event.artist.name.toLowerCase().includes(filters.artist.toLowerCase())
+      );
+    }
+
+    // Filter by organizer name
+    if (filters.organizer) {
+      filtered = filtered.filter((event) =>
+        event.organizer.toLowerCase().includes(filters.organizer.toLowerCase())
       );
     }
 
