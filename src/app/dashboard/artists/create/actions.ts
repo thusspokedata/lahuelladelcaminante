@@ -12,6 +12,22 @@ const createArtistSchema = z.object({
   origin: z.string().min(2),
   genres: z.array(z.string()).min(1),
   userId: z.string(),
+  socialMedia: z.object({
+    instagram: z.string().optional(),
+    spotify: z.string().optional(),
+    youtube: z.string().optional(),
+    website: z.string().optional(),
+    tiktok: z.string().optional(),
+  }),
+  images: z
+    .array(
+      z.object({
+        url: z.string(),
+        alt: z.string().optional(),
+        public_id: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 type CreateArtistInput = z.infer<typeof createArtistSchema>;
@@ -46,17 +62,34 @@ export async function createArtist(data: CreateArtistInput) {
       slug = `${slug}-${Date.now().toString().slice(-4)}`;
     }
 
-    // Create artist
-    const newArtist = await prisma.artist.create({
-      data: {
-        name: validatedData.name,
-        bio: validatedData.bio,
-        origin: validatedData.origin,
-        genres: validatedData.genres,
-        slug,
-        userId: validatedData.userId,
-        socialMedia: {}, // Empty object for now
-      },
+    // Create artist with images in a transaction
+    const newArtist = await prisma.$transaction(async (tx) => {
+      // Create the basic artist
+      const artist = await tx.artist.create({
+        data: {
+          name: validatedData.name,
+          bio: validatedData.bio,
+          origin: validatedData.origin,
+          genres: validatedData.genres,
+          slug,
+          userId: validatedData.userId,
+          socialMedia: validatedData.socialMedia || {},
+        },
+      });
+
+      // Add images if provided
+      if (validatedData.images && validatedData.images.length > 0) {
+        await tx.image.createMany({
+          data: validatedData.images.map((img) => ({
+            url: img.url,
+            alt: img.alt || validatedData.name,
+            public_id: img.public_id,
+            artistId: artist.id,
+          })),
+        });
+      }
+
+      return artist;
     });
 
     return {

@@ -22,6 +22,7 @@ import { createArtist } from "./actions";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import CloudinaryUpload from "@/components/ui/cloudinary-upload";
 
 interface CreateArtistFormProps {
   userId: string;
@@ -41,6 +42,22 @@ const formSchema = z.object({
   genres: z.array(z.string()).min(1, {
     message: "Agrega al menos un género.",
   }),
+  socialMedia: z.object({
+    instagram: z.string().optional(),
+    spotify: z.string().optional(),
+    youtube: z.string().optional(),
+    website: z.string().optional(),
+    tiktok: z.string().optional(),
+  }),
+  images: z
+    .array(
+      z.object({
+        url: z.string(),
+        alt: z.string().optional(),
+        public_id: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 // Define form values type
@@ -60,6 +77,14 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
       bio: "",
       origin: "",
       genres: [],
+      socialMedia: {
+        instagram: "",
+        spotify: "",
+        youtube: "",
+        website: "",
+        tiktok: "",
+      },
+      images: [],
     },
   });
 
@@ -225,10 +250,131 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
                 )}
               />
 
-              <FormDescription>
-                Podrás agregar más información como redes sociales e imágenes después de crear el
-                artista básico.
-              </FormDescription>
+              {/* Social Media */}
+              <div className="space-y-4">
+                <FormLabel>Redes Sociales</FormLabel>
+                <FormDescription>
+                  Agrega enlaces a las redes sociales del artista (opcional).
+                </FormDescription>
+
+                <FormField
+                  control={form.control}
+                  name="socialMedia.instagram"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <div className="w-24">
+                          <FormLabel>Instagram</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input {...field} placeholder="https://instagram.com/artista" />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="socialMedia.spotify"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <div className="w-24">
+                          <FormLabel>Spotify</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input {...field} placeholder="https://open.spotify.com/artist/..." />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="socialMedia.youtube"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <div className="w-24">
+                          <FormLabel>YouTube</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input {...field} placeholder="https://youtube.com/c/..." />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="socialMedia.website"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <div className="w-24">
+                          <FormLabel>Sitio Web</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input {...field} placeholder="https://artista.com" />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="socialMedia.tiktok"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center">
+                        <div className="w-24">
+                          <FormLabel>TikTok</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input {...field} placeholder="https://tiktok.com/@artista" />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Images */}
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Imágenes</FormLabel>
+                    <FormControl>
+                      <CloudinaryUpload
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        onRemove={(index) => {
+                          const newImages = [...(field.value || [])];
+                          newImages.splice(Number(index), 1);
+                          field.onChange(newImages);
+                        }}
+                        maxImages={5}
+                        uploadPreset="artists_preset"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Agrega hasta 5 imágenes del artista (fotos, logos, etc.)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </CardContent>
         </Card>
