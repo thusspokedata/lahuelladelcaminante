@@ -42,7 +42,7 @@ export default async function ArtistsDashboardPage() {
           <Card className="col-span-full">
             <CardContent className="flex flex-col items-center justify-center px-8 py-12">
               <p className="text-muted-foreground mb-4 text-center">
-                No has creado ningún artista todavía.
+                No has agregado ningún artista todavía.
               </p>
               <Button asChild>
                 <Link href="/dashboard/artists/create">

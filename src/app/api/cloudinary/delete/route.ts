@@ -1,13 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
-});
+import { deleteCloudinaryImage } from "@/lib/cloudinary";
 
 export async function POST(request: Request) {
   try {
@@ -28,17 +21,17 @@ export async function POST(request: Request) {
     }
 
     // Delete the image from Cloudinary
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await deleteCloudinaryImage(publicId);
 
-    if (result.result === "ok" || result.result === "not found") {
+    if (result.success) {
       return NextResponse.json({
         message: "Image deleted successfully",
         result,
       });
     } else {
-      console.error("Error deleting image from Cloudinary:", result);
+      console.error("Error deleting image from Cloudinary:", result.error);
       return NextResponse.json(
-        { message: "Failed to delete image", error: result },
+        { message: "Failed to delete image", error: result.error },
         { status: 500 }
       );
     }
