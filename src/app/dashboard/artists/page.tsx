@@ -27,7 +27,7 @@ export default async function ArtistsDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-6">
         <h1 className="text-2xl font-bold">Mis Artistas</h1>
         <Button asChild>
           <Link href="/dashboard/artists/create">
@@ -37,13 +37,19 @@ export default async function ArtistsDashboardPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 px-6 md:grid-cols-2 lg:grid-cols-3">
         {artists.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground text-center">
+          <Card className="col-span-full">
+            <CardContent className="flex flex-col items-center justify-center px-8 py-12">
+              <p className="text-muted-foreground mb-4 text-center">
                 No has creado ningún artista todavía.
               </p>
+              <Button asChild>
+                <Link href="/dashboard/artists/create">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Agregar Artista
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         ) : (
@@ -100,14 +106,16 @@ export default async function ArtistsDashboardPage() {
         )}
       </div>
 
-      <div className="mt-8">
-        <Button asChild>
-          <Link href="/dashboard/artists/create">
-            <Plus className="mr-2 h-4 w-4" />
-            Agregar Artista
-          </Link>
-        </Button>
-      </div>
+      {artists.length === 0 ? null : (
+        <div className="mt-8">
+          <Button asChild>
+            <Link href="/dashboard/artists/create">
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar Artista
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
