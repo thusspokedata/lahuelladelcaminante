@@ -173,7 +173,7 @@ export async function getUserWithArtistProfile(userId: string): Promise<
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      artistProfile: {
+      artistProfiles: {
         select: {
           id: true,
           name: true,
@@ -185,5 +185,12 @@ export async function getUserWithArtistProfile(userId: string): Promise<
       },
     },
   });
-  return user;
+
+  if (!user) return null;
+
+  // Map the first artist profile to artistProfile field
+  return {
+    ...user,
+    artistProfile: user.artistProfiles.length > 0 ? user.artistProfiles[0] : null,
+  };
 }

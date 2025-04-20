@@ -4,6 +4,7 @@ import {
   Image as PrismaImage,
   Event as PrismaEvent,
 } from "@/generated/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 export interface Artist {
   id: string;
@@ -109,82 +110,33 @@ export const searchArtistsByName = async (name: string): Promise<Artist[]> => {
   return artists.map(mapPrismaArtistToArtist);
 };
 
-// Función para generar un slug a partir del nombre
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^\w\s]/gi, "")
-    .replace(/\s+/g, "-");
-}
-
 /**
- * Obtiene los artistas asociados al usuario actual
+ * Get artists associated with a user
  */
-export async function getUserArtists(userId: string) {
+export async function getArtistsByUser(userId?: string): Promise<Artist[]> {
   try {
+    // If no userId provided, try to get from current user
     if (!userId) {
-      throw new Error("User ID es requerido");
+      const authResult = await auth();
+      if (!authResult.userId) {
+        return [];
+      }
+      userId = authResult.userId;
     }
-
-    const artists = await prisma.artist.findMany({
-      where: {
-        userId: userId,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    return artists;
   } catch (error) {
-    console.error("Error al obtener los artistas:", error);
-    throw new Error("No se pudieron obtener los artistas");
+    console.error("Error getting artists by user:", error);
+    return [];
   }
-}
 
-/**
- * Crea un nuevo artista asociado al usuario actual
- */
-export async function createArtistUser(name: string, userId: string) {
-  try {
-    if (!userId) {
-      throw new Error("User ID es requerido");
-    }
+  const artists = await prisma.artist.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      images: true,
+      events: true,
+    },
+  });
 
-    // Verificar si ya existe un artista con ese nombre para este usuario
-    const existingArtist = await prisma.artist.findFirst({
-      where: {
-        name: name,
-        userId: userId,
-      },
-    });
-
-    if (existingArtist) {
-      throw new Error("Ya tienes un artista con ese nombre");
-    }
-
-    // Generar slug desde el nombre del artista
-    const slug = generateSlug(name);
-
-    const artist = await prisma.artist.create({
-      data: {
-        name,
-        userId,
-        slug,
-        bio: "", // Campo requerido
-        origin: "", // Campo requerido
-        genres: [], // Campo requerido
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    return artist;
-  } catch (error) {
-    console.error("Error al crear el artista:", error);
-    throw error;
-  }
+  return artists.map(mapPrismaArtistToArtist);
 }

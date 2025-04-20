@@ -16,6 +16,7 @@ export interface Artist {
     spotify?: string;
     youtube?: string;
     website?: string;
+    tiktok?: string;
   };
   upcomingEvents?: string[];
 }
