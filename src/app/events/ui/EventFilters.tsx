@@ -84,7 +84,7 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
           <div className="space-y-2">
             <label className="text-sm font-medium">Género</label>
             <Select value={genre} onValueChange={setGenre}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="genre-select">
                 <SelectValue placeholder="Seleccionar género" />
               </SelectTrigger>
               <SelectContent>
@@ -110,7 +110,7 @@ export function EventFilters({ onFilterChange, selectedDate, events }: EventFilt
           <div className="space-y-2">
             <label className="text-sm font-medium">Organizador</label>
             <Select value={organizer} onValueChange={setOrganizer}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="organizer-select">
                 <SelectValue placeholder="Seleccionar organizador" />
               </SelectTrigger>
               <SelectContent>
