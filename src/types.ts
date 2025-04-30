@@ -11,6 +11,7 @@ export interface Artist {
   bio: string;
   origin: string;
   images?: ArtistImage[];
+  profileImageId?: string | null;
   socialMedia?: {
     instagram?: string;
     spotify?: string;
@@ -19,6 +20,9 @@ export interface Artist {
     tiktok?: string;
   };
   upcomingEvents?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  userId?: string | null;
 }
 
 export interface EventImage {

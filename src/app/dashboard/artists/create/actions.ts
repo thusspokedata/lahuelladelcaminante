@@ -25,9 +25,11 @@ const createArtistSchema = z.object({
         url: z.string(),
         alt: z.string().optional(),
         public_id: z.string().optional(),
+        isProfile: z.boolean().optional(),
       })
     )
     .optional(),
+  profileImageId: z.string().optional().nullable(),
 });
 
 type CreateArtistInput = z.infer<typeof createArtistSchema>;
@@ -74,6 +76,7 @@ export async function createArtist(data: CreateArtistInput) {
           slug,
           userId: validatedData.userId,
           socialMedia: validatedData.socialMedia || {},
+          profileImageId: validatedData.profileImageId || null,
         },
       });
 

@@ -82,6 +82,7 @@ model Artist {
   bio         String
   origin      String
   images      Image[]
+  profileImageId String? // ID of the profile image
   socialMedia Json? // Store social media links as JSON
   events      Event[]
   createdAt   DateTime @default(now())

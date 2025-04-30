@@ -21,7 +21,7 @@ async function main() {
   // Seed artists
   for (const artistData of mockArtists) {
     const artistSlug = slugify(artistData.name);
-    
+
     const artist = await prisma.artist.create({
       data: {
         // Remove the id field to let Prisma generate a CUID
@@ -31,6 +31,7 @@ async function main() {
         bio: artistData.bio,
         origin: artistData.origin,
         socialMedia: artistData.socialMedia || {},
+        profileImageId: null,
         // Create images
         images: {
           create: artistData.images.map((img) => ({

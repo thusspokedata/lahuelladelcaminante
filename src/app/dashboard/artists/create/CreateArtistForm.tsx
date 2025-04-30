@@ -55,9 +55,11 @@ const formSchema = z.object({
         url: z.string(),
         alt: z.string().optional(),
         public_id: z.string().optional(),
+        isProfile: z.boolean().optional(),
       })
     )
     .optional(),
+  profileImageId: z.string().optional().nullable(),
 });
 
 // Define form values type
@@ -66,6 +68,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newGenre, setNewGenre] = useState("");
+  const [profileImageIndex, setProfileImageIndex] = useState<number>(-1);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -85,6 +88,7 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
         tiktok: "",
       },
       images: [],
+      profileImageId: null,
     },
   });
 
@@ -92,6 +96,14 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
   const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true);
+
+      // If profile image is selected, set the profileImageId
+      if (profileImageIndex >= 0 && values.images && values.images.length > profileImageIndex) {
+        const profileImage = values.images[profileImageIndex];
+        values.profileImageId = profileImage.public_id || null;
+      } else {
+        values.profileImageId = null;
+      }
 
       const result = await createArtist({
         ...values,
@@ -358,18 +370,34 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
                     <FormControl>
                       <CloudinaryUpload
                         value={field.value || []}
-                        onChange={field.onChange}
-                        onRemove={(index) => {
+                        onChange={(url, alt, public_id) => {
                           const newImages = [...(field.value || [])];
-                          newImages.splice(Number(index), 1);
+                          newImages.push({ url, alt: alt || "", public_id });
+                          field.onChange(newImages);
+                        }}
+                        onRemove={(url) => {
+                          const newImages = [...(field.value || [])];
+                          const indexToRemove = newImages.findIndex((img) => img.url === url);
+
+                          // Adjust profile image index if needed
+                          if (profileImageIndex === indexToRemove) {
+                            setProfileImageIndex(-1);
+                          } else if (profileImageIndex > indexToRemove) {
+                            setProfileImageIndex(profileImageIndex - 1);
+                          }
+
+                          newImages.splice(indexToRemove, 1);
                           field.onChange(newImages);
                         }}
                         maxImages={5}
-                        uploadPreset="artists_preset"
+                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                        isProfileSelector={true}
+                        onProfileSelect={setProfileImageIndex}
+                        profileImageIndex={profileImageIndex}
                       />
                     </FormControl>
                     <FormDescription>
-                      Agrega hasta 5 imágenes del artista (fotos, logos, etc.)
+                      Agrega hasta 5 imágenes del artista. Selecciona una imagen como perfil.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
