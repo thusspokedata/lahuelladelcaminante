@@ -59,16 +59,19 @@ describe("Users Service", () => {
     status: UserStatus.PENDING,
   };
 
+  const artistProfileData = {
+    id: "profile1",
+    name: "Artist Name",
+    slug: "artist-name",
+    genres: ["Tango"],
+    bio: "Artist bio",
+    origin: "Buenos Aires",
+  };
+
   const mockUserWithArtistProfile = {
     ...mockArtistUser,
-    artistProfile: {
-      id: "profile1",
-      name: "Artist Name",
-      slug: "artist-name",
-      genres: ["Tango"],
-      bio: "Artist bio",
-      origin: "Buenos Aires",
-    },
+    artistProfiles: [artistProfileData],
+    artistProfile: artistProfileData,
   };
 
   beforeEach(() => {
@@ -419,7 +422,7 @@ describe("Users Service", () => {
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { id: "artist1" },
         include: {
-          artistProfile: {
+          artistProfiles: {
             select: {
               id: true,
               name: true,
@@ -434,7 +437,7 @@ describe("Users Service", () => {
 
       // Verify result
       expect(result).toEqual(mockUserWithArtistProfile);
-      expect(result?.artistProfile?.name).toBe("Artist Name");
+      expect(result?.artistProfiles[0]?.name).toBe("Artist Name");
     });
 
     it("should return null when user not found", async () => {

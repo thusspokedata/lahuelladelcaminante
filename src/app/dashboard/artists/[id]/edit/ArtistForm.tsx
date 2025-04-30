@@ -355,7 +355,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                           field.onChange(newImages);
                         }}
                         maxImages={5}
-                        uploadPreset="artists_preset"
+                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
                       />
                     </FormControl>
                     <FormDescription>

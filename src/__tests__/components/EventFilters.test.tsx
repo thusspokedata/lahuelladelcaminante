@@ -136,6 +136,7 @@ describe("EventFilters Component", () => {
       date: undefined,
       genre: "all",
       artist: "Test Artist",
+      organizer: "",
     });
   });
 
@@ -149,7 +150,7 @@ describe("EventFilters Component", () => {
     );
 
     // Change the genre select
-    const genreSelect = screen.getByTestId("genre-select");
+    const genreSelect = screen.getAllByTestId("genre-select")[0];
     fireEvent.change(genreSelect, { target: { value: "tango" } });
 
     // Click apply filters button
@@ -161,6 +162,7 @@ describe("EventFilters Component", () => {
       date: undefined,
       genre: "tango",
       artist: "",
+      organizer: "",
     });
   });
 
@@ -186,6 +188,7 @@ describe("EventFilters Component", () => {
       date: expect.any(Date),
       genre: "all",
       artist: "",
+      organizer: "",
     });
 
     // The date should be December 1, 2023
@@ -206,7 +209,7 @@ describe("EventFilters Component", () => {
     const artistInput = screen.getByPlaceholderText("Buscar artista...");
     await userEvent.type(artistInput, "Test Artist");
 
-    const genreSelect = screen.getByTestId("genre-select");
+    const genreSelect = screen.getAllByTestId("genre-select")[0];
     fireEvent.change(genreSelect, { target: { value: "tango" } });
 
     // Reset mocks to clearly see the reset call
@@ -221,6 +224,7 @@ describe("EventFilters Component", () => {
       date: undefined,
       genre: "all",
       artist: "",
+      organizer: "",
     });
   });
 });
