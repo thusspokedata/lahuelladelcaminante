@@ -4,13 +4,16 @@ import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import { Artist } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { getProfileImage } from "@/lib/utils";
 
 export interface ArtistCardProps {
   artist: Artist;
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
-  const { name, genres = [], bio, origin, images = [], socialMedia, slug } = artist;
+  const { name, genres = [], bio, origin, images = [], socialMedia, slug, profileImageId } = artist;
+
+  const profileImage = getProfileImage(images, profileImageId);
 
   return (
     <Card>
@@ -21,10 +24,10 @@ export function ArtistCard({ artist }: ArtistCardProps) {
       <CardContent>
         <div className="flex gap-4">
           <div className="relative h-40 w-40 shrink-0">
-            {images.length > 0 ? (
+            {profileImage ? (
               <Image
-                src={images[0].url}
-                alt={images[0].alt}
+                src={profileImage.url}
+                alt={profileImage.alt}
                 className="rounded-md object-cover"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

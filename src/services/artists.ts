@@ -13,7 +13,8 @@ export interface Artist {
   genres: string[];
   bio: string;
   origin: string;
-  images: { url: string; alt: string }[];
+  images: { url: string; alt: string; public_id?: string }[];
+  profileImageId?: string | null;
   socialMedia?: { [key: string]: string };
   upcomingEvents?: string[]; // Array of event IDs
 }
@@ -24,6 +25,38 @@ type ArtistWithRelations = PrismaArtist & {
 };
 
 const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
+  // Map artist data with image information
+  const mappedArtist = {
+    ...artist,
+    images: artist.images.map((img) => ({
+      url: img.url,
+      alt: img.alt,
+      public_id: img.public_id || undefined,
+    })),
+  };
+
+  // If there's a profileImageId but no exact match in images,
+  // try to find partial matches
+  if (
+    artist.profileImageId &&
+    mappedArtist.images.length > 0 &&
+    !mappedArtist.images.some((img) => img.public_id === artist.profileImageId)
+  ) {
+    // Try to find an image that contains part of the profileImageId
+    const profileImageByPartial = mappedArtist.images.find(
+      (img) =>
+        img.public_id &&
+        artist.profileImageId &&
+        (img.public_id.includes(artist.profileImageId) ||
+          artist.profileImageId.includes(img.public_id))
+    );
+
+    if (profileImageByPartial) {
+      // If we find a partial match, use that exact public_id
+      artist.profileImageId = profileImageByPartial.public_id || null;
+    }
+  }
+
   return {
     id: artist.id,
     name: artist.name,
@@ -31,10 +64,8 @@ const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
     genres: artist.genres,
     bio: artist.bio,
     origin: artist.origin,
-    images: artist.images.map((img) => ({
-      url: img.url,
-      alt: img.alt,
-    })),
+    images: mappedArtist.images,
+    profileImageId: artist.profileImageId,
     socialMedia: artist.socialMedia as { [key: string]: string } | undefined,
     upcomingEvents: artist.events?.map((event) => event.id) || [],
   };

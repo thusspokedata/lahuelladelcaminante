@@ -137,3 +137,49 @@ export function slugify(text: string): string {
     .replace(/--+/g, "-") // Replace multiple - with single -
     .replace(/^-+|-+$/g, ""); // Remove leading/trailing -
 }
+
+/**
+ * Checks if an image is the profile image based on the profileImageId
+ */
+export function isProfileImage(
+  img: { url: string; alt: string; public_id?: string },
+  profileImageId: string | null | undefined
+): boolean {
+  if (!profileImageId || !img.public_id) return false;
+
+  // Exact match
+  if (img.public_id === profileImageId) return true;
+
+  // Check when profileImageId is the complete public_id
+  if (profileImageId.includes(img.public_id)) return true;
+
+  // Check when profileImageId is part of the public_id
+  if (img.public_id.includes(profileImageId)) return true;
+
+  // Check for the last part of public_id after the last slash
+  const shortPublicId = img.public_id.split("/").pop();
+  const shortProfileId = profileImageId.split("/").pop();
+
+  if (shortPublicId && shortProfileId && shortPublicId === shortProfileId) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Gets the profile image from an array of images based on profileImageId
+ * Falls back to the first image if no match is found
+ */
+export function getProfileImage(
+  images: Array<{ url: string; alt: string; public_id?: string }> | undefined | null,
+  profileImageId: string | null | undefined
+) {
+  if (!images || images.length === 0) return null;
+
+  const matchedImage = profileImageId
+    ? images.find((img) => isProfileImage(img, profileImageId))
+    : null;
+
+  return matchedImage || images[0];
+}

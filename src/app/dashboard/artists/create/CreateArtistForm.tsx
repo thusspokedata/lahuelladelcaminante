@@ -97,11 +97,13 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
     try {
       setIsSubmitting(true);
 
-      // If profile image is selected, set the profileImageId
+      // Set profileImageId if a profile image is selected
       if (profileImageIndex >= 0 && values.images && values.images.length > profileImageIndex) {
         const profileImage = values.images[profileImageIndex];
+        // The profileImageId should be the complete public_id of the image
         values.profileImageId = profileImage.public_id || null;
       } else {
+        // If no profile image is selected, set to null
         values.profileImageId = null;
       }
 

@@ -34,6 +34,11 @@ describe("Events Service", () => {
     genres: ["Tango"],
     bio: "Bio",
     origin: "Argentina",
+    profileImageId: null,
+    socialMedia: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: "user1",
   };
 
   const mockEventDates = [{ id: "date1", date: testDate, eventId: "event1" }];
@@ -55,6 +60,12 @@ describe("Events Service", () => {
       description: "Test description",
       images: mockImages,
       isActive: true,
+      isDeleted: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      organizer: "Test Organizer",
+      createdById: "user1",
+      deletedAt: null,
     },
     {
       id: "event2",
@@ -70,6 +81,12 @@ describe("Events Service", () => {
       description: "Another description",
       images: [{ id: "img2", url: "another.jpg", alt: "Another image", eventId: "event2" }],
       isActive: true,
+      isDeleted: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      organizer: "Test Organizer",
+      createdById: "user1",
+      deletedAt: null,
     },
   ];
 
@@ -266,7 +283,19 @@ describe("Events Service", () => {
   describe("getEventsByArtistSlug", () => {
     it("should return events for an artist slug", async () => {
       // Mock Prisma responses
-      vi.mocked(prisma.artist.findUnique).mockResolvedValue({ id: "artist1" });
+      vi.mocked(prisma.artist.findUnique).mockResolvedValue({
+        id: "artist1",
+        name: "Test Artist",
+        slug: "test-artist",
+        genres: ["Tango"],
+        bio: "Bio",
+        origin: "Argentina",
+        profileImageId: null,
+        socialMedia: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: "user1",
+      });
       vi.mocked(prisma.event.findMany).mockResolvedValue(mockEvents);
 
       // Call service function
