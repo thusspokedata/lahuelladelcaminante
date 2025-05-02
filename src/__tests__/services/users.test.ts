@@ -311,6 +311,7 @@ describe("Users Service", () => {
         origin: "Buenos Aires",
         socialMedia: null,
         userId: "user1",
+        profileImageId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -437,7 +438,7 @@ describe("Users Service", () => {
 
       // Verify result
       expect(result).toEqual(mockUserWithArtistProfile);
-      expect(result?.artistProfiles[0]?.name).toBe("Artist Name");
+      expect(result?.artistProfile?.name).toBe("Artist Name");
     });
 
     it("should return null when user not found", async () => {
