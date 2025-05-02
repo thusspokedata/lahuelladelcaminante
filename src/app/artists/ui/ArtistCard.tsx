@@ -10,7 +10,36 @@ export interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
-  const { name, genres = [], bio, origin, images = [], socialMedia, slug } = artist;
+  const { name, genres = [], bio, origin, images = [], socialMedia, slug, profileImageId } = artist;
+
+  // Function to check if an image matches the profileImageId
+  const isProfileImage = (img: { url: string; alt: string; public_id?: string }) => {
+    if (!profileImageId || !img.public_id) return false;
+
+    // Exact match
+    if (img.public_id === profileImageId) return true;
+
+    // Check when profileImageId is the complete public_id
+    if (profileImageId.includes(img.public_id)) return true;
+
+    // Check when profileImageId is part of the public_id
+    if (img.public_id.includes(profileImageId)) return true;
+
+    // Check for the last part of public_id after the last slash
+    const shortPublicId = img.public_id.split("/").pop();
+    const shortProfileId = profileImageId.split("/").pop();
+
+    if (shortPublicId && shortProfileId && shortPublicId === shortProfileId) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // Find profile image or use first image, with more flexible matching
+  const profileImage =
+    (profileImageId && images.length > 0 && images.find(isProfileImage)) ||
+    (images.length > 0 ? images[0] : null);
 
   return (
     <Card>
@@ -21,10 +50,10 @@ export function ArtistCard({ artist }: ArtistCardProps) {
       <CardContent>
         <div className="flex gap-4">
           <div className="relative h-40 w-40 shrink-0">
-            {images.length > 0 ? (
+            {profileImage ? (
               <Image
-                src={images[0].url}
-                alt={images[0].alt}
+                src={profileImage.url}
+                alt={profileImage.alt}
                 className="rounded-md object-cover"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

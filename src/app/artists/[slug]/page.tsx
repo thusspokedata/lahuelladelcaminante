@@ -8,19 +8,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 
-// En Next.js 15, params debe ser await correctamente
+// In Next.js 15, params must be properly awaited
 interface ArtistPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default async function ArtistPage({ params }: ArtistPageProps) {
-  // Await params para acceder a sus propiedades
+  // Await params to access its properties
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
 
-  console.log("Looking for artist with slug:", slug);
-
-  // Obtener artista de la base de datos
+  // Get artist from database
   const artist = await getArtistBySlug(slug);
 
   // If artist not found, show 404
@@ -30,6 +28,36 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
   // Get upcoming events for this artist
   const artistEvents = await getEventsByArtistId(artist.id);
+
+  // Function to check if an image matches the profileImageId
+  const isProfileImage = (img: { url: string; alt: string; public_id?: string }) => {
+    if (!artist.profileImageId || !img.public_id) return false;
+
+    // Exact match
+    if (img.public_id === artist.profileImageId) return true;
+
+    // Check when profileImageId is the complete public_id
+    if (artist.profileImageId.includes(img.public_id)) return true;
+
+    // Check when profileImageId is part of the public_id
+    if (img.public_id.includes(artist.profileImageId)) return true;
+
+    // Check for the last part of public_id after the last slash
+    const shortPublicId = img.public_id.split("/").pop();
+    const shortProfileId = artist.profileImageId.split("/").pop();
+
+    if (shortPublicId && shortProfileId && shortPublicId === shortProfileId) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // Find profile image or use first image
+  const profileImage =
+    artist.images && artist.images.length > 0
+      ? (artist.profileImageId ? artist.images.find(isProfileImage) : null) || artist.images[0]
+      : null;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -44,10 +72,10 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
         <div>
           <div className="mb-8 flex items-center gap-6">
             <div className="relative h-48 w-48 shrink-0 overflow-hidden rounded-full">
-              {artist.images && artist.images.length > 0 ? (
+              {profileImage ? (
                 <Image
-                  src={artist.images[0].url}
-                  alt={artist.images[0].alt}
+                  src={profileImage.url}
+                  alt={profileImage.alt}
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -47,8 +47,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
 
   const maxReached = maxImages > 0 && localImages.length >= maxImages;
 
-  console.log("Upload preset:", uploadPreset);
-
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
@@ -150,7 +148,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         const result = await deleteCloudinaryImage(imageToRemove.public_id);
 
         if (!result.success) {
-          console.warn("Could not delete image from Cloudinary:", result.message);
           // Continue with removal even if Cloudinary deletion failed
         }
       }
@@ -163,7 +160,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       onRemove(url);
     } catch (err) {
       setError(`Error removing image: ${err instanceof Error ? err.message : String(err)}`);
-      console.error("Error removing image:", err);
     } finally {
       setIsDeleting(false);
     }

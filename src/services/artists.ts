@@ -13,7 +13,8 @@ export interface Artist {
   genres: string[];
   bio: string;
   origin: string;
-  images: { url: string; alt: string }[];
+  images: { url: string; alt: string; public_id?: string }[];
+  profileImageId?: string | null;
   socialMedia?: { [key: string]: string };
   upcomingEvents?: string[]; // Array of event IDs
 }
@@ -24,6 +25,43 @@ type ArtistWithRelations = PrismaArtist & {
 };
 
 const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
+  console.log("Mapping artist:", artist.name);
+  console.log("Profile image ID:", artist.profileImageId);
+  console.log("Images:", artist.images);
+
+  // Mapear las imágenes y asegurarse de que public_id está definido
+  const mappedImages = artist.images.map((img) => ({
+    url: img.url,
+    alt: img.alt,
+    public_id: img.public_id || undefined,
+  }));
+
+  console.log("Mapped images:", mappedImages);
+
+  // Si hay un profileImageId y no hay imagen con ese public_id,
+  // podemos intentar buscar coincidencias parciales
+  if (
+    artist.profileImageId &&
+    mappedImages.length > 0 &&
+    !mappedImages.some((img) => img.public_id === artist.profileImageId)
+  ) {
+    console.log("Profile image not found by exact match, trying partial match");
+    // Tratar de encontrar una imagen que contenga parte del profileImageId
+    const profileImageByPartial = mappedImages.find(
+      (img) =>
+        img.public_id &&
+        artist.profileImageId &&
+        (img.public_id.includes(artist.profileImageId) ||
+          artist.profileImageId.includes(img.public_id))
+    );
+
+    if (profileImageByPartial) {
+      console.log("Found profile image by partial match:", profileImageByPartial);
+      // Si encontramos un match parcial, usar ese public_id exacto
+      artist.profileImageId = profileImageByPartial.public_id || null;
+    }
+  }
+
   return {
     id: artist.id,
     name: artist.name,
@@ -31,10 +69,8 @@ const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
     genres: artist.genres,
     bio: artist.bio,
     origin: artist.origin,
-    images: artist.images.map((img) => ({
-      url: img.url,
-      alt: img.alt,
-    })),
+    images: mappedImages,
+    profileImageId: artist.profileImageId,
     socialMedia: artist.socialMedia as { [key: string]: string } | undefined,
     upcomingEvents: artist.events?.map((event) => event.id) || [],
   };

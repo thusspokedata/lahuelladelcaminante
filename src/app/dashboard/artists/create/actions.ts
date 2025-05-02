@@ -51,6 +51,32 @@ export async function createArtist(data: CreateArtistInput) {
       return { success: false, error: "ID de usuario no válido" };
     }
 
+    // Check if the user exists in the database, if not create it
+    // This ensures we won't violate foreign key constraints when creating an artist
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: authResult.userId,
+      },
+    });
+
+    // If user doesn't exist in our database but exists in Clerk, create it
+    if (!user) {
+      // Use Clerk SDK to get user data
+      try {
+        // Create user with minimal data
+        await prisma.user.create({
+          data: {
+            clerkId: authResult.userId,
+            email: authResult.userId, // Use userId as temporary email - this will be updated later by the webhook
+            role: "USER", // Default role
+            status: "ACTIVE", // Set as active since they're already authenticated
+          },
+        });
+      } catch {
+        return { success: false, error: "Error al crear el usuario en la base de datos" };
+      }
+    }
+
     // Generate slug from name
     let slug = slugify(validatedData.name);
 
@@ -64,9 +90,26 @@ export async function createArtist(data: CreateArtistInput) {
       slug = `${slug}-${Date.now().toString().slice(-4)}`;
     }
 
+    // First determine which image (if any) will be the profile image
+    let profileImageIdx = -1;
+    let profileImagePublicId = null;
+
+    if (validatedData.images && validatedData.images.length > 0) {
+      if (validatedData.profileImageId) {
+        // Find the index of the image with this public_id
+        profileImageIdx = validatedData.images.findIndex(
+          (img) => img.public_id === validatedData.profileImageId
+        );
+        // If we found a match, save the public_id
+        if (profileImageIdx >= 0) {
+          profileImagePublicId = validatedData.images[profileImageIdx].public_id;
+        }
+      }
+    }
+
     // Create artist with images in a transaction
     const newArtist = await prisma.$transaction(async (tx) => {
-      // Create the basic artist
+      // Create the basic artist without profileImageId first
       const artist = await tx.artist.create({
         data: {
           name: validatedData.name,
@@ -74,14 +117,15 @@ export async function createArtist(data: CreateArtistInput) {
           origin: validatedData.origin,
           genres: validatedData.genres,
           slug,
-          userId: validatedData.userId,
+          userId: user?.id, // Use the actual user ID from our database
           socialMedia: validatedData.socialMedia || {},
-          profileImageId: validatedData.profileImageId || null,
+          // We don't set profileImageId yet
         },
       });
 
       // Add images if provided
       if (validatedData.images && validatedData.images.length > 0) {
+        // Create all images
         await tx.image.createMany({
           data: validatedData.images.map((img) => ({
             url: img.url,
@@ -90,9 +134,40 @@ export async function createArtist(data: CreateArtistInput) {
             artistId: artist.id,
           })),
         });
+
+        // If we had a profile image identified, save its public_id
+        if (profileImagePublicId) {
+          // Find the image we just created that has this public_id
+          const profileImage = await tx.image.findFirst({
+            where: {
+              artistId: artist.id,
+              public_id: profileImagePublicId,
+            },
+          });
+
+          if (profileImage) {
+            // Update the artist with the reference to the profile image
+            await tx.artist.update({
+              where: { id: artist.id },
+              data: {
+                profileImageId: profileImage.public_id,
+              },
+            });
+          }
+        }
       }
 
-      return artist;
+      // Retrieve the artist with all updated relations
+      const updatedArtist = await tx.artist.findUnique({
+        where: { id: artist.id },
+        include: { images: true },
+      });
+
+      if (!updatedArtist) {
+        throw new Error("Could not find artist after creating it");
+      }
+
+      return updatedArtist;
     });
 
     return {
