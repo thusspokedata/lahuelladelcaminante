@@ -25,29 +25,25 @@ type ArtistWithRelations = PrismaArtist & {
 };
 
 const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
-  console.log("Mapping artist:", artist.name);
-  console.log("Profile image ID:", artist.profileImageId);
-  console.log("Images:", artist.images);
+  // Map artist data with image information
+  const mappedArtist = {
+    ...artist,
+    images: artist.images.map((img) => ({
+      url: img.url,
+      alt: img.alt,
+      public_id: img.public_id || undefined,
+    })),
+  };
 
-  // Mapear las imágenes y asegurarse de que public_id está definido
-  const mappedImages = artist.images.map((img) => ({
-    url: img.url,
-    alt: img.alt,
-    public_id: img.public_id || undefined,
-  }));
-
-  console.log("Mapped images:", mappedImages);
-
-  // Si hay un profileImageId y no hay imagen con ese public_id,
-  // podemos intentar buscar coincidencias parciales
+  // If there's a profileImageId but no exact match in images,
+  // try to find partial matches
   if (
     artist.profileImageId &&
-    mappedImages.length > 0 &&
-    !mappedImages.some((img) => img.public_id === artist.profileImageId)
+    mappedArtist.images.length > 0 &&
+    !mappedArtist.images.some((img) => img.public_id === artist.profileImageId)
   ) {
-    console.log("Profile image not found by exact match, trying partial match");
-    // Tratar de encontrar una imagen que contenga parte del profileImageId
-    const profileImageByPartial = mappedImages.find(
+    // Try to find an image that contains part of the profileImageId
+    const profileImageByPartial = mappedArtist.images.find(
       (img) =>
         img.public_id &&
         artist.profileImageId &&
@@ -56,8 +52,7 @@ const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
     );
 
     if (profileImageByPartial) {
-      console.log("Found profile image by partial match:", profileImageByPartial);
-      // Si encontramos un match parcial, usar ese public_id exacto
+      // If we find a partial match, use that exact public_id
       artist.profileImageId = profileImageByPartial.public_id || null;
     }
   }
@@ -69,7 +64,7 @@ const mapPrismaArtistToArtist = (artist: ArtistWithRelations): Artist => {
     genres: artist.genres,
     bio: artist.bio,
     origin: artist.origin,
-    images: mappedImages,
+    images: mappedArtist.images,
     profileImageId: artist.profileImageId,
     socialMedia: artist.socialMedia as { [key: string]: string } | undefined,
     upcomingEvents: artist.events?.map((event) => event.id) || [],

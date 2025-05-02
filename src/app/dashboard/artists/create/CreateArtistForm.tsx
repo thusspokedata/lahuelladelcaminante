@@ -97,30 +97,20 @@ export default function CreateArtistForm({ userId }: CreateArtistFormProps) {
     try {
       setIsSubmitting(true);
 
-      // Si hay una imagen seleccionada como perfil, establecer el profileImageId
+      // Set profileImageId if a profile image is selected
       if (profileImageIndex >= 0 && values.images && values.images.length > profileImageIndex) {
         const profileImage = values.images[profileImageIndex];
-
-        // Log para depuración
-        console.log("Selected profile image:", profileImage);
-
-        // El profileImageId debe ser el public_id completo de la imagen
+        // The profileImageId should be the complete public_id of the image
         values.profileImageId = profileImage.public_id || null;
-
-        console.log("Setting profileImageId to:", values.profileImageId);
       } else {
-        // Si no hay una imagen de perfil seleccionada, establecer a null
+        // If no profile image is selected, set to null
         values.profileImageId = null;
-        console.log("No profile image selected, setting profileImageId to null");
       }
 
       const result = await createArtist({
         ...values,
         userId,
       });
-
-      // Log del resultado
-      console.log("Create artist result:", result);
 
       if (result.success) {
         toast({
