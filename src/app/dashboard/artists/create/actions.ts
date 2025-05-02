@@ -6,7 +6,7 @@ import { slugify } from "@/lib/utils";
 import { z } from "zod";
 
 // Form validation schema
-const createArtistSchema = z.object({
+const artistSchema = z.object({
   name: z.string().min(2),
   bio: z.string().min(10),
   origin: z.string().min(2),
@@ -32,12 +32,12 @@ const createArtistSchema = z.object({
   profileImageId: z.string().optional().nullable(),
 });
 
-type CreateArtistInput = z.infer<typeof createArtistSchema>;
+type ArtistInput = z.infer<typeof artistSchema>;
 
-export async function createArtist(data: CreateArtistInput) {
+export async function createArtist(data: ArtistInput) {
   try {
     // Validate data
-    const validatedData = createArtistSchema.parse(data);
+    const validatedData = artistSchema.parse(data);
 
     // Get current user
     const authResult = await auth();
@@ -188,6 +188,191 @@ export async function createArtist(data: CreateArtistInput) {
     return {
       success: false,
       error: "Error al crear el artista",
+    };
+  }
+}
+
+export async function updateArtist(artistId: string, data: ArtistInput) {
+  try {
+    // Validate data
+    const validatedData = artistSchema.parse(data);
+
+    // Get current user
+    const authResult = await auth();
+
+    if (!authResult.userId) {
+      return { success: false, error: "No autenticado" };
+    }
+
+    // Check if the user ID in the data matches the current user
+    if (authResult.userId !== validatedData.userId) {
+      return { success: false, error: "ID de usuario no válido" };
+    }
+
+    // Verify the artist exists and belongs to this user
+    const existingArtist = await prisma.artist.findFirst({
+      where: {
+        id: artistId,
+        user: {
+          clerkId: authResult.userId,
+        },
+      },
+      include: { images: true },
+    });
+
+    if (!existingArtist) {
+      return { success: false, error: "Artista no encontrado o no autorizado" };
+    }
+
+    // Generate slug from name if name has changed
+    let slug = existingArtist.slug;
+    if (existingArtist.name !== validatedData.name) {
+      slug = slugify(validatedData.name);
+
+      // Check if slug already exists for another artist
+      const slugExists = await prisma.artist.findFirst({
+        where: {
+          slug,
+          id: { not: artistId }, // Exclude current artist
+        },
+      });
+
+      // If slug exists for another artist, append a random suffix
+      if (slugExists) {
+        slug = `${slug}-${Date.now().toString().slice(-4)}`;
+      }
+    }
+
+    // First determine which image (if any) will be the profile image
+    const profileImagePublicId = validatedData.profileImageId;
+
+    // Update artist and manage images in a transaction
+    const updatedArtist = await prisma.$transaction(async (tx) => {
+      // Update the basic artist data
+      const artist = await tx.artist.update({
+        where: { id: artistId },
+        data: {
+          name: validatedData.name,
+          bio: validatedData.bio,
+          origin: validatedData.origin,
+          genres: validatedData.genres,
+          slug,
+          socialMedia: validatedData.socialMedia || {},
+          profileImageId: profileImagePublicId,
+        },
+      });
+
+      // Handle images update
+      if (validatedData.images && validatedData.images.length > 0) {
+        // Delete existing images that are not in the new set
+        const newImagePublicIds = validatedData.images
+          .map((img) => img.public_id)
+          .filter((id): id is string => !!id);
+
+        await tx.image.deleteMany({
+          where: {
+            artistId: artistId,
+            public_id: {
+              notIn: newImagePublicIds,
+            },
+          },
+        });
+
+        // Get existing image public_ids to avoid duplicates
+        const existingImages = await tx.image.findMany({
+          where: { artistId: artistId },
+          select: { public_id: true },
+        });
+        const existingPublicIds = existingImages
+          .map((img) => img.public_id)
+          .filter((id): id is string => !!id);
+
+        // Create only new images
+        for (const img of validatedData.images) {
+          if (img.public_id && !existingPublicIds.includes(img.public_id)) {
+            await tx.image.create({
+              data: {
+                url: img.url,
+                alt: img.alt || validatedData.name,
+                public_id: img.public_id,
+                artistId: artistId,
+              },
+            });
+          }
+        }
+      } else {
+        // If no images provided, keep existing ones
+      }
+
+      return artist;
+    });
+
+    return {
+      success: true,
+      artistId: updatedArtist.id,
+    };
+  } catch (error) {
+    console.error("Error updating artist:", error);
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: "Datos inválidos",
+        validationErrors: error.errors,
+      };
+    }
+
+    return {
+      success: false,
+      error: "Error al actualizar el artista",
+    };
+  }
+}
+
+export async function deleteArtist(artistId: string) {
+  try {
+    // Get current user
+    const authResult = await auth();
+
+    if (!authResult.userId) {
+      return { success: false, error: "No autenticado" };
+    }
+
+    // Verify the artist exists and belongs to this user
+    const existingArtist = await prisma.artist.findFirst({
+      where: {
+        id: artistId,
+        user: {
+          clerkId: authResult.userId,
+        },
+      },
+    });
+
+    if (!existingArtist) {
+      return { success: false, error: "Artista no encontrado o no autorizado" };
+    }
+
+    // Delete artist and related data in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Delete related images first (due to foreign key constraints)
+      await tx.image.deleteMany({
+        where: { artistId: artistId },
+      });
+
+      // Delete the artist
+      await tx.artist.delete({
+        where: { id: artistId },
+      });
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error deleting artist:", error);
+    return {
+      success: false,
+      error: "Error al eliminar el artista",
     };
   }
 }

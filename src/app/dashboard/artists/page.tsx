@@ -99,7 +99,7 @@ export default async function ArtistsDashboardPage() {
                     </Link>
                   </Button>
                   <Button variant="default" asChild>
-                    <Link href={`/dashboard/artists/${artist.id}/edit`}>
+                    <Link href={`/dashboard/artists/create?artistId=${artist.id}`}>
                       <Pencil className="mr-2 h-4 w-4" />
                       Editar
                     </Link>

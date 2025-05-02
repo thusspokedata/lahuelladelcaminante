@@ -1,6 +1,7 @@
 export interface ArtistImage {
   url: string;
   alt: string;
+  public_id?: string;
 }
 
 export interface Artist {

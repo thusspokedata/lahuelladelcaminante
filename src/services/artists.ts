@@ -144,30 +144,44 @@ export const searchArtistsByName = async (name: string): Promise<Artist[]> => {
 /**
  * Get artists associated with a user
  */
-export async function getArtistsByUser(userId?: string): Promise<Artist[]> {
+export async function getArtistsByUser(clerkUserId?: string): Promise<Artist[]> {
   try {
-    // If no userId provided, try to get from current user
-    if (!userId) {
+    // If no clerkUserId provided, try to get from current user
+    if (!clerkUserId) {
       const authResult = await auth();
       if (!authResult.userId) {
         return [];
       }
-      userId = authResult.userId;
+      clerkUserId = authResult.userId;
     }
+
+    // First, find the user in our database by their clerkId
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: clerkUserId,
+      },
+    });
+
+    // If no user is found, return empty array
+    if (!user) {
+      console.log(`No user found with clerkId: ${clerkUserId}`);
+      return [];
+    }
+
+    // Then find all artists associated with that user's ID
+    const artists = await prisma.artist.findMany({
+      where: {
+        userId: user.id, // Use the internal ID, not the clerkId
+      },
+      include: {
+        images: true,
+        events: true,
+      },
+    });
+
+    return artists.map(mapPrismaArtistToArtist);
   } catch (error) {
     console.error("Error getting artists by user:", error);
     return [];
   }
-
-  const artists = await prisma.artist.findMany({
-    where: {
-      userId: userId,
-    },
-    include: {
-      images: true,
-      events: true,
-    },
-  });
-
-  return artists.map(mapPrismaArtistToArtist);
 }
