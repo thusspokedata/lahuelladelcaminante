@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
+import { getProfileImage } from "@/lib/utils";
 
 // In Next.js 15, params must be properly awaited
 interface ArtistPageProps {
@@ -29,35 +30,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
   // Get upcoming events for this artist
   const artistEvents = await getEventsByArtistId(artist.id);
 
-  // Function to check if an image matches the profileImageId
-  const isProfileImage = (img: { url: string; alt: string; public_id?: string }) => {
-    if (!artist.profileImageId || !img.public_id) return false;
-
-    // Exact match
-    if (img.public_id === artist.profileImageId) return true;
-
-    // Check when profileImageId is the complete public_id
-    if (artist.profileImageId.includes(img.public_id)) return true;
-
-    // Check when profileImageId is part of the public_id
-    if (img.public_id.includes(artist.profileImageId)) return true;
-
-    // Check for the last part of public_id after the last slash
-    const shortPublicId = img.public_id.split("/").pop();
-    const shortProfileId = artist.profileImageId.split("/").pop();
-
-    if (shortPublicId && shortProfileId && shortPublicId === shortProfileId) {
-      return true;
-    }
-
-    return false;
-  };
-
-  // Find profile image or use first image
-  const profileImage =
-    artist.images && artist.images.length > 0
-      ? (artist.profileImageId ? artist.images.find(isProfileImage) : null) || artist.images[0]
-      : null;
+  const profileImage = getProfileImage(artist.images, artist.profileImageId);
 
   return (
     <div className="container mx-auto px-4 py-8">

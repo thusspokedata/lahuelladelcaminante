@@ -4,6 +4,7 @@ import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import { Artist } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { getProfileImage } from "@/lib/utils";
 
 export interface ArtistCardProps {
   artist: Artist;
@@ -12,34 +13,7 @@ export interface ArtistCardProps {
 export function ArtistCard({ artist }: ArtistCardProps) {
   const { name, genres = [], bio, origin, images = [], socialMedia, slug, profileImageId } = artist;
 
-  // Function to check if an image matches the profileImageId
-  const isProfileImage = (img: { url: string; alt: string; public_id?: string }) => {
-    if (!profileImageId || !img.public_id) return false;
-
-    // Exact match
-    if (img.public_id === profileImageId) return true;
-
-    // Check when profileImageId is the complete public_id
-    if (profileImageId.includes(img.public_id)) return true;
-
-    // Check when profileImageId is part of the public_id
-    if (img.public_id.includes(profileImageId)) return true;
-
-    // Check for the last part of public_id after the last slash
-    const shortPublicId = img.public_id.split("/").pop();
-    const shortProfileId = profileImageId.split("/").pop();
-
-    if (shortPublicId && shortProfileId && shortPublicId === shortProfileId) {
-      return true;
-    }
-
-    return false;
-  };
-
-  // Find profile image or use first image, with more flexible matching
-  const profileImage =
-    (profileImageId && images.length > 0 && images.find(isProfileImage)) ||
-    (images.length > 0 ? images[0] : null);
+  const profileImage = getProfileImage(images, profileImageId);
 
   return (
     <Card>
