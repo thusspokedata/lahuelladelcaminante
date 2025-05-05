@@ -10,6 +10,7 @@ import { Footer } from "@/components/Footer";
 import { UserSync } from "@/components/UserSync";
 import { AdminNavLink } from "@/components/AdminNavLink";
 import { DashboardLink } from "@/components/DashboardLink";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,6 +60,7 @@ export default function RootLayout({
             </header>
             <main className="flex-1">{children}</main>
             <Footer />
+            <Toaster />
           </ThemeProvider>
         </Providers>
       </body>
