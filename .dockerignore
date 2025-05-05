@@ -1,0 +1,35 @@
+# Versioning and metadata
+.git
+.gitignore
+.dockerignore
+
+# Build dependencies
+dist
+node_modules
+coverage
+
+# Environment (contains sensitive data)
+.env
+.env.*
+!.env.example
+
+# Files not required for production
+README.md
+Dockerfile
+docker-compose.yml
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Docs
+docs
+*.md
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local development files
+.DS_Store
+*.log 
