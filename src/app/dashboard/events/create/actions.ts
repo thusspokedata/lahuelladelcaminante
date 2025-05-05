@@ -210,10 +210,248 @@ export async function createEventHandler(
   }
 }
 
-// Function to generate slug from name
+// Get event by id for editing
+export async function getEventById(eventId: string) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      throw new Error("No se pudo obtener el usuario actual");
+    }
+
+    const event = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        createdBy: {
+          id: user.id,
+        },
+      },
+      include: {
+        dates: {
+          orderBy: {
+            date: "asc",
+          },
+        },
+        artist: {
+          select: {
+            id: true,
+            name: true,
+            bio: true,
+          },
+        },
+        images: true,
+      },
+    });
+
+    if (!event) {
+      throw new Error("Evento no encontrado o no tienes permiso para editarlo");
+    }
+
+    return {
+      id: event.id,
+      title: event.title,
+      description: event.description || "",
+      organizerName: event.organizer,
+      location: event.location,
+      time: event.time,
+      price: event.price?.toString() || "",
+      genre: event.genre,
+      artists: event.artist
+        ? [{ id: event.artist.id, name: event.artist.name, bio: event.artist.bio || "" }]
+        : [],
+      dates: event.dates.map((date) => date.date),
+      images: event.images.map((img) => ({
+        url: img.url,
+        alt: img.alt,
+        public_id: img.public_id || undefined,
+      })),
+    };
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    throw new Error("No se pudo cargar el evento");
+  }
+}
+
+/**
+ * Update an existing event
+ */
+export async function updateEventHandler(
+  eventId: string,
+  data: EventFormData
+): Promise<{ success: boolean; eventId: string }> {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      throw new Error("No se pudo obtener el usuario actual");
+    }
+
+    const isActive = await isActiveUser();
+    if (!isActive) {
+      throw new Error("Tu cuenta no está activa");
+    }
+
+    // Verify the user has permission to edit this event
+    const existingEvent = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        createdBy: {
+          id: user.id,
+        },
+      },
+    });
+
+    if (!existingEvent) {
+      throw new Error("Evento no encontrado o no tienes permiso para editarlo");
+    }
+
+    // Validate data with Zod
+    const validatedData = eventSchema.parse(data);
+
+    // First handle the artist connection
+    const artistId = validatedData.artists.length > 0 ? validatedData.artists[0].id : null;
+
+    // Update the event in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Update the base event data
+      await tx.event.update({
+        where: { id: eventId },
+        data: {
+          title: validatedData.title,
+          description: validatedData.description,
+          location: validatedData.location,
+          time: validatedData.time,
+          price: validatedData.price ? parseFloat(validatedData.price) : null,
+          organizer: validatedData.organizerName,
+          genre: validatedData.genre,
+          artistId: artistId, // Connect to the first artist, or null if none
+        },
+      });
+
+      // Update dates - delete old ones and create new ones
+      await tx.eventDate.deleteMany({
+        where: { eventId },
+      });
+
+      await Promise.all(
+        validatedData.dates.map((date) =>
+          tx.eventDate.create({
+            data: {
+              date,
+              eventId,
+            },
+          })
+        )
+      );
+
+      // Update images - delete old ones that are not in the new set and add new ones
+      if (validatedData.images && validatedData.images.length > 0) {
+        // Get existing image public_ids to identify which need to be kept
+        const existingImages = await tx.image.findMany({
+          where: { eventId },
+          select: { public_id: true },
+        });
+
+        const existingPublicIds = existingImages
+          .map((img) => img.public_id)
+          .filter((id): id is string => !!id);
+
+        // Get the public_ids from the incoming images
+        const incomingPublicIds = validatedData.images
+          .map((img) => img.public_id)
+          .filter((id): id is string => !!id);
+
+        // Delete images that don't exist in the incoming set
+        await tx.image.deleteMany({
+          where: {
+            eventId,
+            public_id: {
+              notIn: incomingPublicIds,
+            },
+          },
+        });
+
+        // Add only new images (those not already in the database)
+        for (const image of validatedData.images) {
+          if (image.public_id && !existingPublicIds.includes(image.public_id)) {
+            await tx.image.create({
+              data: {
+                url: image.url,
+                alt: image.alt || validatedData.title,
+                public_id: image.public_id,
+                eventId,
+              },
+            });
+          }
+        }
+      } else {
+        // If no images provided, delete all existing images
+        await tx.image.deleteMany({
+          where: { eventId },
+        });
+      }
+    });
+
+    return { success: true, eventId };
+  } catch (error) {
+    console.error("Error updating event:", error);
+
+    if (error instanceof z.ZodError) {
+      const errorMessage = error.errors.map((e) => `${e.path}: ${e.message}`).join(", ");
+      throw new Error(`Validation error: ${errorMessage}`);
+    }
+
+    throw new Error(error instanceof Error ? error.message : "Error al actualizar el evento");
+  }
+}
+
+/**
+ * Delete an event (soft delete)
+ */
+export async function deleteEventHandler(eventId: string): Promise<{ success: boolean }> {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      throw new Error("No se pudo obtener el usuario actual");
+    }
+
+    // Verify the user has permission to delete this event
+    const existingEvent = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        createdBy: {
+          id: user.id,
+        },
+      },
+    });
+
+    if (!existingEvent) {
+      throw new Error("Evento no encontrado o no tienes permiso para eliminarlo");
+    }
+
+    // Soft delete the event
+    await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    throw new Error(error instanceof Error ? error.message : "Error al eliminar el evento");
+  }
+}
+
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
-    .replace(/[^\w\s]/gi, "")
-    .replace(/\s+/g, "-");
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 }

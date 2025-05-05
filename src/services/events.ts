@@ -345,6 +345,35 @@ export const getEventsByArtistSlug = async (
   return getEventsByArtistId(artist.id, { includeDeleted });
 };
 
+// Get events created by a specific user
+export const getEventsByUser = async (
+  userId: string,
+  { includeDeleted = false } = {}
+): Promise<Event[]> => {
+  const events = await prisma.event.findMany({
+    where: {
+      createdBy: {
+        clerkId: userId,
+      },
+      ...(includeDeleted ? {} : { isDeleted: false }),
+    },
+    include: {
+      dates: {
+        orderBy: {
+          date: "asc",
+        },
+      },
+      artist: true,
+      images: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return events.map(mapPrismaEventToEvent);
+};
+
 // Get events by date
 export const getEventsByDate = async (
   date: Date,

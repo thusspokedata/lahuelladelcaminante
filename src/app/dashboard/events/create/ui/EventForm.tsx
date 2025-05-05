@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,19 +81,22 @@ interface EventFormProps {
   onSubmit: (values: EventFormValues) => Promise<void>;
   isSubmitting?: boolean;
   initialError?: string | null;
+  initialData?: EventFormValues | null;
 }
 
 export default function EventForm({
   onSubmit,
   isSubmitting = false,
   initialError = null,
+  initialData = null,
 }: EventFormProps) {
   const [error, setError] = useState<string | null>(initialError);
+  const isEditMode = Boolean(initialData);
 
   // Initialize form with React Hook Form and Zod
   const form = useForm<EventFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "",
       description: "",
       artists: [] as FormArtist[],
@@ -107,13 +110,20 @@ export default function EventForm({
     },
   });
 
+  // Update form when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData, form]);
+
   // Handle form submission
   const handleSubmit: SubmitHandler<EventFormValues> = async (values) => {
     setError(null);
     try {
       await onSubmit(values);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error al crear el evento");
+      setError(error instanceof Error ? error.message : "Ocurrió un error al procesar el evento");
     }
   };
 
@@ -122,7 +132,9 @@ export default function EventForm({
       <CardHeader>
         <CardTitle>Información del Evento</CardTitle>
         <CardDescription>
-          Completa el formulario con los datos del evento que deseas crear.
+          {isEditMode
+            ? "Edita la información del evento."
+            : "Completa el formulario con los datos del evento que deseas crear."}
         </CardDescription>
       </CardHeader>
       <CardContent>
