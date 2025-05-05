@@ -1,0 +1,6 @@
+{
+  "name": "la-huella-del-caminante",
+  "description": "Eventos de música argentina en Berlín",
+  "repository": "https://github.com/thusspokedata/lahuelladelcaminante",
+  "keywords": ["nextjs", "react", "music", "events"]
+}

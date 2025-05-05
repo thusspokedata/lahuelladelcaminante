@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.production.local # Environment variables file for local production testing
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: always
+    # Example of how to configure for an external DB
+    # environment:
+    #   - DATABASE_URL=${DATABASE_URL}  # Connection URL for neon.tech or similar service
+
+  # If you need to simulate the production DB locally
+  # (Only for testing, in actual production you would use neon.tech)
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: lahuelladelcaminante_prod_db
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: lahuelladelcaminante_prod
+  #   ports:
+  #     - "5434:5432"  # Different port than development
+  #   volumes:
+  #     - postgres_prod_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+# volumes:
+#   postgres_prod_data:
