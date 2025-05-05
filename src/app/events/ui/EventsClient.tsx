@@ -6,6 +6,9 @@ import { Event } from "@/types";
 import { EventCard } from "./EventCard";
 import { EventFilters } from "./EventFilters";
 import { formatDateWithWeekday } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, Music, Info } from "lucide-react";
+import Link from "next/link";
 
 interface EventsClientProps {
   initialEvents: Event[];
@@ -63,6 +66,36 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     setFilteredEvents(filtered);
   };
 
+  // If there are no initial events, show a welcome/empty state
+  if (initialEvents.length === 0) {
+    return (
+      <Card className="p-8">
+        <CardContent className="flex flex-col items-center justify-center space-y-6 pt-6 text-center">
+          <CalendarIcon className="text-primary/70 h-16 w-16" />
+          <h3 className="text-2xl font-semibold">Próximamente nuevos eventos</h3>
+          <p className="text-muted-foreground max-w-md">
+            Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto
+            para descubrir nuevas fechas y artistas.
+          </p>
+          <div className="flex flex-wrap gap-4 pt-2">
+            <Button variant="outline" asChild>
+              <Link href="/artists">
+                <Music className="mr-2 h-4 w-4" />
+                Ver artistas
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/about">
+                <Info className="mr-2 h-4 w-4" />
+                Sobre nosotros
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Create a flat list of events with their dates for chronological sorting
   const sortedEvents = filteredEvents
     .flatMap((event) => {
@@ -106,9 +139,17 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         {sortedEvents.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-4">
                 No se encontraron eventos con los filtros seleccionados
               </p>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  handleFilterChange({ date: undefined, genre: undefined, artist: "" })
+                }
+              >
+                Limpiar filtros
+              </Button>
             </CardContent>
           </Card>
         ) : (

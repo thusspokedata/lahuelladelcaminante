@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma";
+import { PrismaClient, UserRole, UserStatus } from "../src/generated/prisma";
 import { mockArtists, mockEvents } from "../src/mockData";
 import { slugify } from "../src/lib/utils";
 
@@ -15,11 +15,41 @@ async function main() {
   await prisma.eventDate.deleteMany();
   await prisma.event.deleteMany();
   await prisma.artist.deleteMany();
+  await prisma.user.deleteMany();
 
   console.log("Deleted existing data");
 
-  // Seed artists
+  // Create admin user first
+  const adminUser = await prisma.user.create({
+    data: {
+      clerkId: "admin_clerk_id", // Mock Clerk ID for admin
+      email: "info@lahuelladelcaminante.com",
+      firstName: "Admin",
+      lastName: "User",
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  console.log(`Created admin user: ${adminUser.email} with ID: ${adminUser.id}`);
+
+  // Create artist user accounts
   for (const artistData of mockArtists) {
+    // Create a user account for each artist
+    const artistUser = await prisma.user.create({
+      data: {
+        clerkId: `clerk_${artistData.id}`, // Mock Clerk ID
+        email: `${slugify(artistData.name)}@lahuelladelcaminante.com`,
+        firstName: artistData.name.split(" ")[0],
+        lastName: artistData.name.split(" ").slice(1).join(" ") || "",
+        role: UserRole.USER,
+        status: UserStatus.ACTIVE,
+      },
+    });
+
+    console.log(`Created artist user: ${artistUser.email} with ID: ${artistUser.id}`);
+
+    // Now create the artist profile linked to the user
     const artistSlug = slugify(artistData.name);
 
     const artist = await prisma.artist.create({
@@ -32,6 +62,8 @@ async function main() {
         origin: artistData.origin,
         socialMedia: artistData.socialMedia || {},
         profileImageId: null,
+        // Link to the user account
+        userId: artistUser.id,
         // Create images
         images: {
           create: artistData.images.map((img) => ({
@@ -44,7 +76,9 @@ async function main() {
 
     // Store the mapping between original ID and Prisma-generated ID
     artistIdMap.set(artistData.id, artist.id);
-    console.log(`Created artist: ${artist.name} with ID: ${artist.id} and slug: ${artist.slug}`);
+    console.log(
+      `Created artist profile: ${artist.name} with ID: ${artist.id} and slug: ${artist.slug}`
+    );
   }
 
   // Seed events
@@ -52,6 +86,7 @@ async function main() {
     // Find artist by name to get artist ID
     const artist = await prisma.artist.findFirst({
       where: { name: eventData.artist },
+      include: { user: true }, // Include the user to access the creator
     });
 
     if (!artist) {
@@ -74,6 +109,8 @@ async function main() {
         genre: eventData.genre,
         artistId: artist.id,
         organizer: eventData.artist || "La Huella del Caminante",
+        // Link to the creator (the artist's user account or admin if not available)
+        createdById: artist.userId || adminUser.id,
         // Create date entries
         dates: {
           create: eventData.dates.map((date) => ({

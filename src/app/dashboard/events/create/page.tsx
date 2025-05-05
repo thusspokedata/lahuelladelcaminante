@@ -8,7 +8,13 @@ import { getCurrentUser, hasRole, isActiveUser } from "@/services/auth";
 
 import { EventFormContainerClient, BackButtonClient } from "./ui/client-components";
 
-export default async function EventPage({ searchParams }: { searchParams: { eventId?: string } }) {
+interface PageProps {
+  searchParams: {
+    eventId?: string;
+  };
+}
+
+export default async function EventPage({ searchParams }: PageProps) {
   // Auth checks on the server
   const user = await currentUser();
 
@@ -28,8 +34,8 @@ export default async function EventPage({ searchParams }: { searchParams: { even
     return <InactiveUserMessage />;
   }
 
-  // Get eventId from searchParams if it exists
-  const { eventId } = searchParams;
+  // Access eventId safely
+  const eventId = searchParams?.eventId;
   const isEditMode = Boolean(eventId);
 
   // If all checks pass, show the event form
