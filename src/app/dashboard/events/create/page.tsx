@@ -8,7 +8,7 @@ import { getCurrentUser, hasRole, isActiveUser } from "@/services/auth";
 
 import { EventFormContainerClient, BackButtonClient } from "./ui/client-components";
 
-export default async function CreateEventPage() {
+export default async function EventPage({ searchParams }: { searchParams: { eventId?: string } }) {
   // Auth checks on the server
   const user = await currentUser();
 
@@ -28,16 +28,22 @@ export default async function CreateEventPage() {
     return <InactiveUserMessage />;
   }
 
-  // If all checks pass, show the create event form
+  // Get eventId from searchParams if it exists
+  const { eventId } = searchParams;
+  const isEditMode = Boolean(eventId);
+
+  // If all checks pass, show the event form
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Crear Nuevo Evento</h1>
+        <h1 className="text-3xl font-bold">
+          {isEditMode ? "Editar Evento" : "Crear Nuevo Evento"}
+        </h1>
         <BackButtonClient />
       </div>
 
       <Suspense fallback={<div>Cargando formulario...</div>}>
-        <EventFormContainerClient />
+        <EventFormContainerClient eventId={eventId} />
       </Suspense>
     </div>
   );
