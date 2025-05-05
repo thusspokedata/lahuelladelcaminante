@@ -201,7 +201,6 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
             title: "¡Artista actualizado!",
             description: `El perfil de "${values.name}" ha sido actualizado correctamente.`,
             variant: "default",
-            duration: 5000,
           });
           router.refresh();
         } else {
@@ -220,8 +219,9 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
         if (result.success) {
           toast({
-            title: "Artista creado",
-            description: "El artista ha sido creado correctamente.",
+            title: "¡Artista creado!",
+            description: `"${values.name}" ha sido agregado correctamente.`,
+            variant: "default",
           });
 
           // Redirect to the artists dashboard
@@ -258,8 +258,9 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
       if (result.success) {
         toast({
-          title: "Artista eliminado",
+          title: "¡Artista eliminado!",
           description: "El artista ha sido eliminado correctamente.",
+          variant: "default",
         });
 
         // Redirect to the artists dashboard
