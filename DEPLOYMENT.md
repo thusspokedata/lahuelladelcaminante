@@ -2,7 +2,34 @@
 
 This guide will help you deploy the application using Dokku, a self-hosted PaaS solution.
 
-## Prerequisites
+## Local Development & Testing
+
+### Development Environment
+
+For local development with a PostgreSQL database running in Docker:
+
+```bash
+# Start the development database
+docker-compose up -d
+```
+
+This uses the standard `docker-compose.yml` file which runs only the PostgreSQL database on port 5433.
+
+### Production Testing
+
+For testing the production build locally before deploying to Dokku:
+
+```bash
+# First build and run the production configuration
+docker-compose -f docker-compose.prod.yml up --build
+
+# Or in detached mode
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+This uses `docker-compose.prod.yml` which builds the application using the Dockerfile and sets up the appropriate environment for production testing.
+
+## Prerequisites for Deployment
 
 - A server with Dokku installed ([Dokku installation guide](https://dokku.com/docs/getting-started/installation/))
 - SSH access to your server
@@ -38,12 +65,14 @@ dokku config:set lahuelladelcaminante NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 
 ## Database Setup
 
-If you're using a PostgreSQL database:
+When using Neon.tech or another external PostgreSQL provider:
+
+1. Create a new PostgreSQL database in your Neon.tech dashboard
+2. Get the connection string from the dashboard
+3. Set it as the DATABASE_URL environment variable for your Dokku app:
 
 ```bash
-# On your Dokku server
-dokku postgres:create lahuelladelcaminante-db
-dokku postgres:link lahuelladelcaminante-db lahuelladelcaminante
+dokku config:set lahuelladelcaminante DATABASE_URL=postgresql://user:password@hostname:port/database
 ```
 
 ## Set Up Domain
@@ -71,14 +100,14 @@ Add Dokku as a remote to your Git repository and push to deploy:
 ```bash
 # On your local machine
 git remote add dokku dokku@your-dokku-server:lahuelladelcaminante
-git push dokku main
+git push dokku production:main
 ```
 
-If you're deploying from a branch other than main:
+If you're deploying from a branch other than production:
 
 ```bash
 # On your local machine
-git push dokku feature/dashboard-event-management:main
+git push dokku your-branch-name:main
 ```
 
 ## Scaling (Optional)
