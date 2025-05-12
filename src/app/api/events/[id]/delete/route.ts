@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteEvent, getEventById } from "@/services/events";
 // Auth will be implemented properly with Clerk later
 
-export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
+type Params = Promise<{ id: string }>;
+
+export async function DELETE(_request: NextRequest, { params }: { params: Params }) {
+  const { id } = await params;
   try {
     // Authentication will be implemented with Clerk later
     // Temporary authentication bypass for development
@@ -12,7 +15,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: { id: 
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const eventId = params.id;
+    const eventId = id;
 
     // Check if the event exists
     const existingEvent = await getEventById(eventId, { includeDeleted: true });

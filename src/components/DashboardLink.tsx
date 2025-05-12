@@ -3,14 +3,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PendingUserModal } from "@/components/PendingUserModal";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export function DashboardLink() {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const checkUserStatus = async () => {

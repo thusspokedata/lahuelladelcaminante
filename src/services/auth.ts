@@ -1,3 +1,5 @@
+'use server'
+
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { UserRole, UserStatus } from "@/generated/prisma";

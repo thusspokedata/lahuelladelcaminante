@@ -5,11 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import ArtistForm from "./ArtistForm";
 import { getArtistsByUser } from "@/services/artists";
 
-export default async function CreateArtistPage({
-  searchParams,
-}: {
-  searchParams: { artistId?: string };
-}) {
+type SearchParams = Promise<{ artistId?: string }>;
+
+export default async function CreateArtistPage({ searchParams }: { searchParams: SearchParams }) {
   const authResult = await auth();
 
   if (!authResult.userId) {
@@ -20,7 +18,7 @@ export default async function CreateArtistPage({
   const userArtists = await getArtistsByUser(authResult.userId);
 
   // Get the artistId from the URL if it exists
-  const { artistId } = searchParams;
+  const { artistId } = await searchParams;
 
   return (
     <div className="container mx-auto space-y-6 py-6">

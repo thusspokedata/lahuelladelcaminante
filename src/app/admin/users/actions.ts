@@ -1,19 +1,19 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { UserRole, UserStatus } from "@/generated/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 // Verify that the current user is admin
 async function verifyAdmin() {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/sign-in");
   }
 
-  const user = await db.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { clerkId: userId },
   });
 
@@ -30,7 +30,7 @@ export async function updateUserRoleAction(userId: string, role: UserRole) {
   await verifyAdmin();
 
   try {
-    const updatedUser = await db.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { role },
     });
@@ -48,7 +48,7 @@ export async function updateUserStatusAction(userId: string, status: UserStatus)
   await verifyAdmin();
 
   try {
-    const updatedUser = await db.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { status },
     });
@@ -66,7 +66,7 @@ export async function getAllUsersAction() {
   await verifyAdmin();
 
   try {
-    const users = await db.user.findMany({
+    const users = await prisma.user.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -85,7 +85,7 @@ export async function getPendingUsersAction() {
   await verifyAdmin();
 
   try {
-    const users = await db.user.findMany({
+    const users = await prisma.user.findMany({
       where: { status: "PENDING" },
       orderBy: {
         createdAt: "desc",
