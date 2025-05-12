@@ -1,19 +1,15 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getCurrentUser, updateUserRole, updateUserStatus } from "@/services/auth";
-import { db } from "@/lib/db";
+import { getCurrentUser } from "@/services/auth";
+import { prisma } from "@/lib/db";
 import { UserRoleForm } from "./UserRoleForm";
 import { UserStatusForm } from "./UserStatusForm";
 
-// Props for the page
-interface EditUserPageProps {
-  params: {
-    id: string;
-  };
-}
+type Params = Promise<{ id: string }>;
 
-export default async function EditUserPage({ params }: EditUserPageProps) {
+export default async function EditUserPage({ params }: { params: Params }) {
+  const { id } = await params;
   // Check if the current user is an administrator
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "ADMIN") {
@@ -21,8 +17,8 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
   }
 
   // Get the user to edit
-  const user = await db.user.findUnique({
-    where: { id: params.id },
+  const user = await prisma.user.findUnique({
+    where: { id: id },
   });
 
   // If the user doesn't exist, redirect
@@ -54,7 +50,9 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Nombre</dt>
-              <dd className="text-base">{user.name || "No especificado"}</dd>
+              <dd className="text-base">
+                {user.firstName ? `${user.firstName} ${user.lastName || ""}` : "No especificado"}
+              </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Email</dt>

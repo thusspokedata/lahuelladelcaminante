@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { Webhook } from "svix";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 // This function verifies the webhook signature to ensure it comes from Clerk
@@ -13,7 +13,7 @@ async function validateRequest(request: Request) {
   }
 
   // Get the headers from the request
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
@@ -70,11 +70,12 @@ export async function POST(request: Request) {
       }
 
       // Create or update the user in our database
-      await db.user.create({
+      await prisma.user.create({
         data: {
           clerkId: id,
           email: primaryEmail,
-          name: `${first_name || ""} ${last_name || ""}`.trim(),
+          firstName: first_name || null,
+          lastName: last_name || null,
           status: "PENDING", // By default, users are pending approval
           role: "USER", // By default, users have the USER role
         },
@@ -93,27 +94,29 @@ export async function POST(request: Request) {
       }
 
       // Look for the user by their clerkId
-      const existingUser = await db.user.findUnique({
+      const existingUser = await prisma.user.findUnique({
         where: { clerkId: id },
       });
 
       if (existingUser) {
         // Update the existing user
-        await db.user.update({
+        await prisma.user.update({
           where: { clerkId: id },
           data: {
             email: primaryEmail,
-            name: `${first_name || ""} ${last_name || ""}`.trim(),
+            firstName: first_name || null,
+            lastName: last_name || null,
           },
         });
         return NextResponse.json({ message: "Usuario actualizado exitosamente" }, { status: 200 });
       } else {
         // If it doesn't exist, create it
-        await db.user.create({
+        await prisma.user.create({
           data: {
             clerkId: id,
             email: primaryEmail,
-            name: `${first_name || ""} ${last_name || ""}`.trim(),
+            firstName: first_name || null,
+            lastName: last_name || null,
             status: "PENDING",
             role: "USER",
           },
@@ -125,12 +128,12 @@ export async function POST(request: Request) {
       const { id } = evt.data;
 
       // Option 1: Delete the user completely
-      await db.user.delete({
+      await prisma.user.delete({
         where: { clerkId: id },
       });
 
       // Option 2: Implement soft delete if preferred
-      // await db.user.update({
+      // await prisma.user.update({
       //   where: { clerkId: id },
       //   data: { isDeleted: true, deletedAt: new Date() }
       // });

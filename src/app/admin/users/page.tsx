@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getAllUsers, getCurrentUser, updateUserRole, updateUserStatus } from "@/services/auth";
+import { getAllUsers, getCurrentUser, updateUserStatus } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { UserRole, UserStatus } from "@/generated/prisma";
 
@@ -78,7 +78,9 @@ export default async function AdminUsersPage() {
               users.map((user) => (
                 <tr key={user.id}>
                   <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
-                    {user.name || "Sin nombre"}
+                    {user.firstName
+                      ? `${user.firstName} ${user.lastName || ""}`
+                      : "No especificado"}
                   </td>
                   <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {user.email}

@@ -17,14 +17,10 @@ async function userOwnsArtist(userId: string, artistId: string): Promise<boolean
   return !!artist && artist.userId === userId;
 }
 
-interface EditArtistPageProps {
-  params: {
-    id: string;
-  };
-}
+type Params = Promise<{ id: string }>;
 
-export default async function EditArtistPage({ params }: EditArtistPageProps) {
-  const { id } = params;
+export default async function EditArtistPage({ params }: { params: Params }) {
+  const { id } = await params;
   const authResult = await auth();
 
   if (!authResult.userId) {
