@@ -8,6 +8,10 @@ interface UserProviderProps {
   children: React.ReactNode;
 }
 
+interface WindowWithDebug extends Window {
+  __userDebug?: string;
+}
+
 export function UserProvider({ children }: UserProviderProps) {
   const { isLoaded: isClerkLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
@@ -46,11 +50,12 @@ export function UserProvider({ children }: UserProviderProps) {
       hasAttemptedDataLoad.current = true;
       clearUserData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClerkLoaded, isSignedIn]); // Remove user, loadUserData, and clearUserData from dependencies
 
   // For debugging purposes only - remove in production
   if (typeof window !== "undefined") {
-    (window as any).__userDebug = debugMessage;
+    (window as WindowWithDebug).__userDebug = debugMessage;
   }
 
   return <>{children}</>;
