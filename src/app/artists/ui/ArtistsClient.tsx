@@ -15,17 +15,9 @@ interface ArtistsClientProps {
 
 export function ArtistsClient({ initialArtists }: ArtistsClientProps) {
   const [filteredArtists, setFilteredArtists] = useState(initialArtists);
-  const [currentFilters, setCurrentFilters] = useState<{ genre: string | undefined; name: string }>(
-    {
-      genre: undefined,
-      name: "",
-    }
-  );
 
-  // Use useCallback to memoize the filter function
   const handleFilterChange = useCallback(
     (filters: { genre: string | undefined; name: string }) => {
-      setCurrentFilters(filters);
       let filtered = [...initialArtists];
 
       if (filters.genre) {
