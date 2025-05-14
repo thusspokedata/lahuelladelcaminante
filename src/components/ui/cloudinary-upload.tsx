@@ -11,7 +11,6 @@ export interface ImageObject {
   url: string;
   alt?: string;
   public_id?: string;
-  isProfile?: boolean;
 }
 
 interface CloudinaryUploadProps {
@@ -22,9 +21,6 @@ interface CloudinaryUploadProps {
   maxImages?: number;
   uploadPreset?: string;
   deleteFromCloudinary?: boolean;
-  isProfileSelector?: boolean;
-  onProfileSelect?: (index: number) => void;
-  profileImageIndex?: number;
 }
 
 const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
@@ -35,9 +31,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   maxImages = 5,
   uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
   deleteFromCloudinary = true,
-  isProfileSelector = false,
-  onProfileSelect,
-  profileImageIndex,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [localImages, setLocalImages] = useState<ImageObject[]>(value);
@@ -101,7 +94,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         url: result.info.secure_url as string,
         public_id: publicId,
         alt: filename,
-        isProfile: isProfileSelector && localImages.length === 0,
       };
 
       // Update local images
@@ -110,11 +102,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
 
       // Call the onChange handler - explicitly passing all values
       onChange(imageData.url, imageData.alt, imageData.public_id);
-
-      // If this is the first image and profile selector is enabled, make it the profile
-      if (isProfileSelector && localImages.length === 0 && onProfileSelect) {
-        onProfileSelect(localImages.length);
-      }
     } catch (err) {
       setError(`Error processing upload: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
@@ -128,26 +115,13 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
 
       // Find the image to remove
       const imageToRemove = localImages.find((img) => img.url === url);
-      const indexToRemove = localImages.findIndex((img) => img.url === url);
-
-      // Handle profile image selection if needed
-      if (isProfileSelector && profileImageIndex === indexToRemove && onProfileSelect) {
-        onProfileSelect(-1); // No profile image selected
-      } else if (
-        isProfileSelector &&
-        profileImageIndex !== undefined &&
-        profileImageIndex > indexToRemove &&
-        onProfileSelect
-      ) {
-        // If we're removing an image before the profile image, adjust the index
-        onProfileSelect(profileImageIndex - 1);
-      }
 
       // Delete from Cloudinary if enabled and we have a public_id
       if (deleteFromCloudinary && imageToRemove?.public_id) {
         const result = await deleteCloudinaryImage(imageToRemove.public_id);
 
         if (!result.success) {
+          console.warn("Could not delete image from Cloudinary:", result.message);
           // Continue with removal even if Cloudinary deletion failed
         }
       }
@@ -160,14 +134,9 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
       onRemove(url);
     } catch (err) {
       setError(`Error removing image: ${err instanceof Error ? err.message : String(err)}`);
+      console.error("Error removing image:", err);
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const handleSetAsProfile = (index: number) => {
-    if (isProfileSelector && onProfileSelect) {
-      onProfileSelect(index);
     }
   };
 
@@ -175,14 +144,10 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
     <div className="w-full space-y-4">
       {localImages.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {localImages.map((image, index) => (
+          {localImages.map((image) => (
             <div
               key={image.url}
-              className={`relative h-[200px] w-[200px] overflow-hidden rounded-md ${
-                isProfileSelector && profileImageIndex === index
-                  ? "ring-primary border-primary ring-2"
-                  : "border-2 border-gray-300"
-              }`}
+              className="relative h-[200px] w-[200px] overflow-hidden rounded-md border-2 border-gray-300"
             >
               <div className="absolute top-2 right-2 z-10">
                 <Button
@@ -196,27 +161,6 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-
-              {isProfileSelector && profileImageIndex !== index && (
-                <div className="absolute right-2 bottom-2 z-10">
-                  <Button
-                    type="button"
-                    onClick={() => handleSetAsProfile(index)}
-                    variant="secondary"
-                    size="sm"
-                    className="text-xs"
-                  >
-                    Set as Profile
-                  </Button>
-                </div>
-              )}
-
-              {isProfileSelector && profileImageIndex === index && (
-                <div className="bg-primary absolute top-2 left-2 z-10 rounded-full px-2 py-1 text-xs text-white">
-                  Profile
-                </div>
-              )}
-
               <Image
                 fill
                 alt={image.alt || "Uploaded image"}
