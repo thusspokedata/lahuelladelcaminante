@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,12 +19,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
 import DateSelector from "./DateSelector";
 import ImageUploadField from "./ImageUploadField";
 import { ArtistSelector } from "./ArtistSelector";
 
-// Simplified Artist type for form use
 type FormArtist = {
   id: string;
   name: string;
@@ -92,6 +89,8 @@ export default function EventForm({
 }: EventFormProps) {
   const [error, setError] = useState<string | null>(initialError);
   const isEditMode = Boolean(initialData);
+  const [cloudinaryReady, setCloudinaryReady] = useState(false);
+  const [cloudinaryError, setCloudinaryError] = useState<string | null>(null);
 
   // Initialize form with React Hook Form and Zod
   const form = useForm<EventFormValues>({
@@ -109,6 +108,35 @@ export default function EventForm({
       images: [],
     },
   });
+
+  // Check if Cloudinary variables are available
+  useEffect(() => {
+    // Wait for client-side execution
+    const checkCloudinaryConfig = () => {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName) {
+        setCloudinaryError("Cloudinary configuration missing: Cloud name not available");
+        return false;
+      }
+
+      if (!uploadPreset) {
+        setCloudinaryError("Cloudinary configuration missing: Upload preset not available");
+        return false;
+      }
+
+      setCloudinaryError(null);
+      return true;
+    };
+
+    // Small delay to ensure browser has loaded environment variables
+    const timer = setTimeout(() => {
+      setCloudinaryReady(checkCloudinaryConfig());
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Update form when initialData changes
   useEffect(() => {
@@ -143,6 +171,17 @@ export default function EventForm({
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {cloudinaryError && (
+          <Alert variant="default" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Advertencia</AlertTitle>
+            <AlertDescription>
+              {cloudinaryError}
+              <p className="mt-2">La carga de imágenes no estará disponible.</p>
+            </AlertDescription>
           </Alert>
         )}
 
@@ -281,8 +320,8 @@ export default function EventForm({
             {/* Dates */}
             <DateSelector form={form} />
 
-            {/* Images */}
-            <ImageUploadField form={form} disabled={isSubmitting} />
+            {/* Images - Render only if Cloudinary is properly configured */}
+            {cloudinaryReady && <ImageUploadField form={form} disabled={isSubmitting} />}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Creando evento..." : "Crear Evento"}

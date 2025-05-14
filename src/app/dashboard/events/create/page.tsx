@@ -2,10 +2,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { AlertCircle } from "lucide-react";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getCurrentUser, hasRole, isActiveUser } from "@/services/auth";
-
 import { EventFormContainerClient, BackButtonClient } from "./ui/client-components";
 
 type SearchParams = Promise<{ eventId?: string }>;
@@ -19,7 +17,7 @@ export default async function EventPage({ searchParams }: { searchParams: Search
   }
 
   // Get user data to check permissions
-  await getCurrentUser(); // Ensure user is in DB
+  await getCurrentUser();
 
   // Check if user can create events (admin or artist with active status)
   const isAdmin = await hasRole("ADMIN");
