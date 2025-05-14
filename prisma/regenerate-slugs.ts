@@ -59,7 +59,6 @@ async function ensureUniqueEventSlug(slug: string, existingId?: string): Promise
 
 async function regenerateArtistSlugs() {
   const artists = await prisma.artist.findMany();
-  console.log(`Found ${artists.length} artists to update`);
 
   for (const artist of artists) {
     const baseSlug = slugify(artist.name);
@@ -69,14 +68,11 @@ async function regenerateArtistSlugs() {
       where: { id: artist.id },
       data: { slug: uniqueSlug },
     });
-
-    console.log(`Updated artist: ${artist.name} with slug: ${uniqueSlug}`);
   }
 }
 
 async function regenerateEventSlugs() {
   const events = await prisma.event.findMany();
-  console.log(`Found ${events.length} events to update`);
 
   for (const event of events) {
     const baseSlug = slugify(event.title);
@@ -86,22 +82,16 @@ async function regenerateEventSlugs() {
       where: { id: event.id },
       data: { slug: uniqueSlug },
     });
-
-    console.log(`Updated event: ${event.title} with slug: ${uniqueSlug}`);
   }
 }
 
 async function main() {
   try {
-    console.log("Starting slug regeneration...");
-
     // Regenerate slugs for artists
     await regenerateArtistSlugs();
 
     // Regenerate slugs for events
     await regenerateEventSlugs();
-
-    console.log("Slug regeneration completed successfully");
   } catch (error) {
     console.error("Error during slug regeneration:", error);
     process.exit(1);

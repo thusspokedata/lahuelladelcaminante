@@ -7,12 +7,6 @@ export async function GET(_request: NextRequest) {
     const authResult = await auth();
     const clerkUser = await currentUser();
 
-    console.log("Debug endpoint auth check:", {
-      userId: authResult.userId,
-      hasClerkUser: !!clerkUser,
-      clerkUserId: clerkUser?.id,
-    });
-
     return NextResponse.json({
       authResult: {
         userId: authResult.userId,

@@ -22,9 +22,6 @@ export function UserProvider({ children }: UserProviderProps) {
   const hasAttemptedDataLoad = useRef(false);
 
   useEffect(() => {
-    // Log Clerk state for debugging
-    console.log("Clerk state:", { isClerkLoaded, isSignedIn, userId: user?.id });
-
     // Only attempt to load user data if Clerk is loaded
     if (!isClerkLoaded) {
       setDebugMessage("Clerk not loaded yet");

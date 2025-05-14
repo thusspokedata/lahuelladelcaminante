@@ -67,7 +67,6 @@ export const useUserStore = create<UserState>()(
           }
 
           const userData = await response.json();
-          console.log("Store: User data received:", userData);
 
           if (userData) {
             set({

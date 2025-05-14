@@ -17,8 +17,6 @@ async function main() {
   await prisma.artist.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log("Deleted existing data");
-
   // Create admin user first
   const adminUser = await prisma.user.create({
     data: {

@@ -10,15 +10,12 @@ try {
   // Create a command that only targets specific directories
   const command = `npx eslint --ext .js,.jsx,.ts,.tsx ${includeDirs.join(" ")}`;
 
-  console.log(`Running: ${command}`);
-
   // Run ESLint only on included directories
   execSync(command, {
     encoding: "utf-8",
     stdio: "inherit",
   });
 
-  console.log("Linting passed successfully");
 } catch {
   // If ESLint fails, the exit code will be propagated automatically
   process.exit(1);
