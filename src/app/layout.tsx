@@ -11,6 +11,7 @@ import { UserSync } from "@/components/UserSync";
 import { AdminNavLink } from "@/components/AdminNavLink";
 import { DashboardLink } from "@/components/DashboardLink";
 import { Toaster } from "@/components/ui/toaster";
+import { HomeButton } from "@/components/HomeButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,9 +38,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <header className="flex h-16 items-center justify-between p-4">
-              <Link href="/">
-                <Button variant="outline">Volver al Inicio</Button>
-              </Link>
+              <HomeButton />
               <div className="flex gap-4">
                 <SignedOut>
                   <Link href="/sign-in">
