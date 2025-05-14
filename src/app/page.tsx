@@ -1,14 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { getAllEvents } from "@/services/events";
+import { HomeEventsCarousel } from "@/components/HomeEventsCarousel";
 
-export default function Home() {
+export default async function Home() {
+  // Get events for the carousel
+  const events = await getAllEvents();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <h1 className="mb-2 text-4xl font-bold">La Huella del Caminante</h1>
         <p className="text-muted-foreground text-xl">Música Argentina en Berlín</p>
       </header>
+
+      {/* Events carousel */}
+      <section className="mb-12">
+        <HomeEventsCarousel events={events} />
+      </section>
 
       <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
         <Card className="flex min-h-[200px] flex-col">
