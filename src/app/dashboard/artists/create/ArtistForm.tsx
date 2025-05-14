@@ -21,7 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createArtist, updateArtist, deleteArtist } from "./actions";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, AlertCircle } from "lucide-react";
 import CloudinaryUpload from "@/components/ui/cloudinary-upload";
 import { Artist } from "@/types";
 import {
@@ -43,6 +43,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ArtistFormProps {
   userId: string;
@@ -93,8 +94,39 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
   const [profileImageIndex, setProfileImageIndex] = useState<number>(-1);
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(initialArtistId || null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [cloudinaryReady, setCloudinaryReady] = useState(false);
+  const [cloudinaryError, setCloudinaryError] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+
+  // Check if Cloudinary variables are available
+  useEffect(() => {
+    // Wait for client-side execution
+    const checkCloudinaryConfig = () => {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName) {
+        setCloudinaryError("Cloudinary configuration missing: Cloud name not available");
+        return false;
+      }
+
+      if (!uploadPreset) {
+        setCloudinaryError("Cloudinary configuration missing: Upload preset not available");
+        return false;
+      }
+
+      setCloudinaryError(null);
+      return true;
+    };
+
+    // Small delay to ensure browser has loaded environment variables
+    const timer = setTimeout(() => {
+      setCloudinaryReady(checkCloudinaryConfig());
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -568,49 +600,62 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                   />
                 </div>
 
-                {/* Images */}
-                <FormField
-                  control={form.control}
-                  name="images"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Imágenes</FormLabel>
-                      <FormControl>
-                        <CloudinaryUpload
-                          value={field.value || []}
-                          onChange={(url, alt, public_id) => {
-                            const newImages = [...(field.value || [])];
-                            newImages.push({ url, alt: alt || "", public_id });
-                            field.onChange(newImages);
-                          }}
-                          onRemove={(url) => {
-                            const newImages = [...(field.value || [])];
-                            const indexToRemove = newImages.findIndex((img) => img.url === url);
+                {cloudinaryError && (
+                  <Alert variant="default" className="mb-6">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Advertencia</AlertTitle>
+                    <AlertDescription>
+                      {cloudinaryError}
+                      <p className="mt-2">La carga de imágenes no estará disponible.</p>
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-                            // Adjust profile image index if needed
-                            if (profileImageIndex === indexToRemove) {
-                              setProfileImageIndex(-1);
-                            } else if (profileImageIndex > indexToRemove) {
-                              setProfileImageIndex(profileImageIndex - 1);
-                            }
+                {/* Images - Only render if Cloudinary is properly configured */}
+                {cloudinaryReady && (
+                  <FormField
+                    control={form.control}
+                    name="images"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Imágenes</FormLabel>
+                        <FormControl>
+                          <CloudinaryUpload
+                            value={field.value || []}
+                            onChange={(url, alt, public_id) => {
+                              const newImages = [...(field.value || [])];
+                              newImages.push({ url, alt: alt || "", public_id });
+                              field.onChange(newImages);
+                            }}
+                            onRemove={(url) => {
+                              const newImages = [...(field.value || [])];
+                              const indexToRemove = newImages.findIndex((img) => img.url === url);
 
-                            newImages.splice(indexToRemove, 1);
-                            field.onChange(newImages);
-                          }}
-                          maxImages={5}
-                          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                          isProfileSelector={true}
-                          onProfileSelect={setProfileImageIndex}
-                          profileImageIndex={profileImageIndex}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Agrega hasta 5 imágenes del artista. Selecciona una imagen como perfil.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                              // Adjust profile image index if needed
+                              if (profileImageIndex === indexToRemove) {
+                                setProfileImageIndex(-1);
+                              } else if (profileImageIndex > indexToRemove) {
+                                setProfileImageIndex(profileImageIndex - 1);
+                              }
+
+                              newImages.splice(indexToRemove, 1);
+                              field.onChange(newImages);
+                            }}
+                            maxImages={5}
+                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                            isProfileSelector={true}
+                            onProfileSelect={setProfileImageIndex}
+                            profileImageIndex={profileImageIndex}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Agrega hasta 5 imágenes del artista. Selecciona una imagen como perfil.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
             </CardContent>
           </Card>
