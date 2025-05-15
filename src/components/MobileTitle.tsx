@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function SiteTitle() {
+export function MobileTitle() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -12,9 +11,9 @@ export function SiteTitle() {
   }
 
   return (
-    <Link href="/" className="ml-2 hidden flex-col md:flex">
-      <h1 className="text-xl leading-tight font-bold">La Huella del Caminante</h1>
+    <div className="pb-4 text-center md:hidden">
+      <h1 className="text-xl font-bold">La Huella del Caminante</h1>
       <p className="text-muted-foreground text-sm">Música Argentina en Berlín</p>
-    </Link>
+    </div>
   );
 }

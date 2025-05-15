@@ -13,6 +13,7 @@ import { DashboardLink } from "@/components/DashboardLink";
 import { Toaster } from "@/components/ui/toaster";
 import { HomeButton } from "@/components/HomeButton";
 import { SiteTitle } from "@/components/SiteTitle";
+import { MobileTitle } from "@/components/MobileTitle";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,28 +39,33 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header className="flex h-16 items-center justify-between p-4">
-              <div className="flex items-center">
-                <HomeButton />
-                <SiteTitle />
+            <header className="flex flex-col">
+              <div className="flex h-16 items-center justify-between p-4">
+                <div className="flex items-center">
+                  <HomeButton />
+                  <SiteTitle />
+                </div>
+                <div className="flex gap-4">
+                  <SignedOut>
+                    <Link href="/sign-in">
+                      <Button variant="outline">Iniciar Sesión</Button>
+                    </Link>
+                    <Link href="/sign-up">
+                      <Button>Registrarse</Button>
+                    </Link>
+                  </SignedOut>
+                  <SignedIn>
+                    {/* Admin Navigation Link - Only visible for administrators */}
+                    <AdminNavLink />
+                    {/* Dashboard link with pending user modal */}
+                    <DashboardLink />
+                    <UserButton />
+                  </SignedIn>
+                </div>
               </div>
-              <div className="flex gap-4">
-                <SignedOut>
-                  <Link href="/sign-in">
-                    <Button variant="outline">Iniciar Sesión</Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button>Registrarse</Button>
-                  </Link>
-                </SignedOut>
-                <SignedIn>
-                  {/* Admin Navigation Link - Only visible for administrators */}
-                  <AdminNavLink />
-                  {/* Dashboard link with pending user modal */}
-                  <DashboardLink />
-                  <UserButton />
-                </SignedIn>
-              </div>
+
+              {/* Mobile title - Only visible on small screens */}
+              <MobileTitle />
             </header>
             <main className="flex-1">{children}</main>
             <Footer />
