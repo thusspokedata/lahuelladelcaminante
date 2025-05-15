@@ -9,12 +9,7 @@ export default async function Home() {
   const events = await getAllEvents();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 text-center">
-        <h1 className="mb-2 text-4xl font-bold">La Huella del Caminante</h1>
-        <p className="text-muted-foreground text-xl">Música Argentina en Berlín</p>
-      </header>
-
+    <div className="container mx-auto px-4">
       {/* Events carousel */}
       <section className="mb-12">
         <HomeEventsCarousel events={events} />
@@ -30,7 +25,7 @@ export default async function Home() {
           </CardHeader>
           <CardContent className="mt-auto">
             <Link href="/events">
-              <Button className="w-full">Ver Eventos</Button>
+              <Button className="w-full">Ver Todos</Button>
             </Link>
           </CardContent>
         </Card>
