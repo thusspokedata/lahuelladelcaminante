@@ -13,6 +13,16 @@ import {
   ArrowLeftIcon,
 } from "lucide-react";
 import { formatDateWithWeekday } from "@/lib/utils";
+import { generateEntityMetadata } from "@/lib/metadata";
+
+export const revalidate = 3600; // Revalidate at most every hour
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  return generateEntityMetadata("event", params, {
+    title: "Evento | La Huella del Caminante",
+    description: "Evento de música argentina en Berlín",
+  });
+}
 
 export default async function EventDetails({ params }: { params: Promise<{ slug: string }> }) {
   // Await params to access its properties
@@ -211,11 +221,6 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
               </CardContent>
             </Card>
           )}
-
-          {/* Buy Tickets */}
-          <Button className="w-full" size="lg">
-            Comprar entradas
-          </Button>
         </div>
       </div>
     </div>

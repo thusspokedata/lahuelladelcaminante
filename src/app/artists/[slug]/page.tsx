@@ -8,6 +8,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Music } from "lucide-react";
 import { getProfileImage } from "@/lib/utils";
+import { generateEntityMetadata } from "@/lib/metadata";
+
+export const revalidate = 3600; // Revalidate at most every hour
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  return generateEntityMetadata("artist", params, {
+    title: "Artista | La Huella del Caminante",
+    description: "Artista argentino en Berlín",
+  });
+}
 
 // In Next.js 15, params must be properly awaited
 interface ArtistPageProps {
