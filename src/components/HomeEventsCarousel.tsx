@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Clock, MapPin, MusicIcon } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -26,8 +26,8 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
-  // Autoplay plugin configuration - slower transition for single event view
-  const autoplayPlugin = Autoplay({ delay: 7000, stopOnInteraction: true });
+  // Autoplay plugin configuration - slower transition for fullscreen view
+  const autoplayPlugin = Autoplay({ delay: 8000, stopOnInteraction: true });
 
   // Effect must be called before any conditional returns
   useEffect(() => {
@@ -66,16 +66,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Próximos Eventos</h2>
-        <Link href="/events">
-          <Button variant="outline" size="sm">
-            Ver todos
-          </Button>
-        </Link>
-      </div>
-
+    <div className="relative right-[50%] left-[50%] -mx-[50vw] w-screen">
       <Carousel
         setApi={setApi}
         className="w-full"
@@ -85,46 +76,63 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
           loop: true,
         }}
       >
-        <CarouselContent>
+        <CarouselContent className="h-[450px] sm:h-[550px] md:h-[650px] lg:h-[750px] xl:h-[85vh]">
           {upcomingEvents.map((event, index) => (
-            <CarouselItem key={`${event.id}-${index}`} className="basis-full">
-              <Link href={`/events/${event.slug}`}>
-                <div className="bg-card text-card-foreground overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md md:flex">
-                  <div className="relative aspect-video w-full md:h-auto md:w-1/2">
-                    {event.images && event.images.length > 0 ? (
-                      <Image
-                        src={event.images[0].url}
-                        alt={event.images[0].alt || event.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    ) : (
-                      <div className="bg-muted flex h-full w-full items-center justify-center">
-                        <MusicIcon className="text-muted-foreground h-12 w-12" />
+            <CarouselItem key={`${event.id}-${index}`} className="basis-full pl-0">
+              <Link href={`/events/${event.slug}`} className="block h-full">
+                <div className="relative h-full w-full overflow-hidden">
+                  {/* Image as background */}
+                  {event.images && event.images.length > 0 ? (
+                    <Image
+                      src={event.images[0].url}
+                      alt={event.images[0].alt || event.title}
+                      fill
+                      className="object-cover brightness-[0.75]"
+                      sizes="100vw"
+                      priority
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-black"></div>
+                  )}
+
+                  {/* Content overlay */}
+                  <div className="absolute inset-0 flex flex-col justify-end">
+                    <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent px-8 pt-40 pb-16 md:px-14 md:pb-24">
+                      <div className="mx-0 max-w-7xl md:mx-40">
+                        <h3 className="mb-3 text-3xl leading-tight font-bold text-white md:text-4xl lg:text-5xl xl:text-6xl">
+                          {event.title}
+                        </h3>
+                        <p className="mb-5 text-xl text-white/90 md:text-2xl lg:text-3xl">
+                          {event.artist.name}
+                        </p>
+                        <div className="mb-5 flex flex-col gap-4 text-white/90 sm:flex-row sm:items-center sm:gap-8">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-5 w-5 lg:h-6 lg:w-6" />
+                            <span className="text-base md:text-lg lg:text-xl">
+                              {formatDateWithWeekday(event.date)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-5 w-5 lg:h-6 lg:w-6" />
+                            <span className="text-base md:text-lg lg:text-xl">{event.time}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5 lg:h-6 lg:w-6" />
+                            <span className="text-base md:text-lg lg:text-xl">
+                              {event.location}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-6">
+                          <Button
+                            variant="outline"
+                            className="group h-auto border-white bg-transparent px-6 py-5 text-base font-medium text-white hover:border-white hover:bg-black/30 md:text-lg"
+                          >
+                            Ver evento
+                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 md:h-5 md:w-5" />
+                          </Button>
+                        </div>
                       </div>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 text-white md:hidden">
-                      <h3 className="text-lg leading-tight font-bold">{event.title}</h3>
-                      <p className="text-sm">{event.artist.name}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-center p-6 md:w-1/2">
-                    <div className="mb-4 hidden md:block">
-                      <h3 className="mb-1 text-2xl font-bold">{event.title}</h3>
-                      <p className="text-muted-foreground text-lg">{event.artist.name}</p>
-                    </div>
-                    <div className="flex items-start space-x-2 text-sm md:text-base">
-                      <Calendar className="mt-0.5 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                      <span>{formatDateWithWeekday(event.date)}</span>
-                    </div>
-                    <div className="mt-2 flex items-start space-x-2 text-sm md:text-base">
-                      <Clock className="mt-0.5 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="mt-2 flex items-start space-x-2 text-sm md:text-base">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-                      <span>{event.location}</span>
                     </div>
                   </div>
                 </div>
@@ -132,24 +140,27 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="-left-4 md:-left-6" />
-        <CarouselNext className="-right-4 md:-right-6" />
-      </Carousel>
 
-      <div className="flex justify-center gap-2 pt-2">
-        {count > 0 &&
-          Array.from({ length: count }).map((_, i) => (
-            <Button
-              key={i}
-              variant="ghost"
-              size="icon"
-              className={`h-2 w-2 rounded-full p-0 ${
-                i === current - 1 ? "bg-primary" : "bg-muted"
-              }`}
-              onClick={() => api?.scrollTo(i)}
-            />
-          ))}
-      </div>
+        {/* Custom navigation arrows - positioned at sides */}
+        <CarouselPrevious className="absolute top-1/2 left-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+        <CarouselNext className="absolute top-1/2 right-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+
+        {/* Indicators - now moved inside the carousel */}
+        <div className="absolute right-0 bottom-6 left-0 z-10 flex justify-center gap-3">
+          {count > 0 &&
+            Array.from({ length: count }).map((_, i) => (
+              <Button
+                key={i}
+                variant="ghost"
+                size="icon"
+                className={`h-2 w-2 rounded-full p-0 ${
+                  i === current - 1 ? "bg-primary" : "bg-white/50"
+                }`}
+                onClick={() => api?.scrollTo(i)}
+              />
+            ))}
+        </div>
+      </Carousel>
     </div>
   );
 }
