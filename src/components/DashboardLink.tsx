@@ -32,6 +32,11 @@ export function DashboardLink() {
     if (userStatus === "PENDING") {
       e.preventDefault();
       setShowPendingModal(true);
+      // Log para depuración
+      console.log("User is PENDING, showing modal");
+    } else {
+      // Log para depuración
+      console.log("User status:", userStatus);
     }
   };
 

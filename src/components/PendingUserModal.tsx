@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { Clock } from "lucide-react";
+import { useEffect } from "react";
 
 interface PendingUserModalProps {
   open: boolean;
@@ -20,7 +21,15 @@ interface PendingUserModalProps {
 export function PendingUserModal({ open, onOpenChange }: PendingUserModalProps) {
   const router = useRouter();
 
+  // Log para depuración
+  useEffect(() => {
+    if (open) {
+      console.log("PendingUserModal is now open");
+    }
+  }, [open]);
+
   const handleClose = () => {
+    console.log("Closing modal and redirecting to home");
     onOpenChange(false);
     router.push("/");
   };
