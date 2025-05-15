@@ -126,7 +126,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
                         <div className="mt-6">
                           <Button
                             variant="outline"
-                            className="group h-auto border-white bg-transparent px-6 py-5 text-base font-medium text-white hover:border-white hover:bg-black/30 md:text-lg"
+                            className="group h-auto border-white bg-transparent px-6 py-4 hover:text-blue-300 text-base font-medium text-white hover:border-white hover:bg-transparent md:text-lg"
                           >
                             Ver evento
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 md:h-5 md:w-5" />
@@ -142,11 +142,11 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
         </CarouselContent>
 
         {/* Custom navigation arrows - positioned at sides */}
-        <CarouselPrevious className="absolute top-1/2 left-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
-        <CarouselNext className="absolute top-1/2 right-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
-
+        <CarouselPrevious className="absolute border-0 top-1/2 left-4 z-10 h-12 w-12 -translate-y-1/2 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+        <CarouselNext className="absolute border-0 top-1/2 right-4 z-10 h-12 w-12 -translate-y-1/2 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+        
         {/* Indicators - now moved inside the carousel */}
-        <div className="absolute right-0 bottom-6 left-0 z-10 flex justify-center gap-3">
+        <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center gap-3">
           {count > 0 &&
             Array.from({ length: count }).map((_, i) => (
               <Button
