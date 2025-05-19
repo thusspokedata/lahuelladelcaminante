@@ -16,6 +16,7 @@ import { SiteTitle } from "@/components/SiteTitle";
 import { MobileTitle } from "@/components/MobileTitle";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,12 +32,16 @@ type Props = {
 
 export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
+  console.log("Layout - Locale:", locale);
+  const t = await getTranslations("navigation");
   const messages = await getMessages();
+  console.log("estos son los mensajes", messages);
+  console.log("Layout - Messages:", messages);
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.className} flex min-h-screen flex-col`} suppressHydrationWarning>
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
+        <Providers>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             {/* UserSync component to synchronize users during development */}
             <UserSync />
             <ThemeProvider
@@ -57,7 +62,7 @@ export default async function RootLayout({ children, params }: Props) {
                         <Button variant="outline">Iniciar Sesión</Button>
                       </Link>
                       <Link href="/sign-up">
-                        <Button>Registrarse</Button>
+                        <Button>{t("signUp")}</Button>
                       </Link>
                     </SignedOut>
                     <SignedIn>
@@ -77,8 +82,8 @@ export default async function RootLayout({ children, params }: Props) {
               <Footer />
               <Toaster />
             </ThemeProvider>
-          </Providers>
-        </NextIntlClientProvider>
+          </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );
