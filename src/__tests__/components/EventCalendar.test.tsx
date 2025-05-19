@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { EventCalendar } from "@/app/events/ui/EventCalendar";
+import { EventCalendar } from "@/app/[locale]/events/ui/EventCalendar";
 
 // Mock the Calendar component
 vi.mock("@/components/ui/calendar", () => ({
