@@ -29,7 +29,8 @@ type Props = {
   params: { locale: string };
 };
 
-export default async function RootLayout({ children, params: { locale } }: Props) {
+export default async function RootLayout({ children, params }: Props) {
+  const { locale } = await params;
   const messages = await getMessages();
   return (
     <html lang={locale} suppressHydrationWarning>
