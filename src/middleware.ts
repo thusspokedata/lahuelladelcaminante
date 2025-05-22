@@ -1,12 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./i18n/routing";
+import { routing } from "./i18n/routing";
 
-const handleI18nRouting = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: "always",
-});
+const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher(["/:locale/dashboard(.*)"]);
 

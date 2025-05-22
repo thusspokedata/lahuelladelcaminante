@@ -8,13 +8,8 @@ import { useTranslations } from "use-intl";
 import { Event } from "@/services/events";
 
 export function HomeClient({ events, locale }: { events: Event[]; locale: string }) {
-  console.log("HomeClient - Locale:", locale);
   const tHome = useTranslations("home");
   const tCommon = useTranslations("common");
-  console.log("HomeClient - Translations:", {
-    upcomingEvents: tHome("upcomingEvents"),
-    viewAll: tCommon("viewAll"),
-  });
   return (
     <div className="container mx-auto px-4">
       {/* Events carousel */}
