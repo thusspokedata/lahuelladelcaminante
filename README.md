@@ -9,6 +9,7 @@ A web platform that showcases and promotes Latin American music events in Berlin
 - 👨‍🎤 Artists: Explore artist profiles with their upcoming events
 - 🔍 Search: Look up specific artists or events
 - 📱 Responsive Design: Optimized for all devices
+- 🌐 Internationalization: Spanish and German supported
 
 ## Tech Stack
 
@@ -26,6 +27,16 @@ A web platform that showcases and promotes Latin American music events in Berlin
   - [Vitest](https://vitest.dev/) - Unit and component testing
   - [Testing Library](https://testing-library.com/) - React component testing
 - **Container**: [Docker](https://www.docker.com/)
+
+## Internationalization (i18n)
+
+This project supports multiple languages. Currently, Spanish (`es`) and German (`de`) are available.
+
+- Translation files are located in the `/messages` directory:
+  - `messages/es.json` (Spanish)
+  - `messages/de.json` (German)
+
+If you want to contribute a new language, feel free to add a new JSON file in the `messages/` folder and submit a pull request!
 
 ## Getting Started
 
@@ -128,13 +139,17 @@ npm run test:coverage
 
 ```
 src/
-├── app/                # Next.js app router pages
+├── app/
+│   └── [locale]/       # Locale-specific routes (i18n)
+│       ├── page.tsx    # Home page per locale
+│       └── ...         # Other locale-specific pages
 ├── components/         # Reusable React components
 ├── lib/                # Utility functions and configurations
 ├── services/           # Data access and business logic layer
 ├── types/              # TypeScript type definitions
 ├── __tests__/          # Test files
 └── generated/          # Generated Prisma client
+messages/               # Translation files for i18n
 prisma/
 ├── migrations/         # Database migrations
 └── schema.prisma       # Database schema
