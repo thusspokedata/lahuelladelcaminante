@@ -7,8 +7,11 @@ import {
   IconBrandTiktok,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+  const t = useTranslations("footer");
+
   // Email obfuscation to prevent spam bots
   const [email, setEmail] = useState("");
 
@@ -25,7 +28,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div>
             <h3 className="text-lg font-semibold">La Huella del Caminante</h3>
-            <p className="text-muted-foreground text-sm">Música argentina en Berlín</p>
+            <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-6">
@@ -66,13 +69,13 @@ export function Footer() {
               aria-label="Send email"
             >
               <IconMail size={20} />
-              <span className="sr-only md:not-sr-only md:text-sm">Contact Us</span>
+              <span className="sr-only md:not-sr-only md:text-sm">{t("contact")}</span>
             </button>
           </div>
         </div>
 
         <div className="text-muted-foreground mt-4 text-center text-xs">
-          © {new Date().getFullYear()} La Huella del Caminante. All rights reserved.
+          © {new Date().getFullYear()} La Huella del Caminante. {t("rights")}
         </div>
       </div>
     </footer>

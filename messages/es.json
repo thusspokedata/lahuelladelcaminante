@@ -71,7 +71,11 @@
     "myArtists": "Mis Artistas",
     "createNew": "Crear Nuevo",
     "pendingApproval": "Cuenta pendiente de aprobación",
-    "pendingMessage": "Tu cuenta está pendiente de revisión por parte de nuestro equipo"
+    "pendingMessage": "Tu cuenta está pendiente de revisión por parte de nuestro equipo",
+    "pendingTitle": "Cuenta Pendiente de Aprobación",
+    "pendingDescription": "Tu cuenta está pendiente de aprobación por un administrador. Podrás acceder al panel de control una vez que tu cuenta haya sido aprobada.",
+    "pendingContactInfo": "Si deseas agilizar el proceso, puedes enviar un correo a",
+    "pendingContactPurpose": "para solicitar la revisión de tu cuenta."
   },
   "footer": {
     "rights": "Todos los derechos reservados",
@@ -81,6 +85,26 @@
     "impressum": "Impressum",
     "followUs": "Síguenos en",
     "subtitle": "Música argentina en Berlín"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "No autorizado",
+      "notFound": "Usuario no encontrado",
+      "errorGettingData": "Error al obtener datos del usuario"
+    },
+    "events": {
+      "notAuthorized": "No autorizado. Debes iniciar sesión para crear eventos.",
+      "userNotFound": "Usuario no encontrado en la base de datos.",
+      "mustBeActive": "Tu cuenta debe estar activa para crear eventos. Estado actual: {status}",
+      "errorCreating": "Error al crear el evento"
+    },
+    "cloudinary": {
+      "unauthorized": "No autorizado",
+      "missingPublicId": "Falta el public_id",
+      "configMissing": "Falta la configuración de Cloudinary",
+      "imageDeleted": "Imagen eliminada correctamente",
+      "failedDelete": "No se pudo eliminar la imagen",
+      "internalError": "Error interno del servidor"
+    }
   }
 }
- 

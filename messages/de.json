@@ -1,86 +1,110 @@
 {
-    "navigation": {
-      "home": "Startseite",
-      "events": "Veranstaltungen",
-      "artists": "Künstler",
-      "signIn": "Anmelden",
-      "signUp": "Registrieren",
-      "dashboard": "Dashboard",
-      "admin": "Admin"
-    },
-    "common": {
-      "loading": "Wird geladen...",
-      "error": "Fehler",
-      "back": "Zurück",
-      "save": "Speichern",
-      "cancel": "Abbrechen",
-      "edit": "Bearbeiten",
-      "delete": "Löschen",
-      "view": "Ansehen",
-      "create": "Erstellen",
-      "submit": "Absenden",
-      "search": "Suchen",
-      "viewAll": "Alle ansehen",
-      "explore": "Erkunden",
-      "pageNotFound": "Seite nicht gefunden",
-      "backToHome": "Zurück zur Startseite"
-    },
-    "home": {
-      "title": "La Huella del Caminante",
-      "subtitle": "Argentinische Musikveranstaltungen in Berlin",
-      "upcomingEvents": "Kommende Veranstaltungen",
-      "upcomingEventsDesc": "Entdecke die kommenden argentinischen Musikshows in Berlin",
-      "artists": "Künstler",
-      "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten"
+  "navigation": {
+    "home": "Startseite",
+    "events": "Veranstaltungen",
+    "artists": "Künstler",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Ansehen",
+    "create": "Erstellen",
+    "submit": "Absenden",
+    "search": "Suchen",
+    "viewAll": "Alle ansehen",
+    "explore": "Erkunden",
+    "pageNotFound": "Seite nicht gefunden",
+    "backToHome": "Zurück zur Startseite"
+  },
+  "home": {
+    "title": "La Huella del Caminante",
+    "subtitle": "Argentinische Musikveranstaltungen in Berlin",
+    "upcomingEvents": "Kommende Veranstaltungen",
+    "upcomingEventsDesc": "Entdecke die kommenden argentinischen Musikshows in Berlin",
+    "artists": "Künstler",
+    "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten"
+  },
+  "events": {
+    "title": "Veranstaltungen",
+    "noEvents": "Keine Veranstaltungen verfügbar",
+    "upcoming": "Kommende Veranstaltungen",
+    "past": "Vergangene Veranstaltungen",
+    "details": "Veranstaltungsdetails",
+    "location": "Ort",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "artist": "Künstler",
+    "description": "Beschreibung",
+    "createEvent": "Veranstaltung erstellen"
+  },
+  "artists": {
+    "title": "Künstler",
+    "noArtists": "Keine Künstler verfügbar",
+    "details": "Künstlerprofil",
+    "bio": "Biografie",
+    "origin": "Herkunft",
+    "genres": "Genres",
+    "createArtist": "Künstler erstellen",
+    "socialMedia": "Soziale Medien"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "forgotPassword": "Passwort vergessen",
+    "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinie und rechtlichen Bedingungen"
+  },
+  "dashboard": {
+    "welcome": "Willkommen in Ihrem Dashboard",
+    "myEvents": "Meine Veranstaltungen",
+    "myArtists": "Meine Künstler",
+    "createNew": "Neu erstellen",
+    "pendingApproval": "Konto wartet auf Genehmigung",
+    "pendingMessage": "Ihr Konto wird derzeit von unserem Team überprüft",
+    "pendingTitle": "Konto wartet auf Genehmigung",
+    "pendingDescription": "Ihr Konto wartet auf Genehmigung durch einen Administrator. Sie können auf das Dashboard zugreifen, sobald Ihr Konto genehmigt wurde.",
+    "pendingContactInfo": "Wenn Sie den Prozess beschleunigen möchten, können Sie eine E-Mail senden an",
+    "pendingContactPurpose": "um die Überprüfung Ihres Kontos anzufordern."
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "contact": "Kontakt",
+    "legal": "Rechtliche Informationen",
+    "privacy": "Datenschutzrichtlinie",
+    "impressum": "Impressum",
+    "followUs": "Folgen Sie uns auf",
+    "subtitle": "Argentinische Musik in Berlin"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "Nicht autorisiert",
+      "notFound": "Benutzer nicht gefunden",
+      "errorGettingData": "Fehler beim Abrufen der Benutzerdaten"
     },
     "events": {
-      "title": "Veranstaltungen",
-      "noEvents": "Keine Veranstaltungen verfügbar",
-      "upcoming": "Kommende Veranstaltungen",
-      "past": "Vergangene Veranstaltungen",
-      "details": "Veranstaltungsdetails",
-      "location": "Ort",
-      "date": "Datum",
-      "time": "Uhrzeit",
-      "artist": "Künstler",
-      "description": "Beschreibung",
-      "createEvent": "Veranstaltung erstellen"
+      "notAuthorized": "Nicht autorisiert. Sie müssen angemeldet sein, um Veranstaltungen zu erstellen.",
+      "userNotFound": "Benutzer in der Datenbank nicht gefunden.",
+      "mustBeActive": "Ihr Konto muss aktiv sein, um Veranstaltungen zu erstellen. Aktueller Status: {status}",
+      "errorCreating": "Fehler beim Erstellen der Veranstaltung"
     },
-    "artists": {
-      "title": "Künstler",
-      "noArtists": "Keine Künstler verfügbar",
-      "details": "Künstlerprofil",
-      "bio": "Biografie",
-      "origin": "Herkunft",
-      "genres": "Genres",
-      "createArtist": "Künstler erstellen",
-      "socialMedia": "Soziale Medien"
-    },
-    "auth": {
-      "login": "Anmelden",
-      "register": "Registrieren",
-      "logout": "Abmelden",
-      "email": "E-Mail",
-      "password": "Passwort",
-      "forgotPassword": "Passwort vergessen",
-      "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinie und rechtlichen Bedingungen"
-    },
-    "dashboard": {
-      "welcome": "Willkommen in Ihrem Dashboard",
-      "myEvents": "Meine Veranstaltungen",
-      "myArtists": "Meine Künstler",
-      "createNew": "Neu erstellen",
-      "pendingApproval": "Konto wartet auf Genehmigung",
-      "pendingMessage": "Ihr Konto wird derzeit von unserem Team überprüft"
-    },
-    "footer": {
-      "rights": "Alle Rechte vorbehalten",
-      "contact": "Kontakt",
-      "legal": "Rechtliche Informationen",
-      "privacy": "Datenschutzrichtlinie",
-      "impressum": "Impressum",
-      "followUs": "Folgen Sie uns auf",
-      "subtitle": "Argentinische Musik in Berlin"
+    "cloudinary": {
+      "unauthorized": "Nicht autorisiert",
+      "missingPublicId": "public_id fehlt",
+      "configMissing": "Cloudinary-Konfiguration fehlt",
+      "imageDeleted": "Bild erfolgreich gelöscht",
+      "failedDelete": "Bild konnte nicht gelöscht werden",
+      "internalError": "Interner Serverfehler"
     }
   }
-  
+}
