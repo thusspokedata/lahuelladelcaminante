@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ArtistFilters } from "@/app/artists/ui/ArtistFilters";
+import { ArtistFilters } from "@/app/[locale]/artists/ui/ArtistFilters";
 import { ReactNode } from "react";
 
 // Mock the Select component since it's difficult to test with jsdom

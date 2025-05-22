@@ -1,13 +1,15 @@
+"use client";
+
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { getAllEvents } from "@/services/events";
 import { HomeEventsCarousel } from "@/components/HomeEventsCarousel";
+import { useTranslations } from "use-intl";
+import { Event } from "@/services/events";
 
-export default async function Home() {
-  // Get events for the carousel
-  const events = await getAllEvents();
-
+export function HomeClient({ events, locale }: { events: Event[]; locale: string }) {
+  const tHome = useTranslations("home");
+  const tCommon = useTranslations("common");
   return (
     <div className="container mx-auto px-4">
       {/* Events carousel */}
@@ -18,26 +20,24 @@ export default async function Home() {
       <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
         <Card className="flex min-h-[200px] flex-col">
           <CardHeader>
-            <CardTitle>Próximos Eventos</CardTitle>
-            <CardDescription>
-              Descubre los próximos shows de música argentina en Berlín
-            </CardDescription>
+            <CardTitle>{tHome("upcomingEvents")}</CardTitle>
+            <CardDescription>{tHome("upcomingEventsDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="mt-auto">
-            <Link href="/events">
-              <Button className="w-full">Ver Todos</Button>
+            <Link href={`/${locale}/events`}>
+              <Button className="w-full">{tCommon("viewAll")}</Button>
             </Link>
           </CardContent>
         </Card>
 
         <Card className="flex min-h-[200px] flex-col">
           <CardHeader>
-            <CardTitle>Artistas</CardTitle>
-            <CardDescription>Conoce a los artistas argentinos que actúan en Berlín</CardDescription>
+            <CardTitle>{tHome("artists")}</CardTitle>
+            <CardDescription>{tHome("artistsDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="mt-auto">
-            <Link href="/artists">
-              <Button className="w-full">Explorar Artistas</Button>
+            <Link href={`/${locale}/artists`}>
+              <Button className="w-full">{tCommon("explore")}</Button>
             </Link>
           </CardContent>
         </Card>

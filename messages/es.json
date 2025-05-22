@@ -1,0 +1,86 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "events": "Eventos",
+    "artists": "Artistas",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "dashboard": "Panel de Control",
+    "admin": "Admin"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "back": "Volver",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "create": "Crear",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "viewAll": "Ver Todos",
+    "explore": "Explorar",
+    "pageNotFound": "Página no encontrada",
+    "backToHome": "Volver al inicio"
+  },
+  "home": {
+    "title": "La Huella del Caminante",
+    "subtitle": "Eventos de música argentina en Berlín",
+    "upcomingEvents": "Próximos Eventos",
+    "upcomingEventsDesc": "Descubre los próximos shows de música argentina en Berlín",
+    "artists": "Artistas",
+    "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín"
+  },
+  "events": {
+    "title": "Eventos",
+    "noEvents": "No hay eventos disponibles",
+    "upcoming": "Próximos Eventos",
+    "past": "Eventos Pasados",
+    "details": "Detalles del Evento",
+    "location": "Ubicación",
+    "date": "Fecha",
+    "time": "Hora",
+    "artist": "Artista",
+    "description": "Descripción",
+    "createEvent": "Crear Evento"
+  },
+  "artists": {
+    "title": "Artistas",
+    "noArtists": "No hay artistas disponibles",
+    "details": "Perfil del Artista",
+    "bio": "Biografía",
+    "origin": "Origen",
+    "genres": "Géneros",
+    "createArtist": "Crear Artista",
+    "socialMedia": "Redes Sociales"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "Olvidé mi Contraseña",
+    "privacyPolicy": "Al registrarte aceptas nuestra política de privacidad y términos legales"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido a tu Panel de Control",
+    "myEvents": "Mis Eventos",
+    "myArtists": "Mis Artistas",
+    "createNew": "Crear Nuevo",
+    "pendingApproval": "Cuenta pendiente de aprobación",
+    "pendingMessage": "Tu cuenta está pendiente de revisión por parte de nuestro equipo"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "contact": "Contacto",
+    "legal": "Información Legal",
+    "privacy": "Política de Privacidad",
+    "impressum": "Impressum",
+    "followUs": "Síguenos en",
+    "subtitle": "Música argentina en Berlín"
+  }
+}
+ 

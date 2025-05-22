@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EventFilters } from "@/app/events/ui/EventFilters";
+import { EventFilters } from "@/app/[locale]/events/ui/EventFilters";
 import { ReactNode } from "react";
 
 // Mock the Select component
