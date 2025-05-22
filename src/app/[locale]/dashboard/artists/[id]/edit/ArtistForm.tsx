@@ -19,7 +19,7 @@ import * as z from "zod";
 import { Artist } from "@/types";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { updateArtist } from "@/app/dashboard/artists/[id]/edit/actions";
+import { updateArtist } from "./actions";
 import CloudinaryUpload from "@/components/ui/cloudinary-upload";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
