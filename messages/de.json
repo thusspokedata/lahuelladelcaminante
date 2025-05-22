@@ -23,6 +23,7 @@
     "viewAll": "Alle ansehen",
     "explore": "Erkunden",
     "pageNotFound": "Seite nicht gefunden",
+    "pageNotFoundMessage": "Die gesuchte Seite existiert nicht.",
     "backToHome": "Zurück zur Startseite"
   },
   "home": {
