@@ -112,17 +112,6 @@ export default async function ArtistsDashboardPage() {
           })
         )}
       </div>
-
-      {artists.length === 0 ? null : (
-        <div className="mt-8">
-          <Button asChild>
-            <Link href="/dashboard/artists/create">
-              <Plus className="mr-2 h-4 w-4" />
-              {t("addArtist")}
-            </Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
