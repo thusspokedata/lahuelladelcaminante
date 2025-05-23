@@ -38,7 +38,10 @@
     "upcomingEvents": "Upcoming Events",
     "upcomingEventsDesc": "Discover upcoming Argentine music shows in Berlin",
     "artists": "Artists",
-    "artistsDesc": "Meet the Argentine artists performing in Berlin"
+    "artistsDesc": "Meet the Argentine artists performing in Berlin",
+    "carousel": {
+      "viewEvent": "View event"
+    }
   },
   "events": {
     "title": "Events",
@@ -61,7 +64,32 @@
     "origin": "Origin",
     "genres": "Genres",
     "createArtist": "Create Artist",
-    "socialMedia": "Social Media"
+    "socialMedia": "Social Media",
+    "client": {
+      "upcomingTitle": "New artists coming soon",
+      "upcomingMessage": "We're preparing profiles of Argentine artists in Berlin. Check back soon to discover talent.",
+      "viewEvents": "View events",
+      "aboutUs": "About us",
+      "artistList": "Artist List",
+      "noArtistsFound": "No artists found",
+      "tryOtherFilters": "Try other filters or remove search restrictions.",
+      "clearFilters": "Clear filters"
+    },
+    "filters": {
+      "title": "Filters",
+      "genre": "Genre",
+      "allGenres": "All genres",
+      "name": "Name",
+      "searchByName": "Search by name...",
+      "clearFilters": "Clear filters",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
   },
   "auth": {
     "login": "Login",
@@ -77,12 +105,21 @@
     "myEvents": "My Events",
     "myArtists": "My Artists",
     "createNew": "Create New",
-    "pendingApproval": "Account pending approval",
-    "pendingMessage": "Your account is being reviewed by our team",
+    "pendingApproval": "Account Pending Approval",
+    "pendingMessage": "Your account is currently being reviewed by our team",
     "pendingTitle": "Account Pending Approval",
-    "pendingDescription": "Your account is pending approval by an administrator. You'll be able to access the dashboard once your account has been approved.",
-    "pendingContactInfo": "If you'd like to expedite the process, you can send an email to",
-    "pendingContactPurpose": "to request review of your account."
+    "pendingDescription": "Your account is pending approval by an administrator. You will be able to access the dashboard once your account has been approved.",
+    "pendingContactInfo": "If you wish to expedite the process, you can send an email to",
+    "pendingContactPurpose": "to request the review of your account.",
+    "events": {
+      "title": "My Events",
+      "create": "Create Event",
+      "noEvents": "You haven't created any events yet.",
+      "viewEvent": "View Event",
+      "editEvent": "Edit",
+      "dateNotAvailable": "Date not available",
+      "noArtist": "No artist assigned"
+    }
   },
   "footer": {
     "rights": "All rights reserved",

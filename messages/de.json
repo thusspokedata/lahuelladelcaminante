@@ -38,7 +38,10 @@
     "upcomingEvents": "Kommende Veranstaltungen",
     "upcomingEventsDesc": "Entdecke die kommenden argentinischen Musikshows in Berlin",
     "artists": "Künstler",
-    "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten"
+    "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten",
+    "carousel": {
+      "viewEvent": "Veranstaltung anzeigen"
+    }
   },
   "events": {
     "title": "Veranstaltungen",
@@ -61,7 +64,32 @@
     "origin": "Herkunft",
     "genres": "Genres",
     "createArtist": "Künstler erstellen",
-    "socialMedia": "Soziale Medien"
+    "socialMedia": "Soziale Medien",
+    "client": {
+      "upcomingTitle": "Neue Künstler kommen bald",
+      "upcomingMessage": "Wir bereiten Profile argentinischer Künstler in Berlin vor. Schauen Sie bald wieder vorbei, um Talente zu entdecken.",
+      "viewEvents": "Veranstaltungen anzeigen",
+      "aboutUs": "Über uns",
+      "artistList": "Künstlerliste",
+      "noArtistsFound": "Keine Künstler gefunden",
+      "tryOtherFilters": "Versuchen Sie andere Filter oder entfernen Sie Sucheinschränkungen.",
+      "clearFilters": "Filter löschen"
+    },
+    "filters": {
+      "title": "Filter",
+      "genre": "Genre",
+      "allGenres": "Alle Genres",
+      "name": "Name",
+      "searchByName": "Nach Namen suchen...",
+      "clearFilters": "Filter löschen",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
   },
   "auth": {
     "login": "Anmelden",
@@ -82,7 +110,16 @@
     "pendingTitle": "Konto wartet auf Genehmigung",
     "pendingDescription": "Ihr Konto wartet auf Genehmigung durch einen Administrator. Sie können auf das Dashboard zugreifen, sobald Ihr Konto genehmigt wurde.",
     "pendingContactInfo": "Wenn Sie den Prozess beschleunigen möchten, können Sie eine E-Mail senden an",
-    "pendingContactPurpose": "um die Überprüfung Ihres Kontos anzufordern."
+    "pendingContactPurpose": "um die Überprüfung Ihres Kontos anzufordern.",
+    "events": {
+      "title": "Meine Veranstaltungen",
+      "create": "Veranstaltung erstellen",
+      "noEvents": "Sie haben noch keine Veranstaltungen erstellt.",
+      "viewEvent": "Veranstaltung anzeigen",
+      "editEvent": "Bearbeiten",
+      "dateNotAvailable": "Datum nicht verfügbar",
+      "noArtist": "Kein Künstler zugewiesen"
+    }
   },
   "footer": {
     "rights": "Alle Rechte vorbehalten",

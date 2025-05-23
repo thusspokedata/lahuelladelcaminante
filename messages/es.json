@@ -38,7 +38,10 @@
     "upcomingEvents": "Próximos Eventos",
     "upcomingEventsDesc": "Descubre los próximos shows de música argentina en Berlín",
     "artists": "Artistas",
-    "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín"
+    "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín",
+    "carousel": {
+      "viewEvent": "Ver evento"
+    }
   },
   "events": {
     "title": "Eventos",
@@ -61,7 +64,32 @@
     "origin": "Origen",
     "genres": "Géneros",
     "createArtist": "Crear Artista",
-    "socialMedia": "Redes Sociales"
+    "socialMedia": "Redes Sociales",
+    "client": {
+      "upcomingTitle": "Próximamente nuevos artistas",
+      "upcomingMessage": "Estamos preparando perfiles de los artistas argentinos en Berlín. Vuelve pronto para descubrir talentos.",
+      "viewEvents": "Ver eventos",
+      "aboutUs": "Sobre nosotros",
+      "artistList": "Lista de Artistas",
+      "noArtistsFound": "No se encontraron artistas",
+      "tryOtherFilters": "Intenta con otros filtros o elimina las restricciones de búsqueda.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "filters": {
+      "title": "Filtros",
+      "genre": "Género",
+      "allGenres": "Todos los géneros",
+      "name": "Nombre",
+      "searchByName": "Buscar por nombre...",
+      "clearFilters": "Limpiar filtros",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -82,7 +110,16 @@
     "pendingTitle": "Cuenta Pendiente de Aprobación",
     "pendingDescription": "Tu cuenta está pendiente de aprobación por un administrador. Podrás acceder al panel de control una vez que tu cuenta haya sido aprobada.",
     "pendingContactInfo": "Si deseas agilizar el proceso, puedes enviar un correo a",
-    "pendingContactPurpose": "para solicitar la revisión de tu cuenta."
+    "pendingContactPurpose": "para solicitar la revisión de tu cuenta.",
+    "events": {
+      "title": "Mis Eventos",
+      "create": "Crear Evento",
+      "noEvents": "No has creado ningún evento todavía.",
+      "viewEvent": "Ver Evento",
+      "editEvent": "Editar",
+      "dateNotAvailable": "Fecha no disponible",
+      "noArtist": "Sin artista asignado"
+    }
   },
   "footer": {
     "rights": "Todos los derechos reservados",

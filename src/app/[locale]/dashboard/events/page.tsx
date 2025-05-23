@@ -13,13 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Plus, Calendar, MapPin, Clock } from "lucide-react";
 import { getEventsByUser } from "@/services/events";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, de, enUS } from "date-fns/locale";
 import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
+import { getTranslations } from "next-intl/server";
 
-export default async function EventsDashboardPage() {
+export default async function EventsDashboardPage({ params }: { params: { locale: string } }) {
   const authResult = await auth();
   const userId = authResult.userId;
+  const t = await getTranslations("dashboard.events");
 
   if (!userId) {
     redirect("/sign-in");
@@ -27,14 +29,22 @@ export default async function EventsDashboardPage() {
 
   const events = await getEventsByUser(userId);
 
+  // Set date locale based on current language
+  const dateLocale =
+    {
+      es,
+      de,
+      en: enUS,
+    }[params.locale] || es;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-6">
-        <h1 className="text-2xl font-bold">Mis Eventos</h1>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Button asChild>
-          <Link href="/dashboard/events/create">
+          <Link href={`/${params.locale}/dashboard/events/create`}>
             <Plus className="mr-2 h-4 w-4" />
-            Crear Evento
+            {t("create")}
           </Link>
         </Button>
       </div>
@@ -43,13 +53,11 @@ export default async function EventsDashboardPage() {
         {events.length === 0 ? (
           <Card className="col-span-full">
             <CardContent className="flex flex-col items-center justify-center px-8 py-12">
-              <p className="text-muted-foreground mb-4 text-center">
-                No has creado ningún evento todavía.
-              </p>
+              <p className="text-muted-foreground mb-4 text-center">{t("noEvents")}</p>
               <Button asChild>
-                <Link href="/dashboard/events/create">
+                <Link href={`/${params.locale}/dashboard/events/create`}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Crear Evento
+                  {t("create")}
                 </Link>
               </Button>
             </CardContent>
@@ -62,8 +70,16 @@ export default async function EventsDashboardPage() {
             // Format the first date for display
             const formattedDate =
               event.dates && event.dates.length > 0
-                ? format(new Date(event.dates[0].date), "d 'de' MMMM, yyyy", { locale: es })
-                : "Fecha no disponible";
+                ? format(
+                    new Date(event.dates[0].date),
+                    params.locale === "es"
+                      ? "d 'de' MMMM, yyyy"
+                      : params.locale === "de"
+                        ? "d. MMMM yyyy"
+                        : "MMMM d, yyyy",
+                    { locale: dateLocale }
+                  )
+                : t("dateNotAvailable");
 
             return (
               <Card key={event.id} className="overflow-hidden">
@@ -87,7 +103,7 @@ export default async function EventsDashboardPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xl">{event.title}</CardTitle>
                   <CardDescription>
-                    {event.artist ? event.artist.name : "Sin artista asignado"}
+                    {event.artist ? event.artist.name : t("noArtist")}
                   </CardDescription>
                 </CardHeader>
 
@@ -108,14 +124,14 @@ export default async function EventsDashboardPage() {
 
                 <CardFooter className="flex justify-between pt-2">
                   <Button variant="outline" asChild>
-                    <Link href={`/events/${event.slug}`} target="_blank">
-                      Ver Evento
+                    <Link href={`/${params.locale}/events/${event.slug}`} target="_blank">
+                      {t("viewEvent")}
                     </Link>
                   </Button>
                   <Button variant="default" asChild>
-                    <Link href={`/dashboard/events/create?eventId=${event.id}`}>
+                    <Link href={`/${params.locale}/dashboard/events/create?eventId=${event.id}`}>
                       <Pencil className="mr-2 h-4 w-4" />
-                      Editar
+                      {t("editEvent")}
                     </Link>
                   </Button>
                 </CardFooter>
