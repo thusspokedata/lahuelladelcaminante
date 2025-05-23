@@ -1,0 +1,237 @@
+{
+  "navigation": {
+    "home": "Home",
+    "events": "Events",
+    "artists": "Artists",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "create": "Create",
+    "submit": "Submit",
+    "search": "Search",
+    "viewAll": "View All",
+    "explore": "Explore",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist.",
+    "backToHome": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "Sorry, we couldn't find the page you're looking for. The page might have been moved or deleted.",
+    "homeButton": "Go back home",
+    "backButton": "Go back"
+  },
+  "home": {
+    "title": "La Huella del Caminante",
+    "subtitle": "Argentine music events in Berlin",
+    "upcomingEvents": "Upcoming Events",
+    "upcomingEventsDesc": "Discover upcoming Argentine music shows in Berlin",
+    "artists": "Artists",
+    "artistsDesc": "Meet the Argentine artists performing in Berlin",
+    "carousel": {
+      "viewEvent": "View event"
+    }
+  },
+  "events": {
+    "title": "Events",
+    "noEvents": "No events available",
+    "upcoming": "Upcoming Argentine music shows in Berlin",
+    "past": "Past Events",
+    "details": "Event Details",
+    "location": "Location",
+    "date": "Date",
+    "time": "Time",
+    "artist": "Artist",
+    "description": "Description",
+    "createEvent": "Create Event",
+    "card": {
+      "organizedBy": "Organized by",
+      "genre": "Genre",
+      "location": "Location",
+      "time": "Time",
+      "price": "Price",
+      "viewDetails": "View Details"
+    },
+    "client": {
+      "upcomingMessage": "We're preparing upcoming Argentine music events in Berlin. Check back soon to discover new dates and artists.",
+      "viewArtists": "View artists",
+      "aboutUs": "About us",
+      "noEventsFound": "No events found with the selected filters",
+      "clearFilters": "Clear filters"
+    },
+    "filters": {
+      "title": "Filters",
+      "date": "Date",
+      "genre": "Genre",
+      "artist": "Artist",
+      "organizer": "Organizer",
+      "selectGenre": "Select genre",
+      "selectOrganizer": "Select organizer",
+      "searchArtist": "Search artist...",
+      "allGenres": "All genres",
+      "allOrganizers": "All organizers",
+      "applyFilters": "Apply filters",
+      "showAll": "Show all",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Electronic"
+      }
+    },
+    "eventDetail": {
+      "notFound": "Event not found",
+      "notFoundDesc": "We couldn't find the event you're looking for.",
+      "viewAll": "View all events",
+      "backToEvents": "Back to events",
+      "about": "About this event",
+      "noDescription": "No description available for this event.",
+      "gallery": "Gallery",
+      "detailsTitle": "Details",
+      "dates": "Dates",
+      "time": "Time",
+      "location": "Location",
+      "price": "Price",
+      "aboutArtist": "About the artist",
+      "viewFullProfile": "View full profile"
+    }
+  },
+  "artists": {
+    "title": "Artists",
+    "noArtists": "No artists available",
+    "details": "Artist Profile",
+    "bio": "Biography",
+    "origin": "Origin",
+    "genres": "Genres",
+    "createArtist": "Create Artist",
+    "socialMedia": "Social Media",
+    "client": {
+      "upcomingTitle": "New artists coming soon",
+      "upcomingMessage": "We're preparing profiles of Argentine artists in Berlin. Check back soon to discover talent.",
+      "viewEvents": "View events",
+      "aboutUs": "About us",
+      "artistList": "Artist List",
+      "noArtistsFound": "No artists found",
+      "tryOtherFilters": "Try other filters or remove search restrictions.",
+      "clearFilters": "Clear filters"
+    },
+    "filters": {
+      "title": "Filters",
+      "genre": "Genre",
+      "allGenres": "All genres",
+      "name": "Name",
+      "searchByName": "Search by name...",
+      "clearFilters": "Clear filters",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password",
+    "privacyPolicy": "By registering, you accept our privacy policy and legal terms"
+  },
+  "dashboard": {
+    "welcome": "Welcome to your Dashboard",
+    "myEvents": "My Events",
+    "myArtists": "My Artists",
+    "createNew": "Create New",
+    "pendingApproval": "Account Pending Approval",
+    "pendingMessage": "Your account is currently being reviewed by our team",
+    "pendingTitle": "Account Pending Approval",
+    "pendingDescription": "Your account is pending approval by an administrator. You will be able to access the dashboard once your account has been approved.",
+    "pendingContactInfo": "If you wish to expedite the process, you can send an email to",
+    "pendingContactPurpose": "to request the review of your account.",
+    "events": {
+      "title": "My Events",
+      "create": "Create Event",
+      "noEvents": "You haven't created any events yet.",
+      "viewEvent": "View Event",
+      "editEvent": "Edit",
+      "dateNotAvailable": "Date not available",
+      "noArtist": "No artist assigned"
+    },
+    "mainPage": {
+      "title": "Dashboard",
+      "logout": "Logout",
+      "userInfo": "User Information",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "registerDate": "Registration date",
+      "notSpecified": "Not specified",
+      "administration": "Administration",
+      "userManagement": "User Management",
+      "userManagementDesc": "Approve, block and assign roles to users",
+      "eventsManagement": "Events",
+      "eventsManagementDesc": "Manage and approve events",
+      "artistManagement": "Artist Management",
+      "artistProfile": "Artist Profile",
+      "artistProfileDesc": "Manage your artist profile",
+      "myEvents": "My Events",
+      "myEventsDesc": "Manage your events",
+      "events": "Events",
+      "createEvent": "Create Event",
+      "viewManageEvents": "View and manage your events",
+      "artists": "Artists",
+      "addArtist": "Add Artist",
+      "myArtists": "My Artists",
+      "myArtistsDesc": "View and manage your artist profiles",
+      "account": "My Account",
+      "settings": "Settings",
+      "settingsDesc": "Manage account preferences"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "contact": "Contact",
+    "legal": "Legal Information",
+    "privacy": "Privacy Policy",
+    "impressum": "Impressum",
+    "followUs": "Follow us on",
+    "subtitle": "Argentine music in Berlin"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "Not authorized",
+      "notFound": "User not found",
+      "errorGettingData": "Error retrieving user data"
+    },
+    "events": {
+      "notAuthorized": "Not authorized. You must be signed in to create events.",
+      "userNotFound": "User not found in database.",
+      "mustBeActive": "Your account must be active to create events. Current status: {status}",
+      "errorCreating": "Error creating event"
+    },
+    "cloudinary": {
+      "unauthorized": "Not authorized",
+      "missingPublicId": "Missing public_id",
+      "configMissing": "Cloudinary configuration missing",
+      "imageDeleted": "Image successfully deleted",
+      "failedDelete": "Failed to delete image",
+      "internalError": "Internal server error"
+    }
+  }
+}

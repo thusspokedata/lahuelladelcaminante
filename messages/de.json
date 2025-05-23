@@ -1,86 +1,237 @@
 {
-    "navigation": {
-      "home": "Startseite",
+  "navigation": {
+    "home": "Startseite",
+    "events": "Veranstaltungen",
+    "artists": "Künstler",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Ansehen",
+    "create": "Erstellen",
+    "submit": "Absenden",
+    "search": "Suchen",
+    "viewAll": "Alle anzeigen",
+    "explore": "Erkunden",
+    "pageNotFound": "Seite nicht gefunden",
+    "pageNotFoundMessage": "Die gesuchte Seite existiert nicht.",
+    "backToHome": "Zurück zur Startseite"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "message": "Entschuldigung, wir konnten die gesuchte Seite nicht finden. Die Seite wurde möglicherweise verschoben oder gelöscht.",
+    "homeButton": "Zurück zur Startseite",
+    "backButton": "Zurück gehen"
+  },
+  "home": {
+    "title": "La Huella del Caminante",
+    "subtitle": "Argentinische Musikveranstaltungen in Berlin",
+    "upcomingEvents": "Kommende Veranstaltungen",
+    "upcomingEventsDesc": "Entdecken Sie kommende argentinische Musikshows in Berlin",
+    "artists": "Künstler",
+    "artistsDesc": "Lernen Sie die argentinischen Künstler kennen, die in Berlin auftreten",
+    "carousel": {
+      "viewEvent": "Veranstaltung ansehen"
+    }
+  },
+  "events": {
+    "title": "Veranstaltungen",
+    "noEvents": "Keine Veranstaltungen verfügbar",
+    "upcoming": "Kommende argentinische Musikshows in Berlin",
+    "past": "Vergangene Veranstaltungen",
+    "details": "Veranstaltungsdetails",
+    "location": "Ort",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "artist": "Künstler",
+    "description": "Beschreibung",
+    "createEvent": "Veranstaltung erstellen",
+    "card": {
+      "organizedBy": "Organisiert von",
+      "genre": "Genre",
+      "location": "Ort",
+      "time": "Uhrzeit",
+      "price": "Preis",
+      "viewDetails": "Details ansehen"
+    },
+    "client": {
+      "upcomingMessage": "Wir bereiten kommende argentinische Musikveranstaltungen in Berlin vor. Schauen Sie bald wieder vorbei, um neue Termine und Künstler zu entdecken.",
+      "viewArtists": "Künstler ansehen",
+      "aboutUs": "Über uns",
+      "noEventsFound": "Keine Veranstaltungen mit den ausgewählten Filtern gefunden",
+      "clearFilters": "Filter löschen"
+    },
+    "filters": {
+      "title": "Filter",
+      "date": "Datum",
+      "genre": "Genre",
+      "artist": "Künstler",
+      "organizer": "Veranstalter",
+      "selectGenre": "Genre auswählen",
+      "selectOrganizer": "Veranstalter auswählen",
+      "searchArtist": "Künstler suchen...",
+      "allGenres": "Alle Genres",
+      "allOrganizers": "Alle Veranstalter",
+      "applyFilters": "Filter anwenden",
+      "showAll": "Alle anzeigen",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Elektronische Musik"
+      }
+    },
+    "eventDetail": {
+      "notFound": "Veranstaltung nicht gefunden",
+      "notFoundDesc": "Wir konnten die gesuchte Veranstaltung nicht finden.",
+      "viewAll": "Alle Veranstaltungen ansehen",
+      "backToEvents": "Zurück zu Veranstaltungen",
+      "about": "Über diese Veranstaltung",
+      "noDescription": "Keine Beschreibung für diese Veranstaltung verfügbar.",
+      "gallery": "Galerie",
+      "detailsTitle": "Details",
+      "dates": "Termine",
+      "time": "Uhrzeit",
+      "location": "Ort",
+      "price": "Preis",
+      "aboutArtist": "Über den Künstler",
+      "viewFullProfile": "Vollständiges Profil ansehen"
+    }
+  },
+  "artists": {
+    "title": "Künstler",
+    "noArtists": "Keine Künstler verfügbar",
+    "details": "Künstlerprofil",
+    "bio": "Biografie",
+    "origin": "Herkunft",
+    "genres": "Genres",
+    "createArtist": "Künstler erstellen",
+    "socialMedia": "Soziale Medien",
+    "client": {
+      "upcomingTitle": "Neue Künstler kommen bald",
+      "upcomingMessage": "Wir erstellen Profile argentinischer Künstler in Berlin. Schauen Sie bald wieder vorbei, um Talente zu entdecken.",
+      "viewEvents": "Veranstaltungen ansehen",
+      "aboutUs": "Über uns",
+      "artistList": "Künstlerliste",
+      "noArtistsFound": "Keine Künstler gefunden",
+      "tryOtherFilters": "Versuchen Sie andere Filter oder entfernen Sie Sucheinschränkungen.",
+      "clearFilters": "Filter löschen"
+    },
+    "filters": {
+      "title": "Filter",
+      "genre": "Genre",
+      "allGenres": "Alle Genres",
+      "name": "Name",
+      "searchByName": "Nach Namen suchen...",
+      "clearFilters": "Filter löschen",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "forgotPassword": "Passwort vergessen",
+    "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinien und rechtlichen Bedingungen"
+  },
+  "dashboard": {
+    "welcome": "Willkommen in Ihrem Dashboard",
+    "myEvents": "Meine Veranstaltungen",
+    "myArtists": "Meine Künstler",
+    "createNew": "Neu erstellen",
+    "pendingApproval": "Konto wartet auf Genehmigung",
+    "pendingMessage": "Ihr Konto wird derzeit von unserem Team überprüft",
+    "pendingTitle": "Konto wartet auf Genehmigung",
+    "pendingDescription": "Ihr Konto wartet auf Genehmigung durch einen Administrator. Sie können auf das Dashboard zugreifen, sobald Ihr Konto genehmigt wurde.",
+    "pendingContactInfo": "Wenn Sie den Prozess beschleunigen möchten, können Sie eine E-Mail an",
+    "pendingContactPurpose": "senden, um die Überprüfung Ihres Kontos anzufordern.",
+    "events": {
+      "title": "Meine Veranstaltungen",
+      "create": "Veranstaltung erstellen",
+      "noEvents": "Sie haben noch keine Veranstaltungen erstellt.",
+      "viewEvent": "Veranstaltung ansehen",
+      "editEvent": "Bearbeiten",
+      "dateNotAvailable": "Datum nicht verfügbar",
+      "noArtist": "Kein Künstler zugewiesen"
+    },
+    "mainPage": {
+      "title": "Dashboard",
+      "logout": "Abmelden",
+      "userInfo": "Benutzerinformationen",
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "status": "Status",
+      "registerDate": "Registrierungsdatum",
+      "notSpecified": "Nicht angegeben",
+      "administration": "Administration",
+      "userManagement": "Benutzerverwaltung",
+      "userManagementDesc": "Benutzer genehmigen, sperren und Rollen zuweisen",
+      "eventsManagement": "Veranstaltungen",
+      "eventsManagementDesc": "Veranstaltungen verwalten und genehmigen",
+      "artistManagement": "Künstlerverwaltung",
+      "artistProfile": "Künstlerprofil",
+      "artistProfileDesc": "Verwalten Sie Ihr Künstlerprofil",
+      "myEvents": "Meine Veranstaltungen",
+      "myEventsDesc": "Verwalten Sie Ihre Veranstaltungen",
       "events": "Veranstaltungen",
+      "createEvent": "Veranstaltung erstellen",
+      "viewManageEvents": "Ihre Veranstaltungen ansehen und verwalten",
       "artists": "Künstler",
-      "signIn": "Anmelden",
-      "signUp": "Registrieren",
-      "dashboard": "Dashboard",
-      "admin": "Admin"
-    },
-    "common": {
-      "loading": "Wird geladen...",
-      "error": "Fehler",
-      "back": "Zurück",
-      "save": "Speichern",
-      "cancel": "Abbrechen",
-      "edit": "Bearbeiten",
-      "delete": "Löschen",
-      "view": "Ansehen",
-      "create": "Erstellen",
-      "submit": "Absenden",
-      "search": "Suchen",
-      "viewAll": "Alle ansehen",
-      "explore": "Erkunden",
-      "pageNotFound": "Seite nicht gefunden",
-      "backToHome": "Zurück zur Startseite"
-    },
-    "home": {
-      "title": "La Huella del Caminante",
-      "subtitle": "Argentinische Musikveranstaltungen in Berlin",
-      "upcomingEvents": "Kommende Veranstaltungen",
-      "upcomingEventsDesc": "Entdecke die kommenden argentinischen Musikshows in Berlin",
-      "artists": "Künstler",
-      "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten"
+      "addArtist": "Künstler hinzufügen",
+      "myArtists": "Meine Künstler",
+      "myArtistsDesc": "Ihre Künstlerprofile ansehen und verwalten",
+      "account": "Mein Konto",
+      "settings": "Einstellungen",
+      "settingsDesc": "Kontoeinstellungen verwalten"
+    }
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "contact": "Kontakt",
+    "legal": "Rechtliche Informationen",
+    "privacy": "Datenschutzrichtlinie",
+    "impressum": "Impressum",
+    "followUs": "Folgen Sie uns auf",
+    "subtitle": "Argentinische Musik in Berlin"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "Nicht autorisiert",
+      "notFound": "Benutzer nicht gefunden",
+      "errorGettingData": "Fehler beim Abrufen von Benutzerdaten"
     },
     "events": {
-      "title": "Veranstaltungen",
-      "noEvents": "Keine Veranstaltungen verfügbar",
-      "upcoming": "Kommende Veranstaltungen",
-      "past": "Vergangene Veranstaltungen",
-      "details": "Veranstaltungsdetails",
-      "location": "Ort",
-      "date": "Datum",
-      "time": "Uhrzeit",
-      "artist": "Künstler",
-      "description": "Beschreibung",
-      "createEvent": "Veranstaltung erstellen"
+      "notAuthorized": "Nicht autorisiert. Sie müssen angemeldet sein, um Veranstaltungen zu erstellen.",
+      "userNotFound": "Benutzer nicht in der Datenbank gefunden.",
+      "mustBeActive": "Ihr Konto muss aktiv sein, um Veranstaltungen zu erstellen. Aktueller Status: {status}",
+      "errorCreating": "Fehler beim Erstellen der Veranstaltung"
     },
-    "artists": {
-      "title": "Künstler",
-      "noArtists": "Keine Künstler verfügbar",
-      "details": "Künstlerprofil",
-      "bio": "Biografie",
-      "origin": "Herkunft",
-      "genres": "Genres",
-      "createArtist": "Künstler erstellen",
-      "socialMedia": "Soziale Medien"
-    },
-    "auth": {
-      "login": "Anmelden",
-      "register": "Registrieren",
-      "logout": "Abmelden",
-      "email": "E-Mail",
-      "password": "Passwort",
-      "forgotPassword": "Passwort vergessen",
-      "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinie und rechtlichen Bedingungen"
-    },
-    "dashboard": {
-      "welcome": "Willkommen in Ihrem Dashboard",
-      "myEvents": "Meine Veranstaltungen",
-      "myArtists": "Meine Künstler",
-      "createNew": "Neu erstellen",
-      "pendingApproval": "Konto wartet auf Genehmigung",
-      "pendingMessage": "Ihr Konto wird derzeit von unserem Team überprüft"
-    },
-    "footer": {
-      "rights": "Alle Rechte vorbehalten",
-      "contact": "Kontakt",
-      "legal": "Rechtliche Informationen",
-      "privacy": "Datenschutzrichtlinie",
-      "impressum": "Impressum",
-      "followUs": "Folgen Sie uns auf",
-      "subtitle": "Argentinische Musik in Berlin"
+    "cloudinary": {
+      "unauthorized": "Nicht autorisiert",
+      "missingPublicId": "Fehlende public_id",
+      "configMissing": "Cloudinary-Konfiguration fehlt",
+      "imageDeleted": "Bild erfolgreich gelöscht",
+      "failedDelete": "Bild konnte nicht gelöscht werden",
+      "internalError": "Interner Serverfehler"
     }
   }
-  
+}

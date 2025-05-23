@@ -57,7 +57,7 @@ export default async function RootLayout({ children, params }: Props) {
                   <div className="flex gap-4">
                     <SignedOut>
                       <Link href="/sign-in">
-                        <Button variant="outline">Iniciar Sesión</Button>
+                        <Button variant="outline">{t("signIn")}</Button>
                       </Link>
                       <Link href="/sign-up">
                         <Button>{t("signUp")}</Button>

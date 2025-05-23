@@ -13,9 +13,10 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { formatDateWithWeekday } from "@/lib/utils";
 import { Event } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
+import { useTranslations, useLocale } from "next-intl";
+import { useLocalizedDate } from "@/hooks/useLocalizedDate";
 
 interface HomeEventsCarouselProps {
   events: Event[];
@@ -25,6 +26,9 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const t = useTranslations("home.carousel");
+  const locale = useLocale();
+  const { format: formatDate } = useLocalizedDate();
 
   // Autoplay plugin configuration - slower transition for fullscreen view
   const autoplayPlugin = Autoplay({ delay: 8000, stopOnInteraction: true });
@@ -79,7 +83,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
         <CarouselContent className="h-[450px] sm:h-[550px] md:h-[650px] lg:h-[750px] xl:h-[85vh]">
           {upcomingEvents.map((event, index) => (
             <CarouselItem key={`${event.id}-${index}`} className="basis-full pl-0">
-              <Link href={`/events/${event.slug}`} className="block h-full">
+              <Link href={`/${locale}/events/${event.slug}`} className="block h-full">
                 <div className="relative h-full w-full overflow-hidden">
                   {/* Image as background */}
                   {event.images && event.images.length > 0 ? (
@@ -109,7 +113,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
                           <div className="flex items-center gap-2">
                             <Calendar className="h-5 w-5 lg:h-6 lg:w-6" />
                             <span className="text-base md:text-lg lg:text-xl">
-                              {formatDateWithWeekday(event.date)}
+                              {formatDate(String(event.date))}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -126,9 +130,9 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
                         <div className="mt-6">
                           <Button
                             variant="outline"
-                            className="group h-auto border-white bg-transparent px-6 py-4 hover:text-blue-300 text-base font-medium text-white hover:border-white hover:bg-transparent md:text-lg"
+                            className="group h-auto border-white bg-transparent px-6 py-4 text-base font-medium text-white hover:border-white hover:bg-transparent hover:text-blue-300 md:text-lg"
                           >
-                            Ver evento
+                            {t("viewEvent")}
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 md:h-5 md:w-5" />
                           </Button>
                         </div>
@@ -142,11 +146,11 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
         </CarouselContent>
 
         {/* Custom navigation arrows - positioned at sides */}
-        <CarouselPrevious className="absolute border-0 top-1/2 left-4 z-10 h-12 w-12 -translate-y-1/2 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
-        <CarouselNext className="absolute border-0 top-1/2 right-4 z-10 h-12 w-12 -translate-y-1/2 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
-        
+        <CarouselPrevious className="absolute top-1/2 left-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+        <CarouselNext className="absolute top-1/2 right-4 z-10 h-12 w-12 -translate-y-1/2 border-0 bg-transparent text-white hover:bg-transparent hover:text-white/80 md:h-16 md:w-16" />
+
         {/* Indicators - now moved inside the carousel */}
-        <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center gap-3">
+        <div className="absolute right-0 bottom-6 left-0 z-10 flex justify-center gap-3">
           {count > 0 &&
             Array.from({ length: count }).map((_, i) => (
               <Button

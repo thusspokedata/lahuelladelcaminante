@@ -1,8 +1,10 @@
 import { SignOutButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function UserPendingPage() {
+  const t = useTranslations("common");
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
       <div className="max-w-md space-y-6">
@@ -25,7 +27,7 @@ export default function UserPendingPage() {
           <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
             <Link href="/">
               <Button variant="outline" className="w-full sm:w-auto">
-                Volver al inicio
+                {t("backToHome")}
               </Button>
             </Link>
             <SignOutButton>

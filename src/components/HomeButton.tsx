@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function HomeButton() {
+  const t = useTranslations("common");
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -14,7 +16,7 @@ export function HomeButton() {
 
   return (
     <Link href="/">
-      <Button variant="outline">Volver al Inicio</Button>
+      <Button variant="outline">{t("backToHome")}</Button>
     </Link>
   );
 }

@@ -14,20 +14,33 @@ import {
 } from "lucide-react";
 import { formatDateWithWeekday } from "@/lib/utils";
 import { generateEntityMetadata } from "@/lib/metadata";
+import { getTranslations } from "next-intl/server";
 
 export const revalidate = 3600; // Revalidate at most every hour
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}) {
   return generateEntityMetadata("event", params, {
     title: "Evento | La Huella del Caminante",
     description: "Evento de música argentina en Berlín",
   });
 }
 
-export default async function EventDetails({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EventDetails({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}) {
   // Await params to access its properties
   const resolvedParams = await params;
   const eventSlug = resolvedParams.slug;
+  const locale = resolvedParams.locale;
+
+  // Get translations
+  const t = await getTranslations({ locale, namespace: "events.eventDetail" });
 
   console.log("Looking for event with slug:", eventSlug);
 
@@ -50,10 +63,10 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="mb-4 text-2xl font-bold">Evento no encontrado</h1>
-          <p className="mb-6">No pudimos encontrar el evento que estás buscando.</p>
-          <Link href="/events">
-            <Button>Ver todos los eventos</Button>
+          <h1 className="mb-4 text-2xl font-bold">{t("notFound")}</h1>
+          <p className="mb-6">{t("notFoundDesc")}</p>
+          <Link href={`/${locale}/events`}>
+            <Button>{t("viewAll")}</Button>
           </Link>
         </div>
       </div>
@@ -63,11 +76,11 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
   return (
     <div className="container mx-auto px-4 py-8">
       <Link
-        href="/events"
+        href={`/${locale}/events`}
         className="text-muted-foreground hover:text-foreground mb-4 flex items-center"
       >
         <ArrowLeftIcon className="mr-2 h-4 w-4" />
-        Volver a eventos
+        {t("backToEvents")}
       </Link>
 
       <div className="grid gap-8 md:grid-cols-[2fr_1fr]">
@@ -98,12 +111,10 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
           {/* Event Description */}
           <Card>
             <CardHeader>
-              <CardTitle>Sobre este evento</CardTitle>
+              <CardTitle>{t("about")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="whitespace-pre-line">
-                {event.description || "No hay descripción disponible para este evento."}
-              </p>
+              <p className="whitespace-pre-line">{event.description || t("noDescription")}</p>
             </CardContent>
           </Card>
 
@@ -111,7 +122,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
           {event.images && event.images.length > 1 && (
             <Card>
               <CardHeader>
-                <CardTitle>Galería</CardTitle>
+                <CardTitle>{t("gallery")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -137,17 +148,17 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
           {/* Event Details */}
           <Card>
             <CardHeader>
-              <CardTitle>Detalles</CardTitle>
+              <CardTitle>{t("detailsTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Date */}
               <div className="flex items-start">
                 <CalendarIcon className="text-muted-foreground mt-0.5 mr-3 h-5 w-5" />
                 <div>
-                  <p className="font-medium">Fechas</p>
+                  <p className="font-medium">{t("dates")}</p>
                   <ul className="text-muted-foreground">
                     {event.dates.map((d, idx) => (
-                      <li key={idx}>{formatDateWithWeekday(d.date)}</li>
+                      <li key={idx}>{formatDateWithWeekday(d.date, locale)}</li>
                     ))}
                   </ul>
                 </div>
@@ -157,7 +168,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
               <div className="flex items-start">
                 <ClockIcon className="text-muted-foreground mt-0.5 mr-3 h-5 w-5" />
                 <div>
-                  <p className="font-medium">Hora</p>
+                  <p className="font-medium">{t("time")}</p>
                   <p className="text-muted-foreground">{event.time}</p>
                 </div>
               </div>
@@ -166,7 +177,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
               <div className="flex items-start">
                 <MapPinIcon className="text-muted-foreground mt-0.5 mr-3 h-5 w-5" />
                 <div>
-                  <p className="font-medium">Lugar</p>
+                  <p className="font-medium">{t("location")}</p>
                   <p className="text-muted-foreground">{event.location}</p>
                 </div>
               </div>
@@ -176,7 +187,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
                 <div className="flex items-start">
                   <TicketIcon className="text-muted-foreground mt-0.5 mr-3 h-5 w-5" />
                   <div>
-                    <p className="font-medium">Precio</p>
+                    <p className="font-medium">{t("price")}</p>
                     <p className="text-muted-foreground">€{event.price}</p>
                   </div>
                 </div>
@@ -188,7 +199,7 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
           {artist && (
             <Card>
               <CardHeader>
-                <CardTitle>Acerca del artista</CardTitle>
+                <CardTitle>{t("aboutArtist")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -213,9 +224,9 @@ export default async function EventDetails({ params }: { params: Promise<{ slug:
                   </div>
                 </div>
                 <p className="line-clamp-4 text-sm">{artist.bio}</p>
-                <Link href={`/artists/${artist.slug}`}>
+                <Link href={`/${locale}/artists/${artist.slug}`}>
                   <Button variant="outline" className="w-full">
-                    Ver perfil completo
+                    {t("viewFullProfile")}
                   </Button>
                 </Link>
               </CardContent>

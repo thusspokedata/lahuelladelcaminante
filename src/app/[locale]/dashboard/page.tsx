@@ -3,8 +3,12 @@ import { SignOutButton } from "@clerk/nextjs";
 import { getCurrentUser } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Get translator for server-side text
+  const t = await getTranslations({ locale, namespace: "dashboard.mainPage" });
   // Get the current user with information from our DB
   const user = await getCurrentUser();
 
@@ -22,38 +26,38 @@ export default async function DashboardPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Panel de Control</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <SignOutButton>
-          <Button variant="outline">Cerrar sesión</Button>
+          <Button variant="outline">{t("logout")}</Button>
         </SignOutButton>
       </div>
 
       <div className="mb-6 rounded-lg border p-6">
-        <h2 className="mb-4 text-xl font-semibold">Información del Usuario</h2>
+        <h2 className="mb-4 text-xl font-semibold">{t("userInfo")}</h2>
         <dl className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Nombre</dt>
+            <dt className="text-sm font-medium text-gray-500">{t("name")}</dt>
             <dd className="text-base">
               {user.firstName && user.lastName
                 ? `${user.firstName} ${user.lastName}`
-                : "No especificado"}
+                : t("notSpecified")}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Email</dt>
+            <dt className="text-sm font-medium text-gray-500">{t("email")}</dt>
             <dd className="text-base">{user.email}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Rol</dt>
+            <dt className="text-sm font-medium text-gray-500">{t("role")}</dt>
             <dd className="text-base capitalize">{user.role.toLowerCase()}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Estado</dt>
+            <dt className="text-sm font-medium text-gray-500">{t("status")}</dt>
             <dd className="text-base capitalize">{user.status.toLowerCase()}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Fecha de registro</dt>
-            <dd className="text-base">{user.createdAt.toLocaleDateString()}</dd>
+            <dt className="text-sm font-medium text-gray-500">{t("registerDate")}</dt>
+            <dd className="text-base">{user.createdAt.toLocaleDateString(locale)}</dd>
           </div>
         </dl>
       </div>
@@ -62,23 +66,21 @@ export default async function DashboardPage() {
       <div className="space-y-4">
         {user.role === "ADMIN" && (
           <div className="rounded-lg border p-6">
-            <h2 className="mb-4 text-xl font-semibold">Administración</h2>
+            <h2 className="mb-4 text-xl font-semibold">{t("administration")}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Link href="/admin/users">
+              <Link href={`/${locale}/admin/users`}>
                 <Button variant="outline" className="h-24 w-full justify-start p-4">
                   <div className="text-left">
-                    <div className="font-medium">Gestión de Usuarios</div>
-                    <div className="mt-1 text-sm text-gray-500">
-                      Aprobar, bloquear y asignar roles a usuarios
-                    </div>
+                    <div className="font-medium">{t("userManagement")}</div>
+                    <div className="mt-1 text-sm text-gray-500">{t("userManagementDesc")}</div>
                   </div>
                 </Button>
               </Link>
-              <Link href="/admin/events">
+              <Link href={`/${locale}/admin/events`}>
                 <Button variant="outline" className="h-24 w-full justify-start p-4">
                   <div className="text-left">
-                    <div className="font-medium">Eventos</div>
-                    <div className="mt-1 text-sm text-gray-500">Gestionar y aprobar eventos</div>
+                    <div className="font-medium">{t("eventsManagement")}</div>
+                    <div className="mt-1 text-sm text-gray-500">{t("eventsManagementDesc")}</div>
                   </div>
                 </Button>
               </Link>
@@ -88,21 +90,21 @@ export default async function DashboardPage() {
 
         {user.role === "ADMIN" && (
           <div className="rounded-lg border p-6">
-            <h2 className="mb-4 text-xl font-semibold">Gestión de Artista</h2>
+            <h2 className="mb-4 text-xl font-semibold">{t("artistManagement")}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Link href="/dashboard/artist/profile">
+              <Link href={`/${locale}/dashboard/artist/profile`}>
                 <Button variant="outline" className="h-24 w-full justify-start p-4">
                   <div className="text-left">
-                    <div className="font-medium">Perfil de Artista</div>
-                    <div className="mt-1 text-sm text-gray-500">Gestionar tu perfil de artista</div>
+                    <div className="font-medium">{t("artistProfile")}</div>
+                    <div className="mt-1 text-sm text-gray-500">{t("artistProfileDesc")}</div>
                   </div>
                 </Button>
               </Link>
-              <Link href="/dashboard/artist/events">
+              <Link href={`/${locale}/dashboard/artist/events`}>
                 <Button variant="outline" className="h-24 w-full justify-start p-4">
                   <div className="text-left">
-                    <div className="font-medium">Mis Eventos</div>
-                    <div className="mt-1 text-sm text-gray-500">Gestionar tus eventos</div>
+                    <div className="font-medium">{t("myEvents")}</div>
+                    <div className="mt-1 text-sm text-gray-500">{t("myEventsDesc")}</div>
                   </div>
                 </Button>
               </Link>
@@ -112,17 +114,17 @@ export default async function DashboardPage() {
 
         <div className="rounded-lg border p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Eventos</h2>
-            <Link href="/dashboard/events/create">
-              <Button>Crear Evento</Button>
+            <h2 className="text-xl font-semibold">{t("events")}</h2>
+            <Link href={`/${locale}/dashboard/events/create`}>
+              <Button>{t("createEvent")}</Button>
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Link href="/dashboard/events">
+            <Link href={`/${locale}/dashboard/events`}>
               <Button variant="outline" className="h-24 w-full justify-start p-4">
                 <div className="text-left">
-                  <div className="font-medium">Mis Eventos</div>
-                  <div className="mt-1 text-sm text-gray-500">Ver y gestionar tus eventos</div>
+                  <div className="font-medium">{t("myEvents")}</div>
+                  <div className="mt-1 text-sm text-gray-500">{t("viewManageEvents")}</div>
                 </div>
               </Button>
             </Link>
@@ -131,19 +133,17 @@ export default async function DashboardPage() {
 
         <div className="rounded-lg border p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Artistas</h2>
-            <Link href="/dashboard/artists/create">
-              <Button>Agregar Artista</Button>
+            <h2 className="text-xl font-semibold">{t("artists")}</h2>
+            <Link href={`/${locale}/dashboard/artists/create`}>
+              <Button>{t("addArtist")}</Button>
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Link href="/dashboard/artists">
+            <Link href={`/${locale}/dashboard/artists`}>
               <Button variant="outline" className="h-24 w-full justify-start p-4">
                 <div className="text-left">
-                  <div className="font-medium">Mis Artistas</div>
-                  <div className="mt-1 text-sm text-gray-500">
-                    Ver y gestionar tus perfiles de artista
-                  </div>
+                  <div className="font-medium">{t("myArtists")}</div>
+                  <div className="mt-1 text-sm text-gray-500">{t("myArtistsDesc")}</div>
                 </div>
               </Button>
             </Link>
@@ -151,13 +151,13 @@ export default async function DashboardPage() {
         </div>
 
         <div className="rounded-lg border p-6">
-          <h2 className="mb-4 text-xl font-semibold">Mi Cuenta</h2>
+          <h2 className="mb-4 text-xl font-semibold">{t("account")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Link href="/dashboard/settings">
+            <Link href={`/${locale}/dashboard/settings`}>
               <Button variant="outline" className="h-24 w-full justify-start p-4">
                 <div className="text-left">
-                  <div className="font-medium">Configuración</div>
-                  <div className="mt-1 text-sm text-gray-500">Gestionar preferencias de cuenta</div>
+                  <div className="font-medium">{t("settings")}</div>
+                  <div className="mt-1 text-sm text-gray-500">{t("settingsDesc")}</div>
                 </div>
               </Button>
             </Link>

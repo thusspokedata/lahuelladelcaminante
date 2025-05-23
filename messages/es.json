@@ -23,7 +23,14 @@
     "viewAll": "Ver Todos",
     "explore": "Explorar",
     "pageNotFound": "Página no encontrada",
+    "pageNotFoundMessage": "La página que buscas no existe.",
     "backToHome": "Volver al inicio"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "message": "Lo sentimos, no pudimos encontrar la página que estás buscando. Es posible que haya sido movida o eliminada.",
+    "homeButton": "Volver al inicio",
+    "backButton": "Volver atrás"
   },
   "home": {
     "title": "La Huella del Caminante",
@@ -31,12 +38,15 @@
     "upcomingEvents": "Próximos Eventos",
     "upcomingEventsDesc": "Descubre los próximos shows de música argentina en Berlín",
     "artists": "Artistas",
-    "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín"
+    "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín",
+    "carousel": {
+      "viewEvent": "Ver evento"
+    }
   },
   "events": {
     "title": "Eventos",
     "noEvents": "No hay eventos disponibles",
-    "upcoming": "Próximos Eventos",
+    "upcoming": "Próximos shows de música argentina en Berlín",
     "past": "Eventos Pasados",
     "details": "Detalles del Evento",
     "location": "Ubicación",
@@ -44,7 +54,59 @@
     "time": "Hora",
     "artist": "Artista",
     "description": "Descripción",
-    "createEvent": "Crear Evento"
+    "createEvent": "Crear Evento",
+    "card": {
+      "organizedBy": "Organiza",
+      "genre": "Género",
+      "location": "Lugar",
+      "time": "Hora",
+      "price": "Precio",
+      "viewDetails": "Ver Detalles"
+    },
+    "client": {
+      "upcomingMessage": "Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto para descubrir nuevas fechas y artistas.",
+      "viewArtists": "Ver artistas",
+      "aboutUs": "Sobre nosotros",
+      "noEventsFound": "No se encontraron eventos con los filtros seleccionados",
+      "clearFilters": "Limpiar filtros"
+    },
+    "filters": {
+      "title": "Filtros",
+      "date": "Fecha",
+      "genre": "Género",
+      "artist": "Artista",
+      "organizer": "Organizador",
+      "selectGenre": "Seleccionar género",
+      "selectOrganizer": "Seleccionar organizador",
+      "searchArtist": "Buscar artista...",
+      "allGenres": "Todos los géneros",
+      "allOrganizers": "Todos los organizadores",
+      "applyFilters": "Aplicar Filtros",
+      "showAll": "Mostrar Todos",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Electrónica"
+      }
+    },
+    "eventDetail": {
+      "notFound": "Evento no encontrado",
+      "notFoundDesc": "No pudimos encontrar el evento que estás buscando.",
+      "viewAll": "Ver todos los eventos",
+      "backToEvents": "Volver a eventos",
+      "about": "Sobre este evento",
+      "noDescription": "No hay descripción disponible para este evento.",
+      "gallery": "Galería",
+      "detailsTitle": "Detalles",
+      "dates": "Fechas",
+      "time": "Hora",
+      "location": "Lugar",
+      "price": "Precio",
+      "aboutArtist": "Acerca del artista",
+      "viewFullProfile": "Ver perfil completo"
+    }
   },
   "artists": {
     "title": "Artistas",
@@ -54,7 +116,32 @@
     "origin": "Origen",
     "genres": "Géneros",
     "createArtist": "Crear Artista",
-    "socialMedia": "Redes Sociales"
+    "socialMedia": "Redes Sociales",
+    "client": {
+      "upcomingTitle": "Próximamente nuevos artistas",
+      "upcomingMessage": "Estamos preparando perfiles de los artistas argentinos en Berlín. Vuelve pronto para descubrir talentos.",
+      "viewEvents": "Ver eventos",
+      "aboutUs": "Sobre nosotros",
+      "artistList": "Lista de Artistas",
+      "noArtistsFound": "No se encontraron artistas",
+      "tryOtherFilters": "Intenta con otros filtros o elimina las restricciones de búsqueda.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "filters": {
+      "title": "Filtros",
+      "genre": "Género",
+      "allGenres": "Todos los géneros",
+      "name": "Nombre",
+      "searchByName": "Buscar por nombre...",
+      "clearFilters": "Limpiar filtros",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "cumbia": "Cumbia",
+        "jazz": "Jazz"
+      }
+    }
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -71,7 +158,51 @@
     "myArtists": "Mis Artistas",
     "createNew": "Crear Nuevo",
     "pendingApproval": "Cuenta pendiente de aprobación",
-    "pendingMessage": "Tu cuenta está pendiente de revisión por parte de nuestro equipo"
+    "pendingMessage": "Tu cuenta está pendiente de revisión por parte de nuestro equipo",
+    "pendingTitle": "Cuenta Pendiente de Aprobación",
+    "pendingDescription": "Tu cuenta está pendiente de aprobación por un administrador. Podrás acceder al panel de control una vez que tu cuenta haya sido aprobada.",
+    "pendingContactInfo": "Si deseas agilizar el proceso, puedes enviar un correo a",
+    "pendingContactPurpose": "para solicitar la revisión de tu cuenta.",
+    "events": {
+      "title": "Mis Eventos",
+      "create": "Crear Evento",
+      "noEvents": "No has creado ningún evento todavía.",
+      "viewEvent": "Ver Evento",
+      "editEvent": "Editar",
+      "dateNotAvailable": "Fecha no disponible",
+      "noArtist": "Sin artista asignado"
+    },
+    "mainPage": {
+      "title": "Panel de Control",
+      "logout": "Cerrar sesión",
+      "userInfo": "Información del Usuario",
+      "name": "Nombre",
+      "email": "Email",
+      "role": "Rol",
+      "status": "Estado",
+      "registerDate": "Fecha de registro",
+      "notSpecified": "No especificado",
+      "administration": "Administración",
+      "userManagement": "Gestión de Usuarios",
+      "userManagementDesc": "Aprobar, bloquear y asignar roles a usuarios",
+      "eventsManagement": "Eventos",
+      "eventsManagementDesc": "Gestionar y aprobar eventos",
+      "artistManagement": "Gestión de Artista",
+      "artistProfile": "Perfil de Artista",
+      "artistProfileDesc": "Gestionar tu perfil de artista",
+      "myEvents": "Mis Eventos",
+      "myEventsDesc": "Gestionar tus eventos",
+      "events": "Eventos",
+      "createEvent": "Crear Evento",
+      "viewManageEvents": "Ver y gestionar tus eventos",
+      "artists": "Artistas",
+      "addArtist": "Agregar Artista",
+      "myArtists": "Mis Artistas",
+      "myArtistsDesc": "Ver y gestionar tus perfiles de artista",
+      "account": "Mi Cuenta",
+      "settings": "Configuración",
+      "settingsDesc": "Gestionar preferencias de cuenta"
+    }
   },
   "footer": {
     "rights": "Todos los derechos reservados",
@@ -81,6 +212,26 @@
     "impressum": "Impressum",
     "followUs": "Síguenos en",
     "subtitle": "Música argentina en Berlín"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "No autorizado",
+      "notFound": "Usuario no encontrado",
+      "errorGettingData": "Error al obtener datos del usuario"
+    },
+    "events": {
+      "notAuthorized": "No autorizado. Debes iniciar sesión para crear eventos.",
+      "userNotFound": "Usuario no encontrado en la base de datos.",
+      "mustBeActive": "Tu cuenta debe estar activa para crear eventos. Estado actual: {status}",
+      "errorCreating": "Error al crear el evento"
+    },
+    "cloudinary": {
+      "unauthorized": "No autorizado",
+      "missingPublicId": "Falta el public_id",
+      "configMissing": "Falta la configuración de Cloudinary",
+      "imageDeleted": "Imagen eliminada correctamente",
+      "failedDelete": "No se pudo eliminar la imagen",
+      "internalError": "Error interno del servidor"
+    }
   }
 }
- 

@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 interface EventImage {
   url: string;
@@ -35,6 +37,9 @@ export function EventCard({
   price,
   images = [],
 }: EventCardProps) {
+  const t = useTranslations("events.card");
+  const locale = useLocale();
+
   return (
     <Card>
       <CardHeader>
@@ -59,14 +64,26 @@ export function EventCard({
           <div className="flex flex-1 flex-col justify-between">
             <div>
               <h3 className="text-xl font-semibold">{artist}</h3>
-              <p className="font-semibold">Organiza: {organizer}</p>
-              <p className="text-muted-foreground">Género: {genre}</p>
-              <p className="text-muted-foreground">Lugar: {location}</p>
-              <p className="text-muted-foreground">Hora: {time}</p>
-              {price && <p className="text-muted-foreground">Precio: €{price}</p>}
+              <p className="font-semibold">
+                {t("organizedBy")}: {organizer}
+              </p>
+              <p className="text-muted-foreground">
+                {t("genre")}: {genre}
+              </p>
+              <p className="text-muted-foreground">
+                {t("location")}: {location}
+              </p>
+              <p className="text-muted-foreground">
+                {t("time")}: {time}
+              </p>
+              {price && (
+                <p className="text-muted-foreground">
+                  {t("price")}: €{price}
+                </p>
+              )}
             </div>
-            <Link href={`/events/${slug}`}>
-              <Button className="mt-4">Ver Detalles</Button>
+            <Link href={`/${locale}/events/${slug}`}>
+              <Button className="mt-4">{t("viewDetails")}</Button>
             </Link>
           </div>
         </div>

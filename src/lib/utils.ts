@@ -1,5 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format } from "date-fns";
+import { es, de, enUS } from "date-fns/locale";
+import { SupportedLocale } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -8,17 +11,21 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format a date with weekday included
  * @param date Date object, date string, or ISO date string
- * @returns Formatted date string with weekday in Spanish locale
+ * @param locale Locale for date formatting (defaults to 'es')
+ * @returns Formatted date string with weekday in the specified locale
  */
-export function formatDateWithWeekday(date: Date | string): string {
+export function formatDateWithWeekday(date: Date | string, locale: string = "es"): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
-  return dateObj.toLocaleDateString("es-ES", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return dateObj.toLocaleDateString(
+    locale === "en" ? "en-US" : locale === "de" ? "de-DE" : "es-ES",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
 }
 
 /**
@@ -182,4 +189,46 @@ export function getProfileImage(
     : null;
 
   return matchedImage || images[0];
+}
+
+// Format date with locale support for application's supported languages
+export function formatDateByLocale(dateString: string, locale: SupportedLocale = "es") {
+  const date = new Date(dateString);
+
+  // Get date-fns locale based on current language
+  const dateLocale =
+    {
+      es,
+      de,
+      en: enUS,
+    }[locale] || es;
+
+  const weekdayFormat = "EEEE"; // Same for all languages
+  const dateFormat =
+    locale === "es" ? "d 'de' MMMM, yyyy" : locale === "de" ? "d. MMMM yyyy" : "MMMM d, yyyy";
+
+  const weekday = format(date, weekdayFormat, { locale: dateLocale });
+  const formattedDate = format(date, dateFormat, { locale: dateLocale });
+
+  // Capitalize first letter of weekday
+  const capitalizedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+
+  return `${capitalizedWeekday}, ${formattedDate}`;
+}
+
+// Simplified version without weekday for compact displays
+export function formatDateShortByLocale(dateString: string, locale: SupportedLocale = "es") {
+  const date = new Date(dateString);
+
+  const dateLocale =
+    {
+      es,
+      de,
+      en: enUS,
+    }[locale] || es;
+
+  const dateFormat =
+    locale === "es" ? "d 'de' MMMM, yyyy" : locale === "de" ? "d. MMMM yyyy" : "MMMM d, yyyy";
+
+  return format(date, dateFormat, { locale: dateLocale });
 }

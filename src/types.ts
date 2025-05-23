@@ -4,6 +4,11 @@ export interface ArtistImage {
   public_id?: string;
 }
 
+/**
+ * Tipo que define los idiomas soportados por la aplicación
+ */
+export type SupportedLocale = "es" | "en" | "de";
+
 export interface Artist {
   id: string;
   name: string;
