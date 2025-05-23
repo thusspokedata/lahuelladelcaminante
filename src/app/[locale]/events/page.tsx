@@ -2,9 +2,10 @@ import { getAllEvents } from "@/services/events";
 import { EventsClient } from "./ui";
 import { getTranslations } from "next-intl/server";
 
-export default async function EventsPage({ params }: { params: { locale: string } }) {
+export default async function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   // Get translations
-  const t = await getTranslations({ locale: params.locale, namespace: "events" });
+  const t = await getTranslations({ locale: locale, namespace: "events" });
 
   // Fetch events from the database
   const events = await getAllEvents();
