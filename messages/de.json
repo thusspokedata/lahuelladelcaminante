@@ -26,6 +26,12 @@
     "pageNotFoundMessage": "Die gesuchte Seite existiert nicht.",
     "backToHome": "Zurück zur Startseite"
   },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "message": "Es tut uns leid, wir konnten die gesuchte Seite nicht finden. Die Seite wurde möglicherweise verschoben oder gelöscht.",
+    "homeButton": "Zurück zur Startseite",
+    "backButton": "Zurück"
+  },
   "home": {
     "title": "La Huella del Caminante",
     "subtitle": "Argentinische Musikveranstaltungen in Berlin",

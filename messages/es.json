@@ -26,6 +26,12 @@
     "pageNotFoundMessage": "La página que buscas no existe.",
     "backToHome": "Volver al inicio"
   },
+  "notFound": {
+    "title": "Página no encontrada",
+    "message": "Lo sentimos, no pudimos encontrar la página que estás buscando. Es posible que haya sido movida o eliminada.",
+    "homeButton": "Volver al inicio",
+    "backButton": "Volver atrás"
+  },
   "home": {
     "title": "La Huella del Caminante",
     "subtitle": "Eventos de música argentina en Berlín",
