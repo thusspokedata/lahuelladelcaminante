@@ -8,7 +8,6 @@ type NotFoundUIProps = {
 };
 
 export function NotFoundUI({ locale }: NotFoundUIProps) {
-
   return (
     <div
       className="bg-background flex min-h-screen flex-col items-center justify-center px-4 py-16 text-center"
