@@ -282,7 +282,13 @@
       "bioValidation": "Biography must be at least {length} characters.",
       "originValidation": "Origin must be at least {length} characters.",
       "genresValidation": "Select at least one genre."
-    }
+    },
+    "backToArtists": "Back to artists",
+    "upcomingEvents": "Upcoming Events",
+    "dates": "Dates",
+    "free": "Free",
+    "links": "Links",
+    "gallery": "Gallery"
   },
   "auth": {
     "login": "Login",

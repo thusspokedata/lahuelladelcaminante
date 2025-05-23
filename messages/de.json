@@ -282,7 +282,13 @@
       "bioValidation": "Die Biografie muss mindestens {length} Zeichen lang sein.",
       "originValidation": "Die Herkunft muss mindestens {length} Zeichen lang sein.",
       "genresValidation": "Wählen Sie mindestens ein Genre aus."
-    }
+    },
+    "backToArtists": "Zurück zu Künstlern",
+    "upcomingEvents": "Kommende Veranstaltungen",
+    "dates": "Termine",
+    "free": "Kostenlos",
+    "links": "Links",
+    "gallery": "Galerie"
   },
   "auth": {
     "login": "Anmelden",
