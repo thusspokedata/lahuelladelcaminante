@@ -8,10 +8,12 @@ import { useTranslations } from "next-intl";
 export function HomeButton() {
   const t = useTranslations("common");
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+
+  // Check if we're on the homepage (including localized routes like /en, /es, /de)
+  const isHomePage = pathname === "/" || pathname.match(/^\/[a-z]{2}$/);
 
   if (isHomePage) {
-    return <div></div>;
+    return null;
   }
 
   return (

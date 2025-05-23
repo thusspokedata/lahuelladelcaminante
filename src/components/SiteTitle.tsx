@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 
 export function SiteTitle() {
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+
+  // Check if we're on the homepage (including localized routes like /en, /es, /de)
+  const isHomePage = pathname === "/" || pathname.match(/^\/[a-z]{2}$/);
 
   if (!isHomePage) {
     return null;
