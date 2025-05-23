@@ -1,0 +1,117 @@
+{
+  "navigation": {
+    "home": "Home",
+    "events": "Events",
+    "artists": "Artists",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "create": "Create",
+    "submit": "Submit",
+    "search": "Search",
+    "viewAll": "View All",
+    "explore": "Explore",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist.",
+    "backToHome": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "Sorry, we couldn't find the page you're looking for. The page might have been moved or deleted.",
+    "homeButton": "Go back home",
+    "backButton": "Go back"
+  },
+  "home": {
+    "title": "La Huella del Caminante",
+    "subtitle": "Argentine music events in Berlin",
+    "upcomingEvents": "Upcoming Events",
+    "upcomingEventsDesc": "Discover upcoming Argentine music shows in Berlin",
+    "artists": "Artists",
+    "artistsDesc": "Meet the Argentine artists performing in Berlin"
+  },
+  "events": {
+    "title": "Events",
+    "noEvents": "No events available",
+    "upcoming": "Upcoming Events",
+    "past": "Past Events",
+    "details": "Event Details",
+    "location": "Location",
+    "date": "Date",
+    "time": "Time",
+    "artist": "Artist",
+    "description": "Description",
+    "createEvent": "Create Event"
+  },
+  "artists": {
+    "title": "Artists",
+    "noArtists": "No artists available",
+    "details": "Artist Profile",
+    "bio": "Biography",
+    "origin": "Origin",
+    "genres": "Genres",
+    "createArtist": "Create Artist",
+    "socialMedia": "Social Media"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password",
+    "privacyPolicy": "By registering, you accept our privacy policy and legal terms"
+  },
+  "dashboard": {
+    "welcome": "Welcome to your Dashboard",
+    "myEvents": "My Events",
+    "myArtists": "My Artists",
+    "createNew": "Create New",
+    "pendingApproval": "Account pending approval",
+    "pendingMessage": "Your account is being reviewed by our team",
+    "pendingTitle": "Account Pending Approval",
+    "pendingDescription": "Your account is pending approval by an administrator. You'll be able to access the dashboard once your account has been approved.",
+    "pendingContactInfo": "If you'd like to expedite the process, you can send an email to",
+    "pendingContactPurpose": "to request review of your account."
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "contact": "Contact",
+    "legal": "Legal Information",
+    "privacy": "Privacy Policy",
+    "impressum": "Impressum",
+    "followUs": "Follow us on",
+    "subtitle": "Argentine music in Berlin"
+  },
+  "api": {
+    "user": {
+      "notAuthorized": "Not authorized",
+      "notFound": "User not found",
+      "errorGettingData": "Error retrieving user data"
+    },
+    "events": {
+      "notAuthorized": "Not authorized. You must be signed in to create events.",
+      "userNotFound": "User not found in database.",
+      "mustBeActive": "Your account must be active to create events. Current status: {status}",
+      "errorCreating": "Error creating event"
+    },
+    "cloudinary": {
+      "unauthorized": "Not authorized",
+      "missingPublicId": "Missing public_id",
+      "configMissing": "Cloudinary configuration missing",
+      "imageDeleted": "Image successfully deleted",
+      "failedDelete": "Failed to delete image",
+      "internalError": "Internal server error"
+    }
+  }
+}
