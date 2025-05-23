@@ -55,6 +55,14 @@
     "artist": "Artist",
     "description": "Description",
     "createEvent": "Create Event",
+    "card": {
+      "organizedBy": "Organized by",
+      "genre": "Genre",
+      "location": "Location",
+      "time": "Time",
+      "price": "Price",
+      "viewDetails": "View Details"
+    },
     "client": {
       "upcomingMessage": "We're preparing upcoming Argentine music events in Berlin. Check back soon to discover new dates and artists.",
       "viewArtists": "View artists",

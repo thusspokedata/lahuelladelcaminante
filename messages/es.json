@@ -55,6 +55,14 @@
     "artist": "Artista",
     "description": "Descripción",
     "createEvent": "Crear Evento",
+    "card": {
+      "organizedBy": "Organiza",
+      "genre": "Género",
+      "location": "Lugar",
+      "time": "Hora",
+      "price": "Precio",
+      "viewDetails": "Ver Detalles"
+    },
     "client": {
       "upcomingMessage": "Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto para descubrir nuevas fechas y artistas.",
       "viewArtists": "Ver artistas",

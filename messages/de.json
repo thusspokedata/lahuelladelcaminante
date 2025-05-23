@@ -20,7 +20,7 @@
     "create": "Erstellen",
     "submit": "Absenden",
     "search": "Suchen",
-    "viewAll": "Alle ansehen",
+    "viewAll": "Alle anzeigen",
     "explore": "Erkunden",
     "pageNotFound": "Seite nicht gefunden",
     "pageNotFoundMessage": "Die gesuchte Seite existiert nicht.",
@@ -28,19 +28,19 @@
   },
   "notFound": {
     "title": "Seite nicht gefunden",
-    "message": "Es tut uns leid, wir konnten die gesuchte Seite nicht finden. Die Seite wurde möglicherweise verschoben oder gelöscht.",
+    "message": "Entschuldigung, wir konnten die gesuchte Seite nicht finden. Die Seite wurde möglicherweise verschoben oder gelöscht.",
     "homeButton": "Zurück zur Startseite",
-    "backButton": "Zurück"
+    "backButton": "Zurück gehen"
   },
   "home": {
     "title": "La Huella del Caminante",
     "subtitle": "Argentinische Musikveranstaltungen in Berlin",
     "upcomingEvents": "Kommende Veranstaltungen",
-    "upcomingEventsDesc": "Entdecke die kommenden argentinischen Musikshows in Berlin",
+    "upcomingEventsDesc": "Entdecken Sie kommende argentinische Musikshows in Berlin",
     "artists": "Künstler",
-    "artistsDesc": "Lerne die argentinischen Künstler kennen, die in Berlin auftreten",
+    "artistsDesc": "Lernen Sie die argentinischen Künstler kennen, die in Berlin auftreten",
     "carousel": {
-      "viewEvent": "Veranstaltung anzeigen"
+      "viewEvent": "Veranstaltung ansehen"
     }
   },
   "events": {
@@ -55,9 +55,17 @@
     "artist": "Künstler",
     "description": "Beschreibung",
     "createEvent": "Veranstaltung erstellen",
+    "card": {
+      "organizedBy": "Organisiert von",
+      "genre": "Genre",
+      "location": "Ort",
+      "time": "Uhrzeit",
+      "price": "Preis",
+      "viewDetails": "Details ansehen"
+    },
     "client": {
-      "upcomingMessage": "Wir bereiten kommende argentinische Musikveranstaltungen in Berlin vor. Schau bald wieder vorbei, um neue Termine und Künstler zu entdecken.",
-      "viewArtists": "Künstler anzeigen",
+      "upcomingMessage": "Wir bereiten kommende argentinische Musikveranstaltungen in Berlin vor. Schauen Sie bald wieder vorbei, um neue Termine und Künstler zu entdecken.",
+      "viewArtists": "Künstler ansehen",
       "aboutUs": "Über uns",
       "noEventsFound": "Keine Veranstaltungen mit den ausgewählten Filtern gefunden",
       "clearFilters": "Filter löschen"
@@ -80,13 +88,13 @@
         "folklore": "Folklore",
         "rock": "Rock",
         "jazz": "Jazz",
-        "electronica": "Elektronik"
+        "electronica": "Elektronische Musik"
       }
     },
     "eventDetail": {
       "notFound": "Veranstaltung nicht gefunden",
       "notFoundDesc": "Wir konnten die gesuchte Veranstaltung nicht finden.",
-      "viewAll": "Alle Veranstaltungen anzeigen",
+      "viewAll": "Alle Veranstaltungen ansehen",
       "backToEvents": "Zurück zu Veranstaltungen",
       "about": "Über diese Veranstaltung",
       "noDescription": "Keine Beschreibung für diese Veranstaltung verfügbar.",
@@ -97,7 +105,7 @@
       "location": "Ort",
       "price": "Preis",
       "aboutArtist": "Über den Künstler",
-      "viewFullProfile": "Vollständiges Profil anzeigen"
+      "viewFullProfile": "Vollständiges Profil ansehen"
     }
   },
   "artists": {
@@ -111,8 +119,8 @@
     "socialMedia": "Soziale Medien",
     "client": {
       "upcomingTitle": "Neue Künstler kommen bald",
-      "upcomingMessage": "Wir bereiten Profile argentinischer Künstler in Berlin vor. Schauen Sie bald wieder vorbei, um Talente zu entdecken.",
-      "viewEvents": "Veranstaltungen anzeigen",
+      "upcomingMessage": "Wir erstellen Profile argentinischer Künstler in Berlin. Schauen Sie bald wieder vorbei, um Talente zu entdecken.",
+      "viewEvents": "Veranstaltungen ansehen",
       "aboutUs": "Über uns",
       "artistList": "Künstlerliste",
       "noArtistsFound": "Keine Künstler gefunden",
@@ -142,7 +150,7 @@
     "email": "E-Mail",
     "password": "Passwort",
     "forgotPassword": "Passwort vergessen",
-    "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinie und rechtlichen Bedingungen"
+    "privacyPolicy": "Mit der Registrierung akzeptieren Sie unsere Datenschutzrichtlinien und rechtlichen Bedingungen"
   },
   "dashboard": {
     "welcome": "Willkommen in Ihrem Dashboard",
@@ -153,13 +161,13 @@
     "pendingMessage": "Ihr Konto wird derzeit von unserem Team überprüft",
     "pendingTitle": "Konto wartet auf Genehmigung",
     "pendingDescription": "Ihr Konto wartet auf Genehmigung durch einen Administrator. Sie können auf das Dashboard zugreifen, sobald Ihr Konto genehmigt wurde.",
-    "pendingContactInfo": "Wenn Sie den Prozess beschleunigen möchten, können Sie eine E-Mail senden an",
-    "pendingContactPurpose": "um die Überprüfung Ihres Kontos anzufordern.",
+    "pendingContactInfo": "Wenn Sie den Prozess beschleunigen möchten, können Sie eine E-Mail an",
+    "pendingContactPurpose": "senden, um die Überprüfung Ihres Kontos anzufordern.",
     "events": {
       "title": "Meine Veranstaltungen",
       "create": "Veranstaltung erstellen",
       "noEvents": "Sie haben noch keine Veranstaltungen erstellt.",
-      "viewEvent": "Veranstaltung anzeigen",
+      "viewEvent": "Veranstaltung ansehen",
       "editEvent": "Bearbeiten",
       "dateNotAvailable": "Datum nicht verfügbar",
       "noArtist": "Kein Künstler zugewiesen"
@@ -167,7 +175,7 @@
     "mainPage": {
       "title": "Dashboard",
       "logout": "Abmelden",
-      "userInfo": "Benutzerinformation",
+      "userInfo": "Benutzerinformationen",
       "name": "Name",
       "email": "E-Mail",
       "role": "Rolle",
@@ -176,7 +184,7 @@
       "notSpecified": "Nicht angegeben",
       "administration": "Administration",
       "userManagement": "Benutzerverwaltung",
-      "userManagementDesc": "Benutzer genehmigen, blockieren und Rollen zuweisen",
+      "userManagementDesc": "Benutzer genehmigen, sperren und Rollen zuweisen",
       "eventsManagement": "Veranstaltungen",
       "eventsManagementDesc": "Veranstaltungen verwalten und genehmigen",
       "artistManagement": "Künstlerverwaltung",
@@ -186,11 +194,11 @@
       "myEventsDesc": "Verwalten Sie Ihre Veranstaltungen",
       "events": "Veranstaltungen",
       "createEvent": "Veranstaltung erstellen",
-      "viewManageEvents": "Ihre Veranstaltungen anzeigen und verwalten",
+      "viewManageEvents": "Ihre Veranstaltungen ansehen und verwalten",
       "artists": "Künstler",
       "addArtist": "Künstler hinzufügen",
       "myArtists": "Meine Künstler",
-      "myArtistsDesc": "Ihre Künstlerprofile anzeigen und verwalten",
+      "myArtistsDesc": "Ihre Künstlerprofile ansehen und verwalten",
       "account": "Mein Konto",
       "settings": "Einstellungen",
       "settingsDesc": "Kontoeinstellungen verwalten"
@@ -209,17 +217,17 @@
     "user": {
       "notAuthorized": "Nicht autorisiert",
       "notFound": "Benutzer nicht gefunden",
-      "errorGettingData": "Fehler beim Abrufen der Benutzerdaten"
+      "errorGettingData": "Fehler beim Abrufen von Benutzerdaten"
     },
     "events": {
       "notAuthorized": "Nicht autorisiert. Sie müssen angemeldet sein, um Veranstaltungen zu erstellen.",
-      "userNotFound": "Benutzer in der Datenbank nicht gefunden.",
+      "userNotFound": "Benutzer nicht in der Datenbank gefunden.",
       "mustBeActive": "Ihr Konto muss aktiv sein, um Veranstaltungen zu erstellen. Aktueller Status: {status}",
       "errorCreating": "Fehler beim Erstellen der Veranstaltung"
     },
     "cloudinary": {
       "unauthorized": "Nicht autorisiert",
-      "missingPublicId": "public_id fehlt",
+      "missingPublicId": "Fehlende public_id",
       "configMissing": "Cloudinary-Konfiguration fehlt",
       "imageDeleted": "Bild erfolgreich gelöscht",
       "failedDelete": "Bild konnte nicht gelöscht werden",
