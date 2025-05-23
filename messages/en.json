@@ -54,7 +54,23 @@
     "time": "Time",
     "artist": "Artist",
     "description": "Description",
-    "createEvent": "Create Event"
+    "createEvent": "Create Event",
+    "eventDetail": {
+      "notFound": "Event not found",
+      "notFoundDesc": "We couldn't find the event you're looking for.",
+      "viewAll": "View all events",
+      "backToEvents": "Back to events",
+      "about": "About this event",
+      "noDescription": "No description available for this event.",
+      "gallery": "Gallery",
+      "detailsTitle": "Details",
+      "dates": "Dates",
+      "time": "Time",
+      "location": "Location",
+      "price": "Price",
+      "aboutArtist": "About the artist",
+      "viewFullProfile": "View full profile"
+    }
   },
   "artists": {
     "title": "Artists",

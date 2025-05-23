@@ -54,7 +54,23 @@
     "time": "Hora",
     "artist": "Artista",
     "description": "Descripción",
-    "createEvent": "Crear Evento"
+    "createEvent": "Crear Evento",
+    "eventDetail": {
+      "notFound": "Evento no encontrado",
+      "notFoundDesc": "No pudimos encontrar el evento que estás buscando.",
+      "viewAll": "Ver todos los eventos",
+      "backToEvents": "Volver a eventos",
+      "about": "Sobre este evento",
+      "noDescription": "No hay descripción disponible para este evento.",
+      "gallery": "Galería",
+      "detailsTitle": "Detalles",
+      "dates": "Fechas",
+      "time": "Hora",
+      "location": "Lugar",
+      "price": "Precio",
+      "aboutArtist": "Acerca del artista",
+      "viewFullProfile": "Ver perfil completo"
+    }
   },
   "artists": {
     "title": "Artistas",

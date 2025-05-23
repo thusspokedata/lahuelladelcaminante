@@ -11,17 +11,21 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format a date with weekday included
  * @param date Date object, date string, or ISO date string
- * @returns Formatted date string with weekday in Spanish locale
+ * @param locale Locale for date formatting (defaults to 'es')
+ * @returns Formatted date string with weekday in the specified locale
  */
-export function formatDateWithWeekday(date: Date | string): string {
+export function formatDateWithWeekday(date: Date | string, locale: string = "es"): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
-  return dateObj.toLocaleDateString("es-ES", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return dateObj.toLocaleDateString(
+    locale === "en" ? "en-US" : locale === "de" ? "de-DE" : "es-ES",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
 }
 
 /**
