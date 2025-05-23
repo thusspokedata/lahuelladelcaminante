@@ -182,6 +182,10 @@
     "createArtist": "Crear Artista",
     "manageArtists": "Gestionar Artistas",
     "socialMedia": "Redes Sociales",
+    "noGenres": "Sin géneros",
+    "viewProfile": "Ver perfil",
+    "website": "Sitio web",
+    "artistsDesc": "Descubre artistas argentinos actuando en Berlín",
     "client": {
       "upcomingTitle": "Próximamente nuevos artistas",
       "upcomingMessage": "Estamos preparando perfiles de los artistas argentinos en Berlín. Vuelve pronto para descubrir talentos.",
@@ -273,7 +277,11 @@
       "addArtist": "Agregar Artista",
       "updateArtist": "Actualizar Artista",
       "creating": "Creando...",
-      "updating": "Actualizando..."
+      "updating": "Actualizando...",
+      "nameValidation": "El nombre debe tener al menos {length} caracteres.",
+      "bioValidation": "La biografía debe tener al menos {length} caracteres.",
+      "originValidation": "El origen debe tener al menos {length} caracteres.",
+      "genresValidation": "Selecciona al menos un género."
     }
   },
   "auth": {

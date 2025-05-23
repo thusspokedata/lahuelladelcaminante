@@ -52,47 +52,47 @@ interface ArtistFormProps {
   initialArtistId?: string;
 }
 
-// Form validation schema
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  bio: z.string().min(10, {
-    message: "La biografía debe tener al menos 10 caracteres.",
-  }),
-  origin: z.string().min(2, {
-    message: "El origen debe tener al menos 2 caracteres.",
-  }),
-  genres: z.array(z.string()).min(1, {
-    message: "Agrega al menos un género.",
-  }),
-  socialMedia: z.object({
-    instagram: z.string().optional(),
-    spotify: z.string().optional(),
-    youtube: z.string().optional(),
-    website: z.string().optional(),
-    tiktok: z.string().optional(),
-  }),
-  images: z
-    .array(
-      z.object({
-        url: z.string(),
-        alt: z.string().optional(),
-        public_id: z.string().optional(),
-        isProfile: z.boolean().optional(),
-      })
-    )
-    .optional(),
-  profileImageId: z.string().optional().nullable(),
-});
-
-// Define form values type
-type FormValues = z.infer<typeof formSchema>;
-
 export default function ArtistForm({ userId, userArtists = [], initialArtistId }: ArtistFormProps) {
   const t = useTranslations("artists.form");
   const common = useTranslations("common");
   const validation = useTranslations("validation");
+
+  // Form validation schema
+  const formSchema = z.object({
+    name: z.string().min(2, {
+      message: validation("minLength", { field: t("name"), length: 2 }),
+    }),
+    bio: z.string().min(10, {
+      message: validation("minLength", { field: t("bio"), length: 10 }),
+    }),
+    origin: z.string().min(2, {
+      message: validation("minLength", { field: t("origin"), length: 2 }),
+    }),
+    genres: z.array(z.string()).min(1, {
+      message: validation("minItems", { field: t("genres"), count: 1 }),
+    }),
+    socialMedia: z.object({
+      instagram: z.string().optional(),
+      spotify: z.string().optional(),
+      youtube: z.string().optional(),
+      website: z.string().optional(),
+      tiktok: z.string().optional(),
+    }),
+    images: z
+      .array(
+        z.object({
+          url: z.string(),
+          alt: z.string().optional(),
+          public_id: z.string().optional(),
+          isProfile: z.boolean().optional(),
+        })
+      )
+      .optional(),
+    profileImageId: z.string().optional().nullable(),
+  });
+
+  // Define form values type
+  type FormValues = z.infer<typeof formSchema>;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newGenre, setNewGenre] = useState("");

@@ -182,6 +182,10 @@
     "createArtist": "Künstler erstellen",
     "manageArtists": "Künstler verwalten",
     "socialMedia": "Soziale Medien",
+    "noGenres": "Keine Genres",
+    "viewProfile": "Profil ansehen",
+    "website": "Webseite",
+    "artistsDesc": "Entdecken Sie argentinische Künstler, die in Berlin auftreten",
     "client": {
       "upcomingTitle": "Neue Künstler kommen bald",
       "upcomingMessage": "Wir erstellen Profile argentinischer Künstler in Berlin. Schauen Sie bald wieder vorbei, um Talente zu entdecken.",
@@ -273,7 +277,11 @@
       "addArtist": "Künstler hinzufügen",
       "updateArtist": "Künstler aktualisieren",
       "creating": "Wird erstellt...",
-      "updating": "Wird aktualisiert..."
+      "updating": "Wird aktualisiert...",
+      "nameValidation": "Der Name muss mindestens {length} Zeichen lang sein.",
+      "bioValidation": "Die Biografie muss mindestens {length} Zeichen lang sein.",
+      "originValidation": "Die Herkunft muss mindestens {length} Zeichen lang sein.",
+      "genresValidation": "Wählen Sie mindestens ein Genre aus."
     }
   },
   "auth": {

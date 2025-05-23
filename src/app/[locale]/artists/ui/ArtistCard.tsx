@@ -5,12 +5,14 @@ import { Artist } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { getProfileImage } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export interface ArtistCardProps {
   artist: Artist;
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
+  const t = useTranslations("artists");
   const { name, genres = [], bio, origin, images = [], socialMedia, slug, profileImageId } = artist;
 
   const profileImage = getProfileImage(images, profileImageId);
@@ -19,7 +21,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
     <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
-        <CardDescription>{genres?.join(", ") || "Sin géneros"}</CardDescription>
+        <CardDescription>{genres?.join(", ") || t("noGenres")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex gap-4">
@@ -39,11 +41,13 @@ export function ArtistCard({ artist }: ArtistCardProps) {
           <div className="flex flex-1 flex-col justify-between">
             <div>
               <p className="mb-2 line-clamp-3">{bio}</p>
-              <p className="text-muted-foreground">Origen: {origin}</p>
+              <p className="text-muted-foreground">
+                {t("origin")}: {origin}
+              </p>
 
               {socialMedia && Object.values(socialMedia).some(Boolean) && (
                 <div className="mt-2">
-                  <p className="text-sm font-medium">Enlaces:</p>
+                  <p className="text-sm font-medium">{t("socialMedia")}:</p>
                   <div className="mt-1 flex space-x-2">
                     {socialMedia.instagram && (
                       <a
@@ -82,7 +86,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
                         rel="noopener noreferrer"
                         className="text-gray-500 hover:underline"
                       >
-                        Sitio Web
+                        {t("website")}
                       </a>
                     )}
                   </div>
@@ -90,7 +94,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
               )}
             </div>
             <Link href={`/artists/${slug}`}>
-              <Button className="mt-4">Ver Perfil</Button>
+              <Button className="mt-4">{t("viewProfile")}</Button>
             </Link>
           </div>
         </div>

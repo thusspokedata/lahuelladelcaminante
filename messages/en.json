@@ -182,6 +182,10 @@
     "createArtist": "Create Artist",
     "manageArtists": "Manage Artists",
     "socialMedia": "Social Media",
+    "noGenres": "No genres",
+    "viewProfile": "View profile",
+    "website": "Website",
+    "artistsDesc": "Discover Argentine artists performing in Berlin",
     "client": {
       "upcomingTitle": "New artists coming soon",
       "upcomingMessage": "We're preparing profiles of Argentine artists in Berlin. Check back soon to discover talent.",
@@ -273,7 +277,11 @@
       "addArtist": "Add Artist",
       "updateArtist": "Update Artist",
       "creating": "Creating...",
-      "updating": "Updating..."
+      "updating": "Updating...",
+      "nameValidation": "Name must be at least {length} characters.",
+      "bioValidation": "Biography must be at least {length} characters.",
+      "originValidation": "Origin must be at least {length} characters.",
+      "genresValidation": "Select at least one genre."
     }
   },
   "auth": {

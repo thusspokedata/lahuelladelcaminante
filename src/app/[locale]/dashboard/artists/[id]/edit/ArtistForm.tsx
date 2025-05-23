@@ -23,50 +23,52 @@ import { updateArtist } from "./actions";
 import CloudinaryUpload from "@/components/ui/cloudinary-upload";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ArtistFormProps {
   artist: Artist;
 }
 
-// Form validation schema
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  bio: z.string().min(10, {
-    message: "La biografía debe tener al menos 10 caracteres.",
-  }),
-  origin: z.string().min(2, {
-    message: "El origen debe tener al menos 2 caracteres.",
-  }),
-  genres: z.array(z.string()).min(1, {
-    message: "Selecciona al menos un género.",
-  }),
-  socialMedia: z.object({
-    instagram: z.string().optional(),
-    spotify: z.string().optional(),
-    youtube: z.string().optional(),
-    website: z.string().optional(),
-    tiktok: z.string().optional(),
-  }),
-  images: z
-    .array(
-      z.object({
-        url: z.string(),
-        alt: z.string().optional(),
-        public_id: z.string().optional(),
-      })
-    )
-    .optional(),
-});
-
-// Define form values type
-type FormValues = z.infer<typeof formSchema>;
-
 export default function ArtistForm({ artist }: ArtistFormProps) {
+  const t = useTranslations("artists");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newGenre, setNewGenre] = useState("");
   const { toast } = useToast();
+
+  // Form validation schema
+  const formSchema = z.object({
+    name: z.string().min(2, {
+      message: t("form.nameValidation", { length: 2 }),
+    }),
+    bio: z.string().min(10, {
+      message: t("form.bioValidation", { length: 10 }),
+    }),
+    origin: z.string().min(2, {
+      message: t("form.originValidation", { length: 2 }),
+    }),
+    genres: z.array(z.string()).min(1, {
+      message: t("form.genresValidation"),
+    }),
+    socialMedia: z.object({
+      instagram: z.string().optional(),
+      spotify: z.string().optional(),
+      youtube: z.string().optional(),
+      website: z.string().optional(),
+      tiktok: z.string().optional(),
+    }),
+    images: z
+      .array(
+        z.object({
+          url: z.string(),
+          alt: z.string().optional(),
+          public_id: z.string().optional(),
+        })
+      )
+      .optional(),
+  });
+
+  // Define form values type
+  type FormValues = z.infer<typeof formSchema>;
 
   // Initialize form with artist data
   const form = useForm<FormValues>({
@@ -96,21 +98,21 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
 
       if (result.success) {
         toast({
-          title: "Artista actualizado",
-          description: "La información del artista ha sido actualizada correctamente.",
+          title: t("form.updateSuccess.title"),
+          description: t("form.updateSuccess.description", { name: values.name }),
         });
       } else {
         toast({
-          title: "Error",
-          description: result.error || "Hubo un error al actualizar el artista.",
+          title: t("form.error"),
+          description: result.error || t("form.updateError"),
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title: "Error",
-        description: "Hubo un error al actualizar el artista.",
+        title: t("form.error"),
+        description: t("form.updateError"),
         variant: "destructive",
       });
     } finally {
@@ -150,9 +152,9 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nombre del Artista</FormLabel>
+                    <FormLabel>{t("form.name")}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder={t("form.namePlaceholder")} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -165,13 +167,11 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                 name="origin"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Origen</FormLabel>
+                    <FormLabel>{t("origin")}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Ciudad, País" />
+                      <Input {...field} placeholder={t("form.originPlaceholder")} />
                     </FormControl>
-                    <FormDescription>
-                      Lugar de origen del artista (ej. Buenos Aires, Argentina)
-                    </FormDescription>
+                    <FormDescription>{t("form.originDescription")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -183,17 +183,11 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                 name="bio"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Biografía</FormLabel>
+                    <FormLabel>{t("bio")}</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Escribe una biografía del artista..."
-                        rows={6}
-                      />
+                      <Textarea {...field} placeholder={t("form.bioPlaceholder")} rows={6} />
                     </FormControl>
-                    <FormDescription>
-                      Una descripción completa sobre el artista, su trayectoria y estilo.
-                    </FormDescription>
+                    <FormDescription>{t("form.bioDescription")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -205,7 +199,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                 name="genres"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Géneros</FormLabel>
+                    <FormLabel>{t("genres")}</FormLabel>
                     <div className="mb-2 flex flex-wrap gap-2">
                       {form.watch("genres")?.map((genre) => (
                         <Badge key={genre} variant="secondary">
@@ -224,7 +218,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                       <Input
                         value={newGenre}
                         onChange={(e) => setNewGenre(e.target.value)}
-                        placeholder="Nuevo género"
+                        placeholder={t("form.newGenrePlaceholder")}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -233,10 +227,10 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                         }}
                       />
                       <Button type="button" onClick={handleAddGenre}>
-                        Agregar
+                        {t("form.addGenre")}
                       </Button>
                     </div>
-                    <FormDescription>Agrega los géneros musicales del artista.</FormDescription>
+                    <FormDescription>{t("form.genresDescription")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -244,8 +238,8 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
 
               {/* Social Media */}
               <div className="space-y-4">
-                <FormLabel>Redes Sociales</FormLabel>
-                <FormDescription>Agrega enlaces a las redes sociales del artista.</FormDescription>
+                <FormLabel>{t("socialMedia")}</FormLabel>
+                <FormDescription>{t("form.socialMedia.description")}</FormDescription>
 
                 <FormField
                   control={form.control}
@@ -254,10 +248,13 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                     <FormItem>
                       <div className="flex items-center">
                         <div className="w-24">
-                          <FormLabel>Instagram</FormLabel>
+                          <FormLabel>{t("form.socialMedia.instagram")}</FormLabel>
                         </div>
                         <FormControl>
-                          <Input {...field} placeholder="https://instagram.com/artista" />
+                          <Input
+                            {...field}
+                            placeholder={t("form.socialMedia.instagramPlaceholder")}
+                          />
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -272,10 +269,13 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                     <FormItem>
                       <div className="flex items-center">
                         <div className="w-24">
-                          <FormLabel>Spotify</FormLabel>
+                          <FormLabel>{t("form.socialMedia.spotify")}</FormLabel>
                         </div>
                         <FormControl>
-                          <Input {...field} placeholder="https://open.spotify.com/artist/..." />
+                          <Input
+                            {...field}
+                            placeholder={t("form.socialMedia.spotifyPlaceholder")}
+                          />
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -290,10 +290,13 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                     <FormItem>
                       <div className="flex items-center">
                         <div className="w-24">
-                          <FormLabel>YouTube</FormLabel>
+                          <FormLabel>{t("form.socialMedia.youtube")}</FormLabel>
                         </div>
                         <FormControl>
-                          <Input {...field} placeholder="https://youtube.com/c/..." />
+                          <Input
+                            {...field}
+                            placeholder={t("form.socialMedia.youtubePlaceholder")}
+                          />
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -308,10 +311,13 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                     <FormItem>
                       <div className="flex items-center">
                         <div className="w-24">
-                          <FormLabel>Sitio Web</FormLabel>
+                          <FormLabel>{t("form.socialMedia.website")}</FormLabel>
                         </div>
                         <FormControl>
-                          <Input {...field} placeholder="https://artista.com" />
+                          <Input
+                            {...field}
+                            placeholder={t("form.socialMedia.websitePlaceholder")}
+                          />
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -326,10 +332,10 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                     <FormItem>
                       <div className="flex items-center">
                         <div className="w-24">
-                          <FormLabel>TikTok</FormLabel>
+                          <FormLabel>{t("form.socialMedia.tiktok")}</FormLabel>
                         </div>
                         <FormControl>
-                          <Input {...field} placeholder="https://tiktok.com/@artista" />
+                          <Input {...field} placeholder={t("form.socialMedia.tiktokPlaceholder")} />
                         </FormControl>
                       </div>
                       <FormMessage />
@@ -344,7 +350,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Imágenes</FormLabel>
+                    <FormLabel>{t("form.images.title")}</FormLabel>
                     <FormControl>
                       <CloudinaryUpload
                         value={field.value || []}
@@ -358,9 +364,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
                         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Agrega hasta 5 imágenes del artista (fotos, logos, etc.)
-                    </FormDescription>
+                    <FormDescription>{t("form.images.description")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -371,7 +375,7 @@ export default function ArtistForm({ artist }: ArtistFormProps) {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+            {isSubmitting ? t("form.updating") : t("form.updateArtist")}
           </Button>
         </div>
       </form>
