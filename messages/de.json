@@ -8,6 +8,11 @@
     "dashboard": "Dashboard",
     "admin": "Admin"
   },
+  "languageSwitcher": {
+    "switchLanguage": "Sprache wechseln",
+    "currentLanguage": "Aktuelle Sprache",
+    "selectLanguage": "Sprache auswählen"
+  },
   "common": {
     "loading": "Wird geladen...",
     "error": "Fehler",

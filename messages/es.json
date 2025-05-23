@@ -8,6 +8,11 @@
     "dashboard": "Panel de Control",
     "admin": "Admin"
   },
+  "languageSwitcher": {
+    "switchLanguage": "Cambiar idioma",
+    "currentLanguage": "Idioma actual",
+    "selectLanguage": "Seleccionar idioma"
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",
