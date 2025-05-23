@@ -1,6 +1,7 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import {
   FormControl,
   FormDescription,
@@ -18,13 +19,15 @@ interface ImageUploadFieldProps {
 }
 
 export default function ImageUploadField({ form, disabled = false }: ImageUploadFieldProps) {
+  const t = useTranslations("events.imageUpload");
+
   return (
     <FormField
       control={form.control}
       name="images"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Imágenes</FormLabel>
+          <FormLabel>{t("images")}</FormLabel>
           <FormControl>
             <CloudinaryUpload
               value={(field.value as ImageObject[]) || []}
@@ -62,7 +65,7 @@ export default function ImageUploadField({ form, disabled = false }: ImageUpload
               }}
             />
           </FormControl>
-          <FormDescription>Sube hasta 5 imágenes para tu evento.</FormDescription>
+          <FormDescription>{t("uploadDescription")}</FormDescription>
           <FormMessage />
         </FormItem>
       )}

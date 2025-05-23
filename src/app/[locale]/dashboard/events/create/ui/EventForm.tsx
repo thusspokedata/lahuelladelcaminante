@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,20 +24,10 @@ import DateSelector from "./DateSelector";
 import ImageUploadField from "./ImageUploadField";
 import { ArtistSelector } from "./ArtistSelector";
 
-type FormArtist = {
-  id: string;
-  name: string;
-  bio?: string;
-};
-
-// Validation schema for event creation form
-const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "El título debe tener al menos 3 caracteres",
-  }),
-  description: z.string().min(10, {
-    message: "La descripción debe tener al menos 10 caracteres",
-  }),
+// Define the form schema base shape
+const baseFormSchema = z.object({
+  title: z.string().min(3),
+  description: z.string().min(10),
   artists: z.array(
     z.object({
       id: z.string(),
@@ -44,22 +35,12 @@ const formSchema = z.object({
       bio: z.string().optional(),
     })
   ),
-  dates: z.array(z.date()).min(1, {
-    message: "Selecciona al menos una fecha",
-  }),
-  location: z.string().min(3, {
-    message: "La ubicación debe tener al menos 3 caracteres",
-  }),
-  time: z.string().min(1, {
-    message: "Indica la hora del evento",
-  }),
+  dates: z.array(z.date()).min(1),
+  location: z.string().min(3),
+  time: z.string().min(1),
   price: z.string().optional(),
-  genre: z.string().min(1, {
-    message: "Selecciona un género",
-  }),
-  organizerName: z.string().min(3, {
-    message: "El nombre del organizador debe tener al menos 3 caracteres",
-  }),
+  genre: z.string().min(1),
+  organizerName: z.string().min(3),
   images: z
     .array(
       z.object({
@@ -72,7 +53,13 @@ const formSchema = z.object({
 });
 
 // Type for the form
-export type EventFormValues = z.infer<typeof formSchema>;
+export type EventFormValues = z.infer<typeof baseFormSchema>;
+
+type FormArtist = {
+  id: string;
+  name: string;
+  bio?: string;
+};
 
 interface EventFormProps {
   onSubmit: (values: EventFormValues) => Promise<void>;
@@ -87,10 +74,93 @@ export default function EventForm({
   initialError = null,
   initialData = null,
 }: EventFormProps) {
+  const t = useTranslations("events.create.form");
+  const tCommon = useTranslations("common");
+
   const [error, setError] = useState<string | null>(initialError);
   const isEditMode = Boolean(initialData);
   const [cloudinaryReady, setCloudinaryReady] = useState(false);
   const [cloudinaryError, setCloudinaryError] = useState<string | null>(null);
+
+  // Create schema with translated error messages
+  const formSchema = baseFormSchema.superRefine((data, ctx) => {
+    if (data.title.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 3,
+        type: "string",
+        inclusive: true,
+        path: ["title"],
+        message: `${t("title")} must have at least 3 characters`,
+      });
+    }
+
+    if (data.description.length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 10,
+        type: "string",
+        inclusive: true,
+        path: ["description"],
+        message: `${t("description")} must have at least 10 characters`,
+      });
+    }
+
+    if (data.dates.length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 1,
+        type: "array",
+        inclusive: true,
+        path: ["dates"],
+        message: "Select at least one date",
+      });
+    }
+
+    if (data.location.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 3,
+        type: "string",
+        inclusive: true,
+        path: ["location"],
+        message: `${t("location")} must have at least 3 characters`,
+      });
+    }
+
+    if (data.time.length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 1,
+        type: "string",
+        inclusive: true,
+        path: ["time"],
+        message: `${t("time")} is required`,
+      });
+    }
+
+    if (data.genre.length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 1,
+        type: "string",
+        inclusive: true,
+        path: ["genre"],
+        message: `${t("genre")} is required`,
+      });
+    }
+
+    if (data.organizerName.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 3,
+        type: "string",
+        inclusive: true,
+        path: ["organizerName"],
+        message: `${t("organizer")} must have at least 3 characters`,
+      });
+    }
+  });
 
   // Initialize form with React Hook Form and Zod
   const form = useForm<EventFormValues>({
@@ -158,18 +228,16 @@ export default function EventForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Información del Evento</CardTitle>
+        <CardTitle>{t("eventInfo")}</CardTitle>
         <CardDescription>
-          {isEditMode
-            ? "Edita la información del evento."
-            : "Completa el formulario con los datos del evento que deseas crear."}
+          {isEditMode ? t("editDescription") : t("createDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>{tCommon("error")}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -177,10 +245,10 @@ export default function EventForm({
         {cloudinaryError && (
           <Alert variant="default" className="mb-6">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Advertencia</AlertTitle>
+            <AlertTitle>{t("warning")}</AlertTitle>
             <AlertDescription>
               {cloudinaryError}
-              <p className="mt-2">La carga de imágenes no estará disponible.</p>
+              <p className="mt-2">{t("imageUnavailable")}</p>
             </AlertDescription>
           </Alert>
         )}
@@ -194,9 +262,9 @@ export default function EventForm({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Título</FormLabel>
+                    <FormLabel>{t("title")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Tango en Berlín" {...field} />
+                      <Input placeholder={t("titlePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -209,9 +277,9 @@ export default function EventForm({
                 name="organizerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organizador</FormLabel>
+                    <FormLabel>{t("organizer")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nombre del organizador" {...field} />
+                      <Input placeholder={t("organizerPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -239,10 +307,10 @@ export default function EventForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe el evento, incluye detalles importantes..."
+                      placeholder={t("descriptionPlaceholder")}
                       className="min-h-32"
                       {...field}
                     />
@@ -259,9 +327,9 @@ export default function EventForm({
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ubicación</FormLabel>
+                    <FormLabel>{t("location")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Café Buenos Aires, Berlín" {...field} />
+                      <Input placeholder={t("locationPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -274,9 +342,9 @@ export default function EventForm({
                 name="time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hora</FormLabel>
+                    <FormLabel>{t("time")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="20:00" {...field} />
+                      <Input placeholder={t("timePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -291,11 +359,11 @@ export default function EventForm({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Precio (€)</FormLabel>
+                    <FormLabel>{t("price")}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="15" {...field} />
+                      <Input type="number" placeholder={t("pricePlaceholder")} {...field} />
                     </FormControl>
-                    <FormDescription>Deja en blanco si es gratis</FormDescription>
+                    <FormDescription>{t("freeEvent")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -307,9 +375,9 @@ export default function EventForm({
                 name="genre"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Género</FormLabel>
+                    <FormLabel>{t("genre")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Tango, Folklore, etc." {...field} />
+                      <Input placeholder={t("genrePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -324,7 +392,13 @@ export default function EventForm({
             {cloudinaryReady && <ImageUploadField form={form} disabled={isSubmitting} />}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Creando evento..." : "Crear Evento"}
+              {isSubmitting
+                ? isEditMode
+                  ? t("updating")
+                  : t("creating")
+                : isEditMode
+                  ? t("update")
+                  : t("create")}
             </Button>
           </form>
         </Form>

@@ -15,8 +15,12 @@ import { Pencil, Plus } from "lucide-react";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import Image from "next/image";
 import { getProfileImage } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export default async function ArtistsDashboardPage() {
+  const t = await getTranslations("dashboard.artists");
+  const commonT = await getTranslations("common");
+
   const authResult = await auth();
   const userId = authResult.userId;
 
@@ -29,11 +33,11 @@ export default async function ArtistsDashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-6">
-        <h1 className="text-2xl font-bold">Mis Artistas</h1>
+        <h1 className="text-2xl font-bold">{t("myArtists")}</h1>
         <Button asChild>
           <Link href="/dashboard/artists/create">
             <Plus className="mr-2 h-4 w-4" />
-            Agregar Artista
+            {t("addArtist")}
           </Link>
         </Button>
       </div>
@@ -42,13 +46,11 @@ export default async function ArtistsDashboardPage() {
         {artists.length === 0 ? (
           <Card className="col-span-full">
             <CardContent className="flex flex-col items-center justify-center px-8 py-12">
-              <p className="text-muted-foreground mb-4 text-center">
-                No has agregado ningún artista todavía.
-              </p>
+              <p className="text-muted-foreground mb-4 text-center">{t("noArtistsYet")}</p>
               <Button asChild>
                 <Link href="/dashboard/artists/create">
                   <Plus className="mr-2 h-4 w-4" />
-                  Agregar Artista
+                  {t("addArtist")}
                 </Link>
               </Button>
             </CardContent>
@@ -79,29 +81,29 @@ export default async function ArtistsDashboardPage() {
                       <CardDescription>
                         {artist.genres && artist.genres.length > 0
                           ? artist.genres.join(", ")
-                          : "Sin géneros"}
+                          : t("noGenres")}
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-3">
                   <div className="space-y-1.5">
-                    <p className="text-sm font-medium">Biografía</p>
+                    <p className="text-sm font-medium">{t("biography")}</p>
                     <p className="text-muted-foreground line-clamp-3 text-sm">
-                      {artist.bio || "Sin biografía"}
+                      {artist.bio || t("noBiography")}
                     </p>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <Button variant="outline" asChild>
                     <Link href={`/artists/${artist.slug}`} target="_blank">
-                      Ver Perfil
+                      {t("viewProfile")}
                     </Link>
                   </Button>
                   <Button variant="default" asChild>
                     <Link href={`/dashboard/artists/create?artistId=${artist.id}`}>
                       <Pencil className="mr-2 h-4 w-4" />
-                      Editar
+                      {commonT("edit")}
                     </Link>
                   </Button>
                 </CardFooter>
@@ -116,7 +118,7 @@ export default async function ArtistsDashboardPage() {
           <Button asChild>
             <Link href="/dashboard/artists/create">
               <Plus className="mr-2 h-4 w-4" />
-              Agregar Artista
+              {t("addArtist")}
             </Link>
           </Button>
         </div>

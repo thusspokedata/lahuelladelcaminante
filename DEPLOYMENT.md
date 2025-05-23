@@ -108,6 +108,8 @@ If you're deploying from a branch other than production:
 ```bash
 # On your local machine
 git push dokku your-branch-name:main
+git push dokku production:main
+
 ```
 
 ## Scaling (Optional)

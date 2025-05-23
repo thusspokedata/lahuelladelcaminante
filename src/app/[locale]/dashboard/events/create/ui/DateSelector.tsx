@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -18,6 +19,7 @@ interface DateSelectorProps {
 }
 
 export default function DateSelector({ form }: DateSelectorProps) {
+  const t = useTranslations("events.artistSelector");
   const [selectedDates, setSelectedDates] = useState<Date[]>(form.getValues().dates || []);
 
   // Handle date selection
@@ -46,7 +48,7 @@ export default function DateSelector({ form }: DateSelectorProps) {
       name="dates"
       render={() => (
         <FormItem>
-          <FormLabel>Fechas</FormLabel>
+          <FormLabel>{t("selectDate")}</FormLabel>
           <div className="space-y-4">
             <Popover>
               <PopoverTrigger asChild>
@@ -59,10 +61,10 @@ export default function DateSelector({ form }: DateSelectorProps) {
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDates.length
-                    ? `${selectedDates.length} fecha${
-                        selectedDates.length > 1 ? "s" : ""
-                      } seleccionada${selectedDates.length > 1 ? "s" : ""}`
-                    : "Seleccionar fechas"}
+                    ? `${selectedDates.length} ${
+                        selectedDates.length > 1 ? t("removeDates") : t("addDate")
+                      }`
+                    : t("selectDate")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -85,7 +87,7 @@ export default function DateSelector({ form }: DateSelectorProps) {
 
             {selectedDates.length > 0 && (
               <div className="mt-2 space-y-2">
-                <h4 className="text-sm font-medium">Fechas seleccionadas:</h4>
+                <h4 className="text-sm font-medium">{t("selectDate")}:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedDates.map((date, index) => (
                     <div

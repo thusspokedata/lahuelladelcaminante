@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useTranslations } from "next-intl";
 
 interface ArtistFormProps {
   userId: string;
@@ -89,6 +90,10 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ArtistForm({ userId, userArtists = [], initialArtistId }: ArtistFormProps) {
+  const t = useTranslations("artists.form");
+  const common = useTranslations("common");
+  const validation = useTranslations("validation");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newGenre, setNewGenre] = useState("");
   const [profileImageIndex, setProfileImageIndex] = useState<number>(-1);
@@ -107,12 +112,12 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
       const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
       if (!cloudName) {
-        setCloudinaryError("Cloudinary configuration missing: Cloud name not available");
+        setCloudinaryError(t("cloudinaryErrors.missingCloudName"));
         return false;
       }
 
       if (!uploadPreset) {
-        setCloudinaryError("Cloudinary configuration missing: Upload preset not available");
+        setCloudinaryError(t("cloudinaryErrors.missingUploadPreset"));
         return false;
       }
 
@@ -126,7 +131,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [t]);
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -230,15 +235,15 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
         if (result.success) {
           toast({
-            title: "¡Artista actualizado!",
-            description: `El perfil de "${values.name}" ha sido actualizado correctamente.`,
+            title: t("updateSuccess.title"),
+            description: t("updateSuccess.description", { name: values.name }),
             variant: "default",
           });
           router.refresh();
         } else {
           toast({
-            title: "Error",
-            description: result.error || "Hubo un error al actualizar el artista.",
+            title: t("error"),
+            description: result.error || t("updateError"),
             variant: "destructive",
           });
         }
@@ -251,8 +256,8 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
         if (result.success) {
           toast({
-            title: "¡Artista creado!",
-            description: `"${values.name}" ha sido agregado correctamente.`,
+            title: t("createSuccess.title"),
+            description: t("createSuccess.description", { name: values.name }),
             variant: "default",
           });
 
@@ -261,8 +266,8 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
           router.refresh();
         } else {
           toast({
-            title: "Error",
-            description: result.error || "Hubo un error al crear el artista.",
+            title: t("error"),
+            description: result.error || t("createError"),
             variant: "destructive",
           });
         }
@@ -270,8 +275,8 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title: "Error",
-        description: "Hubo un error al procesar el formulario.",
+        title: t("error"),
+        description: t("formProcessingError"),
         variant: "destructive",
       });
     } finally {
@@ -290,8 +295,8 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
       if (result.success) {
         toast({
-          title: "¡Artista eliminado!",
-          description: "El artista ha sido eliminado correctamente.",
+          title: t("deleteSuccess.title"),
+          description: t("deleteSuccess.description"),
           variant: "default",
         });
 
@@ -300,16 +305,16 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
         router.refresh();
       } else {
         toast({
-          title: "Error",
-          description: result.error || "Hubo un error al eliminar el artista.",
+          title: t("error"),
+          description: result.error || t("deleteError"),
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error deleting artist:", error);
       toast({
-        title: "Error",
-        description: "Hubo un error al eliminar el artista.",
+        title: t("error"),
+        description: t("deleteError"),
         variant: "destructive",
       });
     } finally {
@@ -346,9 +351,9 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base">Artistas Existentes</Label>
+                <Label className="text-base">{t("existingArtists")}</Label>
                 <Button type="button" variant="outline" onClick={() => setSelectedArtistId(null)}>
-                  Crear Nuevo
+                  {t("createNew")}
                 </Button>
               </div>
               <Select
@@ -356,7 +361,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                 onValueChange={(value) => setSelectedArtistId(value || null)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un artista para editar" />
+                  <SelectValue placeholder={t("selectArtistToEdit")} />
                 </SelectTrigger>
                 <SelectContent>
                   {userArtists.map((artist) => (
@@ -373,20 +378,21 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive">
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Eliminar Artista
+                        {t("deleteArtist")}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                        <AlertDialogTitle>{t("deleteConfirmation.title")}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta acción no se puede deshacer. Se eliminará permanentemente el artista
-                          y todos sus datos asociados.
+                          {t("deleteConfirmation.description")}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteArtist}>Eliminar</AlertDialogAction>
+                        <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteArtist}>
+                          {common("delete")}
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -409,11 +415,11 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre del Artista</FormLabel>
+                      <FormLabel>{t("name")}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Nombre del artista" />
+                        <Input {...field} placeholder={t("namePlaceholder")} />
                       </FormControl>
-                      <FormDescription>El nombre público del artista o banda</FormDescription>
+                      <FormDescription>{t("nameDescription")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -425,13 +431,11 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                   name="origin"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Origen</FormLabel>
+                      <FormLabel>{t("origin")}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Ciudad, País" />
+                        <Input {...field} placeholder={t("originPlaceholder")} />
                       </FormControl>
-                      <FormDescription>
-                        Lugar de origen del artista (ej. Buenos Aires, Argentina)
-                      </FormDescription>
+                      <FormDescription>{t("originDescription")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -443,17 +447,11 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                   name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Biografía</FormLabel>
+                      <FormLabel>{t("bio")}</FormLabel>
                       <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Escribe una biografía del artista..."
-                          rows={6}
-                        />
+                        <Textarea {...field} placeholder={t("bioPlaceholder")} rows={6} />
                       </FormControl>
-                      <FormDescription>
-                        Una descripción sobre el artista, su trayectoria y estilo.
-                      </FormDescription>
+                      <FormDescription>{t("bioDescription")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -465,7 +463,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                   name="genres"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Géneros</FormLabel>
+                      <FormLabel>{t("genres")}</FormLabel>
                       <div className="mb-2 flex flex-wrap gap-2">
                         {form.watch("genres")?.map((genre) => (
                           <Badge key={genre} variant="secondary">
@@ -484,7 +482,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                         <Input
                           value={newGenre}
                           onChange={(e) => setNewGenre(e.target.value)}
-                          placeholder="Nuevo género"
+                          placeholder={t("newGenrePlaceholder")}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
@@ -493,10 +491,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                           }}
                         />
                         <Button type="button" onClick={handleAddGenre}>
-                          Agregar
+                          {t("addGenre")}
                         </Button>
                       </div>
-                      <FormDescription>Agrega los géneros musicales del artista.</FormDescription>
+                      <FormDescription>{t("genresDescription")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -504,10 +502,8 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
 
                 {/* Social Media */}
                 <div className="space-y-4">
-                  <Label className="text-base">Redes Sociales</Label>
-                  <p className="text-muted-foreground text-sm">
-                    Agrega enlaces a las redes sociales del artista (opcional).
-                  </p>
+                  <Label className="text-base">{t("socialMedia.title")}</Label>
+                  <p className="text-muted-foreground text-sm">{t("socialMedia.description")}</p>
 
                   <FormField
                     control={form.control}
@@ -516,10 +512,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                       <FormItem>
                         <div className="flex items-center">
                           <div className="w-24">
-                            <FormLabel>Instagram</FormLabel>
+                            <FormLabel>{t("socialMedia.instagram")}</FormLabel>
                           </div>
                           <FormControl>
-                            <Input {...field} placeholder="https://instagram.com/artista" />
+                            <Input {...field} placeholder={t("socialMedia.instagramPlaceholder")} />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -534,10 +530,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                       <FormItem>
                         <div className="flex items-center">
                           <div className="w-24">
-                            <FormLabel>Spotify</FormLabel>
+                            <FormLabel>{t("socialMedia.spotify")}</FormLabel>
                           </div>
                           <FormControl>
-                            <Input {...field} placeholder="https://open.spotify.com/artist/..." />
+                            <Input {...field} placeholder={t("socialMedia.spotifyPlaceholder")} />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -552,10 +548,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                       <FormItem>
                         <div className="flex items-center">
                           <div className="w-24">
-                            <FormLabel>YouTube</FormLabel>
+                            <FormLabel>{t("socialMedia.youtube")}</FormLabel>
                           </div>
                           <FormControl>
-                            <Input {...field} placeholder="https://youtube.com/c/..." />
+                            <Input {...field} placeholder={t("socialMedia.youtubePlaceholder")} />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -570,10 +566,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                       <FormItem>
                         <div className="flex items-center">
                           <div className="w-24">
-                            <FormLabel>Sitio Web</FormLabel>
+                            <FormLabel>{t("socialMedia.website")}</FormLabel>
                           </div>
                           <FormControl>
-                            <Input {...field} placeholder="https://artista.com" />
+                            <Input {...field} placeholder={t("socialMedia.websitePlaceholder")} />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -588,10 +584,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                       <FormItem>
                         <div className="flex items-center">
                           <div className="w-24">
-                            <FormLabel>TikTok</FormLabel>
+                            <FormLabel>{t("socialMedia.tiktok")}</FormLabel>
                           </div>
                           <FormControl>
-                            <Input {...field} placeholder="https://tiktok.com/@artista" />
+                            <Input {...field} placeholder={t("socialMedia.tiktokPlaceholder")} />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -603,10 +599,10 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                 {cloudinaryError && (
                   <Alert variant="default" className="mb-6">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Advertencia</AlertTitle>
+                    <AlertTitle>{t("warning")}</AlertTitle>
                     <AlertDescription>
                       {cloudinaryError}
-                      <p className="mt-2">La carga de imágenes no estará disponible.</p>
+                      <p className="mt-2">{t("imageUnavailable")}</p>
                     </AlertDescription>
                   </Alert>
                 )}
@@ -618,7 +614,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                     name="images"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Imágenes</FormLabel>
+                        <FormLabel>{t("images.title")}</FormLabel>
                         <FormControl>
                           <CloudinaryUpload
                             value={field.value || []}
@@ -648,9 +644,7 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
                             profileImageIndex={profileImageIndex}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Agrega hasta 5 imágenes del artista. Selecciona una imagen como perfil.
-                        </FormDescription>
+                        <FormDescription>{t("images.description")}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -664,11 +658,11 @@ export default function ArtistForm({ userId, userArtists = [], initialArtistId }
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? selectedArtistId
-                  ? "Actualizando..."
-                  : "Creando..."
+                  ? t("updating")
+                  : t("creating")
                 : selectedArtistId
-                  ? "Actualizar Artista"
-                  : "Agregar Artista"}
+                  ? t("updateArtist")
+                  : t("addArtist")}
             </Button>
           </div>
         </form>

@@ -111,6 +111,65 @@
       "price": "Preis",
       "aboutArtist": "Über den Künstler",
       "viewFullProfile": "Vollständiges Profil ansehen"
+    },
+    "create": {
+      "title": "Neue Veranstaltung erstellen",
+      "editTitle": "Veranstaltung bearbeiten",
+      "loadingForm": "Formular wird geladen...",
+      "inactiveUser": "Inaktiver Benutzer",
+      "inactiveUserMessage": "Ihr Konto wartet auf Genehmigung oder wurde deaktiviert. Nur aktive Benutzer können Veranstaltungen erstellen.",
+      "form": {
+        "eventInfo": "Veranstaltungsinformationen",
+        "editDescription": "Bearbeiten Sie die Informationen der Veranstaltung.",
+        "createDescription": "Füllen Sie das Formular mit den Details der Veranstaltung aus, die Sie erstellen möchten.",
+        "title": "Titel",
+        "titlePlaceholder": "Tango in Berlin",
+        "organizer": "Veranstalter",
+        "organizerPlaceholder": "Name des Veranstalters",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Beschreiben Sie die Veranstaltung, fügen Sie wichtige Details hinzu...",
+        "location": "Ort",
+        "locationPlaceholder": "Café Buenos Aires, Berlin",
+        "time": "Uhrzeit",
+        "timePlaceholder": "20:00",
+        "price": "Preis (€)",
+        "pricePlaceholder": "15",
+        "freeEvent": "Leer lassen, wenn kostenlos",
+        "genre": "Genre",
+        "genrePlaceholder": "Tango, Folklore, usw.",
+        "creating": "Veranstaltung wird erstellt...",
+        "create": "Veranstaltung erstellen",
+        "updating": "Veranstaltung wird aktualisiert...",
+        "update": "Veranstaltung aktualisieren",
+        "warning": "Warnung",
+        "imageUnavailable": "Bildupload wird nicht verfügbar sein."
+      }
+    },
+    "artistSelector": {
+      "title": "Künstler",
+      "add": "Künstler hinzufügen",
+      "loading": "Künstler werden geladen...",
+      "select": "Künstler auswählen",
+      "createNew": "Neuen Künstler erstellen",
+      "name": "Künstlername",
+      "namePlaceholder": "Name des Künstlers",
+      "bio": "Biografie (optional)",
+      "bioPlaceholder": "Kurze Künstlerbiografie",
+      "addButton": "Hinzufügen",
+      "associationNote": "Der Künstler wird automatisch mit Ihrem Konto verknüpft. Sie können später weitere Informationen im Künstlerbereich ergänzen.",
+      "noArtists": "Keine Künstler ausgewählt",
+      "selectDate": "Datum auswählen",
+      "addDate": "Datum hinzufügen",
+      "removeDates": "Termine entfernen"
+    },
+    "imageUpload": {
+      "images": "Bilder",
+      "uploadDescription": "Laden Sie bis zu 5 Bilder für Ihre Veranstaltung hoch.",
+      "upload": "Bild hochladen",
+      "uploading": "Wird hochgeladen...",
+      "deleting": "Wird gelöscht...",
+      "setAsProfile": "Als Profilbild festlegen",
+      "profile": "Profil"
     }
   },
   "artists": {
@@ -121,6 +180,7 @@
     "origin": "Herkunft",
     "genres": "Genres",
     "createArtist": "Künstler erstellen",
+    "manageArtists": "Künstler verwalten",
     "socialMedia": "Soziale Medien",
     "client": {
       "upcomingTitle": "Neue Künstler kommen bald",
@@ -146,6 +206,74 @@
         "cumbia": "Cumbia",
         "jazz": "Jazz"
       }
+    },
+    "form": {
+      "name": "Künstlername",
+      "namePlaceholder": "Name des Künstlers",
+      "nameDescription": "Der öffentliche Name des Künstlers oder der Band",
+      "bio": "Biografie",
+      "bioPlaceholder": "Schreiben Sie eine Künstlerbiografie...",
+      "bioDescription": "Eine Beschreibung des Künstlers, sein Hintergrund und Stil",
+      "origin": "Herkunft",
+      "originPlaceholder": "Stadt, Land",
+      "originDescription": "Herkunftsort des Künstlers (z.B. Buenos Aires, Argentinien)",
+      "genres": "Genres",
+      "genresDescription": "Fügen Sie die musikalischen Genres des Künstlers hinzu",
+      "newGenrePlaceholder": "Neues Genre",
+      "addGenre": "Hinzufügen",
+      "existingArtists": "Vorhandene Künstler",
+      "createNew": "Neu erstellen",
+      "selectArtistToEdit": "Wählen Sie einen Künstler zum Bearbeiten aus",
+      "deleteArtist": "Künstler löschen",
+      "images": {
+        "title": "Bilder",
+        "description": "Fügen Sie bis zu 5 Bilder des Künstlers hinzu. Wählen Sie ein Bild als Profil aus."
+      },
+      "socialMedia": {
+        "title": "Soziale Medien",
+        "description": "Fügen Sie Links zu den sozialen Medien des Künstlers hinzu (optional)",
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/kuenstler",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/c/...",
+        "website": "Webseite",
+        "websitePlaceholder": "https://kuenstler.com",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@kuenstler"
+      },
+      "warning": "Warnung",
+      "imageUnavailable": "Bildupload wird nicht verfügbar sein.",
+      "cloudinaryErrors": {
+        "missingCloudName": "Cloudinary-Konfiguration fehlt: Cloud-Name nicht verfügbar",
+        "missingUploadPreset": "Cloudinary-Konfiguration fehlt: Upload-Preset nicht verfügbar"
+      },
+      "error": "Fehler",
+      "updateError": "Beim Aktualisieren des Künstlers ist ein Fehler aufgetreten.",
+      "createError": "Beim Erstellen des Künstlers ist ein Fehler aufgetreten.",
+      "formProcessingError": "Bei der Verarbeitung des Formulars ist ein Fehler aufgetreten.",
+      "deleteError": "Beim Löschen des Künstlers ist ein Fehler aufgetreten.",
+      "updateSuccess": {
+        "title": "Künstler aktualisiert!",
+        "description": "Das Profil von \"{name}\" wurde erfolgreich aktualisiert."
+      },
+      "createSuccess": {
+        "title": "Künstler erstellt!",
+        "description": "\"{name}\" wurde erfolgreich hinzugefügt."
+      },
+      "deleteSuccess": {
+        "title": "Künstler gelöscht!",
+        "description": "Der Künstler wurde erfolgreich gelöscht."
+      },
+      "deleteConfirmation": {
+        "title": "Sind Sie sicher?",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Der Künstler und alle zugehörigen Daten werden dauerhaft gelöscht."
+      },
+      "addArtist": "Künstler hinzufügen",
+      "updateArtist": "Künstler aktualisieren",
+      "creating": "Wird erstellt...",
+      "updating": "Wird aktualisiert..."
     }
   },
   "auth": {
@@ -176,6 +304,15 @@
       "editEvent": "Bearbeiten",
       "dateNotAvailable": "Datum nicht verfügbar",
       "noArtist": "Kein Künstler zugewiesen"
+    },
+    "artists": {
+      "myArtists": "Meine Künstler",
+      "addArtist": "Künstler hinzufügen",
+      "noArtistsYet": "Sie haben noch keine Künstler hinzugefügt.",
+      "noGenres": "Keine Genres",
+      "noBiography": "Keine Biografie",
+      "biography": "Biografie",
+      "viewProfile": "Profil ansehen"
     },
     "mainPage": {
       "title": "Dashboard",
@@ -238,5 +375,9 @@
       "failedDelete": "Bild konnte nicht gelöscht werden",
       "internalError": "Interner Serverfehler"
     }
+  },
+  "validation": {
+    "minLength": "Das Feld {field} muss mindestens {length} Zeichen haben.",
+    "minItems": "Fügen Sie mindestens {count} {field} hinzu."
   }
 }

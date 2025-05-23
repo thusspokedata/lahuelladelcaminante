@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,8 @@ interface ArtistSelectorProps {
 }
 
 export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
+  const t = useTranslations("events.artistSelector");
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [artistName, setArtistName] = useState("");
   const [artistBio, setArtistBio] = useState("");
@@ -107,32 +110,32 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-medium">Artistas</Label>
+        <Label className="text-base font-medium">{t("title")}</Label>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" type="button">
-              Agregar Artista
+              {t("add")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Agregar Artista</DialogTitle>
+              <DialogTitle>{t("add")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               {isLoading ? (
-                <div className="text-center">Cargando artistas...</div>
+                <div className="text-center">{t("loading")}</div>
               ) : (
                 <>
                   {existingArtists.length > 0 && (
                     <div className="space-y-2">
-                      <Label htmlFor="artistSelect">Seleccionar Artista</Label>
+                      <Label htmlFor="artistSelect">{t("select")}</Label>
                       <select
                         id="artistSelect"
                         className="border-input bg-background w-full rounded-md border px-3 py-2"
                         value={selectedExistingArtist}
                         onChange={handleSelectChange}
                       >
-                        <option value="new">Crear nuevo artista</option>
+                        <option value="new">{t("createNew")}</option>
                         {existingArtists.map((artist) => (
                           <option key={artist.id} value={artist.id}>
                             {artist.name}
@@ -143,24 +146,24 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
                   )}
 
                   <div className="space-y-2">
-                    <Label htmlFor="artistName">Nombre del Artista</Label>
+                    <Label htmlFor="artistName">{t("name")}</Label>
                     <Input
                       id="artistName"
                       value={artistName}
                       onChange={(e) => setArtistName(e.target.value)}
-                      placeholder="Nombre del artista"
+                      placeholder={t("namePlaceholder")}
                       disabled={selectedExistingArtist !== "new" && existingArtists.length > 0}
                     />
                   </div>
 
                   {selectedExistingArtist === "new" && (
                     <div className="space-y-2">
-                      <Label htmlFor="artistBio">Biografía (opcional)</Label>
+                      <Label htmlFor="artistBio">{t("bio")}</Label>
                       <Textarea
                         id="artistBio"
                         value={artistBio}
                         onChange={(e) => setArtistBio(e.target.value)}
-                        placeholder="Breve biografía del artista"
+                        placeholder={t("bioPlaceholder")}
                         rows={4}
                       />
                     </div>
@@ -172,15 +175,12 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
                       onClick={addArtist}
                       disabled={selectedExistingArtist === "new" && !artistName.trim()}
                     >
-                      Agregar
+                      {t("addButton")}
                     </Button>
                   </div>
 
                   {selectedExistingArtist === "new" && (
-                    <p className="text-muted-foreground text-sm">
-                      El artista se asociará automáticamente a tu cuenta. Podrás completar más
-                      información después desde el panel de artistas.
-                    </p>
+                    <p className="text-muted-foreground text-sm">{t("associationNote")}</p>
                   )}
                 </>
               )}
@@ -213,7 +213,7 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">No hay artistas seleccionados</p>
+        <p className="text-muted-foreground text-sm">{t("noArtists")}</p>
       )}
     </div>
   );

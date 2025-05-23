@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
 import Image from "next/image";
 import { X, ImagePlus } from "lucide-react";
@@ -39,6 +40,8 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
   onProfileSelect,
   profileImageIndex,
 }) => {
+  const t = useTranslations("events.imageUpload");
+
   const [isMounted, setIsMounted] = useState(false);
   const [localImages, setLocalImages] = useState<ImageObject[]>(value);
   const [error, setError] = useState<string | null>(null);
@@ -228,14 +231,14 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                     size="sm"
                     className="text-xs"
                   >
-                    Set as Profile
+                    {t("setAsProfile")}
                   </Button>
                 </div>
               )}
 
               {isProfileSelector && profileImageIndex === index && (
                 <div className="bg-primary absolute top-2 left-2 z-10 rounded-full px-2 py-1 text-xs text-white">
-                  Profile
+                  {t("profile")}
                 </div>
               )}
 
@@ -274,7 +277,8 @@ const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
                 className="gap-2"
               >
                 <ImagePlus className="h-4 w-4" />
-                Subir imagen {isUploading && "(Subiendo...)"} {isDeleting && "(Eliminando...)"}
+                {t("upload")} {isUploading && `(${t("uploading")})`}{" "}
+                {isDeleting && `(${t("deleting")})`}
               </Button>
             );
           }}

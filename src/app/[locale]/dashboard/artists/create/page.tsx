@@ -4,10 +4,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ArtistForm from "./ArtistForm";
 import { getArtistsByUser } from "@/services/artists";
+import { getTranslations } from "next-intl/server";
 
 type SearchParams = Promise<{ artistId?: string }>;
 
 export default async function CreateArtistPage({ searchParams }: { searchParams: SearchParams }) {
+  const t = await getTranslations("artists");
+  const commonT = await getTranslations("common");
+
   const authResult = await auth();
 
   if (!authResult.userId) {
@@ -29,10 +33,10 @@ export default async function CreateArtistPage({ searchParams }: { searchParams:
             className="text-muted-foreground hover:text-primary inline-flex items-center text-sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
+            {commonT("back")}
           </Link>
         </div>
-        <h1 className="text-center text-2xl font-bold">Gestionar Artistas</h1>
+        <h1 className="text-center text-2xl font-bold">{t("manageArtists")}</h1>
         <div className="w-24"></div> {/* Spacer para balancear el header */}
       </div>
 

@@ -5,10 +5,13 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getCurrentUser, hasRole, isActiveUser } from "@/services/auth";
 import { EventFormContainerClient, BackButtonClient } from "./ui/client-components";
+import { getTranslations } from "next-intl/server";
 
 type SearchParams = Promise<{ eventId?: string }>;
 
 export default async function EventPage({ searchParams }: { searchParams: SearchParams }) {
+  const t = await getTranslations("events.create");
+
   // Auth checks on the server
   const user = await currentUser();
 
@@ -25,7 +28,15 @@ export default async function EventPage({ searchParams }: { searchParams: Search
   const canCreateEvents = isAdmin || isActive;
 
   if (!canCreateEvents) {
-    return <InactiveUserMessage />;
+    return (
+      <div className="container mx-auto max-w-md py-10">
+        <Alert variant="default">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{t("inactiveUser")}</AlertTitle>
+          <AlertDescription>{t("inactiveUserMessage")}</AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   // Get eventId from searchParams if it exists
@@ -36,33 +47,13 @@ export default async function EventPage({ searchParams }: { searchParams: Search
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">
-          {isEditMode ? "Editar Evento" : "Crear Nuevo Evento"}
-        </h1>
+        <h1 className="text-3xl font-bold">{isEditMode ? t("editTitle") : t("title")}</h1>
         <BackButtonClient />
       </div>
 
-      <Suspense fallback={<div>Cargando formulario...</div>}>
+      <Suspense fallback={<div>{t("loadingForm")}</div>}>
         <EventFormContainerClient eventId={eventId} />
       </Suspense>
-    </div>
-  );
-}
-
-// Server component
-function InactiveUserMessage() {
-  return (
-    <div className="container mx-auto py-10">
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Cuenta no activada</AlertTitle>
-        <AlertDescription>
-          Tu cuenta debe estar activa para crear eventos. Por favor, contacta con un administrador.
-          <div className="mt-4">
-            <BackButtonClient />
-          </div>
-        </AlertDescription>
-      </Alert>
     </div>
   );
 }
