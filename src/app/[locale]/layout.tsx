@@ -1,8 +1,8 @@
+import "./../globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
-import "../globals.css";
 import { Providers } from "../providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { MobileTitle } from "@/components/MobileTitle";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -54,7 +55,8 @@ export default async function RootLayout({ children, params }: Props) {
                     <HomeButton />
                     <SiteTitle />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex items-center gap-4">
+                    <LanguageSwitcher />
                     <SignedOut>
                       <Link href="/sign-in">
                         <Button variant="outline">{t("signIn")}</Button>
