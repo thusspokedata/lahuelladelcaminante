@@ -18,7 +18,12 @@ import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
 import { getTranslations } from "next-intl/server";
 
-export default async function EventsDashboardPage({ params }: { params: { locale: string } }) {
+export default async function EventsDashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const authResult = await auth();
   const userId = authResult.userId;
   const t = await getTranslations("dashboard.events");
@@ -35,14 +40,14 @@ export default async function EventsDashboardPage({ params }: { params: { locale
       es,
       de,
       en: enUS,
-    }[params.locale] || es;
+    }[locale] || es;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-6">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Button asChild>
-          <Link href={`/${params.locale}/dashboard/events/create`}>
+          <Link href={`/${locale}/dashboard/events/create`}>
             <Plus className="mr-2 h-4 w-4" />
             {t("create")}
           </Link>
@@ -55,7 +60,7 @@ export default async function EventsDashboardPage({ params }: { params: { locale
             <CardContent className="flex flex-col items-center justify-center px-8 py-12">
               <p className="text-muted-foreground mb-4 text-center">{t("noEvents")}</p>
               <Button asChild>
-                <Link href={`/${params.locale}/dashboard/events/create`}>
+                <Link href={`/${locale}/dashboard/events/create`}>
                   <Plus className="mr-2 h-4 w-4" />
                   {t("create")}
                 </Link>
@@ -72,9 +77,9 @@ export default async function EventsDashboardPage({ params }: { params: { locale
               event.dates && event.dates.length > 0
                 ? format(
                     new Date(event.dates[0].date),
-                    params.locale === "es"
+                    locale === "es"
                       ? "d 'de' MMMM, yyyy"
-                      : params.locale === "de"
+                      : locale === "de"
                         ? "d. MMMM yyyy"
                         : "MMMM d, yyyy",
                     { locale: dateLocale }
@@ -124,12 +129,12 @@ export default async function EventsDashboardPage({ params }: { params: { locale
 
                 <CardFooter className="flex justify-between pt-2">
                   <Button variant="outline" asChild>
-                    <Link href={`/${params.locale}/events/${event.slug}`} target="_blank">
+                    <Link href={`/${locale}/events/${event.slug}`} target="_blank">
                       {t("viewEvent")}
                     </Link>
                   </Button>
                   <Button variant="default" asChild>
-                    <Link href={`/${params.locale}/dashboard/events/create?eventId=${event.id}`}>
+                    <Link href={`/${locale}/dashboard/events/create?eventId=${event.id}`}>
                       <Pencil className="mr-2 h-4 w-4" />
                       {t("editEvent")}
                     </Link>
