@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 // Helper function to check if a user owns an artist
 async function userOwnsArtist(userId: string, artistId: string): Promise<boolean> {
@@ -22,6 +23,10 @@ type Params = Promise<{ id: string }>;
 export default async function EditArtistPage({ params }: { params: Params }) {
   const { id } = await params;
   const authResult = await auth();
+
+  // Get translations
+  const t = await getTranslations("artists.form");
+  const tCommon = await getTranslations("common");
 
   if (!authResult.userId) {
     redirect("/sign-in");
@@ -43,11 +48,11 @@ export default async function EditArtistPage({ params }: { params: Params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Editar Artista</h1>
+        <h1 className="text-2xl font-bold">{t("editArtistTitle")}</h1>
         <Button variant="outline" size="sm" asChild>
           <Link href="/dashboard/artists">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
+            {tCommon("back")}
           </Link>
         </Button>
       </div>

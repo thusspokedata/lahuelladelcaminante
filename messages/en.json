@@ -143,7 +143,23 @@
         "update": "Update Event",
         "warning": "Warning",
         "imageUnavailable": "Image upload will not be available."
-      }
+      },
+      "loadError": "Error loading event",
+      "loadErrorToast": "Could not load event",
+      "loadingEvent": "Loading event data...",
+      "updateSuccess": "Event updated!",
+      "createSuccess": "Event created!",
+      "updateSuccessDescription": "The event \"{title}\" has been updated successfully.",
+      "createSuccessDescription": "The event \"{title}\" has been created successfully.",
+      "submitError": "An error occurred",
+      "submitErrorToast": "There was an error processing the request",
+      "deleteEvent": "Delete Event",
+      "deleteSuccess": "Event deleted!",
+      "deleteSuccessDescription": "The event has been deleted successfully.",
+      "deleteError": "Could not delete event",
+      "deleteErrorToast": "There was an error deleting the event",
+      "deleteConfirmTitle": "Are you sure?",
+      "deleteConfirmDescription": "This action cannot be undone. The event will be removed from the platform."
     },
     "artistSelector": {
       "title": "Artists",
@@ -281,7 +297,8 @@
       "nameValidation": "Name must be at least {length} characters.",
       "bioValidation": "Biography must be at least {length} characters.",
       "originValidation": "Origin must be at least {length} characters.",
-      "genresValidation": "Select at least one genre."
+      "genresValidation": "Select at least one genre.",
+      "editArtistTitle": "Edit Artist"
     },
     "backToArtists": "Back to artists",
     "upcomingEvents": "Upcoming Events",
@@ -393,5 +410,29 @@
   "validation": {
     "minLength": "The {field} field must be at least {length} characters.",
     "minItems": "Add at least {count} {field}."
+  },
+  "users": {
+    "title": "User Management",
+    "backToDashboard": "Back to Dashboard",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "registration": "Registration",
+    "actions": "Actions",
+    "noUsers": "No registered users",
+    "notSpecified": "Not specified",
+    "approve": "Approve",
+    "block": "Block",
+    "unblock": "Unblock",
+    "edit": {
+      "title": "Edit User",
+      "backToList": "Back to list",
+      "userInfo": "User Information",
+      "registrationDate": "Registration date",
+      "lastUpdate": "Last update",
+      "userRole": "User Role",
+      "userStatus": "User Status"
+    }
   }
 }

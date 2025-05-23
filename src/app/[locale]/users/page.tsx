@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getAllUsers, getCurrentUser, updateUserStatus } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { UserRole, UserStatus } from "@/generated/prisma";
+import { getTranslations } from "next-intl/server";
 
 // Component to manage users
 export default async function AdminUsersPage() {
@@ -15,12 +16,16 @@ export default async function AdminUsersPage() {
   // Get all users
   const users = await getAllUsers();
 
+  // Get translations
+  const t = await getTranslations("users");
+  const tCommon = await getTranslations("common");
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Gestión de Usuarios</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <Link href="/dashboard">
-          <Button variant="outline">Volver al Dashboard</Button>
+          <Button variant="outline">{t("backToDashboard")}</Button>
         </Link>
       </div>
 
@@ -33,37 +38,37 @@ export default async function AdminUsersPage() {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Nombre
+                {t("name")}
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Email
+                {t("email")}
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Rol
+                {t("role")}
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Estado
+                {t("status")}
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Registro
+                {t("registration")}
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
               >
-                Acciones
+                {t("actions")}
               </th>
             </tr>
           </thead>
@@ -71,7 +76,7 @@ export default async function AdminUsersPage() {
             {users.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
-                  No hay usuarios registrados
+                  {t("noUsers")}
                 </td>
               </tr>
             ) : (
@@ -80,7 +85,7 @@ export default async function AdminUsersPage() {
                   <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
                     {user.firstName
                       ? `${user.firstName} ${user.lastName || ""}`
-                      : "No especificado"}
+                      : t("notSpecified")}
                   </td>
                   <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {user.email}
@@ -98,7 +103,7 @@ export default async function AdminUsersPage() {
                     <div className="flex space-x-2">
                       <Link href={`/admin/users/${user.id}/edit`}>
                         <Button variant="outline" size="sm">
-                          Editar
+                          {tCommon("edit")}
                         </Button>
                       </Link>
                       {user.status === "PENDING" && (
@@ -109,7 +114,7 @@ export default async function AdminUsersPage() {
                           }}
                         >
                           <Button variant="default" size="sm" type="submit">
-                            Aprobar
+                            {t("approve")}
                           </Button>
                         </form>
                       )}
@@ -121,7 +126,7 @@ export default async function AdminUsersPage() {
                           }}
                         >
                           <Button variant="destructive" size="sm" type="submit">
-                            Bloquear
+                            {t("block")}
                           </Button>
                         </form>
                       )}
@@ -133,7 +138,7 @@ export default async function AdminUsersPage() {
                           }}
                         >
                           <Button variant="default" size="sm" type="submit">
-                            Desbloquear
+                            {t("unblock")}
                           </Button>
                         </form>
                       )}

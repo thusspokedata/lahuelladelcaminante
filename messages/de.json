@@ -143,7 +143,23 @@
         "update": "Veranstaltung aktualisieren",
         "warning": "Warnung",
         "imageUnavailable": "Bildupload wird nicht verfügbar sein."
-      }
+      },
+      "loadError": "Fehler beim Laden des Events",
+      "loadErrorToast": "Event konnte nicht geladen werden",
+      "loadingEvent": "Event-Daten werden geladen...",
+      "updateSuccess": "Event aktualisiert!",
+      "createSuccess": "Event erstellt!",
+      "updateSuccessDescription": "Das Event \"{title}\" wurde erfolgreich aktualisiert.",
+      "createSuccessDescription": "Das Event \"{title}\" wurde erfolgreich erstellt.",
+      "submitError": "Ein Fehler ist aufgetreten",
+      "submitErrorToast": "Fehler beim Verarbeiten der Anfrage",
+      "deleteEvent": "Event löschen",
+      "deleteSuccess": "Event gelöscht!",
+      "deleteSuccessDescription": "Das Event wurde erfolgreich gelöscht.",
+      "deleteError": "Event konnte nicht gelöscht werden",
+      "deleteErrorToast": "Fehler beim Löschen des Events",
+      "deleteConfirmTitle": "Sind Sie sicher?",
+      "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Das Event wird von der Plattform entfernt."
     },
     "artistSelector": {
       "title": "Künstler",
@@ -281,7 +297,8 @@
       "nameValidation": "Der Name muss mindestens {length} Zeichen lang sein.",
       "bioValidation": "Die Biografie muss mindestens {length} Zeichen lang sein.",
       "originValidation": "Die Herkunft muss mindestens {length} Zeichen lang sein.",
-      "genresValidation": "Wählen Sie mindestens ein Genre aus."
+      "genresValidation": "Wählen Sie mindestens ein Genre aus.",
+      "editArtistTitle": "Künstler bearbeiten"
     },
     "backToArtists": "Zurück zu Künstlern",
     "upcomingEvents": "Kommende Veranstaltungen",
@@ -393,5 +410,29 @@
   "validation": {
     "minLength": "Das Feld {field} muss mindestens {length} Zeichen haben.",
     "minItems": "Fügen Sie mindestens {count} {field} hinzu."
+  },
+  "users": {
+    "title": "Benutzerverwaltung",
+    "backToDashboard": "Zurück zum Dashboard",
+    "name": "Name",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "status": "Status",
+    "registration": "Registrierung",
+    "actions": "Aktionen",
+    "noUsers": "Keine registrierten Benutzer",
+    "notSpecified": "Nicht angegeben",
+    "approve": "Genehmigen",
+    "block": "Blockieren",
+    "unblock": "Entsperren",
+    "edit": {
+      "title": "Benutzer bearbeiten",
+      "backToList": "Zurück zur Liste",
+      "userInfo": "Benutzerinformationen",
+      "registrationDate": "Registrierungsdatum",
+      "lastUpdate": "Letzte Aktualisierung",
+      "userRole": "Benutzerrolle",
+      "userStatus": "Benutzerstatus"
+    }
   }
 }

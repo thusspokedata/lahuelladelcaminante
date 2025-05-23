@@ -143,7 +143,23 @@
         "update": "Actualizar Evento",
         "warning": "Advertencia",
         "imageUnavailable": "La carga de imágenes no estará disponible."
-      }
+      },
+      "loadError": "Error al cargar el evento",
+      "loadErrorToast": "No se pudo cargar el evento",
+      "loadingEvent": "Cargando datos del evento...",
+      "updateSuccess": "¡Evento actualizado!",
+      "createSuccess": "¡Evento creado!",
+      "updateSuccessDescription": "El evento \"{title}\" ha sido actualizado correctamente.",
+      "createSuccessDescription": "El evento \"{title}\" ha sido creado correctamente.",
+      "submitError": "Ha ocurrido un error",
+      "submitErrorToast": "Hubo un error al procesar la solicitud",
+      "deleteEvent": "Eliminar Evento",
+      "deleteSuccess": "¡Evento eliminado!",
+      "deleteSuccessDescription": "El evento ha sido eliminado correctamente.",
+      "deleteError": "No se pudo eliminar el evento",
+      "deleteErrorToast": "Hubo un error al eliminar el evento",
+      "deleteConfirmTitle": "¿Estás seguro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. El evento será eliminado de la plataforma."
     },
     "artistSelector": {
       "title": "Artistas",
@@ -281,7 +297,8 @@
       "nameValidation": "El nombre debe tener al menos {length} caracteres.",
       "bioValidation": "La biografía debe tener al menos {length} caracteres.",
       "originValidation": "El origen debe tener al menos {length} caracteres.",
-      "genresValidation": "Selecciona al menos un género."
+      "genresValidation": "Selecciona al menos un género.",
+      "editArtistTitle": "Editar Artista"
     },
     "backToArtists": "Volver a artistas",
     "upcomingEvents": "Próximos Eventos",
@@ -393,5 +410,29 @@
   "validation": {
     "minLength": "El campo {field} debe tener al menos {length} caracteres.",
     "minItems": "Agrega al menos {count} {field}."
+  },
+  "users": {
+    "title": "Gestión de Usuarios",
+    "backToDashboard": "Volver al Dashboard",
+    "name": "Nombre",
+    "email": "Email",
+    "role": "Rol",
+    "status": "Estado",
+    "registration": "Registro",
+    "actions": "Acciones",
+    "noUsers": "No hay usuarios registrados",
+    "notSpecified": "No especificado",
+    "approve": "Aprobar",
+    "block": "Bloquear",
+    "unblock": "Desbloquear",
+    "edit": {
+      "title": "Editar Usuario",
+      "backToList": "Volver a la lista",
+      "userInfo": "Información del Usuario",
+      "registrationDate": "Fecha de registro",
+      "lastUpdate": "Última actualización",
+      "userRole": "Rol de Usuario",
+      "userStatus": "Estado de Usuario"
+    }
   }
 }

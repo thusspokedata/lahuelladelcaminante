@@ -23,13 +23,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 export function BackButtonClient() {
   const router = useRouter();
+  const t = useTranslations("common");
+
   return (
     <Button variant="outline" onClick={() => router.back()}>
       <ArrowLeft className="mr-2 h-4 w-4" />
-      Volver
+      {t("back")}
     </Button>
   );
 }
@@ -43,6 +46,10 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
   const [isLoading, setIsLoading] = useState(Boolean(eventId));
   const { toast } = useToast();
 
+  // Get translations
+  const t = useTranslations("events.create");
+  const tCommon = useTranslations("common");
+
   // Load event data if in edit mode
   useEffect(() => {
     if (eventId) {
@@ -52,10 +59,10 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
           setEvent(data);
         })
         .catch((error: Error) => {
-          setError(error.message || "Error al cargar el evento");
+          setError(error.message || t("loadError"));
           toast({
-            title: "Error",
-            description: error.message || "No se pudo cargar el evento",
+            title: tCommon("error"),
+            description: error.message || t("loadErrorToast"),
             variant: "destructive",
           });
         })
@@ -63,7 +70,7 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
           setIsLoading(false);
         });
     }
-  }, [eventId, toast]);
+  }, [eventId, toast, t, tCommon]);
 
   const handleSubmit = async (values: EventFormValues) => {
     setIsSubmitting(true);
@@ -88,10 +95,10 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
 
       if (result.success) {
         toast({
-          title: eventId ? "¡Evento actualizado!" : "¡Evento creado!",
+          title: eventId ? t("updateSuccess") : t("createSuccess"),
           description: eventId
-            ? `El evento "${values.title}" ha sido actualizado correctamente.`
-            : `El evento "${values.title}" ha sido creado correctamente.`,
+            ? t("updateSuccessDescription", { title: values.title })
+            : t("createSuccessDescription", { title: values.title }),
           variant: "default",
         });
 
@@ -99,14 +106,14 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
         router.push("/dashboard/events");
         router.refresh();
       } else {
-        setError("Ha ocurrido un error");
+        setError(t("submitError"));
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Ha ocurrido un error";
+      const errorMessage = error instanceof Error ? error.message : t("submitError");
       setError(errorMessage);
       toast({
-        title: "Error",
-        description: errorMessage || "Hubo un error al procesar la solicitud",
+        title: tCommon("error"),
+        description: errorMessage || t("submitErrorToast"),
         variant: "destructive",
       });
     } finally {
@@ -123,8 +130,8 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
 
       if (result.success) {
         toast({
-          title: "¡Evento eliminado!",
-          description: "El evento ha sido eliminado correctamente.",
+          title: t("deleteSuccess"),
+          description: t("deleteSuccessDescription"),
           variant: "default",
         });
 
@@ -132,13 +139,13 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
         router.push("/dashboard/events");
         router.refresh();
       } else {
-        throw new Error("No se pudo eliminar el evento");
+        throw new Error(t("deleteError"));
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Ha ocurrido un error";
+      const errorMessage = error instanceof Error ? error.message : t("deleteError");
       toast({
-        title: "Error",
-        description: errorMessage || "Hubo un error al eliminar el evento",
+        title: tCommon("error"),
+        description: errorMessage || t("deleteErrorToast"),
         variant: "destructive",
       });
     } finally {
@@ -148,7 +155,7 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
   };
 
   if (isLoading) {
-    return <div>Cargando datos del evento...</div>;
+    return <div>{t("loadingEvent")}</div>;
   }
 
   return (
@@ -159,19 +166,17 @@ export function EventFormContainerClient({ eventId }: { eventId?: string }) {
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Eliminar Evento
+                {t("deleteEvent")}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta acción no se puede deshacer. El evento será eliminado de la plataforma.
-                </AlertDialogDescription>
+                <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("deleteConfirmDescription")}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>Eliminar</AlertDialogAction>
+                <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>{tCommon("delete")}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
