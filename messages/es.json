@@ -46,7 +46,7 @@
   "events": {
     "title": "Eventos",
     "noEvents": "No hay eventos disponibles",
-    "upcoming": "Próximos Eventos",
+    "upcoming": "Próximos shows de música argentina en Berlín",
     "past": "Eventos Pasados",
     "details": "Detalles del Evento",
     "location": "Ubicación",
@@ -55,6 +55,34 @@
     "artist": "Artista",
     "description": "Descripción",
     "createEvent": "Crear Evento",
+    "client": {
+      "upcomingMessage": "Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto para descubrir nuevas fechas y artistas.",
+      "viewArtists": "Ver artistas",
+      "aboutUs": "Sobre nosotros",
+      "noEventsFound": "No se encontraron eventos con los filtros seleccionados",
+      "clearFilters": "Limpiar filtros"
+    },
+    "filters": {
+      "title": "Filtros",
+      "date": "Fecha",
+      "genre": "Género",
+      "artist": "Artista",
+      "organizer": "Organizador",
+      "selectGenre": "Seleccionar género",
+      "selectOrganizer": "Seleccionar organizador",
+      "searchArtist": "Buscar artista...",
+      "allGenres": "Todos los géneros",
+      "allOrganizers": "Todos los organizadores",
+      "applyFilters": "Aplicar Filtros",
+      "showAll": "Mostrar Todos",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Electrónica"
+      }
+    },
     "eventDetail": {
       "notFound": "Evento no encontrado",
       "notFoundDesc": "No pudimos encontrar el evento que estás buscando.",

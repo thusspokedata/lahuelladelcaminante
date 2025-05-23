@@ -9,12 +9,17 @@ import { formatDateWithWeekday } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Music, Info } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 interface EventsClientProps {
   initialEvents: Event[];
 }
 
 export function EventsClient({ initialEvents }: EventsClientProps) {
+  const t = useTranslations("events");
+  const locale = useLocale();
+
   const [filteredEvents, setFilteredEvents] = useState(initialEvents);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
@@ -22,6 +27,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     date: Date | undefined;
     genre: string | undefined;
     artist: string;
+    organizer: string;
   }) => {
     let filtered = [...initialEvents];
     setSelectedDate(filters.date);
@@ -35,6 +41,10 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
       filtered = filtered.filter((event) =>
         event.artist.name.toLowerCase().includes(filters.artist.toLowerCase())
       );
+    }
+
+    if (filters.organizer) {
+      filtered = filtered.filter((event) => event.organizer === filters.organizer);
     }
 
     if (filters.date) {
@@ -72,22 +82,19 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
       <Card className="p-8">
         <CardContent className="flex flex-col items-center justify-center space-y-6 pt-6 text-center">
           <CalendarIcon className="text-primary/70 h-16 w-16" />
-          <h3 className="text-2xl font-semibold">Próximamente nuevos eventos</h3>
-          <p className="text-muted-foreground max-w-md">
-            Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto
-            para descubrir nuevas fechas y artistas.
-          </p>
+          <h3 className="text-2xl font-semibold">{t("noEvents")}</h3>
+          <p className="text-muted-foreground max-w-md">{t("client.upcomingMessage")}</p>
           <div className="flex flex-wrap gap-4 pt-2">
             <Button variant="outline" asChild>
-              <Link href="/artists">
+              <Link href={`/${locale}/artists`}>
                 <Music className="mr-2 h-4 w-4" />
-                Ver artistas
+                {t("client.viewArtists")}
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/about">
+              <Link href={`/${locale}/about`}>
                 <Info className="mr-2 h-4 w-4" />
-                Sobre nosotros
+                {t("client.aboutUs")}
               </Link>
             </Button>
           </div>
@@ -139,16 +146,19 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         {sortedEvents.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground mb-4">
-                No se encontraron eventos con los filtros seleccionados
-              </p>
+              <p className="text-muted-foreground mb-4">{t("client.noEventsFound")}</p>
               <Button
                 variant="outline"
                 onClick={() =>
-                  handleFilterChange({ date: undefined, genre: undefined, artist: "" })
+                  handleFilterChange({
+                    date: undefined,
+                    genre: undefined,
+                    artist: "",
+                    organizer: "",
+                  })
                 }
               >
-                Limpiar filtros
+                {t("client.clearFilters")}
               </Button>
             </CardContent>
           </Card>
@@ -158,7 +168,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               key={`${event.id}-${index}`}
               id={event.id}
               title={event.title}
-              date={formatDateWithWeekday(event.date)}
+              date={formatDateWithWeekday(event.date, locale)}
               artist={event.artist.name}
               organizer={event.organizer}
               genre={event.genre}

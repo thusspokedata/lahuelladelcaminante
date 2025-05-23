@@ -46,7 +46,7 @@
   "events": {
     "title": "Veranstaltungen",
     "noEvents": "Keine Veranstaltungen verfügbar",
-    "upcoming": "Kommende Veranstaltungen",
+    "upcoming": "Kommende argentinische Musikshows in Berlin",
     "past": "Vergangene Veranstaltungen",
     "details": "Veranstaltungsdetails",
     "location": "Ort",
@@ -55,6 +55,34 @@
     "artist": "Künstler",
     "description": "Beschreibung",
     "createEvent": "Veranstaltung erstellen",
+    "client": {
+      "upcomingMessage": "Wir bereiten kommende argentinische Musikveranstaltungen in Berlin vor. Schau bald wieder vorbei, um neue Termine und Künstler zu entdecken.",
+      "viewArtists": "Künstler anzeigen",
+      "aboutUs": "Über uns",
+      "noEventsFound": "Keine Veranstaltungen mit den ausgewählten Filtern gefunden",
+      "clearFilters": "Filter löschen"
+    },
+    "filters": {
+      "title": "Filter",
+      "date": "Datum",
+      "genre": "Genre",
+      "artist": "Künstler",
+      "organizer": "Veranstalter",
+      "selectGenre": "Genre auswählen",
+      "selectOrganizer": "Veranstalter auswählen",
+      "searchArtist": "Künstler suchen...",
+      "allGenres": "Alle Genres",
+      "allOrganizers": "Alle Veranstalter",
+      "applyFilters": "Filter anwenden",
+      "showAll": "Alle anzeigen",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Elektronik"
+      }
+    },
     "eventDetail": {
       "notFound": "Veranstaltung nicht gefunden",
       "notFoundDesc": "Wir konnten die gesuchte Veranstaltung nicht finden.",

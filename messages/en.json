@@ -46,7 +46,7 @@
   "events": {
     "title": "Events",
     "noEvents": "No events available",
-    "upcoming": "Upcoming Events",
+    "upcoming": "Upcoming Argentine music shows in Berlin",
     "past": "Past Events",
     "details": "Event Details",
     "location": "Location",
@@ -55,6 +55,34 @@
     "artist": "Artist",
     "description": "Description",
     "createEvent": "Create Event",
+    "client": {
+      "upcomingMessage": "We're preparing upcoming Argentine music events in Berlin. Check back soon to discover new dates and artists.",
+      "viewArtists": "View artists",
+      "aboutUs": "About us",
+      "noEventsFound": "No events found with the selected filters",
+      "clearFilters": "Clear filters"
+    },
+    "filters": {
+      "title": "Filters",
+      "date": "Date",
+      "genre": "Genre",
+      "artist": "Artist",
+      "organizer": "Organizer",
+      "selectGenre": "Select genre",
+      "selectOrganizer": "Select organizer",
+      "searchArtist": "Search artist...",
+      "allGenres": "All genres",
+      "allOrganizers": "All organizers",
+      "applyFilters": "Apply filters",
+      "showAll": "Show all",
+      "genreOptions": {
+        "tango": "Tango",
+        "folklore": "Folklore",
+        "rock": "Rock",
+        "jazz": "Jazz",
+        "electronica": "Electronic"
+      }
+    },
     "eventDetail": {
       "notFound": "Event not found",
       "notFoundDesc": "We couldn't find the event you're looking for.",
