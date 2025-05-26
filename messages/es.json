@@ -53,6 +53,7 @@
     "noEvents": "No hay eventos disponibles",
     "upcoming": "Próximos shows de música argentina en Berlín",
     "past": "Eventos Pasados",
+    "viewPastEvents": "Ver eventos pasados",
     "details": "Detalles del Evento",
     "location": "Ubicación",
     "date": "Fecha",
@@ -70,8 +71,10 @@
     },
     "client": {
       "upcomingMessage": "Estamos preparando los próximos eventos de música argentina en Berlín. Vuelve pronto para descubrir nuevas fechas y artistas.",
+      "pastEventsMessage": "Explora los eventos pasados de música argentina en Berlín",
       "viewArtists": "Ver artistas",
       "aboutUs": "Sobre nosotros",
+      "viewUpcomingEvents": "Ver próximos eventos",
       "noEventsFound": "No se encontraron eventos con los filtros seleccionados",
       "clearFilters": "Limpiar filtros"
     },

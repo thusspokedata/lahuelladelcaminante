@@ -218,6 +218,63 @@ export const getAllEvents = async ({ includeDeleted = false } = {}): Promise<Eve
   return events.map(mapPrismaEventToEvent);
 };
 
+// Get upcoming events (events with at least one date in the future)
+export const getUpcomingEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const events = await prisma.event.findMany({
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+    where: {
+      isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
+      dates: {
+        some: {
+          date: {
+            gte: today,
+          },
+        },
+      },
+    },
+  });
+
+  return events.map(mapPrismaEventToEvent);
+};
+
+// Get past events (events with all dates in the past)
+export const getPastEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Get all events
+  const allEvents = await prisma.event.findMany({
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+    where: {
+      isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
+    },
+  });
+
+  // Filter events where ALL dates are in the past
+  const pastEvents = allEvents.filter((event) => {
+    // Event is past if it has at least one date and all dates are in the past
+    return (
+      event.dates.length > 0 &&
+      event.dates.every((date) => new Date(date.date) < today)
+    );
+  });
+
+  return pastEvents.map(mapPrismaEventToEvent);
+};
+
 // Get event by ID
 export const getEventById = async (
   id: string,
