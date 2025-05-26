@@ -53,6 +53,7 @@
     "noEvents": "No events available",
     "upcoming": "Upcoming Argentine music shows in Berlin",
     "past": "Past Events",
+    "viewPastEvents": "View past events",
     "details": "Event Details",
     "location": "Location",
     "date": "Date",
@@ -70,8 +71,10 @@
     },
     "client": {
       "upcomingMessage": "We're preparing upcoming Argentine music events in Berlin. Check back soon to discover new dates and artists.",
+      "pastEventsMessage": "Explore past Argentine music events in Berlin",
       "viewArtists": "View artists",
       "aboutUs": "About us",
+      "viewUpcomingEvents": "View upcoming events",
       "noEventsFound": "No events found with the selected filters",
       "clearFilters": "Clear filters"
     },

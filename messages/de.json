@@ -53,6 +53,7 @@
     "noEvents": "Keine Veranstaltungen verfügbar",
     "upcoming": "Kommende argentinische Musikshows in Berlin",
     "past": "Vergangene Veranstaltungen",
+    "viewPastEvents": "Vergangene Veranstaltungen ansehen",
     "details": "Veranstaltungsdetails",
     "location": "Ort",
     "date": "Datum",
@@ -70,8 +71,10 @@
     },
     "client": {
       "upcomingMessage": "Wir bereiten kommende argentinische Musikveranstaltungen in Berlin vor. Schauen Sie bald wieder vorbei, um neue Termine und Künstler zu entdecken.",
+      "pastEventsMessage": "Entdecken Sie vergangene argentinische Musikveranstaltungen in Berlin",
       "viewArtists": "Künstler ansehen",
       "aboutUs": "Über uns",
+      "viewUpcomingEvents": "Kommende Veranstaltungen ansehen",
       "noEventsFound": "Keine Veranstaltungen mit den ausgewählten Filtern gefunden",
       "clearFilters": "Filter löschen"
     },

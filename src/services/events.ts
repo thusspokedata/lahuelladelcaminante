@@ -5,7 +5,7 @@ import {
   EventDate as PrismaEventDate,
   Artist as PrismaArtist,
 } from "@/generated/prisma";
-import { slugify } from "@/lib/utils";
+import { slugify, getDateWithoutTime } from "@/lib/utils";
 
 export interface Event {
   id: string;
@@ -218,6 +218,61 @@ export const getAllEvents = async ({ includeDeleted = false } = {}): Promise<Eve
   return events.map(mapPrismaEventToEvent);
 };
 
+// Get upcoming events (events with at least one date in the future)
+export const getUpcomingEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
+  const today = getDateWithoutTime();
+
+  const events = await prisma.event.findMany({
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+    where: {
+      isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
+      dates: {
+        some: {
+          date: {
+            gte: today,
+          },
+        },
+      },
+    },
+  });
+
+  return events.map(mapPrismaEventToEvent);
+};
+
+// Get past events (events with all dates in the past)
+export const getPastEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
+  const today = getDateWithoutTime();
+
+  // Get all events
+  const allEvents = await prisma.event.findMany({
+    include: {
+      dates: true,
+      artist: true,
+      images: true,
+    },
+    where: {
+      isActive: true,
+      isDeleted: includeDeleted ? undefined : false,
+    },
+  });
+
+  // Filter events where ALL dates are in the past
+  const pastEvents = allEvents.filter((event) => {
+    // Event is past if it has at least one date and all dates are in the past
+    return (
+      event.dates.length > 0 &&
+      event.dates.every((date) => new Date(date.date) < today)
+    );
+  });
+
+  return pastEvents.map(mapPrismaEventToEvent);
+};
+
 // Get event by ID
 export const getEventById = async (
   id: string,
@@ -380,8 +435,7 @@ export const getEventsByDate = async (
   { includeDeleted = false } = {}
 ): Promise<Event[]> => {
   // Get the date without time component
-  const startDate = new Date(date);
-  startDate.setHours(0, 0, 0, 0);
+  const startDate = getDateWithoutTime(date);
 
   const endDate = new Date(date);
   endDate.setHours(23, 59, 59, 999);
