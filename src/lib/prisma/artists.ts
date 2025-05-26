@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getDateWithoutTime } from "@/lib/utils";
 
 /**
  * Get all artists from the database
@@ -103,8 +104,7 @@ export async function searchArtistsByName(name: string) {
  * Includes only events that have dates in the future
  */
 export async function getArtistsWithUpcomingEvents() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getDateWithoutTime();
 
   return await prisma.artist.findMany({
     where: {

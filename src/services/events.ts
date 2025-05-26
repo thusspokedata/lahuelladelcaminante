@@ -5,7 +5,7 @@ import {
   EventDate as PrismaEventDate,
   Artist as PrismaArtist,
 } from "@/generated/prisma";
-import { slugify } from "@/lib/utils";
+import { slugify, getDateWithoutTime } from "@/lib/utils";
 
 export interface Event {
   id: string;
@@ -220,8 +220,7 @@ export const getAllEvents = async ({ includeDeleted = false } = {}): Promise<Eve
 
 // Get upcoming events (events with at least one date in the future)
 export const getUpcomingEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getDateWithoutTime();
 
   const events = await prisma.event.findMany({
     include: {
@@ -247,8 +246,7 @@ export const getUpcomingEvents = async ({ includeDeleted = false } = {}): Promis
 
 // Get past events (events with all dates in the past)
 export const getPastEvents = async ({ includeDeleted = false } = {}): Promise<Event[]> => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getDateWithoutTime();
 
   // Get all events
   const allEvents = await prisma.event.findMany({
@@ -437,8 +435,7 @@ export const getEventsByDate = async (
   { includeDeleted = false } = {}
 ): Promise<Event[]> => {
   // Get the date without time component
-  const startDate = new Date(date);
-  startDate.setHours(0, 0, 0, 0);
+  const startDate = getDateWithoutTime(date);
 
   const endDate = new Date(date);
   endDate.setHours(23, 59, 59, 999);

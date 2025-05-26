@@ -77,19 +77,26 @@ export function getDateRange(
 }
 
 /**
+ * Get a date without time component (hours, minutes, seconds set to 0)
+ * @param date Optional date to normalize (defaults to current date)
+ * @returns A new Date object with time component set to 00:00:00.000
+ */
+export function getDateWithoutTime(date = new Date()): Date {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+}
+
+/**
  * Check if a date is in the past
  * @param date Date to check
  * @returns boolean indicating if date is in the past
  */
 export function isDateInPast(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  const now = new Date();
-
-  // Reset hours to compare just the dates
-  dateObj.setHours(0, 0, 0, 0);
-  now.setHours(0, 0, 0, 0);
-
-  return dateObj < now;
+  const now = getDateWithoutTime(); // Usar la nueva función en lugar de repetir código
+  
+  return getDateWithoutTime(dateObj) < now;
 }
 
 /**
