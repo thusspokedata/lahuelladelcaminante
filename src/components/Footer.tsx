@@ -7,10 +7,12 @@ import {
   IconBrandTiktok,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const locale = useLocale();
 
   // Email obfuscation to prevent spam bots
   const [email, setEmail] = useState("");
@@ -74,6 +76,15 @@ export function Footer() {
           </div>
         </div>
 
+        <div className="mt-6 flex justify-center gap-4 text-xs text-muted-foreground">
+          <Link href={`/${locale}/legal/impressum`} className="hover:text-primary hover:underline">
+            {t("impressum")}
+          </Link>
+          <Link href={`/${locale}/legal/privacy-policy`} className="hover:text-primary hover:underline">
+            {t("privacy")}
+          </Link>
+        </div>
+        
         <div className="text-muted-foreground mt-4 text-center text-xs">
           © {new Date().getFullYear()} La Huella del Caminante. {t("rights")}
         </div>
