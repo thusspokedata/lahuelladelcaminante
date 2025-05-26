@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "legal.privacy" });
   const footerT = await getTranslations({ locale, namespace: "footer" });
   
@@ -11,7 +12,8 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   };
 }
 
-export default async function PrivacyPolicyPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function PrivacyPolicyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   // Get translations
   const t = await getTranslations({ locale, namespace: "legal.privacy" });
   const legalT = await getTranslations({ locale, namespace: "legal" });
