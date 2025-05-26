@@ -94,7 +94,7 @@ export function getDateWithoutTime(date = new Date()): Date {
  */
 export function isDateInPast(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  const now = getDateWithoutTime(); // Usar la nueva función en lugar de repetir código
+  const now = getDateWithoutTime();
   
   return getDateWithoutTime(dateObj) < now;
 }
