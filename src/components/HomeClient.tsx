@@ -71,8 +71,12 @@ export function HomeClient({ events, locale }: { events: Event[]; locale: string
       </div>
 
       {/* Upcoming Events Section */}
-      <section className="mb-12 w-full bg-slate-100 py-12 dark:bg-slate-800">
-        <div className="container mx-auto px-4">
+      <section className="relative mb-12 w-full overflow-hidden py-16">
+        {/* Background with gradient and pattern overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-blue-50 to-slate-100 dark:from-purple-950/30 dark:via-blue-900/20 dark:to-slate-900/30">
+          <div className="absolute inset-0 opacity-5 dark:opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+        </div>
+        <div className="relative container mx-auto px-4">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">{tHome("upcomingEvents")}</h2>
