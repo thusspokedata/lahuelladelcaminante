@@ -42,6 +42,9 @@
     "subtitle": "Argentine music events in Berlin",
     "upcomingEvents": "Upcoming Events",
     "upcomingEventsDesc": "Discover upcoming Argentine music shows in Berlin",
+    "featuredArtists": "Featured Artists",
+    "featuredArtistsDesc": "Artists with upcoming performances",
+    "noFeaturedArtists": "No featured artists available at the moment",
     "artists": "Artists",
     "artistsDesc": "Meet the Argentine artists performing in Berlin",
     "carousel": {
