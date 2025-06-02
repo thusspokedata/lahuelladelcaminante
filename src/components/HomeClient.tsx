@@ -8,15 +8,16 @@ import { useTranslations } from "use-intl";
 import { Event } from "@/services/events";
 import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/image-placeholder";
-import { format } from "date-fns";
+import { useLocalizedDate } from "@/hooks/useLocalizedDate";
 
 // Card component for the home page events
 function HomeEventCard({ event, locale }: { event: Event; locale: string }) {
   const t = useTranslations("events.card");
+  const { formatShort } = useLocalizedDate();
   
   // Format the first date in the array
   const formattedDate = event.dates && event.dates.length > 0 
-    ? format(new Date(event.dates[0].date), "PPP") 
+    ? formatShort(event.dates[0].date.toString()) 
     : "";
 
   return (
