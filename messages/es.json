@@ -42,6 +42,9 @@
     "subtitle": "Eventos de música argentina en Berlín",
     "upcomingEvents": "Próximos Eventos",
     "upcomingEventsDesc": "Descubre los próximos shows de música argentina en Berlín",
+    "featuredArtists": "Artistas Destacados",
+    "featuredArtistsDesc": "Artistas con próximas presentaciones",
+    "noFeaturedArtists": "No hay artistas destacados disponibles en este momento",
     "artists": "Artistas",
     "artistsDesc": "Conoce a los artistas argentinos que actúan en Berlín",
     "carousel": {
