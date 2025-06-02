@@ -42,6 +42,9 @@
     "subtitle": "Argentinische Musikveranstaltungen in Berlin",
     "upcomingEvents": "Kommende Veranstaltungen",
     "upcomingEventsDesc": "Entdecken Sie kommende argentinische Musikshows in Berlin",
+    "featuredArtists": "Hervorgehobene Künstler",
+    "featuredArtistsDesc": "Künstler mit kommenden Auftritten",
+    "noFeaturedArtists": "Zurzeit sind keine hervorgehobenen Künstler verfügbar",
     "artists": "Künstler",
     "artistsDesc": "Lernen Sie die argentinischen Künstler kennen, die in Berlin auftreten",
     "carousel": {
