@@ -91,7 +91,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
                       src={event.images[0].url}
                       alt={event.images[0].alt || event.title}
                       fill
-                      className="object-cover brightness-[0.75]"
+                      className="object-cover brightness-[0.9]"
                       sizes="100vw"
                       priority
                     />
@@ -101,7 +101,7 @@ export function HomeEventsCarousel({ events }: HomeEventsCarouselProps) {
 
                   {/* Content overlay */}
                   <div className="absolute inset-0 flex flex-col justify-end">
-                    <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent px-8 pt-40 pb-16 md:px-14 md:pb-24">
+                    <div className="bg-gradient-to-t from-black/70 via-black/40 to-transparent px-8 pt-40 pb-16 md:px-14 md:pb-24">
                       <div className="mx-0 max-w-7xl md:mx-40">
                         <h3 className="mb-3 text-3xl leading-tight font-bold text-white md:text-4xl lg:text-5xl xl:text-6xl">
                           {event.title}
