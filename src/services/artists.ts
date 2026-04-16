@@ -84,59 +84,49 @@ export const getAllArtists = unstable_cache(
   { revalidate: 600, tags: ["artists"] }
 )
 
-export const getUpcomingArtists = unstable_cache(
-  async (): Promise<ArtistSummary[]> => {
-    // Artists with upcoming events OR registered but not yet performed
-    const artists = await prisma.artist.findMany({
-      where: {
-        OR: [
-          // Has at least one upcoming linked event
-          {
-            events: {
-              some: {
-                isDeleted: false,
-                isActive: true,
-                dates: { some: { date: { gte: new Date() } } },
-              },
+export async function getUpcomingArtists(): Promise<ArtistSummary[]> {
+  // Artists with upcoming events OR registered but not yet performed
+  const artists = await prisma.artist.findMany({
+    where: {
+      OR: [
+        {
+          events: {
+            some: {
+              isDeleted: false,
+              isActive: true,
+              dates: { some: { date: { gte: new Date() } } },
             },
           },
-          // No events at all yet (newly added artist)
-          { events: { none: {} } },
-        ],
-      },
-      include: artistInclude,
-      orderBy: { name: "asc" },
-    })
-    return artists.map(mapToSummary)
-  },
-  ["upcoming-artists"],
-  { revalidate: 300, tags: ["artists", "events"] }
-)
+        },
+        { events: { none: {} } },
+      ],
+    },
+    include: artistInclude,
+    orderBy: { name: "asc" },
+  })
+  return artists.map(mapToSummary)
+}
 
-export const getPastArtists = unstable_cache(
-  async (): Promise<ArtistSummary[]> => {
-    // Artists who have past events and NO upcoming ones
-    const artists = await prisma.artist.findMany({
-      where: {
-        events: {
-          some: {
-            isDeleted: false,
-            dates: { some: { date: { lt: new Date() } } },
-          },
-          none: {
-            isDeleted: false,
-            dates: { some: { date: { gte: new Date() } } },
-          },
+export async function getPastArtists(): Promise<ArtistSummary[]> {
+  // Artists who have past events and NO upcoming ones
+  const artists = await prisma.artist.findMany({
+    where: {
+      events: {
+        some: {
+          isDeleted: false,
+          dates: { some: { date: { lt: new Date() } } },
+        },
+        none: {
+          isDeleted: false,
+          dates: { some: { date: { gte: new Date() } } },
         },
       },
-      include: artistInclude,
-      orderBy: { name: "asc" },
-    })
-    return artists.map(mapToSummary)
-  },
-  ["past-artists"],
-  { revalidate: 300, tags: ["artists", "events"] }
-)
+    },
+    include: artistInclude,
+    orderBy: { name: "asc" },
+  })
+  return artists.map(mapToSummary)
+}
 
 export async function getArtistBySlug(slug: string): Promise<ArtistDetail | null> {
   const artist = await prisma.artist.findUnique({

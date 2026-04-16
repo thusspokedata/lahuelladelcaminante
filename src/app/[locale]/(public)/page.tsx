@@ -20,7 +20,6 @@ export default async function HomePage({
     getPastArtists(),
   ])
   const featured = events.slice(0, 6)
-
   return (
     <div>
       {/* ── Hero ──────────────────────────────────────────── */}
@@ -116,7 +115,7 @@ export default async function HomePage({
               <Link href={`/${locale}/artists`}>Ver todos →</Link>
             </Button>
           </div>
-          <ArtistCarousel artists={upcomingArtists} variant="upcoming" />
+          <ArtistCarousel artists={upcomingArtists} locale={locale} variant="upcoming" />
         </section>
       )}
 
@@ -132,7 +131,7 @@ export default async function HomePage({
               <Link href={`/${locale}/artists`}>Ver todos →</Link>
             </Button>
           </div>
-          <ArtistCarousel artists={pastArtists} variant="past" />
+          <ArtistCarousel artists={pastArtists} locale={locale} variant="past" />
         </section>
       )}
 
