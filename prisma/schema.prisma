@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Tablas generadas por Better Auth (no modificar manualmente) ---
+
+model User {
+  id            String       @id
+  name          String
+  email         String       @unique
+  emailVerified Boolean
+  image         String?
+  role          String       @default("user")
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  profile       UserProfile?
+  artists       Artist[]
+  events        Event[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime
+  updatedAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime
+  updatedAt  DateTime
+}
+
+// --- Tablas de dominio ---
+
+model UserProfile {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  status    UserStatus @default(PENDING)
+  bio       String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+model Artist {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  bio            String?
+  origin         String?
+  genres         String[]
+  socialMedia    Json?
+  profileImageId String?
+  userId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User?    @relation(fields: [userId], references: [id])
+  images         Image[]
+  events         Event[]
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  description String?
+  location    String
+  organizer   String?
+  genre       String?
+  time        String?
+  price       String?
+  isActive    Boolean     @default(true)
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+  createdById String
+  artistId    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  artist      Artist?     @relation(fields: [artistId], references: [id])
+  dates       EventDate[]
+  images      Image[]
+}
+
+model EventDate {
+  id      String   @id @default(cuid())
+  date    DateTime
+  eventId String
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  publicId  String
+  eventId   String?
+  artistId  String?
+  createdAt DateTime @default(now())
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}

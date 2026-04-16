@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "events": "Events",
+    "artists": "Artists",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "past": "Past Events",
+    "noEvents": "No events available",
+    "filterByGenre": "Filter by genre",
+    "allGenres": "All genres",
+    "createEvent": "Create Event",
+    "deleteSuccess": "Event deleted",
+    "restoreSuccess": "Event restored"
+  },
+  "artists": {
+    "title": "Artists",
+    "search": "Search artist...",
+    "noArtists": "No artists found",
+    "createArtist": "Create Artist"
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "myEvents": "My Events",
+    "myArtists": "My Artists"
+  },
+  "admin": {
+    "users": "User Management",
+    "approve": "Approve",
+    "block": "Block",
+    "changeRole": "Change Role",
+    "allEvents": "All Events"
+  },
+  "status": {
+    "pending": "Pending",
+    "active": "Active",
+    "blocked": "Blocked"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full name",
+    "continueWithGoogle": "Continue with Google",
+    "pendingTitle": "Account under review",
+    "pendingDescription": "Your account is being reviewed by the team. We will notify you by email when it is approved.",
+    "blockedTitle": "Account suspended",
+    "blockedDescription": "Your account has been suspended. Contact the administrator."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "restore": "Restore",
+    "loading": "Loading...",
+    "error": "Unexpected error",
+    "confirm": "Confirm",
+    "back": "Back"
+  }
+}

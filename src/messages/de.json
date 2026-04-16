@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "events": "Veranstaltungen",
+    "artists": "Künstler",
+    "dashboard": "Dashboard",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden"
+  },
+  "events": {
+    "title": "Kommende Veranstaltungen",
+    "past": "Vergangene Veranstaltungen",
+    "noEvents": "Keine Veranstaltungen verfügbar",
+    "filterByGenre": "Nach Genre filtern",
+    "allGenres": "Alle Genres",
+    "createEvent": "Veranstaltung erstellen",
+    "deleteSuccess": "Veranstaltung gelöscht",
+    "restoreSuccess": "Veranstaltung wiederhergestellt"
+  },
+  "artists": {
+    "title": "Künstler",
+    "search": "Künstler suchen...",
+    "noArtists": "Keine Künstler gefunden",
+    "createArtist": "Künstler erstellen"
+  },
+  "dashboard": {
+    "title": "Mein Dashboard",
+    "myEvents": "Meine Veranstaltungen",
+    "myArtists": "Meine Künstler"
+  },
+  "admin": {
+    "users": "Benutzerverwaltung",
+    "approve": "Genehmigen",
+    "block": "Sperren",
+    "changeRole": "Rolle ändern",
+    "allEvents": "Alle Veranstaltungen"
+  },
+  "status": {
+    "pending": "Ausstehend",
+    "active": "Aktiv",
+    "blocked": "Gesperrt"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Vollständiger Name",
+    "continueWithGoogle": "Mit Google fortfahren",
+    "pendingTitle": "Konto wird geprüft",
+    "pendingDescription": "Ihr Konto wird vom Team geprüft. Wir benachrichtigen Sie per E-Mail, wenn es genehmigt wurde.",
+    "blockedTitle": "Konto gesperrt",
+    "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator."
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "restore": "Wiederherstellen",
+    "loading": "Wird geladen...",
+    "error": "Unerwarteter Fehler",
+    "confirm": "Bestätigen",
+    "back": "Zurück"
+  }
+}
