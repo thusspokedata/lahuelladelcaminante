@@ -1,4 +1,5 @@
 import { requireRole } from "@/services/auth"
+import { getArtistsByUser } from "@/services/artists"
 import { EventForm } from "@/components/events/EventForm"
 
 export default async function CreateEventPage({
@@ -7,12 +8,16 @@ export default async function CreateEventPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  await requireRole("ARTIST", locale)
+  const user = await requireRole("ARTIST", locale)
+  const artists = await getArtistsByUser(user.id)
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Crear Evento</h1>
-      <EventForm />
+      <div>
+        <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Dashboard</p>
+        <h1 className="text-3xl font-black">Crear Evento</h1>
+      </div>
+      <EventForm artists={artists.map((a) => ({ id: a.id, name: a.name }))} />
     </div>
   )
 }

@@ -24,6 +24,7 @@ const schema = z.object({
   genre: z.string().optional(),
   time: z.string().optional(),
   price: z.string().optional(),
+  artistId: z.string().optional(),
   dates: z.array(z.object({ value: z.string().min(1) })).min(1),
 })
 
@@ -40,8 +41,14 @@ interface NewImage {
   publicId: string
 }
 
+interface ArtistOption {
+  id: string
+  name: string
+}
+
 interface EventFormProps {
   eventId?: string
+  artists?: ArtistOption[]
   defaultValues?: {
     title?: string
     description?: string
@@ -52,6 +59,7 @@ interface EventFormProps {
     genre?: string
     time?: string
     price?: string
+    artistId?: string
     dates?: string[]
     images?: ExistingImage[]
   }
@@ -63,7 +71,7 @@ const GENRES = [
   "Folklore", "Otros",
 ]
 
-export function EventForm({ eventId, defaultValues }: EventFormProps) {
+export function EventForm({ eventId, artists = [], defaultValues }: EventFormProps) {
   const tCommon = useTranslations("common")
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
@@ -92,6 +100,7 @@ export function EventForm({ eventId, defaultValues }: EventFormProps) {
       genre: defaultValues?.genre ?? "",
       time: defaultValues?.time ?? "",
       price: defaultValues?.price ?? "",
+      artistId: defaultValues?.artistId ?? "",
       dates: defaultValues?.dates?.length
         ? defaultValues.dates.map((d) => ({ value: d.slice(0, 10) }))
         : [{ value: "" }],
@@ -124,6 +133,7 @@ export function EventForm({ eventId, defaultValues }: EventFormProps) {
       genre: data.genre || undefined,
       time: data.time,
       price: data.price,
+      artistId: data.artistId || undefined,
       dates: data.dates.map((d) => new Date(d.value).toISOString()),
       ...(isEdit
         ? {
@@ -203,6 +213,23 @@ export function EventForm({ eventId, defaultValues }: EventFormProps) {
           Se mostrará un enlace para abrir en Google Maps.
         </p>
       </div>
+
+      {/* Artist selector */}
+      {artists.length > 0 && (
+        <div className="space-y-1.5">
+          <Label htmlFor="artistId">Artista</Label>
+          <select
+            id="artistId"
+            {...register("artistId")}
+            className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+          >
+            <option value="">— Sin artista vinculado —</option>
+            {artists.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Genre + Time + Price */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import { requireActive, canEditEvent } from "@/services/auth"
+import { getArtistsByUser } from "@/services/artists"
 import { prisma } from "@/lib/prisma"
 import { EventForm } from "@/components/events/EventForm"
 
@@ -9,18 +10,22 @@ export default async function EditEventPage({
   params: Promise<{ locale: string; id: string }>
 }) {
   const { locale, id } = await params
-  await requireActive(locale)
+  const { user } = await requireActive(locale)
 
   const canEdit = await canEditEvent(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
 
-  const event = await prisma.event.findUnique({
-    where: { id, isDeleted: false },
-    include: {
-      dates: { orderBy: { date: "asc" } },
-      images: { select: { id: true, url: true, publicId: true } },
-    },
-  })
+  const [event, userArtists] = await Promise.all([
+    prisma.event.findUnique({
+      where: { id, isDeleted: false },
+      include: {
+        dates: { orderBy: { date: "asc" } },
+        images: { select: { id: true, url: true, publicId: true } },
+      },
+    }),
+    getArtistsByUser(user.id),
+  ])
+
   if (!event) notFound()
 
   // Split location into venue + city (format: "Venue, City")
@@ -38,6 +43,7 @@ export default async function EditEventPage({
     genre: event.genre ?? "",
     time: event.time ?? "",
     price: event.price ?? "",
+    artistId: event.artistId ?? "",
     dates: event.dates.map((d) => d.date.toISOString()),
     images: event.images,
   }
@@ -48,7 +54,11 @@ export default async function EditEventPage({
         <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Editar evento</p>
         <h1 className="text-3xl font-black">{event.title}</h1>
       </div>
-      <EventForm eventId={id} defaultValues={defaultValues} />
+      <EventForm
+        eventId={id}
+        defaultValues={defaultValues}
+        artists={userArtists.map((a) => ({ id: a.id, name: a.name }))}
+      />
     </div>
   )
 }

@@ -12,6 +12,7 @@ const updateSchema = z.object({
   genre: z.string().optional(),
   time: z.string().optional(),
   price: z.string().optional(),
+  artistId: z.string().optional(),
   dates: z.array(z.string().datetime()).optional(),
   keepImageIds: z.array(z.string()).optional(),
   newImages: z
@@ -43,9 +44,11 @@ export async function PATCH(
     )
   }
 
-  const { dates, ...rest } = result.data
+  const { dates, artistId, ...rest } = result.data
   await updateEvent(id, {
     ...rest,
+    // Pass null explicitly to clear the relation when empty string sent
+    artistId: artistId || null,
     dates: dates?.map((d) => new Date(d)),
   })
 

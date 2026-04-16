@@ -57,6 +57,7 @@ export interface UpdateEventInput {
   genre?: string
   time?: string
   price?: string
+  artistId?: string | null
   dates?: Date[]
   /** IDs of existing EventImage rows to KEEP; others will be deleted */
   keepImageIds?: string[]
