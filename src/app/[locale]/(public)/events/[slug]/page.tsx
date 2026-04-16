@@ -3,8 +3,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { getEventBySlug } from "@/services/events"
 import { formatDate } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CalendarDays, MapPin, Clock, Ticket, Users, ArrowLeft, Navigation } from "lucide-react"
 
 export default async function EventDetailPage({
   params,
@@ -17,74 +17,145 @@ export default async function EventDetailPage({
   if (!event) notFound()
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <Button variant="ghost" asChild className="-ml-2">
-        <Link href={`/${locale}/events`}>← Volver</Link>
-      </Button>
-
-      {event.coverImage && (
-        <div className="relative h-80 w-full rounded-xl overflow-hidden">
-          <Image src={event.coverImage} alt={event.title} fill className="object-cover" />
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="flex items-start justify-between flex-wrap gap-4">
-          <h1 className="text-3xl font-bold">{event.title}</h1>
-          {event.genre && <Badge>{event.genre}</Badge>}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="font-medium text-muted-foreground">Fechas</p>
-            {event.dates.map((d, i) => (
-              <p key={i}>{formatDate(d, locale)}</p>
-            ))}
-          </div>
-          <div>
-            <p className="font-medium text-muted-foreground">Lugar</p>
-            <p>{event.location}</p>
-          </div>
-          {event.time && (
-            <div>
-              <p className="font-medium text-muted-foreground">Hora</p>
-              <p>{event.time}</p>
-            </div>
-          )}
-          {event.price && (
-            <div>
-              <p className="font-medium text-muted-foreground">Precio</p>
-              <p>{event.price}</p>
-            </div>
-          )}
-          {event.organizer && (
-            <div>
-              <p className="font-medium text-muted-foreground">Organizer</p>
-              <p>{event.organizer}</p>
-            </div>
-          )}
-        </div>
-
-        {event.description && (
-          <div className="prose prose-sm max-w-none">
-            <p>{event.description}</p>
+    <div>
+      {/* Hero image */}
+      <div className="relative w-full h-72 sm:h-96 bg-gradient-to-br from-primary/20 via-accent/10 to-background overflow-hidden">
+        {event.coverImage ? (
+          <Image
+            src={event.coverImage}
+            alt={event.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-8xl opacity-10 select-none">
+            🎶
           </div>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
-        {event.artist && (
-          <div className="border rounded-lg p-4 space-y-2">
-            <p className="font-medium text-muted-foreground text-sm">Artista</p>
-            <Link
-              href={`/${locale}/artists/${event.artist.slug}`}
-              className="text-lg font-semibold hover:underline"
-            >
-              {event.artist.name}
-            </Link>
-            {event.artist.origin && (
-              <p className="text-sm text-muted-foreground">{event.artist.origin}</p>
+        {/* Genre badge */}
+        {event.genre && (
+          <div className="absolute top-5 right-5 bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full shadow-lg">
+            {event.genre}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 -mt-8 relative">
+        <Button variant="ghost" asChild className="mb-6 text-muted-foreground hover:text-foreground rounded-full -ml-2">
+          <Link href={`/${locale}/events`}>
+            <ArrowLeft className="w-4 h-4 mr-1.5" />
+            Volver a eventos
+          </Link>
+        </Button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main */}
+          <div className="lg:col-span-2 space-y-6">
+            <h1 className="text-4xl sm:text-5xl font-black leading-tight">{event.title}</h1>
+
+            {event.description && (
+              <p className="text-muted-foreground leading-relaxed text-base">{event.description}</p>
+            )}
+
+            {/* Artist card */}
+            {event.artist && (
+              <div className="rounded-2xl border border-border bg-card p-5 flex items-center gap-4 shadow-sm">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Artista</p>
+                  <Link
+                    href={`/${locale}/artists/${event.artist.slug}`}
+                    className="text-lg font-bold hover:text-primary transition-colors"
+                  >
+                    {event.artist.name}
+                  </Link>
+                  {event.artist.origin && (
+                    <p className="text-sm text-muted-foreground">{event.artist.origin}</p>
+                  )}
+                </div>
+              </div>
             )}
           </div>
-        )}
+
+          {/* Sidebar */}
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-sm">
+              {/* Dates */}
+              <div className="flex gap-3">
+                <CalendarDays className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">
+                    {event.dates.length > 1 ? "Fechas" : "Fecha"}
+                  </p>
+                  <div className="space-y-0.5">
+                    {event.dates.map((d, i) => (
+                      <p key={i} className="text-sm font-medium">{formatDate(d, locale)}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {event.time && (
+                <div className="flex gap-3">
+                  <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Hora</p>
+                    <p className="text-sm font-medium">{event.time}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Lugar</p>
+                  <p className="text-sm font-medium">{event.location}</p>
+                  {event.address && (
+                    <p className="text-sm text-muted-foreground mt-0.5">{event.address}</p>
+                  )}
+                </div>
+              </div>
+
+              {event.address && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 w-full justify-center bg-primary/8 hover:bg-primary/15 border border-primary/20 text-primary text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                >
+                  <Navigation className="w-4 h-4" />
+                  Abrir en Google Maps
+                </a>
+              )}
+
+              {event.price && (
+                <div className="flex gap-3">
+                  <Ticket className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Precio</p>
+                    <p className="text-sm font-medium">{event.price}</p>
+                  </div>
+                </div>
+              )}
+
+              {event.organizer && (
+                <div className="flex gap-3">
+                  <Users className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Organizador</p>
+                    <p className="text-sm font-medium">{event.organizer}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

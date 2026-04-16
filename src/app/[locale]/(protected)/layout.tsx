@@ -16,8 +16,8 @@ export default async function ProtectedLayout({
   return (
     <>
       <Header />
-      <div className="container mx-auto px-4 py-8 flex gap-8 flex-1">
-        <aside className="w-48 flex-shrink-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex gap-8 flex-1">
+        <aside className="w-52 flex-shrink-0 hidden md:block">
           <DashboardNav role={user.role ?? "user"} />
         </aside>
         <main className="flex-1 min-w-0">{children}</main>

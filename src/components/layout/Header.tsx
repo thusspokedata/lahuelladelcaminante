@@ -3,49 +3,81 @@
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { useSession, signOut } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "./LanguageSwitcher"
-import { ThemeToggle } from "./ThemeToggle"
 
 export function Header() {
   const t = useTranslations("nav")
   const locale = useLocale()
+  const router = useRouter()
   const { data: session } = useSession()
 
+  const initials = session?.user?.name
+    ? session.user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : null
+
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href={`/${locale}`} className="font-bold text-lg">
-          La Huella del Caminante
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-black shadow-md shadow-primary/30 group-hover:scale-105 transition-transform">
+            ♪
+          </div>
+          <span className="font-black text-sm leading-tight hidden sm:block tracking-tight">
+            La Huella<br />
+            <span className="text-primary">del Caminante</span>
+          </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm">
-          <Link href={`/${locale}/events`} className="hover:text-foreground/80 transition-colors">
+        {/* Nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          <Link
+            href={`/${locale}/events`}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors"
+          >
             {t("events")}
           </Link>
-          <Link href={`/${locale}/artists`} className="hover:text-foreground/80 transition-colors">
+          <Link
+            href={`/${locale}/artists`}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors"
+          >
             {t("artists")}
           </Link>
           {session && (
-            <Link href={`/${locale}/dashboard`} className="hover:text-foreground/80 transition-colors">
+            <Link
+              href={`/${locale}/dashboard`}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors"
+            >
               {t("dashboard")}
             </Link>
           )}
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Right side */}
+        <div className="flex items-center gap-2 ml-auto md:ml-0">
           <LanguageSwitcher />
-          <ThemeToggle />
           {session ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => signOut()}
-            >
-              {t("signOut")}
-            </Button>
+            <div className="flex items-center gap-2">
+              {initials && (
+                <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center justify-center hidden sm:flex">
+                  {initials}
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full text-xs h-8 px-4"
+                onClick={() =>
+                  signOut({ fetchOptions: { onSuccess: () => router.push(`/${locale}`) } })
+                }
+              >
+                {t("signOut")}
+              </Button>
+            </div>
           ) : (
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="rounded-full h-8 px-5 text-xs font-semibold shadow-md shadow-primary/20">
               <Link href={`/${locale}/sign-in`}>{t("signIn")}</Link>
             </Button>
           )}

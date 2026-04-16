@@ -1,53 +1,93 @@
 "use client"
 
-import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
-const GENRES = [
-  "Tango", "Salsa", "Cumbia", "Reggaeton", "Merengue",
-  "Son Cubano", "Bossa Nova", "Vallenato", "Flamenco Latino", "Latin Jazz",
-]
+interface EventFilterProps {
+  genres: string[]
+  cities: string[]
+}
 
-export function EventFilter() {
-  const t = useTranslations("events")
+export function EventFilter({ genres, cities }: EventFilterProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const current = searchParams.get("genre") ?? ""
+  const currentGenre = searchParams.get("genre") ?? ""
+  const currentCity = searchParams.get("city") ?? ""
 
-  function handleChange(value: string | null) {
+  function update(key: "genre" | "city", value: string) {
     const params = new URLSearchParams(searchParams.toString())
-    if (value && value !== "all" && value !== null) {
-      params.set("genre", value)
+    if (value) {
+      params.set(key, value)
     } else {
-      params.delete("genre")
+      params.delete(key)
     }
     router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-muted-foreground">{t("filterByGenre")}:</span>
-      <Select value={current || "all"} onValueChange={handleChange}>
-        <SelectTrigger className="w-48">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{t("allGenres")}</SelectItem>
-          {GENRES.map((genre) => (
-            <SelectItem key={genre} value={genre}>
+    <div className="flex flex-col gap-3">
+      {/* Genre pills */}
+      {genres.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+          <button
+            onClick={() => update("genre", "")}
+            className={cn(
+              "shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap",
+              currentGenre === ""
+                ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+            )}
+          >
+            Todos
+          </button>
+          {genres.map((genre) => (
+            <button
+              key={genre}
+              onClick={() => update("genre", genre)}
+              className={cn(
+                "shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap",
+                currentGenre === genre
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                  : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+              )}
+            >
               {genre}
-            </SelectItem>
+            </button>
           ))}
-        </SelectContent>
-      </Select>
+        </div>
+      )}
+
+      {/* City pills */}
+      {cities.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+          <button
+            onClick={() => update("city", "")}
+            className={cn(
+              "shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap border",
+              currentCity === ""
+                ? "bg-foreground text-background border-foreground"
+                : "bg-transparent text-muted-foreground border-border hover:border-foreground hover:text-foreground"
+            )}
+          >
+            Todas las ciudades
+          </button>
+          {cities.map((city) => (
+            <button
+              key={city}
+              onClick={() => update("city", city)}
+              className={cn(
+                "shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap border",
+                currentCity === city
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-transparent text-muted-foreground border-border hover:border-foreground hover:text-foreground"
+              )}
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
