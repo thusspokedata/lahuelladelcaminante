@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server"
 import { getUpcomingEvents, getActiveGenres } from "@/services/events"
+import { getUpcomingArtists, getPastArtists } from "@/services/artists"
 import { EventList } from "@/components/events/EventList"
+import { ArtistCarousel } from "@/components/artists/ArtistCarousel"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -11,7 +13,12 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "events" })
-  const [events, genres] = await Promise.all([getUpcomingEvents(), getActiveGenres()])
+  const [events, genres, upcomingArtists, pastArtists] = await Promise.all([
+    getUpcomingEvents(),
+    getActiveGenres(),
+    getUpcomingArtists(),
+    getPastArtists(),
+  ])
   const featured = events.slice(0, 6)
 
   return (
@@ -96,6 +103,38 @@ export default async function HomePage({
           </div>
         )}
       </section>
+
+      {/* ── Artistas por venir ────────────────────────────── */}
+      {upcomingArtists.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-border">
+          <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
+            <div>
+              <p className="text-xs font-bold text-primary uppercase tracking-[0.18em] mb-1">En vivo pronto</p>
+              <h2 className="text-2xl font-black">Artistas por venir</h2>
+            </div>
+            <Button variant="ghost" asChild className="rounded-full font-semibold text-primary hover:text-primary hover:bg-primary/8">
+              <Link href={`/${locale}/artists`}>Ver todos →</Link>
+            </Button>
+          </div>
+          <ArtistCarousel artists={upcomingArtists} variant="upcoming" />
+        </section>
+      )}
+
+      {/* ── Artistas que dejaron su huella ────────────────── */}
+      {pastArtists.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-border">
+          <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
+            <div>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em] mb-1">Ya pasaron por aquí</p>
+              <h2 className="text-2xl font-black">Artistas que dejaron su huella</h2>
+            </div>
+            <Button variant="ghost" asChild className="rounded-full font-semibold text-muted-foreground hover:text-foreground">
+              <Link href={`/${locale}/artists`}>Ver todos →</Link>
+            </Button>
+          </div>
+          <ArtistCarousel artists={pastArtists} variant="past" />
+        </section>
+      )}
 
       {/* ── Genre strip (only shown if there are genres) ─── */}
       {genres.length > 0 && (
