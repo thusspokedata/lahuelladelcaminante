@@ -1,0 +1,886 @@
+# PROMPT — Portal de Eventos Culturales
+# Usar este prompt con Claude para construir el proyecto desde cero
+
+================================================================================
+QUÉ ES EL PROYECTO
+================================================================================
+
+Un portal web de eventos musicales culturales (música latinoamericana en Berlín).
+Permite a artistas publicar eventos, a usuarios explorar y filtrar contenido por
+género y fecha, y a administradores gestionar usuarios y la plataforma.
+
+Tres tipos de usuario:
+- USER (default): puede explorar eventos y artistas
+- ARTIST: puede crear y gestionar artistas y eventos propios
+- ADMIN: acceso completo a toda la plataforma
+
+Tres estados de usuario:
+- PENDING: recién registrado, espera aprobación del admin
+- ACTIVE: aprobado, puede operar normalmente
+- BLOCKED: suspendido, sin acceso a funcionalidades
+
+Tres idiomas: español (default), inglés, alemán.
+
+================================================================================
+STACK TECNOLÓGICO
+================================================================================
+
+- Next.js 15 con App Router (TypeScript)
+- Better Auth — autenticación self-hosted, sin webhooks, escribe directo en DB
+- PostgreSQL en Neon (serverless, free tier) + Prisma 6 como ORM
+- next-intl — internacionalización (ES, EN, DE)
+- Tailwind CSS 4 + shadcn/ui — estilos y componentes
+- Cloudinary + next-cloudinary — almacenamiento y transformación de imágenes
+- React Hook Form + Zod — formularios y validación
+- Resend — emails transaccionales
+- Trigger.dev — jobs asincrónicos (envío de emails en background)
+- Vitest + Testing Library — tests unitarios y de componentes
+
+================================================================================
+ESTRUCTURA DE CARPETAS
+================================================================================
+
+src/
+├── app/
+│   ├── [locale]/
+│   │   ├── (public)/
+│   │   │   ├── page.tsx                     # Home con carousel de eventos destacados
+│   │   │   ├── events/
+│   │   │   │   ├── page.tsx                 # Listado eventos futuros con filtros
+│   │   │   │   ├── past/page.tsx            # Eventos pasados
+│   │   │   │   └── [slug]/page.tsx          # Detalle de evento
+│   │   │   └── artists/
+│   │   │       ├── page.tsx                 # Listado artistas con búsqueda
+│   │   │       └── [slug]/page.tsx          # Perfil artista + sus eventos
+│   │   ├── (auth)/
+│   │   │   ├── sign-in/page.tsx
+│   │   │   └── sign-up/page.tsx
+│   │   ├── (protected)/
+│   │   │   ├── dashboard/page.tsx           # Panel según rol
+│   │   │   ├── dashboard/events/page.tsx
+│   │   │   ├── dashboard/events/create/page.tsx
+│   │   │   ├── dashboard/artists/page.tsx
+│   │   │   ├── dashboard/artists/create/page.tsx
+│   │   │   └── dashboard/artists/[id]/edit/page.tsx
+│   │   ├── (admin)/
+│   │   │   └── admin/
+│   │   │       ├── users/page.tsx           # Gestión de usuarios
+│   │   │       └── events/page.tsx          # Gestión de todos los eventos
+│   │   ├── user-pending/page.tsx            # Pantalla de espera de aprobación
+│   │   └── user-blocked/page.tsx            # Pantalla de cuenta bloqueada
+│   └── api/
+│       ├── auth/[...all]/route.ts           # Better Auth handler
+│       ├── events/route.ts
+│       ├── events/[id]/route.ts
+│       ├── events/[id]/restore/route.ts
+│       ├── artists/route.ts
+│       ├── artists/[id]/route.ts
+│       ├── users/[id]/status/route.ts
+│       ├── users/[id]/role/route.ts
+│       └── cloudinary/delete/route.ts
+├── components/
+│   ├── ui/                                  # shadcn/ui — no modificar
+│   ├── layout/
+│   │   ├── Header.tsx
+│   │   ├── Footer.tsx
+│   │   ├── LanguageSwitcher.tsx
+│   │   └── ThemeToggle.tsx
+│   ├── events/
+│   │   ├── EventCard.tsx
+│   │   ├── EventList.tsx
+│   │   ├── EventFilter.tsx                  # client component
+│   │   └── EventForm.tsx                    # client component
+│   ├── artists/
+│   │   ├── ArtistCard.tsx
+│   │   ├── ArtistList.tsx
+│   │   └── ArtistForm.tsx                   # client component
+│   └── dashboard/
+│       ├── DashboardNav.tsx
+│       ├── UserTable.tsx
+│       └── StatusBadge.tsx
+├── services/                                # server-only, lógica de negocio
+│   ├── auth.ts
+│   ├── events.ts
+│   ├── artists.ts
+│   ├── users.ts
+│   └── cloudinary.ts
+├── lib/
+│   ├── auth.ts                              # configuración Better Auth
+│   ├── auth-client.ts                       # cliente Better Auth (browser)
+│   ├── prisma.ts                            # singleton PrismaClient
+│   ├── email.ts                             # Resend helpers
+│   ├── trigger.ts                           # Trigger.dev jobs
+│   ├── env.ts                               # validación env vars con Zod
+│   └── utils.ts                             # slugify, cn, formatDate, generateUniqueSlug
+├── i18n/
+│   ├── routing.ts
+│   └── request.ts
+├── messages/
+│   ├── es.json
+│   ├── en.json
+│   └── de.json
+└── middleware.ts
+
+================================================================================
+AUTENTICACIÓN — BETTER AUTH
+================================================================================
+
+Better Auth es self-hosted: los usuarios se guardan directamente en tu
+PostgreSQL (tabla `user`). No hay webhooks, no hay sincronización externa,
+no hay dependencias de terceros con costo.
+
+--- src/lib/auth.ts ---
+
+import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+import { admin } from "better-auth/plugins"
+import { prisma } from "./prisma"
+import { triggerWelcomeEmail } from "./trigger"
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
+  emailAndPassword: { enabled: true },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+  plugins: [admin()],
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,   // 7 días
+    updateAge: 60 * 60 * 24,        // refresh diario
+  },
+  hooks: {
+    after: [
+      {
+        // Después del registro: crear UserProfile PENDING + email de bienvenida
+        matcher: (context) => context.path === "/sign-up/email",
+        handler: async (context) => {
+          const user = context.context.newSession?.user
+          if (user) {
+            await prisma.userProfile.create({
+              data: { userId: user.id, status: "PENDING" },
+            })
+            // Disparar email en background con Trigger.dev (no bloquea el response)
+            await triggerWelcomeEmail({ email: user.email, name: user.name })
+          }
+        },
+      },
+    ],
+  },
+})
+
+--- src/app/api/auth/[...all]/route.ts ---
+
+import { auth } from "@/lib/auth"
+import { toNextJsHandler } from "better-auth/next-js"
+export const { GET, POST } = toNextJsHandler(auth)
+
+--- src/lib/auth-client.ts ---
+
+import { createAuthClient } from "better-auth/react"
+import { adminClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL!,
+  plugins: [adminClient()],
+})
+
+export const { signIn, signOut, signUp, useSession } = authClient
+
+================================================================================
+HELPERS DE AUTENTICACIÓN (src/services/auth.ts)
+================================================================================
+
+Toda la lógica de permisos vive aquí. Las API routes y los Server Components
+importan estos helpers — nunca duplicar lógica de rol/status en otro lugar.
+
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+
+export async function getSession() {
+  return auth.api.getSession({ headers: await headers() })
+}
+
+export async function getCurrentUser() {
+  const session = await getSession()
+  return session?.user ?? null
+}
+
+export async function requireAuth(locale = "es") {
+  const user = await getCurrentUser()
+  if (!user) redirect(`/${locale}/sign-in`)
+  return user
+}
+
+export async function requireActive(locale = "es") {
+  const user = await requireAuth(locale)
+  const profile = await prisma.userProfile.findUnique({
+    where: { userId: user.id },
+  })
+  if (profile?.status === "PENDING") redirect(`/${locale}/user-pending`)
+  if (profile?.status === "BLOCKED") redirect(`/${locale}/user-blocked`)
+  return { user, profile }
+}
+
+export async function requireRole(role: "ADMIN" | "ARTIST", locale = "es") {
+  const { user } = await requireActive(locale)
+  if (user.role !== role && user.role !== "ADMIN") {
+    redirect(`/${locale}/dashboard`)
+  }
+  return user
+}
+
+export async function canEditArtist(artistId: string): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user) return false
+  if (user.role === "ADMIN") return true
+  const artist = await prisma.artist.findUnique({ where: { id: artistId } })
+  return artist?.userId === user.id
+}
+
+export async function canEditEvent(eventId: string): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user) return false
+  if (user.role === "ADMIN") return true
+  const event = await prisma.event.findUnique({ where: { id: eventId } })
+  return event?.createdById === user.id
+}
+
+================================================================================
+MIDDLEWARE (src/middleware.ts)
+================================================================================
+
+Combinar next-intl con verificación de sesión de Better Auth.
+
+import { betterFetch } from "@better-fetch/fetch"
+import { NextResponse, type NextRequest } from "next/server"
+import createIntlMiddleware from "next-intl/middleware"
+import { routing } from "./i18n/routing"
+import type { Session } from "better-auth/types"
+
+const intlMiddleware = createIntlMiddleware(routing)
+
+const PROTECTED_PATHS = ["/dashboard"]
+const ADMIN_PATHS = ["/admin"]
+
+export async function middleware(request: NextRequest) {
+  const response = intlMiddleware(request)
+
+  const { pathname } = request.nextUrl
+  const locale = pathname.split("/")[1] || "es"
+  const pathWithoutLocale = "/" + pathname.split("/").slice(2).join("/")
+
+  const isProtected = PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p))
+  const isAdmin = ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p))
+
+  if (isProtected || isAdmin) {
+    const { data: session } = await betterFetch<Session>(
+      "/api/auth/get-session",
+      {
+        baseURL: request.nextUrl.origin,
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+      }
+    )
+
+    if (!session) {
+      return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url))
+    }
+
+    if (isAdmin && session.user.role !== "ADMIN") {
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url))
+    }
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
+}
+
+================================================================================
+BASE DE DATOS — PRISMA SCHEMA
+================================================================================
+
+Las tablas de Better Auth (user, session, account, verification) se generan
+con: npx @better-auth/cli generate
+NO crearlas manualmente.
+
+Las tablas de dominio son las siguientes:
+
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")   // URL de Neon (serverless PostgreSQL)
+}
+
+// --- Tablas generadas por Better Auth (no modificar) ---
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  role          String    @default("user")  // "user" | "artist" | "admin"
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  profile       UserProfile?
+  artists       Artist[]
+  events        Event[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime
+  updatedAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime
+  updatedAt  DateTime
+}
+
+// --- Tablas de dominio ---
+
+model UserProfile {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  status    UserStatus @default(PENDING)
+  bio       String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+model Artist {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  bio            String?
+  origin         String?
+  genres         String[]
+  socialMedia    Json?    // { instagram?, spotify?, youtube?, tiktok?, website? }
+  profileImageId String?  // Image.id del avatar principal
+  userId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User?    @relation(fields: [userId], references: [id])
+  images         Image[]
+  events         Event[]
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  description String?
+  location    String
+  organizer   String?
+  genre       String?
+  time        String?
+  price       String?
+  isActive    Boolean     @default(true)
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+  createdById String
+  artistId    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  artist      Artist?     @relation(fields: [artistId], references: [id])
+  dates       EventDate[]
+  images      Image[]
+}
+
+model EventDate {
+  id      String   @id @default(cuid())
+  date    DateTime
+  eventId String
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  publicId  String   // Cloudinary public_id — necesario para eliminar la imagen
+  eventId   String?
+  artistId  String?
+  createdAt DateTime @default(now())
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}
+
+================================================================================
+SERVICIOS (src/services/)
+================================================================================
+
+REGLAS para todos los servicios:
+- Archivos server-only (agregar: import "server-only" al inicio)
+- Nunca devolver tipos crudos de Prisma: mapear a tipos de dominio propios
+- Las funciones que mutan datos verifican permisos antes de operar
+- Usar next/cache unstable_cache para queries de lectura frecuente
+
+--- events.ts ---
+
+Tipos de dominio:
+  EventSummary { id, title, slug, location, genre, dates: Date[], artistName, coverImage }
+  EventDetail  { ...EventSummary, description, organizer, time, price, images[], artist{} }
+
+Funciones:
+  getUpcomingEvents(filters?: { genre?: string })   → EventSummary[]  [cacheado 5min]
+  getPastEvents()                                    → EventSummary[]  [cacheado 10min]
+  getEventBySlug(slug: string)                       → EventDetail | null
+  getEventsByArtist(artistId: string)                → EventSummary[]
+  getEventsByUser(userId: string)                    → EventSummary[]  (incluye soft-deleted)
+  getDeletedEvents()                                 → EventSummary[]  (solo admin)
+  createEvent(data: CreateEventInput, userId: string) → Event
+    → usar prisma.$transaction() para crear evento + fechas + imágenes juntos
+    → invalidar cache de getUpcomingEvents al crear
+  softDeleteEvent(id: string)                        → void
+  restoreEvent(id: string)                           → void
+  hardDeleteEvent(id: string)                        → void
+    → eliminar imágenes en Cloudinary ANTES de eliminar en DB
+
+--- artists.ts ---
+
+Funciones:
+  getAllArtists(search?: string)                      → ArtistSummary[]  [cacheado 10min]
+  getArtistBySlug(slug: string)                       → ArtistDetail | null
+  getArtistsByUser(userId: string)                    → ArtistSummary[]
+  createArtist(data: CreateArtistInput, userId: string) → Artist
+  updateArtist(id: string, data: UpdateArtistInput)  → Artist
+  deleteArtist(id: string)                           → void
+    → eliminar imágenes en Cloudinary ANTES de eliminar en DB
+
+--- users.ts ---
+
+Funciones:
+  getAllUsers(filters?: { status?: UserStatus; role?: string }) → UserWithProfile[]
+  getUserById(id: string)                            → UserWithProfile | null
+  updateStatus(id: string, status: UserStatus)       → void
+    → disparar email con Trigger.dev al activar o bloquear
+  updateRole(id: string, role: string)               → void
+
+--- cloudinary.ts ---
+
+Funciones:
+  deleteImage(publicId: string)                      → void
+  deleteImages(publicIds: string[])                  → void  (borrado en lote)
+
+================================================================================
+CACHE CON next/cache (unstable_cache)
+================================================================================
+
+Usar unstable_cache para queries de lectura frecuente y costosas.
+Invalidar el cache con revalidateTag() cuando se muta el dato correspondiente.
+
+import { unstable_cache, revalidateTag } from "next/cache"
+
+// Ejemplo en events.ts:
+export const getUpcomingEvents = unstable_cache(
+  async (filters?: { genre?: string }) => {
+    // query a Prisma...
+  },
+  ["upcoming-events"],
+  { revalidate: 300, tags: ["events"] }  // 5 minutos
+)
+
+// Al crear/eliminar un evento:
+revalidateTag("events")
+
+// Ejemplo en artists.ts:
+export const getAllArtists = unstable_cache(
+  async (search?: string) => { /* query */ },
+  ["all-artists"],
+  { revalidate: 600, tags: ["artists"] }  // 10 minutos
+)
+
+================================================================================
+JOBS ASINCRÓNICOS — TRIGGER.DEV (src/lib/trigger.ts)
+================================================================================
+
+Trigger.dev maneja emails en background. El request del usuario no espera
+a que el email se envíe — responde inmediatamente y el email se procesa aparte.
+
+import { client } from "@trigger.dev/sdk/v3"
+import { resend } from "./email"
+
+// Job: email de bienvenida
+export const welcomeEmailJob = client.defineJob({
+  id: "welcome-email",
+  name: "Send Welcome Email",
+  version: "1.0.0",
+  run: async (payload: { email: string; name: string }) => {
+    await resend.emails.send({
+      from: "noreply@tudominio.com",
+      to: payload.email,
+      subject: "Tu cuenta está en revisión",
+      html: `<p>Hola ${payload.name}, tu cuenta está siendo revisada. Te avisaremos cuando sea aprobada.</p>`,
+    })
+  },
+})
+
+// Job: email de cuenta aprobada
+export const accountApprovedJob = client.defineJob({
+  id: "account-approved-email",
+  name: "Send Account Approved Email",
+  version: "1.0.0",
+  run: async (payload: { email: string; name: string }) => {
+    await resend.emails.send({
+      from: "noreply@tudominio.com",
+      to: payload.email,
+      subject: "Tu cuenta fue aprobada",
+      html: `<p>Hola ${payload.name}, ya puedes acceder a la plataforma.</p>`,
+    })
+  },
+})
+
+// Helpers para disparar jobs desde cualquier lugar:
+export async function triggerWelcomeEmail(payload: { email: string; name: string }) {
+  await welcomeEmailJob.invoke(payload)
+}
+
+export async function triggerAccountApproved(payload: { email: string; name: string }) {
+  await accountApprovedJob.invoke(payload)
+}
+
+================================================================================
+UTILS (src/lib/utils.ts)
+================================================================================
+
+// Eliminar acentos y generar slug limpio
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+}
+
+// Generar slug único verificando colisiones en DB
+export async function generateUniqueSlug(
+  base: string,
+  model: "event" | "artist"
+): Promise<string> {
+  const slug = slugify(base)
+  const existing = await prisma[model].findUnique({ where: { slug } })
+  if (!existing) return slug
+  const similar = await prisma[model].findMany({
+    where: { slug: { startsWith: slug } },
+    select: { slug: true },
+  })
+  const max = similar.reduce((n, { slug: s }) => {
+    const match = s.match(/-(\d+)$/)
+    return match ? Math.max(n, parseInt(match[1])) : n
+  }, 1)
+  return `${slug}-${max + 1}`
+}
+
+// Formatear fecha según locale activo
+export function formatDate(date: Date, locale: string): string {
+  const localeMap = { es: "es-ES", en: "en-US", de: "de-DE" }
+  return new Intl.DateTimeFormat(localeMap[locale] ?? "es-ES", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date)
+}
+
+================================================================================
+VALIDACIÓN DE ENV VARS (src/lib/env.ts)
+================================================================================
+
+Validar todas las variables al arrancar. Si falta alguna, la app no inicia.
+
+import { z } from "zod"
+
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  BETTER_AUTH_URL: z.string().url(),
+  NEXT_PUBLIC_APP_URL: z.string().url(),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
+  RESEND_API_KEY: z.string(),
+  TRIGGER_SECRET_KEY: z.string(),
+})
+
+export const env = envSchema.parse(process.env)
+
+// Importar siempre desde aquí, nunca process.env directamente.
+
+================================================================================
+API ROUTES — CONTRATO
+================================================================================
+
+Todas las API routes siguen este patrón sin excepción:
+
+import { getCurrentUser } from "@/services/auth"
+import { NextResponse } from "next/server"
+import { z } from "zod"
+
+export async function POST(request: Request) {
+  // 1. Verificar sesión
+  const user = await getCurrentUser()
+  if (!user) return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 })
+
+  // 2. Verificar permiso específico usando helpers de services/auth.ts
+  // 3. Validar body con Zod
+  const body = await request.json()
+  const result = schema.safeParse(body)
+  if (!result.success) {
+    return NextResponse.json({ error: "Validation error", code: "VALIDATION_ERROR", issues: result.error.issues }, { status: 400 })
+  }
+
+  // 4. Llamar al service correspondiente
+  // 5. Retornar respuesta estructurada
+
+  return NextResponse.json({ data: result })
+}
+
+Errores estructurados siempre así:
+  { error: string, code: "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "VALIDATION_ERROR" }
+
+Rutas necesarias:
+  GET  /api/events                   → listado con filtros opcionales (?genre=tango)
+  POST /api/events                   → crear evento (requiere ARTIST o ADMIN)
+  DELETE /api/events/[id]            → soft delete (owner o ADMIN)
+  POST /api/events/[id]/restore      → restaurar (solo ADMIN)
+  DELETE /api/events/[id]/hard       → eliminar definitivamente (solo ADMIN)
+  GET  /api/artists                  → listado con búsqueda opcional (?search=nombre)
+  POST /api/artists                  → crear artista (requiere ARTIST o ADMIN)
+  PATCH /api/artists/[id]            → editar artista (owner o ADMIN)
+  PATCH /api/users/[id]/status       → cambiar status (solo ADMIN)
+  PATCH /api/users/[id]/role         → cambiar rol (solo ADMIN)
+  DELETE /api/cloudinary/delete      → eliminar imagen en Cloudinary (autenticado)
+  GET|POST /api/auth/[...all]        → Better Auth handler
+
+================================================================================
+INTERNACIONALIZACIÓN
+================================================================================
+
+--- src/i18n/routing.ts ---
+import { defineRouting } from "next-intl/routing"
+
+export const routing = defineRouting({
+  locales: ["es", "en", "de"],
+  defaultLocale: "es",
+})
+
+--- messages/es.json (estructura base, replicar en en.json y de.json) ---
+{
+  "nav": {
+    "events": "Eventos",
+    "artists": "Artistas",
+    "dashboard": "Panel",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
+  },
+  "events": {
+    "title": "Próximos Eventos",
+    "past": "Eventos Pasados",
+    "noEvents": "No hay eventos disponibles",
+    "filterByGenre": "Filtrar por género",
+    "allGenres": "Todos los géneros",
+    "createEvent": "Crear Evento",
+    "deleteSuccess": "Evento eliminado",
+    "restoreSuccess": "Evento restaurado"
+  },
+  "artists": {
+    "title": "Artistas",
+    "search": "Buscar artista...",
+    "noArtists": "No se encontraron artistas",
+    "createArtist": "Crear Artista"
+  },
+  "dashboard": {
+    "title": "Mi Panel",
+    "myEvents": "Mis Eventos",
+    "myArtists": "Mis Artistas"
+  },
+  "admin": {
+    "users": "Gestión de Usuarios",
+    "approve": "Aprobar",
+    "block": "Bloquear",
+    "changeRole": "Cambiar Rol",
+    "allEvents": "Todos los Eventos"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "active": "Activo",
+    "blocked": "Bloqueado"
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "email": "Email",
+    "password": "Contraseña",
+    "name": "Nombre completo",
+    "continueWithGoogle": "Continuar con Google",
+    "pendingTitle": "Cuenta en revisión",
+    "pendingDescription": "Tu cuenta está siendo revisada por el equipo. Te notificaremos por email cuando sea aprobada.",
+    "blockedTitle": "Cuenta suspendida",
+    "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador."
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "restore": "Restaurar",
+    "loading": "Cargando...",
+    "error": "Error inesperado",
+    "confirm": "Confirmar",
+    "back": "Volver"
+  }
+}
+
+================================================================================
+REGLAS DE ARQUITECTURA — EL AGENTE DEBE SEGUIRLAS SIN EXCEPCIÓN
+================================================================================
+
+1. SERVER COMPONENTS POR DEFECTO.
+   Agregar "use client" solo cuando se necesiten: hooks de estado (useState,
+   useEffect), eventos del DOM, o APIs del browser. Todo fetch de datos inicial
+   va en Server Components.
+
+2. NO useEffect PARA FETCHING.
+   useEffect solo para efectos de UI puros (scroll, animaciones, DOM). Los datos
+   se obtienen en Server Components o Server Actions.
+
+3. TRANSACCIONES EN OPERACIONES COMPUESTAS.
+   Crear evento con fechas e imágenes siempre dentro de prisma.$transaction().
+   Si falla cualquier parte, se revierte todo.
+
+4. UN SOLO PUNTO DE VERDAD PARA PERMISOS.
+   Toda la lógica de rol/status vive en src/services/auth.ts. Las API routes y
+   los Server Components importan esos helpers. Nunca duplicar guards de permisos.
+
+5. SOFT DELETE OBLIGATORIO PARA EVENTOS.
+   isDeleted + deletedAt. Todos los queries de listado excluyen { isDeleted: true }.
+   Hard delete solo para ADMIN y borra también las imágenes de Cloudinary primero.
+
+6. TIPOS DE DOMINIO SEPARADOS DE PRISMA.
+   Los services mapean los resultados de Prisma a interfaces de dominio propias
+   antes de retornarlos. Los componentes nunca importan tipos de Prisma directamente.
+
+7. SLUGS ÚNICOS CON COLISIÓN RESUELTA.
+   Usar generateUniqueSlug() siempre al crear artistas o eventos. Nunca asumir
+   que el slug es único sin verificar en la DB.
+
+8. IMÁGENES: SIEMPRE GUARDAR publicId.
+   Al eliminar cualquier entidad (artista, evento), eliminar primero sus imágenes
+   en Cloudinary usando el publicId, luego eliminar en la DB.
+
+9. CACHE CON unstable_cache.
+   Queries de lectura frecuente (listados de eventos y artistas) deben estar
+   cacheadas. Invalidar con revalidateTag() al mutar datos.
+
+10. EMAILS SIEMPRE EN BACKGROUND.
+    Nunca enviar emails de forma síncrona en un request. Usar Trigger.dev para
+    disparar el job y responder inmediatamente al usuario.
+
+11. ENV.TS COMO ÚNICA FUENTE DE ENV VARS.
+    Importar siempre desde src/lib/env.ts, nunca acceder a process.env directamente
+    en componentes o servicios.
+
+12. NO CREAR ABSTRACCIONES PARA UN SOLO USO.
+    No agregar features no pedidos. No agregar comentarios obvios. No crear helpers
+    especulativos. La complejidad justa es la que el problema requiere.
+
+================================================================================
+VARIABLES DE ENTORNO REQUERIDAS
+================================================================================
+
+DATABASE_URL=postgresql://...          # URL de Neon (serverless PostgreSQL)
+BETTER_AUTH_SECRET=                    # string aleatorio mínimo 32 caracteres
+BETTER_AUTH_URL=http://localhost:3000  # URL base de la app
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=                      # opcional para OAuth con Google
+GOOGLE_CLIENT_SECRET=                  # opcional para OAuth con Google
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+RESEND_API_KEY=
+TRIGGER_SECRET_KEY=
+
+================================================================================
+ORDEN DE CONSTRUCCIÓN RECOMENDADO
+================================================================================
+
+1.  Setup inicial: Next.js 15 + TypeScript + Tailwind CSS 4 + shadcn/ui
+2.  src/lib/env.ts — validación de variables de entorno
+3.  Prisma schema + npx @better-auth/cli generate + migraciones en Neon
+4.  src/lib/prisma.ts — singleton PrismaClient
+5.  src/lib/auth.ts + src/app/api/auth/[...all]/route.ts — Better Auth
+6.  src/lib/auth-client.ts
+7.  src/services/auth.ts — todos los helpers de permisos
+8.  src/middleware.ts — next-intl + protección de rutas
+9.  src/i18n/routing.ts + messages/{es,en,de}.json
+10. Layout principal: Header, Footer, LanguageSwitcher, ThemeToggle
+11. Páginas públicas: Home, Events, Events/Past, Events/[slug], Artists, Artists/[slug]
+12. Páginas de auth: sign-in, sign-up usando authClient
+13. Páginas de estado: user-pending, user-blocked
+14. src/services/events.ts con cache
+15. src/services/artists.ts con cache
+16. Dashboard y páginas protegidas según rol
+17. Formularios: EventForm, ArtistForm con React Hook Form + Zod
+18. Integración Cloudinary para subida de imágenes
+19. Panel de admin: gestión de usuarios y eventos
+20. src/lib/trigger.ts + jobs de email con Resend
+21. Tests con Vitest para servicios críticos (auth, events, artists)
+
+================================================================================
+FIN DEL PROMPT
+================================================================================
