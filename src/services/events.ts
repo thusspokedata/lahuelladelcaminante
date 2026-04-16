@@ -246,7 +246,7 @@ export async function createEvent(
 ) {
   const slug = await generateUniqueSlug(data.title, "event")
 
-  const event = await prisma.$transaction(async (tx: typeof prisma) => {
+  const event = await prisma.$transaction(async (tx) => {
     const created = await tx.event.create({
       data: {
         title: data.title,
