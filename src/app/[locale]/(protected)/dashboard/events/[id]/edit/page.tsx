@@ -29,7 +29,7 @@ export default async function EditEventPage({
   if (!event) notFound()
 
   // Split location into venue + city (format: "Venue, City")
-  const locationParts = event.location.split(",").map((s) => s.trim())
+  const locationParts = event.location.split(",").map((s: string) => s.trim())
   const city = locationParts.length > 1 ? locationParts[locationParts.length - 1] : ""
   const venue = locationParts.length > 1 ? locationParts.slice(0, -1).join(", ") : event.location
 
