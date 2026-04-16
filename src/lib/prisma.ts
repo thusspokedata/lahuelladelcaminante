@@ -1,10 +1,20 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PrismaClient } = require("@prisma/client")
+import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
+import { Pool } from "pg"
 
-type PrismaClientType = InstanceType<typeof PrismaClient>
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined
+}
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClientType }
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL
+  if (!connectionString) throw new Error("DATABASE_URL is not set")
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+  return new PrismaClient({ adapter })
+}
 
-export const prisma: PrismaClientType = globalForPrisma.prisma ?? new PrismaClient()
+export const prisma: PrismaClient = global.prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") global.prisma = prisma

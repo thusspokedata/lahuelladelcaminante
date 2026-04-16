@@ -21,7 +21,7 @@ const intlMiddleware = createIntlMiddleware(routing)
 const PROTECTED_PATHS = ["/dashboard"]
 const ADMIN_PATHS = ["/admin"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = intlMiddleware(request)
 
   const { pathname } = request.nextUrl
