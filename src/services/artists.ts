@@ -2,7 +2,7 @@ import "server-only"
 
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
-import { generateUniqueSlug } from "@/lib/utils"
+import { generateUniqueSlug } from "@/lib/slugify"
 import { deleteImages } from "./cloudinary"
 
 export interface ArtistSummary {
@@ -35,7 +35,17 @@ export interface CreateArtistInput {
   images?: { url: string; alt?: string; publicId: string }[]
 }
 
-export type UpdateArtistInput = Partial<CreateArtistInput>
+export interface UpdateArtistInput {
+  name?: string
+  bio?: string
+  origin?: string
+  genres?: string[]
+  socialMedia?: Record<string, string | undefined>
+  /** IDs of existing Image rows to KEEP; others will be deleted from DB + Cloudinary */
+  keepImageIds?: string[]
+  /** New images to add */
+  newImages?: { url: string; alt?: string; publicId: string }[]
+}
 
 function mapToSummary(artist: {
   id: string
@@ -130,6 +140,31 @@ export async function createArtist(
 }
 
 export async function updateArtist(id: string, data: UpdateArtistInput) {
+  // Handle image cleanup
+  if (data.keepImageIds !== undefined) {
+    const allImages = await prisma.image.findMany({
+      where: { artistId: id },
+      select: { id: true, publicId: true },
+    })
+    const toRemove = allImages.filter((img) => !data.keepImageIds!.includes(img.id))
+    if (toRemove.length > 0) {
+      await deleteImages(toRemove.map((img) => img.publicId))
+      await prisma.image.deleteMany({ where: { id: { in: toRemove.map((img) => img.id) } } })
+    }
+  }
+
+  // Add new images
+  if (data.newImages?.length) {
+    await prisma.image.createMany({
+      data: data.newImages.map((img) => ({
+        url: img.url,
+        alt: img.alt ?? null,
+        publicId: img.publicId,
+        artistId: id,
+      })),
+    })
+  }
+
   const artist = await prisma.artist.update({
     where: { id },
     data: {
