@@ -17,6 +17,10 @@ const updateArtistSchema = z.object({
       website: z.string().optional(),
     })
     .optional(),
+  keepImageIds: z.array(z.string()).optional(),
+  newImages: z
+    .array(z.object({ url: z.string().url(), alt: z.string().optional(), publicId: z.string() }))
+    .optional(),
 })
 
 export async function PATCH(

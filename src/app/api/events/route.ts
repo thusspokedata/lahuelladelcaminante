@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/services/auth"
+import { getCurrentUser, isArtistOrAdmin } from "@/services/auth"
 import { getUpcomingEvents, createEvent } from "@/services/events"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -7,6 +7,7 @@ const createEventSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   location: z.string().min(1),
+  address: z.string().optional(),
   organizer: z.string().optional(),
   genre: z.string().optional(),
   time: z.string().optional(),
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 })
   }
 
-  if (user.role !== "artist" && user.role !== "ADMIN" && user.role !== "admin") {
+  if (!isArtistOrAdmin(user.role)) {
     return NextResponse.json({ error: "Forbidden", code: "FORBIDDEN" }, { status: 403 })
   }
 

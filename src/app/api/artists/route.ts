@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/services/auth"
+import { getCurrentUser, isArtistOrAdmin } from "@/services/auth"
 import { getAllArtists, createArtist } from "@/services/artists"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 })
   }
 
-  if (user.role !== "artist" && user.role !== "ADMIN" && user.role !== "admin") {
+  if (!isArtistOrAdmin(user.role)) {
     return NextResponse.json({ error: "Forbidden", code: "FORBIDDEN" }, { status: 403 })
   }
 

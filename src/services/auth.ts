@@ -5,6 +5,15 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 
+export function isAdmin(role?: string | null) {
+  return role?.toLowerCase() === "admin"
+}
+
+export function isArtistOrAdmin(role?: string | null) {
+  const r = role?.toLowerCase()
+  return r === "admin" || r === "artist"
+}
+
 export async function getSession() {
   return auth.api.getSession({ headers: await headers() })
 }
@@ -32,7 +41,9 @@ export async function requireActive(locale = "es") {
 
 export async function requireRole(role: "ADMIN" | "ARTIST", locale = "es") {
   const { user } = await requireActive(locale)
-  if (user.role !== role && user.role !== "ADMIN") {
+  const r = user.role?.toLowerCase()
+  const required = role.toLowerCase()
+  if (r !== required && r !== "admin") {
     redirect(`/${locale}/dashboard`)
   }
   return user
@@ -41,7 +52,7 @@ export async function requireRole(role: "ADMIN" | "ARTIST", locale = "es") {
 export async function canEditArtist(artistId: string): Promise<boolean> {
   const user = await getCurrentUser()
   if (!user) return false
-  if (user.role === "ADMIN") return true
+  if (user.role?.toLowerCase() === "admin") return true
   const artist = await prisma.artist.findUnique({ where: { id: artistId } })
   return artist?.userId === user.id
 }
@@ -49,7 +60,7 @@ export async function canEditArtist(artistId: string): Promise<boolean> {
 export async function canEditEvent(eventId: string): Promise<boolean> {
   const user = await getCurrentUser()
   if (!user) return false
-  if (user.role === "ADMIN") return true
+  if (user.role?.toLowerCase() === "admin") return true
   const event = await prisma.event.findUnique({ where: { id: eventId } })
   return event?.createdById === user.id
 }

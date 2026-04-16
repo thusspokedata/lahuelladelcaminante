@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/services/auth"
+import { getCurrentUser, isAdmin } from "@/services/auth"
 import { updateStatus } from "@/services/users"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -17,7 +17,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 })
   }
 
-  if (user.role !== "admin" && user.role !== "ADMIN") {
+  if (!isAdmin(user.role)) {
     return NextResponse.json({ error: "Forbidden", code: "FORBIDDEN" }, { status: 403 })
   }
 

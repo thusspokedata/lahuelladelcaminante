@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/services/auth"
+import { getCurrentUser, isAdmin } from "@/services/auth"
 import { restoreEvent } from "@/services/events"
 import { NextResponse } from "next/server"
 
@@ -12,7 +12,7 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 })
   }
 
-  if (user.role !== "admin" && user.role !== "ADMIN") {
+  if (!isAdmin(user.role)) {
     return NextResponse.json({ error: "Forbidden", code: "FORBIDDEN" }, { status: 403 })
   }
 
