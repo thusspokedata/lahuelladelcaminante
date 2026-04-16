@@ -27,7 +27,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-border text-xs text-muted-foreground text-center">
-          © {currentYear} La Huella del Caminante. Hecho con ♥ en Berlín.
+          © {currentYear} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata
         </div>
       </div>
     </footer>
