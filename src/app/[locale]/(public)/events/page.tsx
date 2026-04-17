@@ -27,7 +27,7 @@ export default async function EventsPage({
       <div className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
           <p className="text-xs font-bold text-primary uppercase tracking-[0.18em] mb-1.5">
-            Música latina en vivo · Alemania
+            {t("musicLabel")}
           </p>
           <h1 className="text-4xl font-black">{t("title")}</h1>
         </div>

@@ -6,6 +6,19 @@
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión"
   },
+  "home": {
+    "badge": "Berlín · Música Latina",
+    "tagline": "La escena musical latinoamericana en Berlín, Múnich, Hamburgo y más ciudades alemanas.",
+    "viewEvents": "Ver eventos",
+    "upcomingSection": "Próximos eventos",
+    "viewAll": "Ver todos →",
+    "noEventsYet": "Próximamente los primeros eventos",
+    "upcomingArtistsLabel": "En vivo pronto",
+    "upcomingArtistsTitle": "Artistas por venir",
+    "pastArtistsLabel": "Ya pasaron por aquí",
+    "pastArtistsTitle": "Artistas que dejaron su huella",
+    "exploreGenre": "Explora por género"
+  },
   "events": {
     "title": "Próximos Eventos",
     "past": "Eventos Pasados",
@@ -14,7 +27,11 @@
     "allGenres": "Todos los géneros",
     "createEvent": "Crear Evento",
     "deleteSuccess": "Evento eliminado",
-    "restoreSuccess": "Evento restaurado"
+    "restoreSuccess": "Evento restaurado",
+    "date": "Fecha",
+    "dates": "Fechas",
+    "noDate": "Sin fecha",
+    "musicLabel": "Música latina en vivo · Alemania"
   },
   "artists": {
     "title": "Artistas",
@@ -25,14 +42,79 @@
   "dashboard": {
     "title": "Mi Panel",
     "myEvents": "Mis Eventos",
-    "myArtists": "Mis Artistas"
+    "myArtists": "Mis Artistas",
+    "createArtistBtn": "+ Crear Artista",
+    "createEventBtn": "+ Crear Evento",
+    "createFirstEvent": "Crear primer evento",
+    "noArtistsYet": "No tienes artistas aún.",
+    "noEventsYet": "No tienes eventos aún.",
+    "noPermission": "No tienes permisos de artista."
   },
   "admin": {
     "users": "Gestión de Usuarios",
     "approve": "Aprobar",
     "block": "Bloquear",
     "changeRole": "Cambiar Rol",
-    "allEvents": "Todos los Eventos"
+    "allEvents": "Todos los Eventos",
+    "statusUpdated": "Estado actualizado",
+    "roleUpdated": "Rol actualizado",
+    "activate": "Activar",
+    "permanentDelete": "Borrar definitivo",
+    "permanentlyDeleted": "Evento eliminado definitivamente",
+    "colName": "Nombre",
+    "colEmail": "Email",
+    "colRole": "Rol",
+    "colStatus": "Estado",
+    "colActions": "Acciones",
+    "colTitle": "Título",
+    "colGenre": "Género",
+    "colArtist": "Artista"
+  },
+  "forms": {
+    "titleField": "Título *",
+    "description": "Descripción",
+    "venue": "Venue / Lugar *",
+    "city": "Ciudad *",
+    "address": "Dirección",
+    "artistField": "Artista",
+    "genre": "Género",
+    "time": "Hora",
+    "price": "Precio",
+    "organizer": "Organizador",
+    "dates": "Fechas *",
+    "images": "Imágenes",
+    "addDate": "+ Agregar fecha",
+    "uploadPhotos": "↑ Subir fotos (podés seleccionar varias)",
+    "noArtistLinked": "— Sin artista vinculado —",
+    "noGenre": "— Sin género —",
+    "noPhotos": "Sin fotos aún.",
+    "nameField": "Nombre *",
+    "bio": "Biografía",
+    "origin": "Origen",
+    "genres": "Géneros (separados por coma)",
+    "socialMedia": "Redes sociales",
+    "photos": "Fotos",
+    "newBadge": "Nueva",
+    "noImages": "Sin imágenes. Puedes subir una o más.",
+    "mapsHint": "Se mostrará un enlace para abrir en Google Maps.",
+    "titlePlaceholder": "Ej: Noche de Tango en Berlín",
+    "venuePlaceholder": "Ej: Tango Bar Loca",
+    "cityPlaceholder": "Ej: Berlin",
+    "addressPlaceholder": "Ej: Schlesische Str. 38, 10997 Berlin",
+    "titleRequired": "El título es obligatorio",
+    "venueRequired": "El venue es obligatorio",
+    "nameRequired": "El nombre es obligatorio",
+    "editArtist": "Editar Artista",
+    "createArtist": "Crear Artista",
+    "editEvent": "Editar evento",
+    "createEvent": "Crear Evento"
+  },
+  "footer": {
+    "tagline": "Música Latinoamericana · Berlín",
+    "events": "Eventos",
+    "artists": "Artistas",
+    "login": "Acceder",
+    "copyright": "© {year} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata"
   },
   "status": {
     "pending": "Pendiente",
@@ -49,7 +131,9 @@
     "pendingTitle": "Cuenta en revisión",
     "pendingDescription": "Tu cuenta está siendo revisada por el equipo. Te notificaremos por email cuando sea aprobada.",
     "blockedTitle": "Cuenta suspendida",
-    "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador."
+    "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador.",
+    "noAccount": "¿No tienes cuenta?",
+    "haveAccount": "¿Ya tienes cuenta?"
   },
   "common": {
     "save": "Guardar",
@@ -60,6 +144,16 @@
     "loading": "Cargando...",
     "error": "Error inesperado",
     "confirm": "Confirmar",
-    "back": "Volver"
+    "back": "Volver",
+    "view": "Ver",
+    "yes": "Sí",
+    "no": "No",
+    "confirmDelete": "¿Eliminar?",
+    "deleteError": "Error al eliminar",
+    "eventUpdated": "Evento actualizado",
+    "eventCreated": "Evento creado",
+    "artistUpdated": "Artista actualizado",
+    "artistCreated": "Artista creado",
+    "eventDeleted": "Evento eliminado"
   }
 }

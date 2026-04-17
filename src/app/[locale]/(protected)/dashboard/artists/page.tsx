@@ -11,10 +11,11 @@ export default async function DashboardArtistsPage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard" })
+  const tCommon = await getTranslations({ locale, namespace: "common" })
   const { user } = await requireActive(locale)
 
   if (!isArtistOrAdmin(user.role)) {
-    return <p className="text-muted-foreground">No tienes permisos de artista.</p>
+    return <p className="text-muted-foreground">{t("noPermission")}</p>
   }
 
   const artists = await getArtistsByUser(user.id)
@@ -24,12 +25,12 @@ export default async function DashboardArtistsPage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("myArtists")}</h1>
         <Button asChild size="sm">
-          <Link href={`/${locale}/dashboard/artists/create`}>+ Crear Artista</Link>
+          <Link href={`/${locale}/dashboard/artists/create`}>{t("createArtistBtn")}</Link>
         </Button>
       </div>
 
       {artists.length === 0 ? (
-        <p className="text-muted-foreground">No tienes artistas aún.</p>
+        <p className="text-muted-foreground">{t("noArtistsYet")}</p>
       ) : (
         <div className="space-y-2">
           {artists.map((artist) => (
@@ -42,10 +43,10 @@ export default async function DashboardArtistsPage({
               </div>
               <div className="flex gap-2">
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/${locale}/artists/${artist.slug}`}>Ver</Link>
+                  <Link href={`/${locale}/artists/${artist.slug}`}>{tCommon("view")}</Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                  <Link href={`/${locale}/dashboard/artists/${artist.id}/edit`}>Editar</Link>
+                  <Link href={`/${locale}/dashboard/artists/${artist.id}/edit`}>{tCommon("edit")}</Link>
                 </Button>
               </div>
             </div>

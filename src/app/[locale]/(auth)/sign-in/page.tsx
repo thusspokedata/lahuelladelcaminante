@@ -76,7 +76,7 @@ export default function SignInPage() {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
+            {t("noAccount")}{" "}
             <Link href={`/${locale}/sign-up`} className="underline">
               {t("signUp")}
             </Link>

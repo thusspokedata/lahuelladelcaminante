@@ -15,10 +15,10 @@ import Image from "next/image"
 import { X } from "lucide-react"
 
 const schema = z.object({
-  title: z.string().min(1, "El título es obligatorio"),
+  title: z.string().min(1),
   description: z.string().optional(),
-  venue: z.string().min(1, "El venue es obligatorio"),
-  city: z.string().min(1, "La ciudad es obligatoria"),
+  venue: z.string().min(1),
+  city: z.string().min(1),
   address: z.string().optional(),
   organizer: z.string().optional(),
   genre: z.string().optional(),
@@ -73,6 +73,7 @@ const GENRES = [
 
 export function EventForm({ eventId, artists = [], defaultValues }: EventFormProps) {
   const tCommon = useTranslations("common")
+  const tForms = useTranslations("forms")
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
 
@@ -160,7 +161,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
       return
     }
 
-    toast.success(isEdit ? "Evento actualizado" : "Evento creado")
+    toast.success(isEdit ? tCommon("eventUpdated") : tCommon("eventCreated"))
     router.push(`/${locale}/dashboard/events`)
     router.refresh()
   }
@@ -170,14 +171,14 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
 
       {/* Title */}
       <div className="space-y-1.5">
-        <Label htmlFor="title">Título *</Label>
-        <Input id="title" placeholder="Ej: Noche de Tango en Berlín" {...register("title")} />
-        {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
+        <Label htmlFor="title">{tForms("titleField")}</Label>
+        <Input id="title" placeholder={tForms("titlePlaceholder")} {...register("title")} />
+        {errors.title && <p className="text-xs text-destructive">{tForms("titleRequired")}</p>}
       </div>
 
       {/* Description */}
       <div className="space-y-1.5">
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">{tForms("description")}</Label>
         <textarea
           id="description"
           {...register("description")}
@@ -190,40 +191,39 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
       {/* Venue + City */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="venue">Venue / Lugar *</Label>
-          <Input id="venue" placeholder="Ej: Tango Bar Loca" {...register("venue")} />
-          {errors.venue && <p className="text-xs text-destructive">{errors.venue.message}</p>}
+          <Label htmlFor="venue">{tForms("venue")}</Label>
+          <Input id="venue" placeholder={tForms("venuePlaceholder")} {...register("venue")} />
+          {errors.venue && <p className="text-xs text-destructive">{tForms("venueRequired")}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="city">Ciudad *</Label>
-          <Input id="city" placeholder="Ej: Berlin" {...register("city")} />
-          {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
+          <Label htmlFor="city">{tForms("city")}</Label>
+          <Input id="city" placeholder={tForms("cityPlaceholder")} {...register("city")} />
         </div>
       </div>
 
       {/* Address */}
       <div className="space-y-1.5">
-        <Label htmlFor="address">Dirección</Label>
+        <Label htmlFor="address">{tForms("address")}</Label>
         <Input
           id="address"
-          placeholder="Ej: Schlesische Str. 38, 10997 Berlin"
+          placeholder={tForms("addressPlaceholder")}
           {...register("address")}
         />
         <p className="text-xs text-muted-foreground">
-          Se mostrará un enlace para abrir en Google Maps.
+          {tForms("mapsHint")}
         </p>
       </div>
 
       {/* Artist selector */}
       {artists.length > 0 && (
         <div className="space-y-1.5">
-          <Label htmlFor="artistId">Artista</Label>
+          <Label htmlFor="artistId">{tForms("artistField")}</Label>
           <select
             id="artistId"
             {...register("artistId")}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
           >
-            <option value="">— Sin artista vinculado —</option>
+            <option value="">{tForms("noArtistLinked")}</option>
             {artists.map((a) => (
               <option key={a.id} value={a.id}>{a.name}</option>
             ))}
@@ -234,36 +234,36 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
       {/* Genre + Time + Price */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="genre">Género</Label>
+          <Label htmlFor="genre">{tForms("genre")}</Label>
           <select
             id="genre"
             {...register("genre")}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
           >
             {GENRES.map((g) => (
-              <option key={g} value={g}>{g || "— Sin género —"}</option>
+              <option key={g} value={g}>{g || tForms("noGenre")}</option>
             ))}
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="time">Hora</Label>
+          <Label htmlFor="time">{tForms("time")}</Label>
           <Input id="time" placeholder="21:00" {...register("time")} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="price">Precio</Label>
+          <Label htmlFor="price">{tForms("price")}</Label>
           <Input id="price" placeholder="€10 / Gratis" {...register("price")} />
         </div>
       </div>
 
       {/* Organizer */}
       <div className="space-y-1.5">
-        <Label htmlFor="organizer">Organizador</Label>
+        <Label htmlFor="organizer">{tForms("organizer")}</Label>
         <Input id="organizer" placeholder="Nombre del organizador" {...register("organizer")} />
       </div>
 
       {/* Dates */}
       <div className="space-y-2">
-        <Label>Fechas *</Label>
+        <Label>{tForms("dates")}</Label>
         <div className="space-y-2">
           {dateFields.map((field, i) => (
             <div key={field.id} className="flex gap-2 items-center">
@@ -289,13 +289,13 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
           onClick={() => appendDate({ value: "" })}
           className="rounded-full"
         >
-          + Agregar fecha
+          {tForms("addDate")}
         </Button>
       </div>
 
       {/* Images */}
       <div className="space-y-3">
-        <Label>Imágenes</Label>
+        <Label>{tForms("images")}</Label>
 
         {/* Existing images */}
         {existingImages.length > 0 && (
@@ -346,7 +346,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
                   <X className="w-3.5 h-3.5" />
                 </button>
                 <div className="absolute bottom-1 left-1 right-1 bg-primary/80 text-white text-[9px] text-center rounded px-1 py-0.5">
-                  Nueva
+                  {tForms("newBadge")}
                 </div>
               </div>
             ))}
@@ -371,13 +371,13 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
               onClick={() => open()}
               className="rounded-full"
             >
-              ↑ Subir fotos (podés seleccionar varias)
+              {tForms("uploadPhotos")}
             </Button>
           )}
         </CldUploadWidget>
 
         {existingImages.length === 0 && newImages.length === 0 && (
-          <p className="text-xs text-muted-foreground">Sin imágenes. Puedes subir una o más.</p>
+          <p className="text-xs text-muted-foreground">{tForms("noImages")}</p>
         )}
       </div>
 

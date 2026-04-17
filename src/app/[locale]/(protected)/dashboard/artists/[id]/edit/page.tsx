@@ -1,6 +1,6 @@
+import { getTranslations } from "next-intl/server"
 import { notFound, redirect } from "next/navigation"
 import { requireActive, canEditArtist } from "@/services/auth"
-import { getArtistBySlug } from "@/services/artists"
 import { prisma } from "@/lib/prisma"
 import { ArtistForm } from "@/components/artists/ArtistForm"
 
@@ -11,6 +11,7 @@ export default async function EditArtistPage({
 }) {
   const { locale, id } = await params
   await requireActive(locale)
+  const tForms = await getTranslations({ locale, namespace: "forms" })
 
   const canEdit = await canEditArtist(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
@@ -35,7 +36,7 @@ export default async function EditArtistPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Editar Artista</h1>
+      <h1 className="text-2xl font-bold">{tForms("editArtist")}</h1>
       <ArtistForm artist={artist} artistId={id} />
     </div>
   )

@@ -1,6 +1,11 @@
+"use client"
+
 import Link from "next/link"
+import { useTranslations, useLocale } from "next-intl"
 
 export function Footer() {
+  const t = useTranslations("footer")
+  const locale = useLocale()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -14,20 +19,20 @@ export function Footer() {
             </div>
             <div className="leading-tight">
               <div className="font-black text-sm">La Huella del Caminante</div>
-              <div className="text-xs text-muted-foreground">Música Latinoamericana · Berlín</div>
+              <div className="text-xs text-muted-foreground">{t("tagline")}</div>
             </div>
           </div>
 
           {/* Links */}
           <nav className="flex items-center gap-5 text-sm text-muted-foreground">
-            <Link href="/es/events" className="hover:text-foreground transition-colors">Eventos</Link>
-            <Link href="/es/artists" className="hover:text-foreground transition-colors">Artistas</Link>
-            <Link href="/es/sign-in" className="hover:text-foreground transition-colors">Acceder</Link>
+            <Link href={`/${locale}/events`} className="hover:text-foreground transition-colors">{t("events")}</Link>
+            <Link href={`/${locale}/artists`} className="hover:text-foreground transition-colors">{t("artists")}</Link>
+            <Link href={`/${locale}/sign-in`} className="hover:text-foreground transition-colors">{t("login")}</Link>
           </nav>
         </div>
 
         <div className="mt-8 pt-6 border-t border-border text-xs text-muted-foreground text-center">
-          © {currentYear} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata
+          {t("copyright", { year: currentYear })}
         </div>
       </div>
     </footer>

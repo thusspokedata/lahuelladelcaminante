@@ -6,6 +6,19 @@
     "signIn": "Anmelden",
     "signOut": "Abmelden"
   },
+  "home": {
+    "badge": "Berlin · Lateinamerikanische Musik",
+    "tagline": "Die lateinamerikanische Musikszene in Berlin, München, Hamburg und weiteren deutschen Städten.",
+    "viewEvents": "Veranstaltungen",
+    "upcomingSection": "Kommende Veranstaltungen",
+    "viewAll": "Alle anzeigen →",
+    "noEventsYet": "Erste Veranstaltungen kommen bald",
+    "upcomingArtistsLabel": "Bald live",
+    "upcomingArtistsTitle": "Kommende Künstler",
+    "pastArtistsLabel": "Waren schon hier",
+    "pastArtistsTitle": "Künstler, die ihre Spuren hinterlassen haben",
+    "exploreGenre": "Nach Genre erkunden"
+  },
   "events": {
     "title": "Kommende Veranstaltungen",
     "past": "Vergangene Veranstaltungen",
@@ -14,7 +27,11 @@
     "allGenres": "Alle Genres",
     "createEvent": "Veranstaltung erstellen",
     "deleteSuccess": "Veranstaltung gelöscht",
-    "restoreSuccess": "Veranstaltung wiederhergestellt"
+    "restoreSuccess": "Veranstaltung wiederhergestellt",
+    "date": "Datum",
+    "dates": "Termine",
+    "noDate": "Kein Datum",
+    "musicLabel": "Lateinamerikanische Livemusik · Deutschland"
   },
   "artists": {
     "title": "Künstler",
@@ -25,14 +42,79 @@
   "dashboard": {
     "title": "Mein Dashboard",
     "myEvents": "Meine Veranstaltungen",
-    "myArtists": "Meine Künstler"
+    "myArtists": "Meine Künstler",
+    "createArtistBtn": "+ Künstler erstellen",
+    "createEventBtn": "+ Veranstaltung erstellen",
+    "createFirstEvent": "Erste Veranstaltung erstellen",
+    "noArtistsYet": "Noch keine Künstler.",
+    "noEventsYet": "Noch keine Veranstaltungen.",
+    "noPermission": "Sie haben keine Künstlerberechtigungen."
   },
   "admin": {
     "users": "Benutzerverwaltung",
     "approve": "Genehmigen",
     "block": "Sperren",
     "changeRole": "Rolle ändern",
-    "allEvents": "Alle Veranstaltungen"
+    "allEvents": "Alle Veranstaltungen",
+    "statusUpdated": "Status aktualisiert",
+    "roleUpdated": "Rolle aktualisiert",
+    "activate": "Aktivieren",
+    "permanentDelete": "Endgültig löschen",
+    "permanentlyDeleted": "Veranstaltung endgültig gelöscht",
+    "colName": "Name",
+    "colEmail": "E-Mail",
+    "colRole": "Rolle",
+    "colStatus": "Status",
+    "colActions": "Aktionen",
+    "colTitle": "Titel",
+    "colGenre": "Genre",
+    "colArtist": "Künstler"
+  },
+  "forms": {
+    "titleField": "Titel *",
+    "description": "Beschreibung",
+    "venue": "Veranstaltungsort *",
+    "city": "Stadt *",
+    "address": "Adresse",
+    "artistField": "Künstler",
+    "genre": "Genre",
+    "time": "Uhrzeit",
+    "price": "Preis",
+    "organizer": "Veranstalter",
+    "dates": "Termine *",
+    "images": "Bilder",
+    "addDate": "+ Datum hinzufügen",
+    "uploadPhotos": "↑ Fotos hochladen (mehrere auswählbar)",
+    "noArtistLinked": "— Kein Künstler verknüpft —",
+    "noGenre": "— Kein Genre —",
+    "noPhotos": "Noch keine Fotos.",
+    "nameField": "Name *",
+    "bio": "Biografie",
+    "origin": "Herkunft",
+    "genres": "Genres (durch Komma getrennt)",
+    "socialMedia": "Social Media",
+    "photos": "Fotos",
+    "newBadge": "Neu",
+    "noImages": "Keine Bilder. Sie können eines oder mehrere hochladen.",
+    "mapsHint": "Ein Link zum Öffnen in Google Maps wird angezeigt.",
+    "titlePlaceholder": "Z.B.: Tango-Abend in Berlin",
+    "venuePlaceholder": "Z.B.: Tango Bar Loca",
+    "cityPlaceholder": "Z.B.: Berlin",
+    "addressPlaceholder": "Z.B.: Schlesische Str. 38, 10997 Berlin",
+    "titleRequired": "Titel ist erforderlich",
+    "venueRequired": "Veranstaltungsort ist erforderlich",
+    "nameRequired": "Name ist erforderlich",
+    "editArtist": "Künstler bearbeiten",
+    "createArtist": "Künstler erstellen",
+    "editEvent": "Veranstaltung bearbeiten",
+    "createEvent": "Veranstaltung erstellen"
+  },
+  "footer": {
+    "tagline": "Lateinamerikanische Musik · Berlin",
+    "events": "Veranstaltungen",
+    "artists": "Künstler",
+    "login": "Anmelden",
+    "copyright": "© {year} La Huella del Caminante. Gemacht mit ♥ in Berlin von Thusspokedata"
   },
   "status": {
     "pending": "Ausstehend",
@@ -49,7 +131,9 @@
     "pendingTitle": "Konto wird geprüft",
     "pendingDescription": "Ihr Konto wird vom Team geprüft. Wir benachrichtigen Sie per E-Mail, wenn es genehmigt wurde.",
     "blockedTitle": "Konto gesperrt",
-    "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator."
+    "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator.",
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Schon ein Konto?"
   },
   "common": {
     "save": "Speichern",
@@ -60,6 +144,16 @@
     "loading": "Wird geladen...",
     "error": "Unerwarteter Fehler",
     "confirm": "Bestätigen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "view": "Ansehen",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirmDelete": "Löschen?",
+    "deleteError": "Fehler beim Löschen",
+    "eventUpdated": "Veranstaltung aktualisiert",
+    "eventCreated": "Veranstaltung erstellt",
+    "artistUpdated": "Künstler aktualisiert",
+    "artistCreated": "Künstler erstellt",
+    "eventDeleted": "Veranstaltung gelöscht"
   }
 }

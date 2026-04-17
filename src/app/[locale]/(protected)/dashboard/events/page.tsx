@@ -14,6 +14,8 @@ export default async function DashboardEventsPage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard" })
+  const tCommon = await getTranslations({ locale, namespace: "common" })
+  const tEvents = await getTranslations({ locale, namespace: "events" })
   const { user } = await requireActive(locale)
   const events = await getEventsByUser(user.id)
 
@@ -26,7 +28,7 @@ export default async function DashboardEventsPage({
         </div>
         {isArtistOrAdmin(user.role) && (
           <Button asChild size="sm" className="rounded-full px-5">
-            <Link href={`/${locale}/dashboard/events/create`}>+ Crear Evento</Link>
+            <Link href={`/${locale}/dashboard/events/create`}>{t("createEventBtn")}</Link>
           </Button>
         )}
       </div>
@@ -34,10 +36,10 @@ export default async function DashboardEventsPage({
       {events.length === 0 ? (
         <div className="text-center py-20 rounded-2xl border-2 border-dashed border-border">
           <div className="text-5xl mb-4">🎸</div>
-          <p className="text-muted-foreground font-medium">No tienes eventos aún.</p>
+          <p className="text-muted-foreground font-medium">{t("noEventsYet")}</p>
           {isArtistOrAdmin(user.role) && (
             <Button asChild variant="outline" size="sm" className="mt-4 rounded-full">
-              <Link href={`/${locale}/dashboard/events/create`}>Crear primer evento</Link>
+              <Link href={`/${locale}/dashboard/events/create`}>{t("createFirstEvent")}</Link>
             </Button>
           )}
         </div>
@@ -51,16 +53,16 @@ export default async function DashboardEventsPage({
               <div className="min-w-0">
                 <p className="font-semibold truncate">{event.title}</p>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {event.dates[0] ? formatDate(event.dates[0], locale) : "Sin fecha"} · {event.location}
+                  {event.dates[0] ? formatDate(event.dates[0], locale) : tEvents("noDate")} · {event.location}
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {event.genre && <Badge variant="outline" className="hidden sm:inline-flex">{event.genre}</Badge>}
                 <Button variant="ghost" size="sm" asChild className="rounded-full">
-                  <Link href={`/${locale}/events/${event.slug}`}>Ver</Link>
+                  <Link href={`/${locale}/events/${event.slug}`}>{tCommon("view")}</Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild className="rounded-full">
-                  <Link href={`/${locale}/dashboard/events/${event.id}/edit`}>Editar</Link>
+                  <Link href={`/${locale}/dashboard/events/${event.id}/edit`}>{tCommon("edit")}</Link>
                 </Button>
                 <DashboardEventActions eventId={event.id} locale={locale} />
               </div>

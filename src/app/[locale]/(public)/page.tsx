@@ -13,6 +13,8 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "events" })
+  const tHome = await getTranslations({ locale, namespace: "home" })
+  const tNav = await getTranslations({ locale, namespace: "nav" })
   const [events, genres, upcomingArtists, pastArtists] = await Promise.all([
     getUpcomingEvents(),
     getActiveGenres(),
@@ -47,7 +49,7 @@ export default async function HomePage({
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-28 sm:py-36 text-center">
           <div className="inline-flex items-center gap-2.5 bg-white/8 backdrop-blur-sm text-white/75 text-[11px] font-bold px-5 py-2 rounded-full border border-white/12 uppercase tracking-[0.2em] mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Berlín · Música Latina
+            {tHome("badge")}
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none text-white mb-6">
@@ -57,7 +59,7 @@ export default async function HomePage({
           </h1>
 
           <p className="text-lg sm:text-xl text-white/55 max-w-lg mx-auto mb-10 leading-relaxed">
-            La escena musical latinoamericana en Berlín, Múnich, Hamburgo y más ciudades alemanas.
+            {tHome("tagline")}
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
@@ -66,14 +68,14 @@ export default async function HomePage({
               size="lg"
               className="font-bold rounded-full px-10 h-12 text-base shadow-xl shadow-primary/40"
             >
-              <Link href={`/${locale}/events`}>Ver eventos</Link>
+              <Link href={`/${locale}/events`}>{tHome("viewEvents")}</Link>
             </Button>
             <Button
               asChild
               size="lg"
               className="rounded-full px-10 h-12 text-base font-semibold border border-white/20 text-white bg-white/5 hover:bg-white/15 hover:text-white shadow-none"
             >
-              <Link href={`/${locale}/artists`}>Artistas</Link>
+              <Link href={`/${locale}/artists`}>{tNav("artists")}</Link>
             </Button>
           </div>
         </div>
@@ -84,12 +86,12 @@ export default async function HomePage({
         <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
           <div>
             <p className="text-xs font-bold text-primary uppercase tracking-[0.18em] mb-1.5">
-              Próximos eventos
+              {tHome("upcomingSection")}
             </p>
             <h2 className="text-3xl font-black">{t("title")}</h2>
           </div>
           <Button variant="ghost" asChild className="font-semibold text-primary hover:text-primary hover:bg-primary/8 rounded-full">
-            <Link href={`/${locale}/events`}>Ver todos →</Link>
+            <Link href={`/${locale}/events`}>{tHome("viewAll")}</Link>
           </Button>
         </div>
 
@@ -98,7 +100,7 @@ export default async function HomePage({
         ) : (
           <div className="text-center py-24 rounded-2xl border-2 border-dashed border-border">
             <div className="text-5xl mb-4">🎸</div>
-            <p className="text-muted-foreground font-medium">Próximamente los primeros eventos</p>
+            <p className="text-muted-foreground font-medium">{tHome("noEventsYet")}</p>
           </div>
         )}
       </section>
@@ -108,11 +110,11 @@ export default async function HomePage({
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-border">
           <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
             <div>
-              <p className="text-xs font-bold text-primary uppercase tracking-[0.18em] mb-1">En vivo pronto</p>
-              <h2 className="text-2xl font-black">Artistas por venir</h2>
+              <p className="text-xs font-bold text-primary uppercase tracking-[0.18em] mb-1">{tHome("upcomingArtistsLabel")}</p>
+              <h2 className="text-2xl font-black">{tHome("upcomingArtistsTitle")}</h2>
             </div>
             <Button variant="ghost" asChild className="rounded-full font-semibold text-primary hover:text-primary hover:bg-primary/8">
-              <Link href={`/${locale}/artists`}>Ver todos →</Link>
+              <Link href={`/${locale}/artists`}>{tHome("viewAll")}</Link>
             </Button>
           </div>
           <ArtistCarousel artists={upcomingArtists} locale={locale} variant="upcoming" />
@@ -124,11 +126,11 @@ export default async function HomePage({
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-border">
           <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
             <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em] mb-1">Ya pasaron por aquí</p>
-              <h2 className="text-2xl font-black">Artistas que dejaron su huella</h2>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em] mb-1">{tHome("pastArtistsLabel")}</p>
+              <h2 className="text-2xl font-black">{tHome("pastArtistsTitle")}</h2>
             </div>
             <Button variant="ghost" asChild className="rounded-full font-semibold text-muted-foreground hover:text-foreground">
-              <Link href={`/${locale}/artists`}>Ver todos →</Link>
+              <Link href={`/${locale}/artists`}>{tHome("viewAll")}</Link>
             </Button>
           </div>
           <ArtistCarousel artists={pastArtists} locale={locale} variant="past" />
@@ -140,7 +142,7 @@ export default async function HomePage({
         <section className="border-t border-border bg-muted/25 py-14">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 text-center">
-              Explora por género
+              {tHome("exploreGenre")}
             </p>
             <div className="flex flex-wrap gap-2.5 justify-center">
               {genres.map((g) => (

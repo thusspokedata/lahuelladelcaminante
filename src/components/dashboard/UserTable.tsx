@@ -42,7 +42,7 @@ export function UserTable({ users }: UserTableProps) {
       return
     }
 
-    toast.success("Estado actualizado")
+    toast.success(t("statusUpdated"))
     router.refresh()
   }
 
@@ -58,7 +58,7 @@ export function UserTable({ users }: UserTableProps) {
       return
     }
 
-    toast.success("Rol actualizado")
+    toast.success(t("roleUpdated"))
     router.refresh()
   }
 
@@ -66,11 +66,11 @@ export function UserTable({ users }: UserTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Nombre</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Rol</TableHead>
-          <TableHead>Estado</TableHead>
-          <TableHead>Acciones</TableHead>
+          <TableHead>{t("colName")}</TableHead>
+          <TableHead>{t("colEmail")}</TableHead>
+          <TableHead>{t("colRole")}</TableHead>
+          <TableHead>{t("colStatus")}</TableHead>
+          <TableHead>{t("colActions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -104,7 +104,7 @@ export function UserTable({ users }: UserTableProps) {
                     variant="outline"
                     onClick={() => updateStatus(user.id, "ACTIVE")}
                   >
-                    Activar
+                    {t("activate")}
                   </Button>
                 )}
                 <DropdownMenu>

@@ -18,6 +18,7 @@ import type { EventSummary } from "@/services/events"
 
 export default function AdminEventsPage() {
   const t = useTranslations("events")
+  const tAdmin = useTranslations("admin")
   const tCommon = useTranslations("common")
   const { locale } = useParams<{ locale: string }>()
   const [events, setEvents] = useState<EventSummary[]>([])
@@ -39,7 +40,7 @@ export default function AdminEventsPage() {
   async function hardDelete(id: string) {
     const res = await fetch(`/api/events/${id}?hard=true`, { method: "DELETE" })
     if (res.ok) {
-      toast.success("Evento eliminado definitivamente")
+      toast.success(tAdmin("permanentlyDeleted"))
       setEvents((prev) => prev.filter((e) => e.id !== id))
     } else {
       toast.error(tCommon("error"))
@@ -57,14 +58,14 @@ export default function AdminEventsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Todos los Eventos</h1>
+      <h1 className="text-2xl font-bold">{tAdmin("allEvents")}</h1>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Título</TableHead>
-            <TableHead>Género</TableHead>
-            <TableHead>Artista</TableHead>
-            <TableHead>Acciones</TableHead>
+            <TableHead>{tAdmin("colTitle")}</TableHead>
+            <TableHead>{tAdmin("colGenre")}</TableHead>
+            <TableHead>{tAdmin("colArtist")}</TableHead>
+            <TableHead>{tAdmin("colActions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,7 +83,7 @@ export default function AdminEventsPage() {
                     {tCommon("restore")}
                   </Button>
                   <Button size="sm" variant="destructive" onClick={() => hardDelete(event.id)}>
-                    Borrar definitivo
+                    {tAdmin("permanentDelete")}
                   </Button>
                 </div>
               </TableCell>

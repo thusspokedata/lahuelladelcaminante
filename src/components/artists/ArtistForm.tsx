@@ -16,7 +16,7 @@ import { X } from "lucide-react"
 import type { ArtistDetail } from "@/services/artists"
 
 const schema = z.object({
-  name: z.string().min(1, "El nombre es obligatorio"),
+  name: z.string().min(1),
   bio: z.string().optional(),
   origin: z.string().optional(),
   genres: z.string().optional(),
@@ -39,6 +39,7 @@ interface ArtistFormProps {
 
 export function ArtistForm({ artist, artistId }: ArtistFormProps) {
   const tCommon = useTranslations("common")
+  const tForms = useTranslations("forms")
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
 
@@ -108,7 +109,7 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
       return
     }
 
-    toast.success(isEdit ? "Artista actualizado" : "Artista creado")
+    toast.success(isEdit ? tCommon("artistUpdated") : tCommon("artistCreated"))
     router.push(`/${locale}/dashboard/artists`)
     router.refresh()
   }
@@ -118,14 +119,14 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
 
       {/* Name */}
       <div className="space-y-1.5">
-        <Label htmlFor="name">Nombre *</Label>
+        <Label htmlFor="name">{tForms("nameField")}</Label>
         <Input id="name" {...register("name")} />
-        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+        {errors.name && <p className="text-xs text-destructive">{tForms("nameRequired")}</p>}
       </div>
 
       {/* Bio */}
       <div className="space-y-1.5">
-        <Label htmlFor="bio">Biografía</Label>
+        <Label htmlFor="bio">{tForms("bio")}</Label>
         <textarea
           id="bio"
           {...register("bio")}
@@ -137,18 +138,18 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
       {/* Origin + genres */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="origin">Origen</Label>
+          <Label htmlFor="origin">{tForms("origin")}</Label>
           <Input id="origin" {...register("origin")} placeholder="Argentina" />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="genres">Géneros <span className="text-muted-foreground font-normal">(separados por coma)</span></Label>
+          <Label htmlFor="genres">{tForms("genres")}</Label>
           <Input id="genres" {...register("genres")} placeholder="Tango, Milonga" />
         </div>
       </div>
 
       {/* Social */}
       <fieldset className="space-y-3 border border-border rounded-xl p-4">
-        <legend className="text-sm font-semibold px-1">Redes sociales</legend>
+        <legend className="text-sm font-semibold px-1">{tForms("socialMedia")}</legend>
         {(["instagram", "spotify", "youtube", "tiktok", "website"] as const).map((field) => (
           <div key={field} className="flex items-center gap-3">
             <Label className="w-20 text-xs capitalize shrink-0">{field}</Label>
@@ -159,7 +160,7 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
 
       {/* Images */}
       <div className="space-y-3">
-        <Label>Fotos</Label>
+        <Label>{tForms("photos")}</Label>
 
         {/* Existing */}
         {existingImages.length > 0 && (
@@ -197,7 +198,7 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
                   <X className="w-3.5 h-3.5" />
                 </button>
                 <div className="absolute bottom-1 left-1 right-1 bg-primary/80 text-white text-[9px] text-center rounded px-1 py-0.5">
-                  Nueva
+                  {tForms("newBadge")}
                 </div>
               </div>
             ))}
@@ -216,13 +217,13 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
         >
           {({ open }) => (
             <Button type="button" variant="outline" size="sm" onClick={() => open()} className="rounded-full">
-              ↑ Subir fotos (podés seleccionar varias)
+              {tForms("uploadPhotos")}
             </Button>
           )}
         </CldUploadWidget>
 
         {existingImages.length === 0 && newImages.length === 0 && (
-          <p className="text-xs text-muted-foreground">Sin fotos aún.</p>
+          <p className="text-xs text-muted-foreground">{tForms("noPhotos")}</p>
         )}
       </div>
 

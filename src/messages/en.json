@@ -6,6 +6,19 @@
     "signIn": "Sign In",
     "signOut": "Sign Out"
   },
+  "home": {
+    "badge": "Berlin · Latin Music",
+    "tagline": "The Latin American music scene in Berlin, Munich, Hamburg and more German cities.",
+    "viewEvents": "View events",
+    "upcomingSection": "Upcoming events",
+    "viewAll": "View all →",
+    "noEventsYet": "First events coming soon",
+    "upcomingArtistsLabel": "Coming live soon",
+    "upcomingArtistsTitle": "Upcoming artists",
+    "pastArtistsLabel": "Already came by",
+    "pastArtistsTitle": "Artists who left their mark",
+    "exploreGenre": "Explore by genre"
+  },
   "events": {
     "title": "Upcoming Events",
     "past": "Past Events",
@@ -14,7 +27,11 @@
     "allGenres": "All genres",
     "createEvent": "Create Event",
     "deleteSuccess": "Event deleted",
-    "restoreSuccess": "Event restored"
+    "restoreSuccess": "Event restored",
+    "date": "Date",
+    "dates": "Dates",
+    "noDate": "No date",
+    "musicLabel": "Live Latin Music · Germany"
   },
   "artists": {
     "title": "Artists",
@@ -25,14 +42,79 @@
   "dashboard": {
     "title": "My Dashboard",
     "myEvents": "My Events",
-    "myArtists": "My Artists"
+    "myArtists": "My Artists",
+    "createArtistBtn": "+ Create Artist",
+    "createEventBtn": "+ Create Event",
+    "createFirstEvent": "Create first event",
+    "noArtistsYet": "No artists yet.",
+    "noEventsYet": "No events yet.",
+    "noPermission": "You don't have artist permissions."
   },
   "admin": {
     "users": "User Management",
     "approve": "Approve",
     "block": "Block",
     "changeRole": "Change Role",
-    "allEvents": "All Events"
+    "allEvents": "All Events",
+    "statusUpdated": "Status updated",
+    "roleUpdated": "Role updated",
+    "activate": "Activate",
+    "permanentDelete": "Permanently delete",
+    "permanentlyDeleted": "Event permanently deleted",
+    "colName": "Name",
+    "colEmail": "Email",
+    "colRole": "Role",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "colTitle": "Title",
+    "colGenre": "Genre",
+    "colArtist": "Artist"
+  },
+  "forms": {
+    "titleField": "Title *",
+    "description": "Description",
+    "venue": "Venue *",
+    "city": "City *",
+    "address": "Address",
+    "artistField": "Artist",
+    "genre": "Genre",
+    "time": "Time",
+    "price": "Price",
+    "organizer": "Organizer",
+    "dates": "Dates *",
+    "images": "Images",
+    "addDate": "+ Add date",
+    "uploadPhotos": "↑ Upload photos (you can select multiple)",
+    "noArtistLinked": "— No artist linked —",
+    "noGenre": "— No genre —",
+    "noPhotos": "No photos yet.",
+    "nameField": "Name *",
+    "bio": "Biography",
+    "origin": "Origin",
+    "genres": "Genres (comma separated)",
+    "socialMedia": "Social media",
+    "photos": "Photos",
+    "newBadge": "New",
+    "noImages": "No images. You can upload one or more.",
+    "mapsHint": "A link to open in Google Maps will be shown.",
+    "titlePlaceholder": "E.g.: Tango Night in Berlin",
+    "venuePlaceholder": "E.g.: Tango Bar Loca",
+    "cityPlaceholder": "E.g.: Berlin",
+    "addressPlaceholder": "E.g.: Schlesische Str. 38, 10997 Berlin",
+    "titleRequired": "Title is required",
+    "venueRequired": "Venue is required",
+    "nameRequired": "Name is required",
+    "editArtist": "Edit Artist",
+    "createArtist": "Create Artist",
+    "editEvent": "Edit event",
+    "createEvent": "Create Event"
+  },
+  "footer": {
+    "tagline": "Latin American Music · Berlin",
+    "events": "Events",
+    "artists": "Artists",
+    "login": "Log in",
+    "copyright": "© {year} La Huella del Caminante. Made with ♥ in Berlin by Thusspokedata"
   },
   "status": {
     "pending": "Pending",
@@ -49,7 +131,9 @@
     "pendingTitle": "Account under review",
     "pendingDescription": "Your account is being reviewed by the team. We will notify you by email when it is approved.",
     "blockedTitle": "Account suspended",
-    "blockedDescription": "Your account has been suspended. Contact the administrator."
+    "blockedDescription": "Your account has been suspended. Contact the administrator.",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?"
   },
   "common": {
     "save": "Save",
@@ -60,6 +144,16 @@
     "loading": "Loading...",
     "error": "Unexpected error",
     "confirm": "Confirm",
-    "back": "Back"
+    "back": "Back",
+    "view": "View",
+    "yes": "Yes",
+    "no": "No",
+    "confirmDelete": "Delete?",
+    "deleteError": "Error deleting",
+    "eventUpdated": "Event updated",
+    "eventCreated": "Event created",
+    "artistUpdated": "Artist updated",
+    "artistCreated": "Artist created",
+    "eventDeleted": "Event deleted"
   }
 }

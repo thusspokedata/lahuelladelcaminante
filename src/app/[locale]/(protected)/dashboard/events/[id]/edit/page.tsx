@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server"
 import { notFound, redirect } from "next/navigation"
 import { requireActive, canEditEvent } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
@@ -11,6 +12,7 @@ export default async function EditEventPage({
 }) {
   const { locale, id } = await params
   const { user } = await requireActive(locale)
+  const tForms = await getTranslations({ locale, namespace: "forms" })
 
   const canEdit = await canEditEvent(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
@@ -51,7 +53,7 @@ export default async function EditEventPage({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Editar evento</p>
+        <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">{tForms("editEvent")}</p>
         <h1 className="text-3xl font-black">{event.title}</h1>
       </div>
       <EventForm

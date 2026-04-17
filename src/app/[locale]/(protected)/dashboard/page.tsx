@@ -34,7 +34,7 @@ export default async function DashboardPage({
           <h2 className="text-xl font-semibold">{t("myEvents")}</h2>
           {canCreate && (
             <Button asChild size="sm">
-              <Link href={`/${locale}/dashboard/events/create`}>+ Crear Evento</Link>
+              <Link href={`/${locale}/dashboard/events/create`}>{t("createEventBtn")}</Link>
             </Button>
           )}
         </div>
@@ -46,7 +46,7 @@ export default async function DashboardPage({
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">{t("myArtists")}</h2>
             <Button asChild size="sm">
-              <Link href={`/${locale}/dashboard/artists/create`}>+ Crear Artista</Link>
+              <Link href={`/${locale}/dashboard/artists/create`}>{t("createArtistBtn")}</Link>
             </Button>
           </div>
           <ArtistList artists={artists} />
