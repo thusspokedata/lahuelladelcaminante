@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# La Huella del Caminante
 
-## Getting Started
+Portal de eventos de música latinoamericana en Alemania (Berlín, Múnich, Hamburgo y más). Conecta artistas y público con la escena latina en Europa.
 
-First, run the development server:
+**Live:** [https://lahuelladelcaminante.de](https://lahuelladelcaminante.de)
+
+---
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Base de datos:** PostgreSQL + Prisma 7 (adapter `@prisma/adapter-pg`)
+- **Auth:** Better Auth (email/password + Google OAuth)
+- **Imágenes:** Cloudinary
+- **UI:** Tailwind CSS v4 + shadcn/ui
+- **i18n:** next-intl (`/es`, `/en`)
+- **Deploy:** VPS Ubuntu + PM2 + nginx + Let's Encrypt
+
+---
+
+## Desarrollo local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Requiere un archivo `.env.local` con las siguientes variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+DATABASE_URL=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_URL=
+CLOUD_NAME=
+UPLOAD_PRESET=
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+NEXT_PUBLIC_CLOUDINARY_URL=
+NEXT_PUBLIC_CLOUDINARY_API_KEY=
+NEXT_PUBLIC_CLOUDINARY_API_SECRET=
+RESEND_API_KEY=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Base de datos
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Aplicar cambios de schema
+npx prisma db push
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Regenerar cliente Prisma
+npx prisma generate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Abrir Prisma Studio
+npx prisma studio
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Roles de usuario
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Rol | Permisos |
+|-----|----------|
+| `admin` | Todo: crear/editar/eliminar cualquier evento y artista, gestión de usuarios |
+| `artist` | Crear y editar sus propios eventos y artistas |
+| `user` | Solo lectura |
+
+---
+
+## Deploy en producción
+
+El proyecto corre en `root@187.33.155.194` bajo PM2 en el puerto **3002**, servido por nginx con SSL.
+
+Para deployar una nueva versión:
+
+```bash
+bash /var/www/lahuelladelcaminante/deploy.sh
+```
+
+El script hace automáticamente: `git pull` → `npm ci` → `prisma generate` → `npm run build` → `pm2 restart lahuella`.
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── app/
+│   ├── [locale]/
+│   │   ├── (public)/        # Home, eventos, artistas
+│   │   ├── (protected)/     # Dashboard (crear/editar)
+│   │   └── admin/           # Panel de administración
+│   └── api/                 # API routes (events, artists, auth)
+├── components/
+│   ├── events/              # EventCard, EventList, EventForm, EventFilter
+│   ├── artists/             # ArtistCarousel, ArtistForm
+│   ├── dashboard/           # DashboardEventActions
+│   └── layout/              # Header, Footer
+└── services/
+    ├── events.ts            # CRUD + cache de eventos
+    ├── artists.ts           # CRUD + cache de artistas
+    └── auth.ts              # Helpers de autenticación y roles
+```
