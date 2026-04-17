@@ -44,7 +44,7 @@ export default async function EditEventPage({
     time: event.time ?? "",
     price: event.price ?? "",
     artistId: event.artistId ?? "",
-    dates: event.dates.map((d) => d.date.toISOString()),
+    dates: event.dates.map((d: { date: Date }) => d.date.toISOString()),
     images: event.images,
   }
 
