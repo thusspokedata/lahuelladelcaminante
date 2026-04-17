@@ -1,5 +1,5 @@
 import { getCurrentUser, isAdmin } from "@/services/auth"
-import { updateStatus } from "@/services/users"
+import { updateStatus, getUserById } from "@/services/users"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -19,6 +19,12 @@ export async function PATCH(
 
   if (!isAdmin(user.role)) {
     return NextResponse.json({ error: "Forbidden", code: "FORBIDDEN" }, { status: 403 })
+  }
+
+  // Admins cannot block other admins
+  const target = await getUserById(id)
+  if (target && isAdmin(target.role)) {
+    return NextResponse.json({ error: "Cannot change status of an admin", code: "FORBIDDEN" }, { status: 403 })
   }
 
   const body = await request.json()

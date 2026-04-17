@@ -18,7 +18,8 @@ export function DashboardNav({ role }: DashboardNavProps) {
   const links = [
     { href: `/${locale}/dashboard`, label: t("title") },
     { href: `/${locale}/dashboard/events`, label: t("myEvents") },
-    ...(role === "artist" || role === "admin"
+    { href: `/${locale}/dashboard/profile`, label: t("profile") },
+    ...(role === "creator" || role === "admin"
       ? [{ href: `/${locale}/dashboard/artists`, label: t("myArtists") }]
       : []),
     ...(role === "admin"

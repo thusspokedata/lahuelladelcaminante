@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { requireActive, isArtistOrAdmin } from "@/services/auth"
+import { requireActive, isCreatorOrAdmin } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ export default async function DashboardArtistsPage({
   const tCommon = await getTranslations({ locale, namespace: "common" })
   const { user } = await requireActive(locale)
 
-  if (!isArtistOrAdmin(user.role)) {
+  if (!isCreatorOrAdmin(user.role)) {
     return <p className="text-muted-foreground">{t("noPermission")}</p>
   }
 

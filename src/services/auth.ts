@@ -9,9 +9,9 @@ export function isAdmin(role?: string | null) {
   return role?.toLowerCase() === "admin"
 }
 
-export function isArtistOrAdmin(role?: string | null) {
+export function isCreatorOrAdmin(role?: string | null) {
   const r = role?.toLowerCase()
-  return r === "admin" || r === "artist"
+  return r === "admin" || r === "creator"
 }
 
 export async function getSession() {

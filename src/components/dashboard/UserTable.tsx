@@ -89,7 +89,7 @@ export function UserTable({ users }: UserTableProps) {
                     {t("approve")}
                   </Button>
                 )}
-                {user.profile?.status !== "BLOCKED" && (
+                {user.role !== "admin" && user.profile?.status !== "BLOCKED" && (
                   <Button
                     size="sm"
                     variant="destructive"
@@ -98,7 +98,7 @@ export function UserTable({ users }: UserTableProps) {
                     {t("block")}
                   </Button>
                 )}
-                {user.profile?.status === "BLOCKED" && (
+                {user.role !== "admin" && user.profile?.status === "BLOCKED" && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -113,7 +113,7 @@ export function UserTable({ users }: UserTableProps) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => updateRole(user.id, "user")}>User</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => updateRole(user.id, "artist")}>Artist</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => updateRole(user.id, "creator")}>Creator</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => updateRole(user.id, "admin")}>Admin</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

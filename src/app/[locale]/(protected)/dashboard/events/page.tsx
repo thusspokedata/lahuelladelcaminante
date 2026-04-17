@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { requireActive, isArtistOrAdmin } from "@/services/auth"
+import { requireActive, isCreatorOrAdmin } from "@/services/auth"
 import { getEventsByUser } from "@/services/events"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ export default async function DashboardEventsPage({
           <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Dashboard</p>
           <h1 className="text-3xl font-black">{t("myEvents")}</h1>
         </div>
-        {isArtistOrAdmin(user.role) && (
+        {isCreatorOrAdmin(user.role) && (
           <Button asChild size="sm" className="rounded-full px-5">
             <Link href={`/${locale}/dashboard/events/create`}>{t("createEventBtn")}</Link>
           </Button>
@@ -37,7 +37,7 @@ export default async function DashboardEventsPage({
         <div className="text-center py-20 rounded-2xl border-2 border-dashed border-border">
           <div className="text-5xl mb-4">🎸</div>
           <p className="text-muted-foreground font-medium">{t("noEventsYet")}</p>
-          {isArtistOrAdmin(user.role) && (
+          {isCreatorOrAdmin(user.role) && (
             <Button asChild variant="outline" size="sm" className="mt-4 rounded-full">
               <Link href={`/${locale}/dashboard/events/create`}>{t("createFirstEvent")}</Link>
             </Button>

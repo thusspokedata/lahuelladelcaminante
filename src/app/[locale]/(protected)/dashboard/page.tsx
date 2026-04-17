@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { requireActive, isArtistOrAdmin } from "@/services/auth"
+import { requireActive, isCreatorOrAdmin } from "@/services/auth"
 import { getEventsByUser } from "@/services/events"
 import { getArtistsByUser } from "@/services/artists"
 import { EventList } from "@/components/events/EventList"
@@ -15,7 +15,7 @@ export default async function DashboardPage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard" })
   const { user } = await requireActive(locale)
-  const canCreate = isArtistOrAdmin(user.role)
+  const canCreate = isCreatorOrAdmin(user.role)
 
   const [events, artists] = await Promise.all([
     getEventsByUser(user.id),
