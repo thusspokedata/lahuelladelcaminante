@@ -2,11 +2,16 @@
 
 import Link from "next/link"
 import { useTranslations, useLocale } from "next-intl"
+import { useSession } from "@/lib/auth-client"
 
 export function Footer() {
   const t = useTranslations("footer")
   const locale = useLocale()
   const currentYear = new Date().getFullYear()
+  const { data: session } = useSession()
+
+  const role = session?.user?.role?.toLowerCase()
+  const canCreate = role === "creator" || role === "admin"
 
   return (
     <footer className="border-t border-border bg-card mt-auto">
@@ -27,6 +32,22 @@ export function Footer() {
           <nav className="flex items-center gap-5 text-sm text-muted-foreground">
             <Link href={`/${locale}/events`} className="hover:text-foreground transition-colors">{t("events")}</Link>
             <Link href={`/${locale}/artists`} className="hover:text-foreground transition-colors">{t("artists")}</Link>
+            <a
+              href="https://www.instagram.com/lahuelladelcaminante/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Instagram
+            </a>
+            {canCreate && (
+              <a
+                href="mailto:info@lahuelladelcaminante.de"
+                className="hover:text-foreground transition-colors"
+              >
+                info@lahuelladelcaminante.de
+              </a>
+            )}
             <Link href={`/${locale}/sign-in`} className="hover:text-foreground transition-colors">{t("login")}</Link>
           </nav>
         </div>
