@@ -78,13 +78,15 @@ npx prisma studio
 
 El proyecto corre en `root@187.33.155.194` bajo PM2 en el puerto **3002**, servido por nginx con SSL.
 
-Para deployar una nueva versión:
+Para deployar una nueva versión, ejecutar **desde tu máquina local**:
 
 ```bash
-bash /var/www/lahuelladelcaminante/deploy.sh
+bash deploy.sh
 ```
 
-El script hace automáticamente: `git pull` → `npm ci` → `prisma generate` → `npm run build` → `pm2 restart lahuella`.
+El script hace: `git pull` en el VPS → `npm run build` local → `rsync .next/` al VPS → `pm2 restart`.
+
+> **Por qué se buildea localmente:** el VPS tiene 1GB de RAM, insuficiente para el build de Next.js 16. El build corre en tu máquina y solo se sube la carpeta `.next` compilada via rsync. Esto también significa que los `node_modules` del VPS nunca se tocan durante el deploy, evitando corrupción de binarios nativos (problema que ocurrió con `@swc/core`, `lightningcss`, etc. al quedarse sin memoria durante `npm install`).
 
 ---
 
