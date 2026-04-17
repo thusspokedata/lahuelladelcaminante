@@ -1,5 +1,6 @@
 import { getCurrentUser, isAdmin } from "@/services/auth"
-import { updateRole } from "@/services/users"
+import { updateRole, getUserById } from "@/services/users"
+import { triggerArtistWelcome } from "@/lib/trigger"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -31,5 +32,14 @@ export async function PATCH(
   }
 
   await updateRole(id, result.data.role)
+
+  // Send welcome email when promoted to artist
+  if (result.data.role === "artist") {
+    const target = await getUserById(id)
+    if (target) {
+      await triggerArtistWelcome({ email: target.email, name: target.name }).catch(() => {})
+    }
+  }
+
   return NextResponse.json({ data: { success: true } })
 }

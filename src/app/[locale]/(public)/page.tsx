@@ -137,6 +137,44 @@ export default async function HomePage({
         </section>
       )}
 
+      {/* ── CTA: publicá tus eventos ─────────────────────── */}
+      <section className="border-t border-border py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-2xl bg-[#0e0407] border border-white/8 px-8 py-12 text-center"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 70% 80% at 50% 120%, oklch(0.42 0.22 20 / 0.5) 0%, transparent 60%)",
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-[0.035] pointer-events-none"
+              style={{
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
+            <div className="relative">
+              <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3">
+                {tHome("ctaLabel")}
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
+                {tHome("ctaTitle")}
+              </h2>
+              <p className="text-white/55 max-w-md mx-auto mb-8 leading-relaxed">
+                {tHome("ctaBody")}
+              </p>
+              <Button
+                asChild
+                size="lg"
+                className="font-bold rounded-full px-10 h-12 text-base shadow-xl shadow-primary/40"
+              >
+                <Link href={`/${locale}/apply`}>{tHome("ctaButton")}</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Genre strip (only shown if there are genres) ─── */}
       {genres.length > 0 && (
         <section className="border-t border-border bg-muted/25 py-14">
