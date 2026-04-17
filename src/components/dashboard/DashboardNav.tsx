@@ -23,6 +23,7 @@ export function DashboardNav({ role }: DashboardNavProps) {
       : []),
     ...(role === "admin"
       ? [
+          { href: `/${locale}/admin/applications`, label: tAdmin("applications") },
           { href: `/${locale}/admin/users`, label: tAdmin("users") },
           { href: `/${locale}/admin/events`, label: tAdmin("allEvents") },
         ]

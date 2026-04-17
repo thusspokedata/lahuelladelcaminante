@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { prisma } from "@/lib/prisma"
 import { triggerApplicationNotification } from "@/lib/trigger"
 
 const schema = z.object({
@@ -19,10 +20,11 @@ export async function POST(request: Request) {
     )
   }
 
-  try {
-    await triggerApplicationNotification(result.data)
-    return NextResponse.json({ data: { success: true } })
-  } catch {
-    return NextResponse.json({ error: "Error sending email" }, { status: 500 })
-  }
+  // Save to DB
+  await prisma.application.create({ data: result.data })
+
+  // Email notification to admin (fire and forget)
+  triggerApplicationNotification(result.data).catch(() => {})
+
+  return NextResponse.json({ data: { success: true } })
 }

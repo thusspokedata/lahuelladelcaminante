@@ -99,7 +99,18 @@
     "colActions": "Actions",
     "colTitle": "Title",
     "colGenre": "Genre",
-    "colArtist": "Artist"
+    "colArtist": "Artist",
+    "applications": "Applications",
+    "applicationsLabel": "Admin panel",
+    "applicationsPending": "Pending",
+    "applicationsReviewed": "Reviewed",
+    "applicationsNone": "No pending applications",
+    "applicationsApproved": "Approved",
+    "applicationsRejected": "Rejected",
+    "applicationsAccept": "Accept",
+    "applicationsReject": "Reject",
+    "applicationsApprovedMsg": "Application approved",
+    "applicationsRejectedMsg": "Application rejected"
   },
   "forms": {
     "titleField": "Title *",

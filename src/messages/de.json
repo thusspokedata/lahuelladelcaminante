@@ -99,7 +99,18 @@
     "colActions": "Aktionen",
     "colTitle": "Titel",
     "colGenre": "Genre",
-    "colArtist": "Künstler"
+    "colArtist": "Künstler",
+    "applications": "Bewerbungen",
+    "applicationsLabel": "Adminbereich",
+    "applicationsPending": "Ausstehend",
+    "applicationsReviewed": "Geprüft",
+    "applicationsNone": "Keine ausstehenden Bewerbungen",
+    "applicationsApproved": "Genehmigt",
+    "applicationsRejected": "Abgelehnt",
+    "applicationsAccept": "Annehmen",
+    "applicationsReject": "Ablehnen",
+    "applicationsApprovedMsg": "Bewerbung genehmigt",
+    "applicationsRejectedMsg": "Bewerbung abgelehnt"
   },
   "forms": {
     "titleField": "Titel *",

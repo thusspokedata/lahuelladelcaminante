@@ -99,7 +99,18 @@
     "colActions": "Acciones",
     "colTitle": "Título",
     "colGenre": "Género",
-    "colArtist": "Artista"
+    "colArtist": "Artista",
+    "applications": "Solicitudes",
+    "applicationsLabel": "Panel de administración",
+    "applicationsPending": "Pendientes",
+    "applicationsReviewed": "Revisadas",
+    "applicationsNone": "No hay solicitudes pendientes",
+    "applicationsApproved": "Aprobada",
+    "applicationsRejected": "Rechazada",
+    "applicationsAccept": "Aceptar",
+    "applicationsReject": "Rechazar",
+    "applicationsApprovedMsg": "Solicitud aprobada",
+    "applicationsRejectedMsg": "Solicitud rechazada"
   },
   "forms": {
     "titleField": "Título *",

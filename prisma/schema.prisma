@@ -142,3 +142,13 @@ model Image {
   event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
 }
+
+
+model Application {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  status    String   @default("pending") // pending | approved | rejected
+  createdAt DateTime @default(now())
+}
