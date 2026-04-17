@@ -32,10 +32,15 @@ export async function proxy(request: NextRequest) {
   const isAdmin = ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p))
 
   if (isProtected || isAdmin) {
+    // Use BETTER_AUTH_URL (internal HTTP URL) to avoid SSL errors when behind
+    // a reverse proxy. request.nextUrl.origin inherits the forwarded protocol
+    // (https) but still uses localhost:PORT, causing ERR_SSL_PACKET_LENGTH_TOO_LONG.
+    const internalBaseURL =
+      process.env.BETTER_AUTH_URL ?? request.nextUrl.origin
     const { data: session } = await betterFetch<SessionResponse>(
       "/api/auth/get-session",
       {
-        baseURL: request.nextUrl.origin,
+        baseURL: internalBaseURL,
         headers: { cookie: request.headers.get("cookie") ?? "" },
       }
     )
