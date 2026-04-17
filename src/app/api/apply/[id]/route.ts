@@ -2,6 +2,7 @@ import { getCurrentUser, isAdmin } from "@/services/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { triggerApplicationApproved } from "@/lib/trigger"
 
 const schema = z.object({
   status: z.enum(["approved", "rejected"]),
@@ -29,6 +30,13 @@ export async function PATCH(
     where: { id },
     data: { status: result.data.status },
   })
+
+  if (result.data.status === "approved") {
+    triggerApplicationApproved({
+      email: result.data.email,
+      name: result.data.name,
+    }).catch(() => {})
+  }
 
   return NextResponse.json({ data: { success: true } })
 }

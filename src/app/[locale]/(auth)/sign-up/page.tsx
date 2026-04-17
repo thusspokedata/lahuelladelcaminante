@@ -42,7 +42,7 @@ export default function SignUpPage() {
       return
     }
 
-    router.push(`/${locale}/user-pending`)
+    router.push(`/${locale}`)
   }
 
   return (

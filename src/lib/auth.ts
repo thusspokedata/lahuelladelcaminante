@@ -2,7 +2,6 @@ import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { admin } from "better-auth/plugins"
 import { prisma } from "./prisma"
-import { triggerWelcomeEmail } from "./trigger"
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -26,10 +25,26 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          await prisma.userProfile.create({
-            data: { userId: user.id, status: "PENDING" },
+          // Check if this email has an approved application
+          const approvedApplication = await prisma.application.findFirst({
+            where: { email: user.email, status: "approved" },
           })
-          await triggerWelcomeEmail({ email: user.email, name: user.name })
+
+          if (approvedApplication) {
+            // Approved applicant: activate as artist immediately
+            await prisma.userProfile.create({
+              data: { userId: user.id, status: "ACTIVE" },
+            })
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { role: "creator" },
+            })
+          } else {
+            // Regular user: active but no artist permissions
+            await prisma.userProfile.create({
+              data: { userId: user.id, status: "ACTIVE" },
+            })
+          }
         },
       },
     },
