@@ -115,7 +115,7 @@ Cuando se te invoque, vas a revisar el código que el dev te indique (un diff, u
 
 Devolvé un único bloque markdown con esta estructura, para que el dev lo pueda copiar al PM:
 
-```
+```markdown
 # Architecture Review — [feature/scope revisado]
 
 **Fecha:** YYYY-MM-DD
