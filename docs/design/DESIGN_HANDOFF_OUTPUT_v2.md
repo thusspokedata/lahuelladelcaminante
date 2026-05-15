@@ -1,7 +1,7 @@
 # DESIGN_HANDOFF_OUTPUT_v2.md
 ## Auth + estados de cuenta — paquete de entrega complementario (final)
 
-Complemento de `DESIGN_HANDOFF_OUTPUT.md` v1.1. Mismos tokens, mismos patrones, sin sistema nuevo. Cubre las 4 pantallas que quedaron afuera de v1, con los 3 ajustes del segundo pase incorporados:
+Complemento de `DESIGN_HANDOFF_OUTPUT.md` v1.1. Mismos tokens, mismos patrones, sin sistema nuevo. Cubre las 5 pantallas que quedaron afuera de v1, con los 3 ajustes del segundo pase incorporados:
 
 - Sin checkbox "Mantener sesión" en sign-in (Better Auth maneja la sesión).
 - Sin nombres hardcoded en el copy del timeline ("Un humano mira tu perfil").
@@ -110,7 +110,7 @@ Mismo layout que pending pero rojo y sin animación (es estado terminal).
 
 ### 3.1 Nuevos a crear
 
-```
+```text
 src/components/auth/AuthShell.tsx           — layout 2-col (form izq, panel atmosférico der)
                                               acepta `hero` prop para customizar la columna derecha
 src/components/auth/AuthField.tsx           — label + input + hint estilizado a los tokens
@@ -125,7 +125,7 @@ src/components/auth/StepTimeline.tsx        — timeline vertical de 4 estados c
 
 ### 3.2 Existentes a modificar
 
-```
+```text
 src/components/layout/Header.tsx  — agregar variante "auth" (oculta nav, deja solo BrandLockup)
                                     O bien: que las páginas /sign-in y /sign-up usen su propio
                                     layout root sin Header. Decisión del dev.

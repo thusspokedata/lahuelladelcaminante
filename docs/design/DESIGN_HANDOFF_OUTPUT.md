@@ -3,7 +3,7 @@
 
 Acompaña al brief y a `DESIGN_HANDOFF_INPUT.md`. v1.1 incorpora las correcciones del PM (Tailwind v4 `@theme inline`, subset `latin`, CTA data-driven, componentes custom, fallback de flyer).
 
-> **Ver también:** `DESIGN_HANDOFF_OUTPUT_v2.md` cubre las 4 pantallas auxiliares (sign-in, sign-up, solicitud enviada, user-pending/blocked) que quedaron afuera de v1.
+> **Ver también:** `DESIGN_HANDOFF_OUTPUT_v2.md` cubre las 5 pantallas auxiliares (sign-in, sign-up, solicitud enviada, user-pending, user-blocked) que quedaron afuera de v1.
 
 ---
 
@@ -259,7 +259,7 @@ Las rutas se mantienen como están hoy (`/[locale]/events`, no `/de/veranstaltun
 
 ### 4.1 Nuevos a crear (custom, alineados a los tokens)
 
-```
+```text
 src/components/brand/BrandMark.tsx        — ícono cuadrado (huella + sangre)
 src/components/brand/BrandLockup.tsx      — ícono + "La Huella / del Caminante"
 src/components/events/EventCard.tsx       — card 4:5 con date tile, badge género, late marker
@@ -276,7 +276,7 @@ src/components/dashboard/DashboardShell.tsx — sidebar + main, role-aware
 
 ### 4.2 Existentes a modificar
 
-```
+```text
 Header.tsx       — nueva lockup, lang switcher en pill, nav con underline-on-active sangre
 Footer.tsx       — 4 columnas con eyebrow titles, copy compacto
 EventCard.tsx    — cambio fuerte: imagen 4:5 (no landscape), date tile overlay
@@ -285,7 +285,7 @@ Layout root      — body con bg dark forzado, sin theme toggle
 
 ### 4.3 Existentes a eliminar (o deprecar)
 
-```
+```text
 Cualquier componente de light-mode (no se usa hasta nueva orden)
 El bloque "Want to post your events?" como hero card oscuro fullwidth — reemplazado por la sección CTA inline en home
 ```
@@ -317,7 +317,7 @@ El bloque "Want to post your events?" como hero card oscuro fullwidth — reempl
 1. **Las cards de evento usan `<a>`** envolviendo todo el bloque. No usar `onClick` en el `<div>` — perdemos accesibilidad, abrir-en-pestaña-nueva, etc.
 2. **Los hovers transicionan en 200ms ease-out.** Es la "respiración" del producto. No los acortes a 100ms ni los extendas a 400ms.
 3. **El flyer del evento nunca se recorta.** Contener + blur fill como fallback. Comportamiento crítico.
-4. **El switch de idioma vive en el header, siempre visible.** Tres pills `ES · EN · DE`. No es un dropdown.
+4. **El language switcher siempre se renderiza como tres pills (`ES · EN · DE`) tappables.** NUNCA se convierte en dropdown, en ningún breakpoint. En mobile, las pills se compactan (font-size menor, sin separador `·` entre ellas), pero siguen siendo tres elementos visibles e individualmente tappables.
 5. **La sangre se usa una vez por pantalla, máximo dos.**
 6. **Densidad: respetar las escalas de spacing.** No agregar paddings ad-hoc; si falta uno, agregar al token system.
 7. **El h1 del home es data-driven** según el estado de la agenda (cascada §7.3 del input de respuesta):
@@ -345,7 +345,7 @@ El bloque "Want to post your events?" como hero card oscuro fullwidth — reempl
 
 ### Breakpoints (alineados con Tailwind defaults)
 
-```
+```text
 sm:  640px
 md:  768px
 lg: 1024px
@@ -370,7 +370,7 @@ xl: 1280px
 
 - Header nav: drawer con icono `≡` a la derecha.
 - Tab bar inferior fija con Inicio · Eventos · Artistas · Guardado.
-- Lang switcher: texto chico en el header (`ES`) — abre dropdown al tocar.
+- Lang switcher: las tres pills (`ES · EN · DE`) se compactan (font-size `var(--text-caption)`, padding reducido, sin separador `·` entre ellas). El componente ocupa el mismo espacio horizontal en el header que la hamburguesa de nav, equilibrando el header simétricamente. **NO dropdown** — la decisión es pills siempre, en todos los breakpoints (ver §5.3, regla 4).
 - En event detail desktop, el flyer es sticky en la columna izquierda. En mobile, scroll normal.
 
 ---
