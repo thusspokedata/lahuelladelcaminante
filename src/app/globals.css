@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* `class="dark"` en <html> activa modificadores `dark:*` de Tailwind.
+   Necesario porque el default de Tailwind v4 mapea `dark:` a `prefers-color-scheme`,
+   no a una clase ancestor. Mientras los componentes shadcn aún tengan modificadores
+   `dark:*`, mantener este variant. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   /* ── Color · surfaces ─────────────────────────────────────── */
@@ -32,7 +39,15 @@
   --color-status-warn: #E5A93B;
   --color-status-danger: #D43029;
 
-  /* ── Type · families (variables wired up via next/font in layout) ─ */
+  /* ── Type · families ──────────────────────────────────────
+     Las variables `--font-display`, `--font-body`, `--font-mono` las
+     setea next/font/google en el <html> (ver layout.tsx). La
+     auto-referencia adentro de @theme inline funciona porque Tailwind
+     v4 inlinea el valor en cada utility y `var()` resuelve contra el
+     cascade (donde <html> shadowea :root). El cycle a nivel :root es
+     inerte. Si en el futuro se quita el `inline`, renombrar las
+     variables source (ej. `--font-display-source`) para evitar
+     ambigüedad. */
   --font-display: var(--font-display), system-ui, sans-serif;
   --font-body: var(--font-body), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, "SF Mono", monospace;
@@ -107,11 +122,46 @@
   --radius-l: 12px;
   --radius-xl: 18px;
   --radius-pill: 9999px;
+
+  /* ── Compatibilidad shadcn (temporal) ──────────────────────
+     Los componentes shadcn ya instalados (button, card, dialog,
+     dropdown-menu, input, select, table, tabs, badge, textarea,
+     sonner) consumen utilities `bg-background`, `text-foreground`,
+     `bg-primary`, `bg-card`, etc. Hasta que los próximos PRs del
+     rediseño los reemplacen por componentes custom de §4.1 del
+     handoff, mapeamos los tokens viejos a sus equivalentes nuevos
+     para que las pantallas no queden sin color de fondo, borde, ni
+     texto. Esto pisa la regla "sangre una vez por pantalla" del
+     handoff §1.3 mientras dure este compatibility layer — es
+     deuda explícita declarada en la épica. */
+  --color-background: var(--color-bg-page);
+  --color-foreground: var(--color-fg-primary);
+  --color-card: var(--color-bg-surface);
+  --color-card-foreground: var(--color-fg-primary);
+  --color-popover: var(--color-bg-surface-2);
+  --color-popover-foreground: var(--color-fg-primary);
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: var(--color-on-brand);
+  --color-secondary: var(--color-bg-surface-2);
+  --color-secondary-foreground: var(--color-fg-primary);
+  --color-muted: var(--color-bg-surface-2);
+  --color-muted-foreground: var(--color-fg-secondary);
+  --color-accent: var(--color-bg-surface-3);
+  --color-accent-foreground: var(--color-fg-primary);
+  --color-destructive: var(--color-status-danger);
+  --color-destructive-foreground: var(--color-on-brand);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-brand);
 }
 
-/* Layout primitives no semánticos quedan fuera de @theme:
-   ancho máximo, header height, gutter del contenedor. */
+/* Variables sueltas que no van en @theme:
+   - `--radius` legacy de shadcn: algunos componentes la leen via var()
+     directo en lugar de utility. La dejamos apuntando al radius-l del
+     sistema nuevo (12px, vs 10px del legacy).
+   - Layout primitives no semánticos: ancho máximo, header height,
+     gutter del contenedor. */
 :root {
+  --radius: var(--radius-l);
   --layout-max-w: 1280px;
   --layout-gutter: 32px;
   --layout-header-h: 72px;
