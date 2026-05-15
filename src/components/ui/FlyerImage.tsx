@@ -4,7 +4,7 @@
  * en ratio Instagram (4:5 o 1:1), no en landscape, y no deben recortarse.
  *
  * Comportamiento por orden de prioridad:
- *  1. Si hay `publicId`: usa `<CldImage>` (Cloudinary) con `crop="fill"` +
+ *  1. Si hay `publicId`: usa `<CldImage>` (Cloudinary) con `crop="pad"` +
  *     `gravity="auto"` y format/quality automáticos.
  *  2. Si hay `src` pero no `publicId`: usa `<Image>` de Next con object-cover.
  *  3. Si no hay ninguno: renderiza fallback de iniciales gigantes sobre un
