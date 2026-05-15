@@ -154,14 +154,26 @@
   --color-ring: var(--color-brand);
 }
 
-/* Variables sueltas que no van en @theme:
-   - `--radius` legacy de shadcn: algunos componentes la leen via var()
-     directo en lugar de utility. La dejamos apuntando al radius-l del
-     sistema nuevo (12px, vs 10px del legacy).
-   - Layout primitives no semánticos: ancho máximo, header height,
-     gutter del contenedor. */
+/* Variables sueltas en :root (no en @theme).
+   Con Tailwind v4 `@theme inline`, los tokens del bloque @theme se
+   inlinean en las utilities pero no se emiten como custom properties
+   al `:root`. Cualquier consumidor que use `var()` directo desde
+   `style={}` o CSS arbitrario necesita la variable acá.
+
+   Hoy los consumidores legacy son:
+   - `components/ui/sonner.tsx` usa `var(--popover)`, `var(--popover-foreground)`,
+     `var(--border)`, `var(--radius)` en su style inline.
+
+   Mapeamos cada uno al token nuevo del sistema. Se va con sonner cuando
+   sea reemplazado por el toaster del rediseño. */
 :root {
+  --popover: var(--color-bg-surface-2);
+  --popover-foreground: var(--color-fg-primary);
+  --border: var(--color-border);
   --radius: var(--radius-l);
+
+  /* Layout primitives no semánticos: ancho máximo, header height,
+     gutter del contenedor. */
   --layout-max-w: 1280px;
   --layout-gutter: 32px;
   --layout-header-h: 72px;
