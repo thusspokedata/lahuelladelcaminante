@@ -6,7 +6,7 @@
  * Comportamiento por orden de prioridad:
  *  1. Si hay `publicId`: usa `<CldImage>` (Cloudinary) con `crop="pad"` +
  *     `gravity="auto"` y format/quality automáticos.
- *  2. Si hay `src` pero no `publicId`: usa `<Image>` de Next con object-cover.
+ *  2. Si hay `src` pero no `publicId`: usa `<Image>` de Next con object-contain.
  *  3. Si no hay ninguno: renderiza fallback de iniciales gigantes sobre un
  *     fondo con radial gradient del color accent (estilo "MS / WP / FC" del
  *     listado de artistas en el handoff).
@@ -14,9 +14,11 @@
  * **Es client component** porque `<CldImage>` de `next-cloudinary` requiere
  * hooks/refs del browser. El resto del árbol que lo consume puede ser server.
  *
- * En v1 NO se implementa el blur-de-contención para imágenes en ratio
- * incorrecto. Si Cloudinary recorta mal, se ajusta gravity por evento desde
- * el caller. Está marcado como TODO para una iteración posterior.
+ * Las imágenes que no vengan en el aspect ratio target se renderizan
+ * contenidas (`crop="pad"` + `object-contain`) sobre `bg-bg-surface-2`,
+ * con bandas sólidas (letterbox). Es lo que pide el handoff §1.4: nunca
+ * recortar texto del flyer. El blur-de-contención estilo Apple Music está
+ * marcado como TODO en el cuerpo del componente, planeado para PR 5.5.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §1.4 + §4.1.
  */
