@@ -74,6 +74,7 @@ export default async function DateTile({
         className
       )}
       aria-label={isValid ? `${month} ${day}` : undefined}
+      aria-hidden={!isValid || undefined}
     >
       <span className="text-eyebrow font-mono">{month}</span>
       <span className={cn(dayClass, "font-display")}>{day}</span>

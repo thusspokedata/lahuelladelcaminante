@@ -108,14 +108,17 @@ export default function FlyerImage({
           alt={alt}
           width={width}
           height={height}
-          crop="fill"
+          crop="pad"
           gravity="auto"
           format="auto"
           quality="auto"
           priority={priority}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
-        {/* TODO (post-PR3): blur-de-contención para flyers en ratio raro. */}
+        {/* TODO: implement blurred background fallback (Apple Music style)
+            cuando el ratio de la imagen no coincide con el aspect target.
+            Hasta entonces, el padding queda sobre `bg-bg-surface-2` (letterbox
+            sólido). Tracked como PR 5.5. */}
       </div>
     )
   }
@@ -130,7 +133,7 @@ export default function FlyerImage({
           fill
           priority={priority}
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover"
+          className="object-contain"
         />
       </div>
     )
