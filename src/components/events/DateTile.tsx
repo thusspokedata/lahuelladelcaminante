@@ -1,24 +1,28 @@
 /**
  * DateTile — bloque "JUN 7" reutilizable. Mes en eyebrow (mono, mayúsculas)
- * encima del día en display weight 800.
+ * encima del día en display weight derivado del token (`text-heading-*`).
  *
  * Usado sobre cards de evento, en el detalle, y en agendas compactas. El día
  * se formatea siempre con dos dígitos para alineación visual consistente.
  *
- * El mes respeta el locale (`getLocale()` por defecto; puede pasarse como prop
- * si el caller ya lo tiene a mano). En la práctica `JUN` coincide en es/en/de,
- * pero `OCT` (es/en) vs `OKT` (de) sí difiere, así que delegamos a `Intl`.
+ * El mes respeta el locale. Para listings de muchos tiles, **pasar `locale`
+ * explícito** (resuelto una vez en el page con `getLocale()`) en lugar de
+ * dejar que cada tile lo pida solo — evita N awaits redundantes aunque
+ * `next-intl` cachee por request. En usos sueltos, omitir `locale` es OK.
+ *
+ * En la práctica `JUN` coincide en es/en/de, pero `OCT` (es/en) vs `OKT`
+ * (de) sí difiere, así que delegamos a `Intl.DateTimeFormat`.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.1.
  */
 
 import { getLocale } from "next-intl/server"
 import { cn } from "@/lib/utils"
-import type { AccentBound } from "@/components/types"
+import type { AccentBound, SmallSize } from "@/components/types"
 
 export interface DateTileProps {
   date: Date | string
-  size?: "s" | "m"
+  size?: SmallSize
   accent?: AccentBound
   locale?: string
   className?: string
@@ -59,19 +63,20 @@ export default async function DateTile({
   const day = isValid ? String(d.getDate()).padStart(2, "0") : "—"
 
   const colors = accent ? ACCENT_BG[accent] : "bg-bg-surface-2 text-fg-primary"
+  // El peso del día viene del propio token `text-heading-*` (700 / 800).
   const dayClass = size === "m" ? "text-heading-l" : "text-heading-m"
 
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-center justify-center rounded-m px-s py-xs",
+        "flex flex-col items-center justify-center rounded-m px-s py-xs w-fit",
         colors,
         className
       )}
       aria-label={isValid ? `${month} ${day}` : undefined}
     >
       <span className="text-eyebrow font-mono">{month}</span>
-      <span className={cn(dayClass, "font-display font-extrabold")}>{day}</span>
+      <span className={cn(dayClass, "font-display")}>{day}</span>
     </div>
   )
 }

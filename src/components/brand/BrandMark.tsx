@@ -17,6 +17,11 @@ import type { Size } from "@/components/types"
 export interface BrandMarkProps {
   size?: Size
   variant?: "default" | "muted"
+  /** Cuando es `true`, marca el elemento como `aria-hidden` y omite el
+   * `aria-label`. Pasar `true` cuando se usa adentro de un componente que
+   * ya provee el nombre accesible (ej. `BrandLockup` con texto visible) y
+   * el mark es puramente decorativo. */
+  decorative?: boolean
   className?: string
 }
 
@@ -35,16 +40,20 @@ const SIZE_RADIUS: Record<Size, string> = {
 export default function BrandMark({
   size = "m",
   variant = "default",
+  decorative = false,
   className,
 }: BrandMarkProps) {
   const px = SIZE_PX[size]
   const bg = variant === "default" ? "bg-brand" : "bg-bg-surface-2"
   const fg = variant === "default" ? "text-on-brand" : "text-fg-primary"
 
+  const ariaProps = decorative
+    ? { "aria-hidden": true as const }
+    : { role: "img" as const, "aria-label": "La Huella del Caminante" }
+
   return (
     <span
-      role="img"
-      aria-label="La Huella del Caminante"
+      {...ariaProps}
       className={cn(
         "inline-flex items-center justify-center shrink-0",
         SIZE_RADIUS[size],

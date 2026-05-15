@@ -13,3 +13,13 @@ export type AccentBound = "brand" | "editorial" | "creator"
 
 /** Escala de tamaños usada por componentes con tamaño variable. */
 export type Size = "s" | "m" | "l"
+
+/** Subset de `Size` para componentes que no tienen variante grande
+ * (ej. DateTile, Chip, ChipButton — donde una `l` no tiene sentido visual). */
+export type SmallSize = Exclude<Size, "l">
+
+/**
+ * Convención de imports: importar componentes directamente desde su archivo
+ * (`import BrandMark from "@/components/brand/BrandMark"`), no via barrels.
+ * Esto preserva tree-shaking del default export en todos los bundlers.
+ */

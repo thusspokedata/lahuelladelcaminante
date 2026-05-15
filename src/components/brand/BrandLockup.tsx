@@ -5,9 +5,13 @@
  *  - `horizontal` (default): mark size `m` a la izquierda, dos líneas a la derecha.
  *  - `vertical`: mark size `l` arriba centrado, dos líneas debajo centradas.
  *
- * Si recibe `href`, el lockup entero se renderiza como `<Link>`. Si no, como
- * `<div>`. Esto le permite servir tanto como logo clickeable en Header como
- * para usos no-interactivos (footer, splash, emails).
+ * Si recibe `href`, el lockup entero se renderiza como `<Link>` con
+ * `aria-label` de marca. Si no, como `<span>` no interactivo. En ambos casos
+ * `className` se aplica al elemento root (Link o span) para que el caller
+ * pueda controlar márgenes/layout desde afuera.
+ *
+ * El `BrandMark` interno se renderiza con `decorative` para que el lector
+ * de pantalla no anuncie dos veces el nombre del producto.
  *
  * El texto "La Huella / del Caminante" está hardcodeado porque es el nombre
  * del producto y no se traduce. La segunda línea siempre va en `text-brand`.
@@ -32,17 +36,17 @@ export default function BrandLockup({
 }: BrandLockupProps) {
   const isHorizontal = orientation === "horizontal"
 
-  const content = (
-    <span
-      className={cn(
-        "inline-flex font-display font-bold leading-[0.95] tracking-tight",
-        isHorizontal
-          ? "flex-row items-center gap-m"
-          : "flex-col items-center gap-s text-center",
-        className
-      )}
-    >
-      <BrandMark size={isHorizontal ? "m" : "l"} />
+  const rootClass = cn(
+    "inline-flex shrink-0 font-display font-bold leading-[0.95] tracking-tight",
+    isHorizontal
+      ? "flex-row items-center gap-m"
+      : "flex-col items-center gap-s text-center",
+    className
+  )
+
+  const inner = (
+    <>
+      <BrandMark size={isHorizontal ? "m" : "l"} decorative />
       <span
         className={cn(
           "flex flex-col",
@@ -52,20 +56,20 @@ export default function BrandLockup({
         <span>La Huella</span>
         <span className="text-brand">del Caminante</span>
       </span>
-    </span>
+    </>
   )
 
   if (href) {
     return (
       <Link
         href={href}
-        className="inline-flex shrink-0 group"
         aria-label="La Huella del Caminante — inicio"
+        className={rootClass}
       >
-        {content}
+        {inner}
       </Link>
     )
   }
 
-  return content
+  return <span className={rootClass}>{inner}</span>
 }

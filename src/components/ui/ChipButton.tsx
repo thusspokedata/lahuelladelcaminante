@@ -1,9 +1,14 @@
 /**
  * ChipButton — versión interactiva de `Chip`. Mismo look, pero render como
- * `<button>` con `onClick`, focus ring, hover, y aria-pressed cuando es toggle.
+ * `<button>` con `onClick`, focus ring, hover, y `aria-pressed` cuando es
+ * toggle. Las clases compartidas viven en `chip-styles.ts`.
  *
- * Usado en filter bars (toggle de género/ciudad), tabs no-stateful, etc. Para
- * tags estáticos o badges, usar `Chip` (server component).
+ * Usado en filter bars (toggle de género/ciudad), tabs no-stateful, etc.
+ * Para tags estáticos o badges, usar `Chip` (server component).
+ *
+ * Nota sobre `accent`: igual que `Chip`, se acepta `Accent` completo
+ * (incluye `neutral`) porque hay casos donde el toggle activo neutral es un
+ * estado válido distinto al idle muteado.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.1.
  */
@@ -11,31 +16,20 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { Accent } from "@/components/types"
+import type { Accent, SmallSize } from "@/components/types"
+import { CHIP_ACTIVE_BG, CHIP_BASE, CHIP_IDLE_BG, CHIP_SIZE } from "./chip-styles"
 
 export interface ChipButtonProps {
   children: React.ReactNode
   onClick?: () => void
   accent?: Accent
   active?: boolean
-  size?: "s" | "m"
+  size?: SmallSize
   disabled?: boolean
   className?: string
   /** Si el chip funciona como toggle (on/off), pasar `true` para que se
    * exponga `aria-pressed`. Si funciona como acción simple, dejar `false`. */
   toggle?: boolean
-}
-
-const ACTIVE_BG: Record<Accent, string> = {
-  brand: "bg-brand text-on-brand border-brand",
-  editorial: "bg-editorial text-on-editorial border-editorial",
-  creator: "bg-creator text-on-creator border-creator",
-  neutral: "bg-fg-primary text-bg-page border-fg-primary",
-}
-
-const SIZE_CLASS: Record<"s" | "m", string> = {
-  s: "text-caption px-s py-[2px]",
-  m: "text-body-s px-m py-xs",
 }
 
 export default function ChipButton({
@@ -48,9 +42,10 @@ export default function ChipButton({
   className,
   toggle = false,
 }: ChipButtonProps) {
-  const colors = active
-    ? ACTIVE_BG[accent]
-    : "bg-bg-surface-2 text-fg-secondary border-border hover:bg-bg-surface-3 hover:text-fg-primary"
+  const idleWithInteraction = cn(
+    CHIP_IDLE_BG,
+    "hover:bg-bg-surface-3 hover:text-fg-primary"
+  )
 
   return (
     <button
@@ -59,11 +54,12 @@ export default function ChipButton({
       disabled={disabled}
       aria-pressed={toggle ? active : undefined}
       className={cn(
-        "inline-flex items-center rounded-pill border font-medium transition-colors",
+        CHIP_BASE,
+        "transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        SIZE_CLASS[size],
-        colors,
+        CHIP_SIZE[size],
+        active ? CHIP_ACTIVE_BG[accent] : idleWithInteraction,
         className
       )}
     >

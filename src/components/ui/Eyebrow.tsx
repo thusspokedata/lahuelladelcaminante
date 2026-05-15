@@ -5,8 +5,10 @@
  * arriba de SectionHeader, "01 / 03" de StepCard, etc. Centraliza las clases
  * para no repetirlas en cada lugar.
  *
- * Tinte opcional con `accent` (brand/editorial/creator). Default neutral
- * usa `text-fg-secondary` para no competir con el título debajo.
+ * Acepta `Accent` completo (no `AccentBound`) porque `neutral` es el estilo
+ * por defecto (sin tinte de marca, en `text-fg-secondary`) — distinto a
+ * "ausencia de accent" que el caller decidiría omitiendo el prop. Útil para
+ * eyebrows debajo de un hero ya marcado donde un accent extra distraería.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.1.
  */

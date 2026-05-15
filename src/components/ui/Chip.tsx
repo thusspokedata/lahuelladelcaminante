@@ -2,38 +2,30 @@
  * Chip — pill estático para tags, etiquetas de género, badges no-interactivos.
  *
  * Para chips clickeables (filtros, toggles), usar `ChipButton` (mismo look,
- * client component con `onClick`).
+ * client component con `onClick`). Las clases compartidas viven en
+ * `chip-styles.ts` — modificar ahí si cambian.
  *
  * Props clave:
- *  - `accent`: tinte del pill cuando `active`. Default `neutral`.
- *  - `active`: si `true`, el chip toma el color del accent. Si `false`,
- *    se renderiza como un pill muteado (surface-2).
- *  - `size`: `s` (compacto, en cards) o `m` (default, en filter bars).
+ *  - `accent`: tinte del pill cuando `active`. Default `neutral` (incluido
+ *    en el set porque el "neutral activo" es un estado válido distinto al
+ *    pill idle muteado).
+ *  - `active`: si `true`, el chip toma el color del accent. Si `false`, se
+ *    renderiza muteado (surface-2 + fg-secondary).
+ *  - `size`: `s` compacto (cards densas) o `m` default (filter bars).
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.1.
  */
 
 import { cn } from "@/lib/utils"
-import type { Accent } from "@/components/types"
+import type { Accent, SmallSize } from "@/components/types"
+import { CHIP_ACTIVE_BG, CHIP_BASE, CHIP_IDLE_BG, CHIP_SIZE } from "./chip-styles"
 
 export interface ChipProps {
   children: React.ReactNode
   accent?: Accent
   active?: boolean
-  size?: "s" | "m"
+  size?: SmallSize
   className?: string
-}
-
-const ACTIVE_BG: Record<Accent, string> = {
-  brand: "bg-brand text-on-brand border-brand",
-  editorial: "bg-editorial text-on-editorial border-editorial",
-  creator: "bg-creator text-on-creator border-creator",
-  neutral: "bg-fg-primary text-bg-page border-fg-primary",
-}
-
-const SIZE_CLASS: Record<"s" | "m", string> = {
-  s: "text-caption px-s py-[2px]",
-  m: "text-body-s px-m py-xs",
 }
 
 export default function Chip({
@@ -43,16 +35,12 @@ export default function Chip({
   size = "m",
   className,
 }: ChipProps) {
-  const colors = active
-    ? ACTIVE_BG[accent]
-    : "bg-bg-surface-2 text-fg-secondary border-border"
-
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-pill border font-medium",
-        SIZE_CLASS[size],
-        colors,
+        CHIP_BASE,
+        CHIP_SIZE[size],
+        active ? CHIP_ACTIVE_BG[accent] : CHIP_IDLE_BG,
         className
       )}
     >

@@ -11,12 +11,17 @@
  *     fondo con radial gradient del color accent (estilo "MS / WP / FC" del
  *     listado de artistas en el handoff).
  *
+ * **Es client component** porque `<CldImage>` de `next-cloudinary` requiere
+ * hooks/refs del browser. El resto del árbol que lo consume puede ser server.
+ *
  * En v1 NO se implementa el blur-de-contención para imágenes en ratio
  * incorrecto. Si Cloudinary recorta mal, se ajusta gravity por evento desde
  * el caller. Está marcado como TODO para una iteración posterior.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §1.4 + §4.1.
  */
+
+"use client"
 
 import Image from "next/image"
 import { CldImage } from "next-cloudinary"
@@ -54,13 +59,17 @@ const ASPECT_DIMENSIONS: Record<
   "1:1": { width: 800, height: 800 },
 }
 
+/**
+ * Fondo del fallback: gradient teñido con el accent sobre surface-2. El texto
+ * (iniciales) va en `fg-primary` (crema) para ser legible en los tres accents:
+ * `on-<accent>` está pensado para texto sobre superficie acentuada plana, no
+ * sobre estos gradients oscuros (en particular `on-editorial` es casi negro
+ * y quedaría invisible acá).
+ */
 const ACCENT_GRADIENT: Record<AccentBound, string> = {
-  brand:
-    "from-brand-dim/40 via-bg-surface-2 to-bg-surface-2 text-on-brand",
-  editorial:
-    "from-editorial-dim/40 via-bg-surface-2 to-bg-surface-2 text-on-editorial",
-  creator:
-    "from-creator-dim/40 via-bg-surface-2 to-bg-surface-2 text-on-creator",
+  brand: "from-brand-dim/40 via-bg-surface-2 to-bg-surface-2",
+  editorial: "from-editorial-dim/40 via-bg-surface-2 to-bg-surface-2",
+  creator: "from-creator-dim/40 via-bg-surface-2 to-bg-surface-2",
 }
 
 function deriveInitials(text: string): string {
@@ -135,11 +144,11 @@ export default function FlyerImage({
       aria-label={alt}
       className={cn(
         containerClass,
-        "flex items-center justify-center bg-gradient-to-br",
+        "flex items-center justify-center bg-gradient-to-br text-fg-primary",
         ACCENT_GRADIENT[fallbackAccent]
       )}
     >
-      <span className="text-display-xl font-display font-extrabold leading-none select-none">
+      <span className="text-display-xl font-display leading-none select-none">
         {initials}
       </span>
     </div>
