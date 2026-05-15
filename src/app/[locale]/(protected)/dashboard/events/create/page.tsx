@@ -9,7 +9,7 @@ export default async function CreateEventPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const user = await requireRole("ARTIST", locale)
+  const user = await requireRole("creator", locale)
   const tForms = await getTranslations({ locale, namespace: "forms" })
   const artists = await getArtistsByUser(user.id)
 
