@@ -5,6 +5,15 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 
+/**
+ * Roles canónicos del sistema. Alineado con cómo se setea `user.role`
+ * en `src/lib/auth.ts` (`"creator"`) y con el enum del endpoint de cambio
+ * de rol en `src/app/api/users/[id]/role/route.ts` (`["user", "creator", "admin"]`).
+ *
+ * Importarlo desde otros archivos en vez de redefinir strings o enums sueltos.
+ */
+export type Role = "user" | "creator" | "admin"
+
 export function isAdmin(role?: string | null) {
   return role?.toLowerCase() === "admin"
 }
@@ -39,11 +48,10 @@ export async function requireActive(locale = "es") {
   return { user, profile }
 }
 
-export async function requireRole(role: "ADMIN" | "ARTIST", locale = "es") {
+export async function requireRole(role: Exclude<Role, "user">, locale = "es") {
   const { user } = await requireActive(locale)
   const r = user.role?.toLowerCase()
-  const required = role.toLowerCase()
-  if (r !== required && r !== "admin") {
+  if (r !== role && r !== "admin") {
     redirect(`/${locale}/dashboard`)
   }
   return user

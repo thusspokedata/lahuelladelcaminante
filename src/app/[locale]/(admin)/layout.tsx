@@ -11,7 +11,7 @@ export default async function AdminLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const user = await requireRole("ADMIN", locale)
+  const user = await requireRole("admin", locale)
 
   return (
     <>

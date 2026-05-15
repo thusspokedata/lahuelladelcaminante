@@ -224,7 +224,7 @@ export async function getEventsByArtist(artistId: string): Promise<EventSummary[
 
 export async function getEventsByUser(userId: string): Promise<EventSummary[]> {
   const events = await prisma.event.findMany({
-    where: { createdById: userId },
+    where: { createdById: userId, isDeleted: false },
     include: eventInclude,
     orderBy: { createdAt: "desc" },
   })
