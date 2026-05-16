@@ -13,6 +13,7 @@
 
 import { ExternalLink, Globe } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { isSafeHttpUrl } from "@/lib/safe-url"
 
 /**
  * Whitelist de plataformas para resolver el label visible. Solo el "website"
@@ -55,9 +56,11 @@ function capitalize(s: string): string {
 export default function SocialLinks({ socialMedia, className }: SocialLinksProps) {
   if (!isStringRecord(socialMedia)) return null
 
+  // Validamos scheme `http:`/`https:` para que un `javascript:` o `data:`
+  // que entre via formulario del creator no ejecute código al hacer click.
   const entries = Object.entries(socialMedia).filter(
     (entry): entry is [string, string] =>
-      typeof entry[1] === "string" && entry[1].trim() !== ""
+      typeof entry[1] === "string" && isSafeHttpUrl(entry[1])
   )
 
   if (entries.length === 0) return null

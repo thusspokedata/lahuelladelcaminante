@@ -23,6 +23,7 @@ import { getTranslations } from "next-intl/server"
 import { ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getEventAccessMode } from "@/lib/event-access"
+import { isSafeHttpUrl } from "@/lib/safe-url"
 
 export interface EventAccessCTAProps {
   /** Texto libre del campo `Event.price`. */
@@ -44,7 +45,11 @@ export default async function EventAccessCTA({
   const access = getEventAccessMode(price)
   const isCompact = variant === "compact"
 
-  if (access.mode === "tickets" && access.ticketUrl) {
+  // Validar scheme antes de emitir el anchor externo: `Event.price` es texto
+  // libre del creator y podría contener `javascript:` o `data:`. Si no es
+  // http/https, caemos al render no-clickeable de abajo con el texto literal
+  // (`unknown`-style) en lugar de generar un link inseguro.
+  if (access.mode === "tickets" && isSafeHttpUrl(access.ticketUrl)) {
     return (
       <div className={cn("flex flex-col gap-xs", className)}>
         <a
@@ -68,12 +73,18 @@ export default async function EventAccessCTA({
 
   // Las 4 variantes no-clickeables comparten el mismo skeleton: bloque
   // sobre surface-2 con título grande + nota chica. Cambia el texto.
-  const labelByMode: Record<typeof access.mode, string> = {
+  // El caso `unknown` tiene dos sub-casos:
+  //   - hay `priceText` (el creator escribió algo que no matcheó ninguna
+  //     heurística): mostramos el texto literal como label + nota genérica.
+  //   - no hay `priceText` (price era null/empty, o ticketUrl inválida): NO
+  //     renderizamos label vacío; solo la nota como bloque informativo
+  //     standalone.
+  const labelByMode: Record<typeof access.mode, string | null> = {
     tickets: t("tickets"), // unreachable acá (ya manejado arriba) pero satisface el tipo
     voluntary: t("voluntary"),
     free: t("free"),
     door: t("door"),
-    unknown: access.priceText ?? "",
+    unknown: access.priceText ?? null,
   }
   const noteByMode: Record<typeof access.mode, string | null> = {
     tickets: null,
@@ -96,19 +107,21 @@ export default async function EventAccessCTA({
         className
       )}
     >
-      <p
-        className={cn(
-          "font-semibold text-fg-primary leading-tight",
-          isCompact ? "text-body" : "text-body-l"
-        )}
-      >
-        {label}
-        {secondaryText ? (
-          <span className="ml-s text-fg-secondary font-normal">
-            · {secondaryText}
-          </span>
-        ) : null}
-      </p>
+      {label ? (
+        <p
+          className={cn(
+            "font-semibold text-fg-primary leading-tight",
+            isCompact ? "text-body" : "text-body-l"
+          )}
+        >
+          {label}
+          {secondaryText ? (
+            <span className="ml-s text-fg-secondary font-normal">
+              · {secondaryText}
+            </span>
+          ) : null}
+        </p>
+      ) : null}
       {!isCompact && note ? (
         <p className="text-body-s text-fg-secondary">{note}</p>
       ) : null}
