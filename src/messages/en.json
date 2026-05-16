@@ -354,8 +354,61 @@
     "community": "Community",
     "apply": "Apply",
     "newsletter": "Newsletter",
+    "contact": "Get in touch",
     "impressum": "Impressum",
     "datenschutz": "Datenschutz"
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Reach out for suggestions, press, partnerships, or anything else.",
+    "eyebrow": "CONTACT",
+    "title": "Get in touch.",
+    "body": "We read every message. We usually reply within 2-3 business days. If you're an artist looking to publish your events, there's a <applyLink>dedicated flow</applyLink>.",
+    "form": {
+      "name": "Your name",
+      "namePlaceholder": "What should we call you?",
+      "email": "Your email",
+      "emailPlaceholder": "you@email.com",
+      "type": "Inquiry type",
+      "types": {
+        "eventSuggestion": "Suggest an event",
+        "reportIssue": "Report an issue",
+        "press": "Press or media",
+        "partnership": "Collaboration or partnership",
+        "other": "Other"
+      },
+      "message": "Your message",
+      "messagePlaceholder": "Tell us what's up...",
+      "messageHint": "Between 10 and 2000 characters.",
+      "submit": "Send message",
+      "submitting": "Sending...",
+      "errors": {
+        "name_too_short": "At least 2 characters.",
+        "name_too_long": "Maximum 120 characters.",
+        "email_invalid": "Invalid email.",
+        "email_too_long": "Email is too long.",
+        "type_invalid": "Pick an inquiry type.",
+        "message_too_short": "At least 10 characters.",
+        "message_too_long": "Maximum 2000 characters.",
+        "generic": "Please check the form fields."
+      }
+    },
+    "success": {
+      "eyebrow": "MESSAGE SENT",
+      "title": "Thanks, {name}.",
+      "body": "We got your message. We'll reply to the email you provided, usually within 2-3 business days.",
+      "backHome": "Back to home",
+      "sendAnother": "Send another message"
+    },
+    "error": {
+      "title": "We couldn't send your message",
+      "body": "There was a connection issue. Please try again in a moment."
+    },
+    "alternatives": {
+      "title": "Other paths",
+      "instagramLabel": "@lahuelladelcaminante on Instagram",
+      "artist": "Are you an artist or organizer? To publish your events, <applyLink>apply here</applyLink>."
+    }
   },
   "status": {
     "pending": "Pending",

@@ -354,8 +354,61 @@
     "community": "Community",
     "apply": "Bewerben",
     "newsletter": "Newsletter",
+    "contact": "Schreib uns",
     "impressum": "Impressum",
     "datenschutz": "Datenschutz"
+  },
+  "contact": {
+    "metaTitle": "Kontakt",
+    "metaDescription": "Schreib uns für Vorschläge, Presse, Partnerschaften oder was du sonst brauchst.",
+    "eyebrow": "KONTAKT",
+    "title": "Schreib uns.",
+    "body": "Wir lesen jede Nachricht. Wir antworten meistens innerhalb von 2-3 Werktagen. Wenn du als Künstler:in deine Events veröffentlichen möchtest, gibt es einen <applyLink>eigenen Ablauf</applyLink>.",
+    "form": {
+      "name": "Dein Name",
+      "namePlaceholder": "Wie heißt du?",
+      "email": "Deine E-Mail",
+      "emailPlaceholder": "du@email.com",
+      "type": "Art der Anfrage",
+      "types": {
+        "eventSuggestion": "Event vorschlagen",
+        "reportIssue": "Problem melden",
+        "press": "Presse oder Medien",
+        "partnership": "Kooperation oder Partnerschaft",
+        "other": "Sonstiges"
+      },
+      "message": "Deine Nachricht",
+      "messagePlaceholder": "Erzähl uns, worum es geht...",
+      "messageHint": "Zwischen 10 und 2000 Zeichen.",
+      "submit": "Nachricht senden",
+      "submitting": "Wird gesendet...",
+      "errors": {
+        "name_too_short": "Mindestens 2 Zeichen.",
+        "name_too_long": "Höchstens 120 Zeichen.",
+        "email_invalid": "Ungültige E-Mail.",
+        "email_too_long": "E-Mail ist zu lang.",
+        "type_invalid": "Bitte eine Art der Anfrage wählen.",
+        "message_too_short": "Mindestens 10 Zeichen.",
+        "message_too_long": "Höchstens 2000 Zeichen.",
+        "generic": "Bitte prüf die Formularfelder."
+      }
+    },
+    "success": {
+      "eyebrow": "NACHRICHT GESENDET",
+      "title": "Danke, {name}.",
+      "body": "Wir haben deine Nachricht erhalten. Wir antworten an die angegebene E-Mail, in der Regel innerhalb von 2-3 Werktagen.",
+      "backHome": "Zurück zur Startseite",
+      "sendAnother": "Weitere Nachricht senden"
+    },
+    "error": {
+      "title": "Nachricht konnte nicht gesendet werden",
+      "body": "Es gab ein Verbindungsproblem. Versuch es gleich noch einmal."
+    },
+    "alternatives": {
+      "title": "Andere Pfade, uns zu erreichen",
+      "instagramLabel": "@lahuelladelcaminante auf Instagram",
+      "artist": "Bist du Künstler:in oder Veranstalter:in? Um deine Events zu veröffentlichen, <applyLink>bewirb dich hier</applyLink>."
+    }
   },
   "status": {
     "pending": "Ausstehend",

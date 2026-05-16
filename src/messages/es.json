@@ -354,8 +354,61 @@
     "community": "Comunidad",
     "apply": "Aplicar",
     "newsletter": "Newsletter",
+    "contact": "Escribinos",
     "impressum": "Impressum",
     "datenschutz": "Datenschutz"
+  },
+  "contact": {
+    "metaTitle": "Contacto",
+    "metaDescription": "Escribinos por sugerencias, prensa, partnerships o lo que necesites.",
+    "eyebrow": "CONTACTO",
+    "title": "Hablanos.",
+    "body": "Leemos todos los mensajes. Solemos responder en 2-3 días hábiles. Si lo tuyo es aplicar como artista, hay un <applyLink>flujo específico</applyLink>.",
+    "form": {
+      "name": "Tu nombre",
+      "namePlaceholder": "¿Cómo te llamás?",
+      "email": "Tu email",
+      "emailPlaceholder": "vos@email.com",
+      "type": "Tipo de consulta",
+      "types": {
+        "eventSuggestion": "Sugerir un evento",
+        "reportIssue": "Reportar un problema",
+        "press": "Prensa o medios",
+        "partnership": "Colaboración o partnership",
+        "other": "Otro"
+      },
+      "message": "Tu mensaje",
+      "messagePlaceholder": "Contanos en qué andás...",
+      "messageHint": "Entre 10 y 2000 caracteres.",
+      "submit": "Enviar mensaje",
+      "submitting": "Enviando...",
+      "errors": {
+        "name_too_short": "Mínimo 2 caracteres.",
+        "name_too_long": "Máximo 120 caracteres.",
+        "email_invalid": "Email inválido.",
+        "email_too_long": "Email demasiado largo.",
+        "type_invalid": "Seleccioná un tipo de consulta.",
+        "message_too_short": "Mínimo 10 caracteres.",
+        "message_too_long": "Máximo 2000 caracteres.",
+        "generic": "Revisá los datos del form."
+      }
+    },
+    "success": {
+      "eyebrow": "MENSAJE ENVIADO",
+      "title": "Gracias, {name}.",
+      "body": "Recibimos tu mensaje. Te respondemos al email que dejaste, normalmente en 2-3 días hábiles.",
+      "backHome": "Volver al inicio",
+      "sendAnother": "Enviar otro mensaje"
+    },
+    "error": {
+      "title": "No pudimos enviar tu mensaje",
+      "body": "Hubo un problema de conexión. Probá de nuevo en un momento."
+    },
+    "alternatives": {
+      "title": "Otros caminos",
+      "instagramLabel": "@lahuelladelcaminante en Instagram",
+      "artist": "¿Sos artista u organizador? Para publicar tus eventos, <applyLink>aplicá acá</applyLink>."
+    }
   },
   "status": {
     "pending": "Pendiente",
