@@ -15,8 +15,11 @@
 
 import { Link, usePathname } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
-import type { DashboardRole } from "./DashboardShell"
-import { navItemClass, navItemActiveClass } from "./DashboardShell"
+import {
+  navItemClass,
+  navItemActiveClass,
+  type DashboardRole,
+} from "./shell-constants"
 
 export interface DashboardSidebarNavItem {
   label: string

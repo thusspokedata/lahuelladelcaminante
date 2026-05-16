@@ -27,8 +27,9 @@ import DashboardSidebarNav, {
   type DashboardSidebarNavItem,
 } from "./DashboardSidebarNav"
 import DashboardMobileTabs from "./DashboardMobileTabs"
+import type { DashboardRole } from "./shell-constants"
 
-export type DashboardRole = "creator" | "admin"
+export type { DashboardRole } from "./shell-constants"
 
 export interface DashboardShellProps {
   children: React.ReactNode
@@ -59,15 +60,9 @@ const ACCENT_BY_ROLE: Record<
   },
 }
 
-/** Clases base del item de nav del sidebar. Re-exportadas para que el
- * sub-componente client `DashboardSidebarNav` no las duplique. */
-export const navItemClass =
-  "text-body-s rounded-r-m border-l-2 px-m py-s transition-colors " +
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand " +
-  "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
-
-/** Clases que se suman cuando el item del sidebar está activo. */
-export const navItemActiveClass = "bg-bg-surface-2 font-semibold"
+// `navItemClass` y `navItemActiveClass` ahora viven en `shell-constants.ts`
+// (módulo neutro, sin "use client" ni "server-only") para que el sidebar nav
+// client las pueda importar sin cruzar boundary RSC.
 
 async function getDefaultSidebarItems(
   role: DashboardRole,
