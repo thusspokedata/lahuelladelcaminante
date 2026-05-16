@@ -290,6 +290,13 @@ export async function triggerContactNotification(payload: {
   // en profundidad — colapsamos newlines a espacio y recortamos extra.
   const safeSubjectName = payload.name.replace(/[\r\n]+/g, " ").trim().slice(0, 100)
   const safeSubjectLabel = payload.typeLabel.replace(/[\r\n]+/g, " ").trim().slice(0, 60)
+  // Mismo tratamiento para el email que va al `Reply-To` header y al
+  // `<a href="mailto:">` del template. Zod `.email()` debería filtrar
+  // CRLF, pero defense in depth: aún si una versión futura de zod o un
+  // edge case lo deja pasar, no permitimos que llegue a un header MIME.
+  // También cortamos `,` y `;` por si se intenta inyectar múltiples
+  // destinatarios via Reply-To.
+  const safeEmail = payload.email.replace(/[\r\n,;]+/g, "").trim()
 
   const html = `<!DOCTYPE html>
 <html lang="${escapeHtml(payload.locale)}">
@@ -317,7 +324,7 @@ export async function triggerContactNotification(payload: {
             <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
               <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Email</p>
               <p style="color:#c0392b;font-size:15px;font-weight:600;margin:0">
-                <a href="mailto:${encodeURIComponent(payload.email)}" style="color:#c0392b;text-decoration:none">${escapeHtml(payload.email)}</a>
+                <a href="mailto:${escapeHtml(safeEmail)}" style="color:#c0392b;text-decoration:none">${escapeHtml(safeEmail)}</a>
               </p>
             </td></tr>
             <tr><td style="padding:14px 20px">
@@ -343,7 +350,7 @@ export async function triggerContactNotification(payload: {
     payload.to,
     `[Contacto · ${safeSubjectLabel}] ${safeSubjectName}`,
     html,
-    { replyTo: payload.email }
+    { replyTo: safeEmail }
   )
 }
 
