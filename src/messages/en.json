@@ -12,21 +12,42 @@
     "languageSwitcherLabel": "Language switcher"
   },
   "home": {
-    "badge": "Berlin · Latin Music",
-    "tagline": "The Latin American music scene in Berlin, Munich, Hamburg and more German cities.",
-    "viewEvents": "View events",
-    "upcomingSection": "Upcoming events",
-    "viewAll": "View all →",
-    "noEventsYet": "First events coming soon",
-    "upcomingArtistsLabel": "Coming live soon",
-    "upcomingArtistsTitle": "Upcoming artists",
-    "pastArtistsLabel": "Already came by",
-    "pastArtistsTitle": "Artists who left their mark",
-    "exploreGenre": "Explore by genre",
-    "ctaLabel": "For artists & organizers",
-    "ctaTitle": "Want to post your events?",
-    "ctaBody": "Publish your shows, concerts and events on the go-to platform for Latin music in Germany.",
-    "ctaButton": "Request access"
+    "hero": {
+      "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+      "thisWeekPrefix": "This week's",
+      "thisWeekHighlight": "huella",
+      "nextMonthPrefix": "Next month's",
+      "nextMonthHighlight": "huella",
+      "whatComesPrefix": "La huella,",
+      "whatComesHighlight": "what comes next",
+      "tagline": "What's playing in Berlin, Munich and Hamburg. Curated by the scene, made by one of us."
+    },
+    "stats": {
+      "shows": "upcoming shows",
+      "artists": "artists",
+      "cities": "cities",
+      "dateRange": "range"
+    },
+    "featured": {
+      "eyebrow": "FEATURED · THIS WEEK",
+      "title": "Must-see",
+      "viewAll": "View all →"
+    },
+    "upcoming": {
+      "eyebrow": "THE AGENDA",
+      "title": "Upcoming weeks",
+      "filterAll": "All"
+    },
+    "artists": {
+      "eyebrow": "NEW VOICES",
+      "title": "Artists to follow",
+      "viewAll": "View all →"
+    },
+    "cta": {
+      "eyebrow": "FOR ARTISTS AND PROMOTERS",
+      "title": "Play Latin music? Join la huella.",
+      "button": "For artists"
+    }
   },
   "apply": {
     "badge": "For artists & organizers",

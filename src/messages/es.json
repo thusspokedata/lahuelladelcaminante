@@ -12,21 +12,42 @@
     "languageSwitcherLabel": "Selector de idioma"
   },
   "home": {
-    "badge": "Berlín · Música Latina",
-    "tagline": "La escena musical latinoamericana en Berlín, Múnich, Hamburgo y más ciudades alemanas.",
-    "viewEvents": "Ver eventos",
-    "upcomingSection": "Próximos eventos",
-    "viewAll": "Ver todos →",
-    "noEventsYet": "Próximamente los primeros eventos",
-    "upcomingArtistsLabel": "En vivo pronto",
-    "upcomingArtistsTitle": "Artistas por venir",
-    "pastArtistsLabel": "Ya pasaron por aquí",
-    "pastArtistsTitle": "Artistas que dejaron su huella",
-    "exploreGenre": "Explora por género",
-    "ctaLabel": "Para artistas y organizadores",
-    "ctaTitle": "¿Querés subir tus eventos?",
-    "ctaBody": "Publicá tus shows, conciertos y eventos en la plataforma de referencia para la música latina en Alemania.",
-    "ctaButton": "Solicitar acceso"
+    "hero": {
+      "eyebrow": "EN VIVO · MÚSICA LATINA · ALEMANIA",
+      "thisWeekPrefix": "La huella",
+      "thisWeekHighlight": "de esta semana",
+      "nextMonthPrefix": "La huella",
+      "nextMonthHighlight": "del mes que viene",
+      "whatComesPrefix": "La huella,",
+      "whatComesHighlight": "lo que viene",
+      "tagline": "Lo que está sonando en Berlín, Múnich y Hamburgo. Curado por la escena, hecho por uno de ustedes."
+    },
+    "stats": {
+      "shows": "shows próximos",
+      "artists": "artistas",
+      "cities": "ciudades",
+      "dateRange": "rango"
+    },
+    "featured": {
+      "eyebrow": "DESTACADOS · ESTA AGENDA",
+      "title": "Imperdibles",
+      "viewAll": "Ver todo →"
+    },
+    "upcoming": {
+      "eyebrow": "LA AGENDA",
+      "title": "Próximas semanas",
+      "filterAll": "Todos"
+    },
+    "artists": {
+      "eyebrow": "GENTE NUEVA",
+      "title": "Artistas a seguir",
+      "viewAll": "Ver todo →"
+    },
+    "cta": {
+      "eyebrow": "PARA ARTISTAS Y ORGANIZADORES",
+      "title": "¿Tocás música latina? Sumate a la huella.",
+      "button": "Para artistas"
+    }
   },
   "apply": {
     "badge": "Para artistas y organizadores",
