@@ -1,5 +1,6 @@
 import "server-only"
 
+import { cache } from "react"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -23,9 +24,23 @@ export function isCreatorOrAdmin(role?: string | null) {
   return r === "admin" || r === "creator"
 }
 
-export async function getSession() {
+/**
+ * `getSession` y `getUserProfile` están wrappeados con `React.cache()`
+ * para dedupe request-scoped: las rutas del dashboard pegan a la cadena
+ * `(protected)/layout → dashboard/layout → page`, cada uno llamando a
+ * `requireActive` que a su vez llama a estos dos. Sin el dedupe sería
+ * 3× session lookup + 3× profile query por request. `cache()` hace que
+ * la segunda y tercera llamada con los mismos args reusen el resultado.
+ * No afecta semántica de redirects — esos siguen evaluándose en cada
+ * caller, solo se reusa la data fetcheada.
+ */
+export const getSession = cache(async () => {
   return auth.api.getSession({ headers: await headers() })
-}
+})
+
+const getUserProfile = cache(async (userId: string) => {
+  return prisma.userProfile.findUnique({ where: { userId } })
+})
 
 export async function getCurrentUser() {
   const session = await getSession()
@@ -40,9 +55,7 @@ export async function requireAuth(locale = "es") {
 
 export async function requireActive(locale = "es") {
   const user = await requireAuth(locale)
-  const profile = await prisma.userProfile.findUnique({
-    where: { userId: user.id },
-  })
+  const profile = await getUserProfile(user.id)
   if (profile?.status === "PENDING") redirect(`/${locale}/user-pending`)
   if (profile?.status === "BLOCKED") redirect(`/${locale}/user-blocked`)
   return { user, profile }

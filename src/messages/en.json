@@ -143,6 +143,122 @@
     "noArtistsYet": "No artists yet.",
     "noEventsYet": "No events yet.",
     "noPermission": "You don't have artist permissions.",
+    "shell": {
+      "role": { "creator": "CREATOR", "admin": "ADMIN" },
+      "greeting": "Hi, {name}",
+      "greetingFallback": "Dashboard",
+      "backToPublic": "← Back to public site",
+      "nav": {
+        "creator": {
+          "dashboard": "My dashboard",
+          "events": "My events",
+          "artists": "My artists",
+          "profile": "My profile"
+        },
+        "admin": {
+          "applications": "Applications",
+          "users": "Users",
+          "events": "Events"
+        }
+      },
+      "mobileTabs": {
+        "dashboard": "Home",
+        "events": "Events",
+        "artists": "Artists",
+        "profile": "Profile",
+        "ariaLabel": "Dashboard navigation"
+      }
+    },
+    "welcome": {
+      "eyebrow": "Welcome to La Huella",
+      "title": "Three steps to get your music out there.",
+      "body": "Your account was approved — welcome to la huella. We'll walk you through publishing your first event."
+    },
+    "steps": {
+      "pending": "Pending",
+      "done": "Done",
+      "profile": {
+        "title": "Create your artist profile",
+        "body": "Photo, bio, links to Instagram, Spotify. It's the page that shows up when someone clicks your event.",
+        "cta": "Create profile"
+      },
+      "event": {
+        "title": "Publish your first event",
+        "body": "Upload your Instagram flyer (1:1 or 4:5), find a venue, add a date, pick a genre.",
+        "cta": "Create event"
+      },
+      "share": {
+        "title": "Share your link",
+        "body": "Your event is live at lahuelladelcaminante.de/events. Paste it in your stories, groups, anywhere.",
+        "cta": "See example"
+      }
+    },
+    "help": {
+      "eyebrow": "HELP",
+      "body": "How do I write a good description? · Recommended image sizes · Need help?",
+      "guideLink": "Read the guide"
+    },
+    "overview": {
+      "eyebrow": "My dashboard",
+      "title": "Your activity",
+      "subtitleUpcoming": "Upcoming",
+      "subtitleTotal": "Total",
+      "myEventsTitle": "My upcoming events",
+      "myArtistsTitle": "My artists",
+      "viewAllEvents": "View all events",
+      "viewAllArtists": "View all artists"
+    },
+    "events": {
+      "eyebrow": "My events",
+      "title": "My events",
+      "countUpcoming": "upcoming",
+      "countTotal": "total",
+      "tabs": {
+        "upcoming": "Upcoming",
+        "drafts": "Drafts",
+        "past": "Past",
+        "all": "All"
+      },
+      "empty": {
+        "upcoming": "No upcoming events. Publish one when you have a date.",
+        "drafts": "No drafts yet.",
+        "past": "No past events published.",
+        "all": "You haven't created any events yet."
+      },
+      "action": { "new": "+ New event" },
+      "status": {
+        "published": "Published",
+        "draft": "Draft",
+        "past": "Past"
+      },
+      "row": {
+        "actions": {
+          "openMenu": "More actions",
+          "edit": "Edit",
+          "duplicate": "Duplicate (soon)",
+          "restore": "Restore (soon)",
+          "delete": "Delete",
+          "shareLink": "Copy public link",
+          "shareCopied": "Link copied to clipboard",
+          "shareFailed": "Couldn't copy the link"
+        }
+      }
+    },
+    "artists": {
+      "eyebrow": "My artists",
+      "title": "My artists",
+      "count": "{count, plural, =0 {no active artists} one {# active artist} other {# active artists}}",
+      "empty": "You haven't created any artists yet.",
+      "emptyCta": "Create your first artist",
+      "action": { "new": "+ New artist" },
+      "card": {
+        "actions": {
+          "edit": "Edit",
+          "viewPublic": "View public profile",
+          "delete": "Delete"
+        }
+      }
+    },
     "profile": "My Profile",
     "profileName": "Name",
     "profileEmail": "Email",

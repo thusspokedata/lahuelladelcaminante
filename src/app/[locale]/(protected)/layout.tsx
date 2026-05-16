@@ -1,8 +1,18 @@
 import { requireActive } from "@/services/auth"
-import { DashboardNav } from "@/components/dashboard/DashboardNav"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 
+/**
+ * Layout del segmento `(protected)`. Solo provee:
+ *  - Verificación de auth + estado activo (redirige a /sign-in o /user-pending
+ *    si no corresponde).
+ *  - Header + Footer comunes.
+ *
+ * El sidebar / shell del dashboard lo provee `(protected)/dashboard/layout.tsx`
+ * via `DashboardShell` (creado en el rediseño del dashboard). No se envuelve
+ * children con sidebar acá porque hoy `(protected)` solo contiene `dashboard`
+ * y todo el contenido vive bajo ese shell.
+ */
 export default async function ProtectedLayout({
   children,
   params,
@@ -11,17 +21,12 @@ export default async function ProtectedLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const { user } = await requireActive(locale)
+  await requireActive(locale)
 
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex gap-8 flex-1">
-        <aside className="w-52 flex-shrink-0 hidden md:block">
-          <DashboardNav role={user.role ?? "user"} />
-        </aside>
-        <main className="flex-1 min-w-0">{children}</main>
-      </div>
+      {children}
       <Footer />
     </>
   )

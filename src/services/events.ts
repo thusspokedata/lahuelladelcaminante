@@ -551,6 +551,90 @@ export async function getEventsByUser(userId: string): Promise<EventSummary[]> {
   return events.map(mapToSummary)
 }
 
+/**
+ * Eventos del creator agrupados por estado para el listado del dashboard
+ * con tabs (Próximos / Borradores / Pasados / Todos).
+ *
+ *  - `upcoming`: activos, con al menos una fecha futura. Ordenados por la
+ *                próxima fecha (ascendente) igual que `getUpcomingEventsWithin`
+ *                para que el `EventRow` muestre la próxima cronología real.
+ *  - `drafts`:   `isActive: false` (despublicados) **o** evento activo sin
+ *                ninguna fecha cargada. Sin fechas es un evento a medio
+ *                completar — lo tratamos como borrador hasta que tenga
+ *                fecha, así no aparece zombi en "Pasados".
+ *  - `past`:     activos, todas las fechas ya pasaron.
+ *  - `all`:      todos los no borrados, sin importar estado.
+ *
+ * Todos los buckets excluyen soft-deleted. Una sola query a Prisma — el
+ * agrupado se hace en memoria. Para el volumen de eventos por creator
+ * (decenas, no miles) es óptimo: evitamos 4 round-trips y mantenemos
+ * consistencia entre tabs (no hay drift entre "se borró acá pero sigue
+ * en otra tab").
+ *
+ * **No se cachea con `unstable_cache`** (a diferencia del resto del
+ * archivo): scope per-user, mutación frecuente desde la propia UI
+ * (crear/editar/borrar desde el mismo dashboard), y la cache key tendría
+ * que incluir `userId` lo que invalida cualquier beneficio. Confiamos en
+ * la dedupe request-scoped del page render.
+ */
+export interface EventsByUserGrouped {
+  upcoming: EventSummary[]
+  drafts: EventSummary[]
+  past: EventSummary[]
+  all: EventSummary[]
+}
+
+export async function getEventsByUserGrouped(
+  userId: string
+): Promise<EventsByUserGrouped> {
+  const events = await prisma.event.findMany({
+    where: { createdById: userId, isDeleted: false },
+    include: eventInclude,
+    orderBy: { createdAt: "desc" },
+  })
+  const now = new Date()
+
+  // Agrupamos sobre el array Prisma para tener acceso a `isActive` (no
+  // expuesto en `EventSummary`). `event.dates` viene ordenado asc por
+  // `eventInclude`. Para distinguir upcoming/past comparamos la **última**
+  // fecha: si la última ya pasó, el evento entero es pasado; si hay al
+  // menos una futura, es upcoming. Evita duplicación entre buckets.
+  const upcoming: EventSummary[] = []
+  const drafts: EventSummary[] = []
+  const past: EventSummary[] = []
+  const all: EventSummary[] = []
+  for (const raw of events) {
+    const summary = mapToSummary(raw)
+    all.push(summary)
+    // Borrador o evento sin fecha → drafts (ver docstring).
+    if (!raw.isActive || summary.dates.length === 0) {
+      drafts.push(summary)
+      continue
+    }
+    const lastDate = summary.dates[summary.dates.length - 1]
+    if (lastDate && lastDate >= now) {
+      // En upcoming filtramos las fechas a solo las futuras, para que el
+      // `EventRow` muestre la próxima cronológica real (`dates[0]`) en su
+      // `DateTile`. Sin este filtro, un evento con varias funciones (una
+      // pasada + una futura) mostraría la pasada porque `dates` viene
+      // ordenado asc desde el include.
+      upcoming.push({
+        ...summary,
+        dates: summary.dates.filter((d) => d >= now),
+      })
+    } else {
+      past.push(summary)
+    }
+  }
+
+  return {
+    upcoming: sortByNextDate(upcoming),
+    drafts,
+    past,
+    all,
+  }
+}
+
 export async function getDeletedEvents(): Promise<EventSummary[]> {
   const events = await prisma.event.findMany({
     where: { isDeleted: true },

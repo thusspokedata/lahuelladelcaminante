@@ -5,161 +5,202 @@
  * (fucsia) para creators y `brand` (sangre) para admins. Es el principal
  * recurso visual que diferencia los dos paneles sin agregar más cromo.
  *
- * En v1 implementamos SOLO la versión desktop (sidebar fija a la izquierda).
- * El comportamiento responsive en mobile (tab bar inferior + drawer
- * accesible desde un hamburger en el header) se implementa en el PR de
- * integración del dashboard, cuando ya tengamos el contenido real adentro.
- * Por eso este componente es server: no necesita estado para desktop.
+ * En desktop (`md:` arriba): sidebar fija 240px a la izquierda + main.
+ * En mobile (debajo de `md`): tab bar fija al pie del viewport con los
+ * items del role. Sidebar y tab bar derivan de la misma fuente
+ * (`getDashboardNavItems`) para evitar drift — si se agrega un item al
+ * sidebar, aparece también en mobile sin tocar dos lugares.
  *
- * Para preparar ese split futuro, las constantes de estilo del item de nav
- * (`navItemClass`/`navItemActiveClass`) y la lista por defecto
- * (`defaultDashboardNavItems`) se exportan: el `MobileDrawer` client que
- * se sume después puede reusarlas sin duplicar Tailwind.
+ * Highlight de active route lo derivan sub-componentes client
+ * (`DashboardSidebarNav` y `DashboardMobileTabs`) usando `usePathname`,
+ * para que el shell siga siendo server async sin middleware extra.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.1.
  */
 
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import { cn } from "@/lib/utils"
+import DashboardSidebarNav, {
+  type DashboardSidebarNavItem,
+} from "./DashboardSidebarNav"
+import DashboardMobileTabs, {
+  type DashboardMobileTabItem,
+} from "./DashboardMobileTabs"
+import type { DashboardRole } from "./shell-constants"
 
-export type DashboardRole = "creator" | "admin"
-
-export interface DashboardNavItem {
-  label: string
-  href: string
-}
+export type { DashboardRole } from "./shell-constants"
 
 export interface DashboardShellProps {
   children: React.ReactNode
   userRole: DashboardRole
   userName?: string
-  /** Ruta activa para resaltar el item correspondiente (match exacto). */
-  activeRoute?: string
-  /** Locale usado para construir las rutas por defecto. NO se usa para
-   * traducir labels — los labels son strings hardcoded por ahora; cuando
-   * se integre con i18n el caller debe armar `navItems` con
-   * `useTranslations` y pasarlos. Default `"es"`. */
-  pathLocale?: string
-  /** Sobreescribir los items por defecto (los del rol). Útil para testing
-   * o pantallas que necesiten una nav reducida. */
-  navItems?: DashboardNavItem[]
+  /** Locale del request — usado para `getTranslations`. */
+  pathLocale: string
+  /** Sobreescribir los items por defecto del sidebar. Útil para testing. */
+  sidebarItems?: DashboardSidebarNavItem[]
   className?: string
 }
 
 const ACCENT_BY_ROLE: Record<
   DashboardRole,
-  { border: string; text: string; greeting: string; label: string }
+  { border: string; text: string; greeting: string; labelKey: "creator" | "admin" }
 > = {
   creator: {
     border: "border-l-creator",
     text: "text-creator",
     greeting: "text-creator",
-    label: "CREATOR",
+    labelKey: "creator",
   },
   admin: {
     border: "border-l-brand",
     text: "text-brand",
     greeting: "text-brand",
-    label: "ADMIN",
+    labelKey: "admin",
   },
 }
 
-/** Items por defecto por rol. Strings hardcoded en español por ahora —
- * cuando se integre i18n en el PR siguiente, el caller arma esta lista con
- * `useTranslations` y la pasa via prop `navItems`. */
-export function defaultDashboardNavItems(
+// `navItemClass` y `navItemActiveClass` ahora viven en `shell-constants.ts`
+// (módulo neutro, sin "use client" ni "server-only") para que el sidebar nav
+// client las pueda importar sin cruzar boundary RSC.
+
+/**
+ * Fuente única de los items de navegación por rol. El sidebar desktop
+ * usa `label + href`; el tab bar mobile suma `Icon` (mismas claves). Si
+ * el sidebar y el tab bar tuvieran fuentes separadas, agregar un item en
+ * uno y olvidar el otro generaría drift silencioso entre los dos
+ * viewports.
+ *
+ * Los labels del sidebar usan el namespace `dashboard.shell.nav.<role>.*`
+ * (formato largo: "Mis eventos"); los del mobile usan
+ * `dashboard.shell.mobileTabs.*` (formato corto: "Eventos") porque en
+ * mobile el espacio horizontal pide compactación.
+ */
+async function getDashboardNavItems(
   role: DashboardRole,
   pathLocale: string
-): DashboardNavItem[] {
-  const base = `/${pathLocale}`
+): Promise<DashboardMobileTabItem[]> {
+  const tSidebar = await getTranslations({
+    locale: pathLocale,
+    namespace: "dashboard.shell.nav",
+  })
+  const tMobile = await getTranslations({
+    locale: pathLocale,
+    namespace: "dashboard.shell.mobileTabs",
+  })
+
   if (role === "creator") {
     return [
-      { label: "Mi panel", href: `${base}/dashboard` },
-      { label: "Mis eventos", href: `${base}/dashboard/events` },
-      { label: "Mis artistas", href: `${base}/dashboard/artists` },
-      { label: "Mi perfil", href: `${base}/dashboard/profile` },
+      { label: tSidebar("creator.dashboard"), shortLabel: tMobile("dashboard"), href: "/dashboard", iconKey: "home" },
+      { label: tSidebar("creator.events"), shortLabel: tMobile("events"), href: "/dashboard/events", iconKey: "calendar" },
+      { label: tSidebar("creator.artists"), shortLabel: tMobile("artists"), href: "/dashboard/artists", iconKey: "users" },
+      { label: tSidebar("creator.profile"), shortLabel: tMobile("profile"), href: "/dashboard/profile", iconKey: "user" },
     ]
   }
+
+  // Admin no tiene `profile` separado (no existe /admin/profile). El
+  // shortLabel cae al `label` largo para mantener la simetría — el tab
+  // bar mobile admin acepta strings un poco más largos porque son 3 (no 4).
   return [
-    { label: "Aplicaciones", href: `${base}/admin/applications` },
-    { label: "Usuarios", href: `${base}/admin/users` },
-    { label: "Eventos", href: `${base}/admin/events` },
+    {
+      label: tSidebar("admin.applications"),
+      shortLabel: tSidebar("admin.applications"),
+      href: "/admin/applications",
+      iconKey: "clipboardList",
+    },
+    {
+      label: tSidebar("admin.users"),
+      shortLabel: tSidebar("admin.users"),
+      href: "/admin/users",
+      iconKey: "userCog",
+    },
+    {
+      label: tSidebar("admin.events"),
+      shortLabel: tSidebar("admin.events"),
+      href: "/admin/events",
+      iconKey: "calendar",
+    },
   ]
 }
 
-/** Clases base del item de nav del sidebar. Reusable desde el futuro
- * `MobileDrawer` para mantener el look consistente. */
-export const navItemClass =
-  "text-body-s rounded-r-m border-l-2 px-m py-s transition-colors " +
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand " +
-  "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
-
-/** Clases que se suman cuando el item está activo (role-aware via
- * `accent.border` + `accent.text`). */
-export const navItemActiveClass = "bg-bg-surface-2 font-semibold"
-
-export default function DashboardShell({
+export default async function DashboardShell({
   children,
   userRole,
   userName,
-  activeRoute,
-  pathLocale = "es",
-  navItems,
+  pathLocale,
+  sidebarItems,
   className,
 }: DashboardShellProps) {
   const accent = ACCENT_BY_ROLE[userRole]
-  const items = navItems ?? defaultDashboardNavItems(userRole, pathLocale)
-  const greeting = userName ? `Hola, ${userName}` : "Panel"
-  const publicHref = `/${pathLocale}`
+  const tShell = await getTranslations({
+    locale: pathLocale,
+    namespace: "dashboard.shell",
+  })
+
+  const navItems = await getDashboardNavItems(userRole, pathLocale)
+
+  // El sidebar acepta items sin `Icon` ni `shortLabel`. Si el caller
+  // pasa `sidebarItems` (override de testing/pantalla acotada), gana.
+  const sidebar: DashboardSidebarNavItem[] =
+    sidebarItems ?? navItems.map(({ label, href }) => ({ label, href }))
+
+  const greeting = userName
+    ? tShell("greeting", { name: userName })
+    : tShell("greetingFallback")
+  const roleLabel = tShell(`role.${accent.labelKey}`)
+  const backLabel = tShell("backToPublic")
+  const mobileTabsAriaLabel = tShell("mobileTabs.ariaLabel")
 
   return (
     <div className={cn("flex flex-1 min-h-0", className)}>
-      {/* Sidebar (desktop). En mobile queda fuera de viewport por ahora —
-          la nav inferior + drawer se agregan en el PR de integración. */}
+      {/* Sidebar desktop. */}
       <aside className="hidden md:flex md:w-[240px] md:flex-col md:border-r md:border-border md:bg-bg-surface md:py-l md:px-m">
         <div className="px-m mb-l">
           <p className={cn("text-eyebrow font-mono mb-xs", accent.greeting)}>
-            {accent.label}
+            {roleLabel}
           </p>
           <p className="text-body-l font-display font-semibold text-fg-primary">
             {greeting}
           </p>
         </div>
 
-        <nav className="flex flex-col gap-xs">
-          {items.map((item) => {
-            const isActive = activeRoute === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={cn(
-                  navItemClass,
-                  isActive
-                    ? cn(navItemActiveClass, accent.border, accent.text)
-                    : "border-l-transparent text-fg-secondary hover:bg-bg-surface-2 hover:text-fg-primary"
-                )}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
+        <DashboardSidebarNav
+          items={sidebar}
+          accentBorderClass={accent.border}
+          accentTextClass={accent.text}
+          role={userRole}
+        />
 
         <div className="mt-auto pt-l">
           <Link
-            href={publicHref}
+            href="/"
             className="text-caption font-mono text-fg-tertiary hover:text-fg-primary transition-colors"
           >
-            ← Volver al sitio público
+            {backLabel}
           </Link>
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 px-m py-l md:px-l md:py-xl">
+      {/* Main. En mobile dejamos espacio para el tab bar fijo (h≈64px
+          + safe-area inset bottom). En desktop no hace falta. */}
+      <main
+        className={cn(
+          "flex-1 min-w-0 px-m py-l md:px-l md:py-xl",
+          "pb-[calc(env(safe-area-inset-bottom)+80px)] md:pb-xl"
+        )}
+      >
         {children}
       </main>
+
+      {/* Tab bar mobile: ambos roles ahora. Antes era creator-only;
+          se unificó tras el feedback de CR — admin también necesita
+          poder navegar en mobile, y derivar de la misma fuente
+          (`navItems`) que el sidebar evita drift. */}
+      <DashboardMobileTabs
+        tabs={navItems}
+        ariaLabel={mobileTabsAriaLabel}
+        accent={userRole}
+      />
     </div>
   )
 }
