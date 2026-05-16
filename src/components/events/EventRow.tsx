@@ -85,4 +85,3 @@ export async function EventRow({ event, locale }: EventRowProps) {
   )
 }
 
-export default EventRow

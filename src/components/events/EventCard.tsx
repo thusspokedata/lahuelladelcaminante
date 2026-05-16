@@ -149,7 +149,3 @@ function formatEyebrow(
   return time ? `${label} · ${time}` : label
 }
 
-// Mantiene compat con consumidores que importan `{ EventCard }` (named) y
-// otros que prefieran default export. La card ya estaba exportada como
-// named; los nuevos consumidores pueden importar via default.
-export default EventCard

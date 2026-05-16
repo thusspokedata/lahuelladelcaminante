@@ -12,21 +12,6 @@
     "languageSwitcherLabel": "Sprachauswahl"
   },
   "home": {
-    "badge": "Berlin · Lateinamerikanische Musik",
-    "tagline": "Die lateinamerikanische Musikszene in Berlin, München, Hamburg und weiteren deutschen Städten.",
-    "viewEvents": "Veranstaltungen",
-    "upcomingSection": "Kommende Veranstaltungen",
-    "viewAll": "Alle anzeigen →",
-    "noEventsYet": "Erste Veranstaltungen kommen bald",
-    "upcomingArtistsLabel": "Bald live",
-    "upcomingArtistsTitle": "Kommende Künstler",
-    "pastArtistsLabel": "Waren schon hier",
-    "pastArtistsTitle": "Künstler, die ihre Spuren hinterlassen haben",
-    "exploreGenre": "Nach Genre erkunden",
-    "ctaLabel": "Für Künstler & Veranstalter",
-    "ctaTitle": "Möchtest du deine Events veröffentlichen?",
-    "ctaBody": "Veröffentliche deine Shows, Konzerte und Events auf der Referenzplattform für lateinamerikanische Musik in Deutschland.",
-    "ctaButton": "Zugang beantragen",
     "hero": {
       "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · DEUTSCHLAND",
       "thisWeekPrefix": "Die huella",

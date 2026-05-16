@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import {
   getFeaturedEvents,
-  getUpcomingEvents,
+  getHeroVariant,
   getUpcomingEventsWithin,
   getUpcomingStats,
   getActiveGenres,
@@ -17,6 +17,12 @@ import { EventRow } from "@/components/events/EventRow"
 import { ArtistCard } from "@/components/artists/ArtistCard"
 import Eyebrow from "@/components/ui/Eyebrow"
 import SectionHeader from "@/components/ui/SectionHeader"
+import {
+  CHIP_ACTIVE_BG,
+  CHIP_BASE,
+  CHIP_IDLE_BG,
+  CHIP_SIZE,
+} from "@/components/ui/chip-styles"
 
 const SECTION_GAP_CLASS = "py-3xl"
 const CONTAINER_STYLE = {
@@ -31,34 +37,26 @@ export default async function HomePage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const tHome = await getTranslations({ locale, namespace: "home" })
 
   const [
-    upcomingThisWeek,
-    upcomingThisMonth,
+    heroVariant,
     featuredEvents,
-    upcomingAll,
+    upcomingAgenda,
     activeArtists,
     activeGenres,
     stats,
     user,
   ] = await Promise.all([
-    getUpcomingEventsWithin(7, 1),
-    getUpcomingEventsWithin(30, 1),
+    getHeroVariant(),
     getFeaturedEvents(3),
-    getUpcomingEvents(),
+    // Próximos 10 dentro del próximo año, suficiente para la agenda
+    // compacta de la home sin traer toda la lista futura.
+    getUpcomingEventsWithin(365, 10),
     getActiveArtists(8),
     getActiveGenres(),
     getUpcomingStats(),
     getCurrentUser(),
   ])
-
-  const heroVariant: "thisWeek" | "nextMonth" | "whatComes" =
-    upcomingThisWeek.length > 0
-      ? "thisWeek"
-      : upcomingThisMonth.length > 0
-        ? "nextMonth"
-        : "whatComes"
 
   return (
     <div>
@@ -70,9 +68,9 @@ export default async function HomePage({
         <FeaturedSection events={featuredEvents} locale={locale} />
       ) : null}
 
-      {upcomingAll.length > 0 ? (
+      {upcomingAgenda.length > 0 ? (
         <AgendaSection
-          events={upcomingAll.slice(0, 10)}
+          events={upcomingAgenda}
           genres={activeGenres}
           locale={locale}
         />
@@ -83,8 +81,6 @@ export default async function HomePage({
       ) : null}
 
       {!user ? <CtaSection /> : null}
-
-      <p className="sr-only">{tHome("badge")}</p>
     </div>
   )
 }
@@ -234,13 +230,12 @@ async function AgendaSection({ events, genres, locale }: AgendaSectionProps) {
           title={t("title")}
           action={
             <div className="flex gap-s overflow-x-auto scrollbar-none -mx-m px-m">
-              <FilterChip
-                href="/events"
-                label={t("filterAll")}
-                active
-              />
+              {/* Atajos de filtro a /events — ninguno representa estado
+                  activo en la home (no hay filtro local). El primero
+                  ("Todos") va sin querystring; el resto pasan genre. */}
+              <FilterShortcut href="/events" label={t("filterAll")} highlight />
               {genreChips.map((g) => (
-                <FilterChip
+                <FilterShortcut
                   key={g}
                   href={`/events?genre=${encodeURIComponent(g)}`}
                   label={g}
@@ -259,22 +254,28 @@ async function AgendaSection({ events, genres, locale }: AgendaSectionProps) {
   )
 }
 
-interface FilterChipProps {
+interface FilterShortcutProps {
   href: string
   label: string
-  active?: boolean
+  /** El primer atajo ("Todos") se renderiza un poco más fuerte para
+   * hacer evidente que es la opción default — pero NO con estado
+   * `active` (en la home no hay filtro real, todos son links a /events). */
+  highlight?: boolean
 }
 
-function FilterChip({ href, label, active = false }: FilterChipProps) {
+function FilterShortcut({ href, label, highlight = false }: FilterShortcutProps) {
   return (
     <Link
       href={href}
       className={cn(
-        "shrink-0 inline-flex items-center rounded-pill border px-m py-xs",
-        "text-body-s font-medium transition-colors duration-200 ease-out",
-        active
-          ? "bg-fg-primary text-bg-page border-fg-primary"
-          : "bg-bg-surface-2 text-fg-secondary border-border hover:bg-bg-surface-3 hover:text-fg-primary"
+        "shrink-0 transition-colors duration-200 ease-out",
+        CHIP_BASE,
+        CHIP_SIZE.m,
+        highlight
+          ? CHIP_ACTIVE_BG.neutral
+          : `${CHIP_IDLE_BG} hover:bg-bg-surface-3 hover:text-fg-primary`,
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+        "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
       )}
     >
       {label}

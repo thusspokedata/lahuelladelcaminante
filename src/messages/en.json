@@ -12,21 +12,6 @@
     "languageSwitcherLabel": "Language switcher"
   },
   "home": {
-    "badge": "Berlin · Latin Music",
-    "tagline": "The Latin American music scene in Berlin, Munich, Hamburg and more German cities.",
-    "viewEvents": "View events",
-    "upcomingSection": "Upcoming events",
-    "viewAll": "View all →",
-    "noEventsYet": "First events coming soon",
-    "upcomingArtistsLabel": "Coming live soon",
-    "upcomingArtistsTitle": "Upcoming artists",
-    "pastArtistsLabel": "Already came by",
-    "pastArtistsTitle": "Artists who left their mark",
-    "exploreGenre": "Explore by genre",
-    "ctaLabel": "For artists & organizers",
-    "ctaTitle": "Want to post your events?",
-    "ctaBody": "Publish your shows, concerts and events on the go-to platform for Latin music in Germany.",
-    "ctaButton": "Request access",
     "hero": {
       "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
       "thisWeekPrefix": "This week's",

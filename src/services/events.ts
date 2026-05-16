@@ -103,9 +103,43 @@ const eventInclude = {
 }
 
 /**
+ * Decide cuál variante de copy mostrar en el hero de la home, en una sola
+ * query liviana (sin includes pesados). Resuelve la cascada:
+ *  - hay shows en los próximos 7 días        → `"thisWeek"`
+ *  - hay shows en los próximos 30 días       → `"nextMonth"`
+ *  - no hay shows próximos                   → `"whatComes"`
+ */
+export const getHeroVariant = unstable_cache(
+  async (): Promise<"thisWeek" | "nextMonth" | "whatComes"> => {
+    const now = new Date()
+    const in7 = new Date(now)
+    in7.setDate(in7.getDate() + 7)
+    const in30 = new Date(now)
+    in30.setDate(in30.getDate() + 30)
+
+    // Una sola query: trae la próxima fecha de evento activo no borrado
+    // y decidimos contra los umbrales en memoria. `select: { date: true }`
+    // mantiene el payload mínimo.
+    const nextDate = await prisma.eventDate.findFirst({
+      where: {
+        date: { gte: now, lte: in30 },
+        event: { isDeleted: false, isActive: true },
+      },
+      orderBy: { date: "asc" },
+      select: { date: true },
+    })
+
+    if (!nextDate) return "whatComes"
+    return nextDate.date <= in7 ? "thisWeek" : "nextMonth"
+  },
+  ["hero-variant"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+/**
  * Eventos activos cuya próxima fecha cae dentro de los próximos `days` días.
- * Usado por la home para decidir el copy del hero (esta semana / mes que
- * viene / lo que viene) sin traer toda la agenda al cliente.
+ * Usado por la home para llenar las listas (agenda compacta) con un set
+ * acotado en lugar de toda la agenda futura.
  */
 export const getUpcomingEventsWithin = unstable_cache(
   async (days: number, limit?: number): Promise<EventSummary[]> => {

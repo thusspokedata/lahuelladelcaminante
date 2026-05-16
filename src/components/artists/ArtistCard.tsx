@@ -59,12 +59,15 @@ export function ArtistCard({ artist, showsCount }: ArtistCardProps) {
       )}
     >
       <div className="relative">
+        {/* Las iniciales del fallback se derivan del `alt` (que ya es el
+            nombre del artista cuando no hay `coverImageAlt`). No duplicamos
+            la lógica de iniciales en este componente — FlyerImage la
+            resuelve via su helper interno `deriveInitials`. */}
         <FlyerImage
           publicId={artist.coverImagePublicId ?? undefined}
           src={artist.coverImage ?? undefined}
           alt={artist.coverImageAlt ?? artist.name}
           aspectRatio="1:1"
-          fallbackInitials={initialsOf(artist.name)}
           fallbackAccent={fallbackAccent}
         />
 
@@ -108,14 +111,3 @@ export function ArtistCard({ artist, showsCount }: ArtistCardProps) {
   )
 }
 
-function initialsOf(name: string): string {
-  const parts = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-  if (parts.length === 0) return name.slice(0, 2).toUpperCase()
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-}
-
-export default ArtistCard
