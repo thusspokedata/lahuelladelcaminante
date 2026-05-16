@@ -4,7 +4,12 @@
     "artists": "Künstler",
     "dashboard": "Dashboard",
     "signIn": "Anmelden",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "thisWeek": "Diese Woche",
+    "forArtists": "Für Künstler",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "languageSwitcherLabel": "Sprachauswahl"
   },
   "home": {
     "badge": "Berlin · Lateinamerikanische Musik",
@@ -168,11 +173,15 @@
     "createEvent": "Veranstaltung erstellen"
   },
   "footer": {
-    "tagline": "Lateinamerikanische Musik · Berlin",
-    "events": "Veranstaltungen",
-    "artists": "Künstler",
-    "login": "Anmelden",
-    "copyright": "© {year} La Huella del Caminante. Gemacht mit ♥ in Berlin von Thusspokedata"
+    "tagline": "Lebendige lateinamerikanische Musik in Deutschland. Aus Berlin.",
+    "copyright": "© {year} La Huella del Caminante. Gemacht mit ♥ in Berlin von Thusspokedata",
+    "explore": "Entdecken",
+    "forYou": "Für dich",
+    "community": "Community",
+    "apply": "Bewerben",
+    "newsletter": "Newsletter",
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
   },
   "status": {
     "pending": "Ausstehend",

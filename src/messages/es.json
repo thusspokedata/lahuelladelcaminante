@@ -4,7 +4,12 @@
     "artists": "Artistas",
     "dashboard": "Panel",
     "signIn": "Iniciar sesión",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "thisWeek": "Esta semana",
+    "forArtists": "Para artistas",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "languageSwitcherLabel": "Selector de idioma"
   },
   "home": {
     "badge": "Berlín · Música Latina",
@@ -168,11 +173,15 @@
     "createEvent": "Crear Evento"
   },
   "footer": {
-    "tagline": "Música Latinoamericana · Berlín",
-    "events": "Eventos",
-    "artists": "Artistas",
-    "login": "Acceder",
-    "copyright": "© {year} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata"
+    "tagline": "Música latina viva en Alemania. Hecha en Berlín.",
+    "copyright": "© {year} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata",
+    "explore": "Explorar",
+    "forYou": "Para vos",
+    "community": "Comunidad",
+    "apply": "Aplicar",
+    "newsletter": "Newsletter",
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
   },
   "status": {
     "pending": "Pendiente",
