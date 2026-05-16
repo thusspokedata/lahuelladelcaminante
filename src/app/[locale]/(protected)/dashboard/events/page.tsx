@@ -1,11 +1,27 @@
+/**
+ * `/dashboard/events` — listado de eventos del creator con tabs por estado.
+ *
+ * 4 tabs: Próximos / Borradores / Pasados / Todos. Cada tab renderiza la
+ * lista de `EventRow` correspondiente (modo dashboard, con dropdown de
+ * acciones). El bucket "Borradores" corresponde a eventos con
+ * `isActive: false` (no publicados / despublicados).
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §4.
+ */
+
 import { getTranslations } from "next-intl/server"
-import { requireActive, isCreatorOrAdmin } from "@/services/auth"
-import { getEventsByUser } from "@/services/events"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { formatDate } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { DashboardEventActions } from "@/components/dashboard/DashboardEventActions"
+import { Link } from "@/i18n/navigation"
+import { requireActive } from "@/services/auth"
+import {
+  getEventsByUserGrouped,
+  type EventSummary,
+} from "@/services/events"
+import Eyebrow from "@/components/ui/Eyebrow"
+import { EventRow } from "@/components/events/EventRow"
+import EventRowActions from "@/components/dashboard/EventRowActions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+type TabKey = "upcoming" | "drafts" | "past" | "all"
 
 export default async function DashboardEventsPage({
   params,
@@ -13,63 +29,115 @@ export default async function DashboardEventsPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "dashboard" })
-  const tCommon = await getTranslations({ locale, namespace: "common" })
-  const tEvents = await getTranslations({ locale, namespace: "events" })
   const { user } = await requireActive(locale)
-  const events = await getEventsByUser(user.id)
+  const grouped = await getEventsByUserGrouped(user.id)
+
+  const t = await getTranslations({ locale, namespace: "dashboard.events" })
+  const tStatus = await getTranslations({
+    locale,
+    namespace: "dashboard.events.status",
+  })
+
+  const tabs: Array<{
+    key: TabKey
+    label: string
+    events: EventSummary[]
+    badge: { label: string; accent: "brand" | "editorial" | "creator" | "neutral" }
+    emptyKey: string
+  }> = [
+    {
+      key: "upcoming",
+      label: t("tabs.upcoming"),
+      events: grouped.upcoming,
+      badge: { label: tStatus("published"), accent: "neutral" },
+      emptyKey: "empty.upcoming",
+    },
+    {
+      key: "drafts",
+      label: t("tabs.drafts"),
+      events: grouped.drafts,
+      badge: { label: tStatus("draft"), accent: "editorial" },
+      emptyKey: "empty.drafts",
+    },
+    {
+      key: "past",
+      label: t("tabs.past"),
+      events: grouped.past,
+      badge: { label: tStatus("past"), accent: "neutral" },
+      emptyKey: "empty.past",
+    },
+    {
+      key: "all",
+      label: t("tabs.all"),
+      events: grouped.all,
+      badge: { label: tStatus("published"), accent: "neutral" },
+      emptyKey: "empty.all",
+    },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Dashboard</p>
-          <h1 className="text-3xl font-black">{t("myEvents")}</h1>
+    <div className="flex flex-col gap-l">
+      <header className="flex flex-col gap-s sm:flex-row sm:items-end sm:justify-between sm:gap-m">
+        <div className="flex flex-col gap-xs">
+          <Eyebrow accent="creator">{t("eyebrow")}</Eyebrow>
+          <h1 className="text-display-m font-display text-fg-primary">
+            {t("title")}
+          </h1>
+          <p className="text-body-s text-fg-secondary">
+            {grouped.upcoming.length} {t("countUpcoming")} ·{" "}
+            {grouped.all.length} {t("countTotal")}
+          </p>
         </div>
-        {isCreatorOrAdmin(user.role) && (
-          <Button asChild size="sm" className="rounded-full px-5">
-            <Link href={`/${locale}/dashboard/events/create`}>{t("createEventBtn")}</Link>
-          </Button>
-        )}
-      </div>
+        <Link
+          href="/dashboard/events/create"
+          className="inline-flex items-center justify-center self-start sm:self-end rounded-pill bg-creator text-on-creator font-semibold px-l py-s text-body-s hover:bg-creator/85 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-creator focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+        >
+          {t("action.new")}
+        </Link>
+      </header>
 
-      {events.length === 0 ? (
-        <div className="text-center py-20 rounded-2xl border-2 border-dashed border-border">
-          <div className="text-5xl mb-4">🎸</div>
-          <p className="text-muted-foreground font-medium">{t("noEventsYet")}</p>
-          {isCreatorOrAdmin(user.role) && (
-            <Button asChild variant="outline" size="sm" className="mt-4 rounded-full">
-              <Link href={`/${locale}/dashboard/events/create`}>{t("createFirstEvent")}</Link>
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {events.map((event) => (
-            <div
-              key={event.id}
-              className="flex items-center justify-between border border-border rounded-xl px-4 py-3.5 bg-card shadow-sm gap-4"
-            >
-              <div className="min-w-0">
-                <p className="font-semibold truncate">{event.title}</p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {event.dates[0] ? formatDate(event.dates[0], locale) : tEvents("noDate")} · {event.location}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {event.genre && <Badge variant="outline" className="hidden sm:inline-flex">{event.genre}</Badge>}
-                <Button variant="ghost" size="sm" asChild className="rounded-full">
-                  <Link href={`/${locale}/events/${event.slug}`}>{tCommon("view")}</Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild className="rounded-full">
-                  <Link href={`/${locale}/dashboard/events/${event.id}/edit`}>{tCommon("edit")}</Link>
-                </Button>
-                <DashboardEventActions eventId={event.id} locale={locale} />
-              </div>
-            </div>
+      <Tabs defaultValue="upcoming" className="flex flex-col gap-m">
+        <TabsList variant="line" className="self-start gap-s overflow-x-auto">
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key}>
+              <span>
+                {tab.label}{" "}
+                <span className="text-fg-tertiary">({tab.events.length})</span>
+              </span>
+            </TabsTrigger>
           ))}
-        </div>
-      )}
+        </TabsList>
+
+        {tabs.map((tab) => (
+          <TabsContent key={tab.key} value={tab.key} className="flex flex-col gap-xs">
+            {tab.events.length === 0 ? (
+              <p className="text-body text-fg-secondary py-l">
+                {t(tab.emptyKey)}
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-xs">
+                {tab.events.map((event) => (
+                  <li key={event.id}>
+                    <EventRow
+                      event={event}
+                      locale={locale}
+                      dashboard
+                      statusBadge={tab.badge}
+                      actions={
+                        <EventRowActions
+                          eventId={event.id}
+                          eventSlug={event.slug}
+                          locale={locale}
+                        />
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   )
 }
