@@ -15,31 +15,34 @@
  *  - `useState` para el drawer mobile.
  *  - El drawer se cierra automáticamente al navegar (cuando cambia el
  *    pathname) — manejado con `useEffect`.
+ *  - Focus management: Escape cierra el drawer y restaura foco al
+ *    hamburger; al abrir, el foco se mueve al primer link del drawer.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §6.
  */
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { useSession, signOut } from "@/lib/auth-client"
-import { useLocale } from "next-intl"
-import { usePathname } from "@/i18n/navigation"
+import { Link, usePathname, useRouter } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import BrandLockup from "@/components/brand/BrandLockup"
 import LanguageSwitcher from "./LanguageSwitcher"
 
 interface NavItem {
   href: string
+  /** `true` si el item linkea a una sección con hash (`#`). Esos no se
+   * pueden marcar activos basándose solo en el pathname — el hash no se
+   * lee en server-side. Hasta tener un detector client-side basado en
+   * `window.location.hash`, los tratamos como "nunca activos por path". */
+  hashOnly?: boolean
   label: string
 }
 
 export function Header() {
   const t = useTranslations("nav")
-  const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
   const { data: session } = useSession()
@@ -53,12 +56,12 @@ export function Header() {
   const navItems: NavItem[] = [
     { href: "/events", label: t("events") },
     { href: "/artists", label: t("artists") },
-    { href: "/events#esta-semana", label: t("thisWeek") },
+    { href: "/events#esta-semana", hashOnly: true, label: t("thisWeek") },
   ]
 
   function handleSignOut() {
     signOut({
-      fetchOptions: { onSuccess: () => router.push(`/${locale}`) },
+      fetchOptions: { onSuccess: () => router.push("/") },
     })
   }
 
@@ -75,17 +78,16 @@ export function Header() {
           paddingRight: "var(--layout-gutter)",
         }}
       >
-        <BrandLockup orientation="horizontal" href={`/${locale}`} />
+        <BrandLockup orientation="horizontal" href="/" />
 
         {/* Nav central — desktop only */}
         <nav className="hidden md:flex items-center gap-l mx-auto">
           {navItems.map((item) => {
-            const localizedHref = `/${locale}${item.href}`
-            const isActive = isNavItemActive(pathname, item.href)
+            const isActive = isNavItemActive(pathname, item)
             return (
               <Link
                 key={item.href}
-                href={localizedHref}
+                href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "text-body-s font-medium pb-[2px] border-b-2 transition-colors duration-200 ease-out",
@@ -105,7 +107,6 @@ export function Header() {
           <LanguageSwitcher />
           <UserSlot
             session={session}
-            locale={locale}
             t={t}
             onSignOut={handleSignOut}
           />
@@ -114,22 +115,11 @@ export function Header() {
         {/* Mobile: switcher compacto + hamburguesa */}
         <div className="md:hidden flex items-center gap-s ml-auto">
           <LanguageSwitcher compact />
-          <button
-            type="button"
-            onClick={() => setDrawerOpen((prev) => !prev)}
-            aria-label={drawerOpen ? t("closeMenu") : t("openMenu")}
-            aria-expanded={drawerOpen}
-            aria-controls="header-mobile-drawer"
-            className={cn(
-              "inline-flex items-center justify-center w-9 h-9 rounded-m",
-              "text-2xl leading-none text-fg-primary",
-              "hover:bg-bg-surface-2 transition-colors duration-200 ease-out",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
-              "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
-            )}
-          >
-            {drawerOpen ? "×" : "≡"}
-          </button>
+          <HamburgerButton
+            open={drawerOpen}
+            onToggle={() => setDrawerOpen((prev) => !prev)}
+            t={t}
+          />
         </div>
       </div>
 
@@ -138,7 +128,6 @@ export function Header() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         navItems={navItems}
-        locale={locale}
         pathname={pathname}
         session={session}
         t={t}
@@ -148,11 +137,13 @@ export function Header() {
   )
 }
 
-/** Match exacto contra el segmento path-sans-locale. "/events" matchea
- * la página de eventos y sus hijos (`/events/...`). El hash no afecta el
- * matching del nav (el pathname no incluye hashes). */
-function isNavItemActive(pathname: string, itemHref: string): boolean {
-  const [path] = itemHref.split("#")
+/** Match contra el pathname-sans-locale (devuelto por `usePathname` de
+ * `@/i18n/navigation`). Para items con hash (`hashOnly: true`) no
+ * intentamos matchear basándonos en el path — el hash es ambiguo entre
+ * varias rutas y leerlo desde el server-rendered no es posible. */
+function isNavItemActive(pathname: string, item: NavItem): boolean {
+  if (item.hashOnly) return false
+  const path = item.href
   if (path === "/") return pathname === "/"
   return pathname === path || pathname.startsWith(`${path}/`)
 }
@@ -163,23 +154,22 @@ interface SessionLike {
 
 interface UserSlotProps {
   session: SessionLike | null | undefined
-  locale: string
   t: (key: string) => string
   onSignOut: () => void
 }
 
-function UserSlot({ session, locale, t, onSignOut }: UserSlotProps) {
+function UserSlot({ session, t, onSignOut }: UserSlotProps) {
   if (!session) {
     return (
       <div className="flex items-center gap-m">
         <Link
-          href={`/${locale}/sign-in`}
+          href="/sign-in"
           className="text-body-s text-fg-secondary hover:text-fg-primary transition-colors duration-200 ease-out"
         >
           {t("signIn")}
         </Link>
         <Link
-          href={`/${locale}/apply`}
+          href="/apply"
           className={cn(
             "inline-flex items-center rounded-pill bg-brand text-on-brand",
             "px-l py-xs text-body-s font-semibold",
@@ -229,10 +219,38 @@ function getInitials(name: string | null): string | null {
     name
       .split(" ")
       .filter(Boolean)
-      .map((part) => part[0]!)
+      .map((part) => part.charAt(0))
       .join("")
       .toUpperCase()
       .slice(0, 2) || null
+  )
+}
+
+interface HamburgerButtonProps {
+  open: boolean
+  onToggle: () => void
+  t: (key: string) => string
+}
+
+function HamburgerButton({ open, onToggle, t }: HamburgerButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={open ? t("closeMenu") : t("openMenu")}
+      aria-expanded={open}
+      aria-controls="header-mobile-drawer"
+      data-header-hamburger
+      className={cn(
+        "inline-flex items-center justify-center w-9 h-9 rounded-m",
+        "text-2xl leading-none text-fg-primary",
+        "hover:bg-bg-surface-2 transition-colors duration-200 ease-out",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+        "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+      )}
+    >
+      {open ? "×" : "≡"}
+    </button>
   )
 }
 
@@ -240,7 +258,6 @@ interface MobileDrawerProps {
   open: boolean
   onClose: () => void
   navItems: NavItem[]
-  locale: string
   pathname: string
   session: SessionLike | null | undefined
   t: (key: string) => string
@@ -251,25 +268,45 @@ function MobileDrawer({
   open,
   onClose,
   navItems,
-  locale,
   pathname,
   session,
   t,
   onSignOut,
 }: MobileDrawerProps) {
-  // Lock body scroll cuando el drawer está abierto.
+  const firstLinkRef = useRef<HTMLAnchorElement | null>(null)
+
+  // Lock body scroll cuando el drawer está abierto + cerrar con Escape +
+  // gestionar foco (al abrir, mover al primer link; al cerrar, restaurar
+  // al hamburger). TODO: agregar focus trap completo (Tab cycling) y
+  // `inert` sobre el resto del DOM cuando agreguemos un primitivo de
+  // dialog compartido (probable PR de overlays/modals).
   useEffect(() => {
     if (!open) return
-    const prev = document.body.style.overflow
+
+    const prevOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
-    return () => {
-      document.body.style.overflow = prev
+    firstLinkRef.current?.focus()
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.stopPropagation()
+        onClose()
+      }
     }
-  }, [open])
+    document.addEventListener("keydown", onKey)
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener("keydown", onKey)
+      const hamburger = document.querySelector<HTMLButtonElement>(
+        "[data-header-hamburger]"
+      )
+      hamburger?.focus()
+    }
+  }, [open, onClose])
 
   return (
     <>
-      {/* Overlay debajo del header (offset por header-h). */}
       <div
         onClick={onClose}
         aria-hidden="true"
@@ -294,16 +331,18 @@ function MobileDrawer({
         style={{ top: "var(--layout-header-h)" }}
       >
         <nav className="flex flex-col gap-xs px-l py-l">
-          {navItems.map((item) => {
-            const localizedHref = `/${locale}${item.href}`
-            const isActive = isNavItemActive(pathname, item.href)
+          {navItems.map((item, index) => {
+            const isActive = isNavItemActive(pathname, item)
             return (
               <Link
                 key={item.href}
-                href={localizedHref}
+                href={item.href}
+                ref={index === 0 ? firstLinkRef : undefined}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "text-body-l py-s rounded-m px-m transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                  "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
                   isActive
                     ? "bg-bg-surface-2 text-fg-primary font-semibold"
                     : "text-fg-secondary hover:bg-bg-surface-2 hover:text-fg-primary"
@@ -319,13 +358,13 @@ function MobileDrawer({
           {!session ? (
             <div className="flex flex-col gap-s">
               <Link
-                href={`/${locale}/sign-in`}
+                href="/sign-in"
                 className="text-body-s text-fg-secondary hover:text-fg-primary py-s"
               >
                 {t("signIn")}
               </Link>
               <Link
-                href={`/${locale}/apply`}
+                href="/apply"
                 className={cn(
                   "inline-flex items-center justify-center rounded-pill",
                   "bg-brand text-on-brand px-l py-s text-body-s font-semibold",

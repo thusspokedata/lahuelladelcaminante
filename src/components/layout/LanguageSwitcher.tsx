@@ -16,7 +16,6 @@
 "use client"
 
 import { useLocale } from "next-intl"
-import { useTransition } from "react"
 import { cn } from "@/lib/utils"
 import { usePathname, useRouter } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
@@ -37,13 +36,10 @@ export default function LanguageSwitcher({
   const activeLocale = useLocale() as Locale
   const router = useRouter()
   const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
 
   function switchTo(next: Locale) {
     if (next === activeLocale) return
-    startTransition(() => {
-      router.replace(pathname, { locale: next })
-    })
+    router.replace(pathname, { locale: next })
   }
 
   const pillBase = cn(
@@ -71,14 +67,12 @@ export default function LanguageSwitcher({
             <button
               type="button"
               onClick={() => switchTo(loc)}
-              disabled={isPending}
               aria-pressed={isActive}
               className={cn(
                 pillBase,
                 isActive
                   ? "bg-bg-surface-2 text-fg-primary"
-                  : "bg-transparent text-fg-secondary hover:bg-bg-surface-2 hover:text-fg-primary",
-                isPending && "opacity-60 cursor-wait"
+                  : "bg-transparent text-fg-secondary hover:bg-bg-surface-2 hover:text-fg-primary"
               )}
             >
               {loc.toUpperCase()}

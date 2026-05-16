@@ -19,14 +19,13 @@
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §6.
  */
 
-import Link from "next/link"
-import { getLocale, getTranslations } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import BrandLockup from "@/components/brand/BrandLockup"
 import Eyebrow from "@/components/ui/Eyebrow"
 
 export async function Footer() {
-  const locale = await getLocale()
   const t = await getTranslations("footer")
   const tNav = await getTranslations("nav")
   const year = new Date().getFullYear()
@@ -58,19 +57,17 @@ export async function Footer() {
 
           {/* Columna 2 — EXPLORAR */}
           <FooterColumn eyebrow={t("explore")}>
-            <FooterLink href={`/${locale}/events`}>{tNav("events")}</FooterLink>
-            <FooterLink href={`/${locale}/artists`}>
-              {tNav("artists")}
-            </FooterLink>
-            <FooterLink href={`/${locale}/events#esta-semana`}>
+            <FooterLink href="/events">{tNav("events")}</FooterLink>
+            <FooterLink href="/artists">{tNav("artists")}</FooterLink>
+            <FooterLink href="/events#esta-semana">
               {tNav("thisWeek")}
             </FooterLink>
           </FooterColumn>
 
           {/* Columna 3 — PARA VOS */}
           <FooterColumn eyebrow={t("forYou")}>
-            <FooterLink href={`/${locale}/apply`}>{t("apply")}</FooterLink>
-            <FooterLink href={`/${locale}/sign-in`}>{tNav("signIn")}</FooterLink>
+            <FooterLink href="/apply">{t("apply")}</FooterLink>
+            <FooterLink href="/sign-in">{tNav("signIn")}</FooterLink>
           </FooterColumn>
 
           {/* Columna 4 — COMUNIDAD */}
@@ -140,7 +137,8 @@ interface FooterLinkProps {
   href: string
   children: React.ReactNode
   /** Si es link externo o mailto: abre en nueva pestaña con `noopener
-   * noreferrer`. Los links internos usan `next/link`. */
+   * noreferrer`. Los links internos usan el `Link` locale-aware de
+   * `@/i18n/navigation`. */
   external?: boolean
 }
 
