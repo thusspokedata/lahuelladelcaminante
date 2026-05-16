@@ -116,6 +116,48 @@
   --spacing-2xl: 64px;
   --spacing-3xl: 96px;
 
+  /* ── Container & max-width scale ─────────────────────────────
+     Restore Tailwind v4 default sizes overridden por los
+     `--spacing-*` tokens del proyecto. La resolución de
+     `max-w-{name}` en Tailwind v4 es:
+       1. --max-width-{name}   ← lo que definimos acá abajo
+       2. --spacing-{name}     ← acá colisiona con nuestro design system
+       3. --container-{name}   ← fallback
+     Sin estos `--max-width-*`, `max-w-2xl` resolvía a
+     `var(--spacing-2xl)` = 64px en lugar de 42rem (672px),
+     rompiendo cualquier contenedor de texto largo. Los
+     `--container-*` se mantienen porque también los usan
+     `@container` queries y son fallback para `w-*` / `min-w-*`.
+     Valores: defaults de Tailwind v4
+     (`node_modules/tailwindcss/theme.css`). */
+  --max-width-3xs: 16rem;
+  --max-width-2xs: 18rem;
+  --max-width-xs: 20rem;
+  --max-width-sm: 24rem;
+  --max-width-md: 28rem;
+  --max-width-lg: 32rem;
+  --max-width-xl: 36rem;
+  --max-width-2xl: 42rem;
+  --max-width-3xl: 48rem;
+  --max-width-4xl: 56rem;
+  --max-width-5xl: 64rem;
+  --max-width-6xl: 72rem;
+  --max-width-7xl: 80rem;
+
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+
   /* ── Radius ───────────────────────────────────────────────── */
   --radius-s: 4px;
   --radius-m: 8px;
