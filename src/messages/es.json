@@ -143,6 +143,122 @@
     "noArtistsYet": "No tienes artistas aún.",
     "noEventsYet": "No tienes eventos aún.",
     "noPermission": "No tienes permisos de artista.",
+    "shell": {
+      "role": { "creator": "CREATOR", "admin": "ADMIN" },
+      "greeting": "Hola, {name}",
+      "greetingFallback": "Panel",
+      "backToPublic": "← Volver al sitio público",
+      "nav": {
+        "creator": {
+          "dashboard": "Mi panel",
+          "events": "Mis eventos",
+          "artists": "Mis artistas",
+          "profile": "Mi perfil"
+        },
+        "admin": {
+          "applications": "Aplicaciones",
+          "users": "Usuarios",
+          "events": "Eventos"
+        }
+      },
+      "mobileTabs": {
+        "dashboard": "Panel",
+        "events": "Eventos",
+        "artists": "Artistas",
+        "profile": "Perfil",
+        "ariaLabel": "Navegación del panel"
+      }
+    },
+    "welcome": {
+      "eyebrow": "Te damos la bienvenida",
+      "title": "Tres pasos para que tu música aparezca.",
+      "body": "Tu cuenta fue aprobada — qué bueno tenerte en la huella. Te acompañamos hasta publicar tu primer evento."
+    },
+    "steps": {
+      "pending": "Pendiente",
+      "done": "Hecho",
+      "profile": {
+        "title": "Creá tu perfil de artista",
+        "body": "Foto, biografía, links de Instagram, Spotify. Es la página que aparece cuando alguien hace clic en tu evento.",
+        "cta": "Crear perfil"
+      },
+      "event": {
+        "title": "Publicá tu primer evento",
+        "body": "Subí flyer de Instagram (1:1 o 4:5), buscá venue, agregá fecha, género.",
+        "cta": "Crear evento"
+      },
+      "share": {
+        "title": "Compartí tu link",
+        "body": "Tu evento queda visible en lahuelladelcaminante.de/events. Pegalo en tus stories, grupos, donde sea.",
+        "cta": "Ver ejemplo"
+      }
+    },
+    "help": {
+      "eyebrow": "AYUDA",
+      "body": "¿Cómo escribo una buena descripción? · Tamaños de imagen recomendados · ¿Necesitás ayuda?",
+      "guideLink": "Ver guía"
+    },
+    "overview": {
+      "eyebrow": "Mi panel",
+      "title": "Tu actividad",
+      "subtitleUpcoming": "Próximos",
+      "subtitleTotal": "Total",
+      "myEventsTitle": "Mis próximos eventos",
+      "myArtistsTitle": "Mis artistas",
+      "viewAllEvents": "Ver todos los eventos",
+      "viewAllArtists": "Ver todos los artistas"
+    },
+    "events": {
+      "eyebrow": "Mis eventos",
+      "title": "Mis eventos",
+      "countUpcoming": "próximos",
+      "countTotal": "totales",
+      "tabs": {
+        "upcoming": "Próximos",
+        "drafts": "Borradores",
+        "past": "Pasados",
+        "all": "Todos"
+      },
+      "empty": {
+        "upcoming": "No tenés eventos próximos. Publicá uno cuando tengas fecha.",
+        "drafts": "Todavía no tenés borradores.",
+        "past": "No publicaste eventos pasados.",
+        "all": "Todavía no creaste ningún evento."
+      },
+      "action": { "new": "+ Nuevo evento" },
+      "status": {
+        "published": "Publicado",
+        "draft": "Borrador",
+        "past": "Pasado"
+      },
+      "row": {
+        "actions": {
+          "openMenu": "Más acciones",
+          "edit": "Editar",
+          "duplicate": "Duplicar (próximamente)",
+          "restore": "Restaurar (próximamente)",
+          "delete": "Borrar",
+          "shareLink": "Copiar link público",
+          "shareCopied": "Link copiado al portapapeles",
+          "shareFailed": "No se pudo copiar el link"
+        }
+      }
+    },
+    "artists": {
+      "eyebrow": "Mis artistas",
+      "title": "Mis artistas",
+      "count": "activos",
+      "empty": "Todavía no creaste ningún artista.",
+      "emptyCta": "Crear tu primer artista",
+      "action": { "new": "+ Nuevo artista" },
+      "card": {
+        "actions": {
+          "edit": "Editar",
+          "viewPublic": "Ver perfil público",
+          "delete": "Borrar"
+        }
+      }
+    },
     "profile": "Mi Perfil",
     "profileName": "Nombre",
     "profileEmail": "Email",

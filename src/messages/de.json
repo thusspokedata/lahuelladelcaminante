@@ -142,7 +142,123 @@
     "createFirstEvent": "Erste Veranstaltung erstellen",
     "noArtistsYet": "Noch keine Künstler.",
     "noEventsYet": "Noch keine Veranstaltungen.",
-    "noPermission": "Sie haben keine Künstlerberechtigungen.",
+    "noPermission": "Du hast keine Künstlerberechtigungen.",
+    "shell": {
+      "role": { "creator": "CREATOR", "admin": "ADMIN" },
+      "greeting": "Hallo, {name}",
+      "greetingFallback": "Dashboard",
+      "backToPublic": "← Zurück zur öffentlichen Seite",
+      "nav": {
+        "creator": {
+          "dashboard": "Mein Dashboard",
+          "events": "Meine Veranstaltungen",
+          "artists": "Meine Künstler",
+          "profile": "Mein Profil"
+        },
+        "admin": {
+          "applications": "Bewerbungen",
+          "users": "Benutzer",
+          "events": "Veranstaltungen"
+        }
+      },
+      "mobileTabs": {
+        "dashboard": "Start",
+        "events": "Events",
+        "artists": "Künstler",
+        "profile": "Profil",
+        "ariaLabel": "Dashboard-Navigation"
+      }
+    },
+    "welcome": {
+      "eyebrow": "Willkommen bei La Huella",
+      "title": "Drei Schritte, damit deine Musik sichtbar wird.",
+      "body": "Dein Konto wurde freigegeben — willkommen bei la huella. Wir begleiten dich bis zur ersten veröffentlichten Veranstaltung."
+    },
+    "steps": {
+      "pending": "Offen",
+      "done": "Erledigt",
+      "profile": {
+        "title": "Erstelle dein Künstlerprofil",
+        "body": "Foto, Bio, Links zu Instagram und Spotify. Das ist die Seite, die erscheint, wenn jemand auf deine Veranstaltung klickt.",
+        "cta": "Profil erstellen"
+      },
+      "event": {
+        "title": "Veröffentliche deine erste Veranstaltung",
+        "body": "Lade deinen Instagram-Flyer hoch (1:1 oder 4:5), such dir einen Veranstaltungsort, ergänze Datum und Genre.",
+        "cta": "Veranstaltung erstellen"
+      },
+      "share": {
+        "title": "Teile deinen Link",
+        "body": "Deine Veranstaltung ist auf lahuelladelcaminante.de/events sichtbar. Teile sie in Stories, Gruppen, überall.",
+        "cta": "Beispiel ansehen"
+      }
+    },
+    "help": {
+      "eyebrow": "HILFE",
+      "body": "Wie schreibe ich eine gute Beschreibung? · Empfohlene Bildgrößen · Brauchst du Hilfe?",
+      "guideLink": "Anleitung lesen"
+    },
+    "overview": {
+      "eyebrow": "Mein Dashboard",
+      "title": "Deine Aktivität",
+      "subtitleUpcoming": "Bevorstehend",
+      "subtitleTotal": "Gesamt",
+      "myEventsTitle": "Meine kommenden Veranstaltungen",
+      "myArtistsTitle": "Meine Künstler",
+      "viewAllEvents": "Alle Veranstaltungen ansehen",
+      "viewAllArtists": "Alle Künstler ansehen"
+    },
+    "events": {
+      "eyebrow": "Meine Veranstaltungen",
+      "title": "Meine Veranstaltungen",
+      "countUpcoming": "bevorstehend",
+      "countTotal": "gesamt",
+      "tabs": {
+        "upcoming": "Demnächst",
+        "drafts": "Entwürfe",
+        "past": "Vergangen",
+        "all": "Alle"
+      },
+      "empty": {
+        "upcoming": "Noch keine kommenden Veranstaltungen. Erstelle eine, sobald ein Termin feststeht.",
+        "drafts": "Noch keine Entwürfe.",
+        "past": "Noch keine vergangenen Veranstaltungen veröffentlicht.",
+        "all": "Du hast noch keine Veranstaltung erstellt."
+      },
+      "action": { "new": "+ Neue Veranstaltung" },
+      "status": {
+        "published": "Veröffentlicht",
+        "draft": "Entwurf",
+        "past": "Vergangen"
+      },
+      "row": {
+        "actions": {
+          "openMenu": "Weitere Aktionen",
+          "edit": "Bearbeiten",
+          "duplicate": "Duplizieren (bald)",
+          "restore": "Wiederherstellen (bald)",
+          "delete": "Löschen",
+          "shareLink": "Öffentlichen Link kopieren",
+          "shareCopied": "Link in die Zwischenablage kopiert",
+          "shareFailed": "Link konnte nicht kopiert werden"
+        }
+      }
+    },
+    "artists": {
+      "eyebrow": "Meine Künstler",
+      "title": "Meine Künstler",
+      "count": "aktiv",
+      "empty": "Du hast noch keine Künstler erstellt.",
+      "emptyCta": "Ersten Künstler erstellen",
+      "action": { "new": "+ Neuer Künstler" },
+      "card": {
+        "actions": {
+          "edit": "Bearbeiten",
+          "viewPublic": "Öffentliches Profil ansehen",
+          "delete": "Löschen"
+        }
+      }
+    },
     "profile": "Mein Profil",
     "profileName": "Name",
     "profileEmail": "E-Mail",
