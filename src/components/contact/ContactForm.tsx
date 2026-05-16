@@ -194,7 +194,12 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-l" noValidate>
+    <form
+      method="post"
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-l"
+      noValidate
+    >
       <div className="flex flex-col gap-xs">
         <Label htmlFor="contact-name">{tForm("name")}</Label>
         <Input

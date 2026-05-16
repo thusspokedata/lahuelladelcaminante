@@ -135,8 +135,17 @@ export async function POST(request: Request) {
       locale,
     })
   } catch (error) {
+    // Whitelist explícito de campos del error — NO serializamos el objeto
+    // crudo porque `error.message` / `error.cause` pueden traer eco del
+    // payload del user (snippets del body que falló al enviar). Solo
+    // logueamos `name` (clase del error: TypeError, NetworkError, etc),
+    // que es info diagnóstica sin PII.
+    const safeError =
+      error instanceof Error
+        ? { errorName: error.name }
+        : { errorType: typeof error }
     console.error("contact_notification_failed", {
-      error,
+      ...safeError,
       recipient: env.CONTACT_RECIPIENT_EMAIL,
       type: result.data.type,
       locale,
