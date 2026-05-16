@@ -42,15 +42,32 @@ const KNOWN_ERROR_CODES = new Set<string>([
   "password_too_short",
   "password_too_long",
   "terms_required",
+  "email_taken",
 ])
 
-/** Mismo principio que SignInForm: aislar el form del mensaje exacto
- * del SDK. El error más típico del sign-up es "user already exists"
- * (email duplicado); el resto cae a `generic`. */
-function mapAuthErrorToCode(message?: string | null): string {
-  if (!message) return "generic"
-  const lower = message.toLowerCase()
-  if (lower.includes("already") || lower.includes("exist") || lower.includes("registered")) {
+/** Codes estables de Better Auth → códigos i18n del form. Mismo
+ * principio que en SignInForm: preferimos `error.code` por estabilidad
+ * y caemos a heurística sobre `.message` solo como último recurso. */
+const BETTER_AUTH_CODE_MAP: Record<string, string> = {
+  USER_ALREADY_EXISTS: "email_taken",
+  USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: "email_taken",
+  EMAIL_ALREADY_EXISTS: "email_taken",
+}
+
+function mapAuthErrorToCode(error?: {
+  code?: string | null
+  message?: string | null
+}): string {
+  if (!error) return "generic"
+  if (error.code && BETTER_AUTH_CODE_MAP[error.code]) {
+    return BETTER_AUTH_CODE_MAP[error.code]
+  }
+  const lower = (error.message ?? "").toLowerCase()
+  if (
+    lower.includes("already") ||
+    lower.includes("exist") ||
+    lower.includes("registered")
+  ) {
     return "email_taken"
   }
   return "generic"
@@ -66,9 +83,7 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
   const router = useRouter()
 
   const errorMessageFor = (code: string): string =>
-    KNOWN_ERROR_CODES.has(code) || code === "email_taken"
-      ? tErrors(code)
-      : tErrors("generic")
+    KNOWN_ERROR_CODES.has(code) ? tErrors(code) : tErrors("generic")
 
   const {
     register,
@@ -76,7 +91,7 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { name: "", email: "", password: "", acceptTerms: false as true },
+    defaultValues: { name: "", email: "", password: "", acceptTerms: false },
   })
 
   async function onSubmit(values: SignUpInput) {
@@ -87,7 +102,7 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
     })
 
     if (res.error) {
-      const code = mapAuthErrorToCode(res.error.message)
+      const code = mapAuthErrorToCode(res.error)
       toast.error(errorMessageFor(code))
       return
     }
@@ -96,10 +111,17 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
   }
 
   function handleGoogleClick() {
-    signIn.social({
-      provider: "google",
-      callbackURL: `/${locale}/dashboard`,
-    })
+    // Try/catch defensivo — `signIn.social` normalmente hace redirect
+    // del browser, pero puede rechazar sync con popup bloqueado o
+    // config inválida. Sin esto el botón queda en disabled silencioso.
+    try {
+      signIn.social({
+        provider: "google",
+        callbackURL: `/${locale}/dashboard`,
+      })
+    } catch {
+      toast.error(errorMessageFor("generic"))
+    }
   }
 
   return (

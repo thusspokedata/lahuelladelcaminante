@@ -30,7 +30,9 @@ import AuthField from "@/components/auth/AuthField"
 import OAuthButton from "@/components/auth/OAuthButton"
 import OrDivider from "@/components/auth/OrDivider"
 
-/** Códigos de error definidos en el schema o mapeables desde Better Auth.
+/** Códigos de error que el form sabe traducir. Combina:
+ *  - Códigos del schema zod (`email_invalid`, etc.).
+ *  - Códigos mapeados desde el `error.code` estable de Better Auth.
  * Lo demás cae al label `generic` del namespace i18n. */
 const KNOWN_ERROR_CODES = new Set<string>([
   "email_required",
@@ -38,17 +40,37 @@ const KNOWN_ERROR_CODES = new Set<string>([
   "email_too_long",
   "password_too_short",
   "password_too_long",
+  "credentials",
 ])
 
-/** Heurística para mapear errores de Better Auth a códigos i18n.
- * El SDK devuelve `error.message` en inglés (ej. "Invalid email or password").
- * Esto nos deja mostrar copy amigable sin acoplar el form al string exacto
- * que pueda cambiar entre versiones del SDK. Si no matchea ninguno, cae al
- * código `generic`. */
-function mapAuthErrorToCode(message?: string | null): string {
-  if (!message) return "generic"
-  const lower = message.toLowerCase()
-  if (lower.includes("invalid") && (lower.includes("password") || lower.includes("credential") || lower.includes("email"))) {
+/** Mapeo de `error.code` de Better Auth a códigos i18n del form. Los
+ * códigos del SDK son estables entre versiones (los strings del `.message`
+ * no — pueden cambiar copy en cualquier minor release). Acá listamos solo
+ * los que tienen una traducción específica; el resto cae al fallback. */
+const BETTER_AUTH_CODE_MAP: Record<string, string> = {
+  INVALID_EMAIL_OR_PASSWORD: "credentials",
+  INVALID_EMAIL: "credentials",
+  INVALID_PASSWORD: "credentials",
+}
+
+/** Resuelve el código i18n desde un error de Better Auth. Preferimos
+ * `error.code` por su estabilidad; si no viene, caemos a heurística sobre
+ * `error.message` (último recurso, frágil). */
+function mapAuthErrorToCode(error?: {
+  code?: string | null
+  message?: string | null
+}): string {
+  if (!error) return "generic"
+  if (error.code && BETTER_AUTH_CODE_MAP[error.code]) {
+    return BETTER_AUTH_CODE_MAP[error.code]
+  }
+  const lower = (error.message ?? "").toLowerCase()
+  if (
+    lower.includes("invalid") &&
+    (lower.includes("password") ||
+      lower.includes("credential") ||
+      lower.includes("email"))
+  ) {
     return "credentials"
   }
   return "generic"
@@ -66,7 +88,7 @@ export default function SignInForm({ locale }: SignInFormProps) {
   const router = useRouter()
 
   const errorMessageFor = (code: string): string =>
-    KNOWN_ERROR_CODES.has(code) ? tErrors(code) : tErrors(code === "credentials" ? "credentials" : "generic")
+    KNOWN_ERROR_CODES.has(code) ? tErrors(code) : tErrors("generic")
 
   const {
     register,
@@ -84,7 +106,7 @@ export default function SignInForm({ locale }: SignInFormProps) {
     })
 
     if (res.error) {
-      const code = mapAuthErrorToCode(res.error.message)
+      const code = mapAuthErrorToCode(res.error)
       toast.error(errorMessageFor(code))
       return
     }
@@ -93,13 +115,19 @@ export default function SignInForm({ locale }: SignInFormProps) {
   }
 
   function handleGoogleClick() {
-    // signIn.social no devuelve promesa accionable — dispara redirect del
-    // browser. No envolver en try/catch. `callbackURL` debe incluir el
+    // signIn.social dispara redirect del browser y normalmente no
+    // devuelve. Try/catch defensivo por si el SDK rechaza síncronamente
+    // (config inválida, popup bloqueado, etc.) — sin esto el botón
+    // queda en disabled silencioso. `callbackURL` debe incluir el
     // locale para volver a la versión correcta del dashboard.
-    signIn.social({
-      provider: "google",
-      callbackURL: `/${locale}/dashboard`,
-    })
+    try {
+      signIn.social({
+        provider: "google",
+        callbackURL: `/${locale}/dashboard`,
+      })
+    } catch {
+      toast.error(errorMessageFor("generic"))
+    }
   }
 
   return (

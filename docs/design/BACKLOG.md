@@ -90,6 +90,40 @@ form de contacto).
 - Mismo helper se puede reusar en `/api/applications/submit` y futuros
   endpoints públicos.
 
+### Prisma — index en `Application.email` + enum para `Application.status` — prioridad MEDIA
+
+**Origen:** PR de auth (`feat/redesign-auth-screens`). El review de
+arquitectura detectó deuda inherited que esta PR consolida.
+
+Dos consumidores hoy hacen `Application.findFirst({ where: { email } })`:
+el hook `databaseHooks.user.create.after` en `src/lib/auth.ts` (corre
+en cada signup) y la nueva pantalla `/user-pending` (corre en cada
+visita). El modelo `Application` no tiene `@@index([email])` —
+seq-scan que escala mal cuando crezca la tabla.
+
+Aparte, `Application.status: String` con comentario `// pending | approved
+| rejected` debería ser enum — hoy un typo silencioso en el hook (ej.
+`status: "aproved"`) rompe el flow de activación sin ningún error de TS.
+
+- Migration:
+  ```prisma
+  enum ApplicationStatus {
+    pending
+    approved
+    rejected
+  }
+
+  model Application {
+    ...
+    status ApplicationStatus @default(pending)
+    @@index([email])
+  }
+  ```
+- Actualizar callers: `src/lib/auth.ts:34` y `src/app/[locale]/user-pending/page.tsx`.
+- Bonus: agregar FK opcional `Application.userId` para que el matching
+  no dependa de email (problema: user puede cambiar email después de
+  aplicar).
+
 ### Security headers globales en `next.config.ts` — prioridad MEDIA
 
 **Origen:** PR 8.5 (`/contact`) y aplicable al sitio entero.

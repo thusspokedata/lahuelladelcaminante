@@ -6,10 +6,13 @@
  * caller via prop `label` para que el texto sea i18n-aware (el componente
  * mismo es presentacional puro, no consume `useTranslations`).
  *
- * Implementación: dos `<hr>` flexibles + un `<span>` central. `role="separator"`
- * implícito por `<hr>`. El span del label tiene `aria-hidden={true}` porque
- * el separador en sí mismo ya comunica la división — el texto es solo
- * decoración tipográfica del breakpoint visual.
+ * Implementación: dos `<hr>` flexibles + un `<span>` central wrapping el
+ * `<Eyebrow>`. `role="separator"` implícito por `<hr>`. El wrapper
+ * `<span aria-hidden>` opaca el texto al lector de pantalla — el
+ * separador en sí mismo ya comunica la división y los hijos del OAuth
+ * y form proveen su propio contexto semántico. (Aria-hidden no se
+ * puede pasar directo a `Eyebrow` porque el componente no propaga
+ * props; envolver es el workaround sin tocar `Eyebrow.tsx`.)
  */
 
 import { cn } from "@/lib/utils"
@@ -27,9 +30,11 @@ export default function OrDivider({ label, className }: OrDividerProps) {
       role="presentation"
     >
       <hr className="flex-1 border-t border-border" aria-hidden={true} />
-      <Eyebrow as="span" accent="neutral" aria-hidden={true}>
-        {label}
-      </Eyebrow>
+      <span aria-hidden={true}>
+        <Eyebrow as="span" accent="neutral">
+          {label}
+        </Eyebrow>
+      </span>
       <hr className="flex-1 border-t border-border" aria-hidden={true} />
     </div>
   )

@@ -4,15 +4,16 @@
  *
  * No renderiza Header/Footer globales — auth es un flow enfocado y los
  * elementos de navegación general distraen. En lugar de eso, un mini
- * header de 64px de alto con:
+ * header de 64px (`h-16`) con:
  *  - `BrandLockup` a la izquierda (linkeado a `/` para que el user pueda
  *    salir del flow sin perderse).
  *  - `LanguageSwitcher` a la derecha (lección del spec de QA — cambio
  *    de idioma debe estar disponible en cada auth screen).
  *
  * Las páginas hijas consumen `AuthShell` para armar la grilla 7:5 interna.
- * El `AuthShell` calcula su `min-h` restando los 64px del mini header
- * (`var(--auth-header-h)` con fallback `4rem`).
+ * `AuthShell` resta los 64px del header del `min-h` via `calc(100vh - 4rem)`
+ * — la altura está cementada en los dos lugares: si cambia acá, actualizar
+ * también en `AuthShell.tsx`.
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT_v2.md` §1.1, §3.2 ("Decisión del
  * dev" — optamos por layout dedicado en vez de variant del Header global,
@@ -24,7 +25,7 @@ import LanguageSwitcher from "@/components/layout/LanguageSwitcher"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-bg-page" style={{ "--auth-header-h": "4rem" } as React.CSSProperties}>
+    <div className="min-h-screen bg-bg-page">
       <header className="flex h-16 items-center justify-between px-l">
         <BrandLockup orientation="horizontal" href="/" />
         <LanguageSwitcher />

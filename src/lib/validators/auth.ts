@@ -45,9 +45,10 @@ export type SignInInput = z.infer<typeof signInSchema>
 /**
  * Sign-up extiende sign-in con:
  *  - `name`: 2-120 chars, trim — mismo rango que `contact.ts` para consistencia.
- *  - `acceptTerms`: literal `true`. Forzar el bool literal hace que zod
- *    rechace `false` con el mismo flujo de error que los demás campos
- *    (no necesita validación custom).
+ *  - `acceptTerms`: bool con refine `=== true`. Usar `boolean().refine`
+ *    en vez de `z.literal(true)` mantiene la inferencia de tipo como
+ *    `boolean` (RHF `defaultValues` necesita un valor sin cast falso),
+ *    sin perder el mensaje i18n del error.
  */
 export const signUpSchema = signInSchema.extend({
   name: z
@@ -55,7 +56,9 @@ export const signUpSchema = signInSchema.extend({
     .trim()
     .min(2, { message: "name_too_short" })
     .max(120, { message: "name_too_long" }),
-  acceptTerms: z.literal(true, { message: "terms_required" }),
+  acceptTerms: z
+    .boolean()
+    .refine((v) => v === true, { message: "terms_required" }),
 })
 
 export type SignUpInput = z.infer<typeof signUpSchema>

@@ -38,7 +38,9 @@ export default function AuthShell({
   return (
     <div
       className={cn(
-        "grid min-h-[calc(100vh-var(--auth-header-h,4rem))] grid-cols-1 lg:grid-cols-12",
+        // `4rem` = altura del mini-header del layout `(auth)` (`h-16`).
+        // Sincronizado a mano — si cambia ahí, actualizar acá también.
+        "grid min-h-[calc(100vh-4rem)] grid-cols-1 lg:grid-cols-12",
         className
       )}
     >
