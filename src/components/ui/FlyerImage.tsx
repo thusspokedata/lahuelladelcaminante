@@ -105,13 +105,19 @@ export default function FlyerImage({
     const { width, height } = ASPECT_DIMENSIONS[aspectRatio]
     return (
       <div className={containerClass}>
+        {/* No usamos `gravity` con `crop="pad"`: Cloudinary solo respeta
+            gravity con crops que recortan (`fill`, `thumb`, etc.). `pad`
+            rellena con bandas, así que la gravity es irrelevante y
+            agregarla dispara un warning ("Auto gravity can only be used
+            with crop modes: auto, crop, fill, lfill, fill_pad, thumb").
+            Si en algún momento se vuelve a `crop="fill"` o `fill_pad`,
+            re-agregar `gravity="auto"`. */}
         <CldImage
           src={publicId}
           alt={alt}
           width={width}
           height={height}
           crop="pad"
-          gravity="auto"
           format="auto"
           quality="auto"
           priority={priority}
