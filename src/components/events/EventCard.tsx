@@ -133,19 +133,28 @@ export async function EventCard({
   )
 }
 
-/** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date. */
+/** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date
+ * o la date es inválida.
+ *
+ * IMPORTANTE: acepta `Date | string` porque `unstable_cache` de Next.js
+ * serializa los `Date` a string ISO al guardar en cache y NO los re-hidrata
+ * al leer. La declaración de `EventSummary.dates` como `Date[]` es honesta
+ * en compile-time pero en runtime, después del primer cache hit, los items
+ * vienen como strings. */
 function formatEyebrow(
-  date: Date | null,
+  date: Date | string | null,
   time: string | null,
   locale: string
 ): string {
   if (!date) return ""
+  const dateObj = date instanceof Date ? date : new Date(date)
+  if (isNaN(dateObj.getTime())) return ""
   const intl = new Intl.DateTimeFormat(MONTHS_BY_LOCALE[locale] ?? "es-ES", {
     weekday: "short",
     day: "numeric",
     month: "short",
   })
-  const label = intl.format(date).replace(/\./g, "").toUpperCase()
+  const label = intl.format(dateObj).replace(/\./g, "").toUpperCase()
   return time ? `${label} · ${time}` : label
 }
 

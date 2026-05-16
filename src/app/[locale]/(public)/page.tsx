@@ -364,17 +364,27 @@ const LOCALE_MAP: Record<string, string> = {
   de: "de-DE",
 }
 
+/**
+ * Acepta `Date | string` en `from`/`to` porque `unstable_cache` de Next.js
+ * serializa los `Date` a string ISO al guardar y NO los re-hidrata al leer.
+ * `UpcomingStats.dateRange` viene del cache de `getUpcomingStats()`, así
+ * que después del primer hit los campos llegan como strings y `Intl.format()`
+ * sobre un string tira `RangeError: Invalid time value`. */
 function formatDateRange(
-  range: { from: Date | null; to: Date | null },
+  range: { from: Date | string | null; to: Date | string | null },
   locale: string
 ): string {
   if (!range.from || !range.to) return ""
+  const fromObj =
+    range.from instanceof Date ? range.from : new Date(range.from)
+  const toObj = range.to instanceof Date ? range.to : new Date(range.to)
+  if (isNaN(fromObj.getTime()) || isNaN(toObj.getTime())) return ""
   const intl = new Intl.DateTimeFormat(LOCALE_MAP[locale] ?? "es-ES", {
     day: "numeric",
     month: "short",
   })
-  const from = intl.format(range.from).replace(/\./g, "")
-  const to = intl.format(range.to).replace(/\./g, "")
+  const from = intl.format(fromObj).replace(/\./g, "")
+  const to = intl.format(toObj).replace(/\./g, "")
   if (from === to) return from
   return `${from} – ${to}`
 }
