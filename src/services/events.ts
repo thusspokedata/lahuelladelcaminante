@@ -11,17 +11,19 @@ export interface EventSummary {
   slug: string
   location: string
   genre: string | null
+  time: string | null
+  price: string | null
   dates: Date[]
   artistName: string | null
   coverImage: string | null
+  coverImagePublicId: string | null
+  coverImageAlt: string | null
 }
 
 export interface EventDetail extends EventSummary {
   description: string | null
   organizer: string | null
   address: string | null
-  time: string | null
-  price: string | null
   images: { id: string; url: string; alt: string | null; publicId: string }[]
   artist: {
     id: string
@@ -71,27 +73,141 @@ function mapToSummary(event: {
   slug: string
   location: string
   genre: string | null
+  time: string | null
+  price: string | null
   dates: { date: Date }[]
   artist: { name: string } | null
-  images: { url: string }[]
+  images: { url: string; publicId: string; alt: string | null }[]
 }): EventSummary {
+  const cover = event.images[0] ?? null
   return {
     id: event.id,
     title: event.title,
     slug: event.slug,
     location: event.location,
     genre: event.genre,
+    time: event.time,
+    price: event.price,
     dates: event.dates.map((d: { date: Date }) => d.date),
     artistName: event.artist?.name ?? null,
-    coverImage: event.images[0]?.url ?? null,
+    coverImage: cover?.url ?? null,
+    coverImagePublicId: cover?.publicId ?? null,
+    coverImageAlt: cover?.alt ?? null,
   }
 }
 
 const eventInclude = {
   dates: { orderBy: { date: "asc" as const } },
   artist: { select: { name: true } },
-  images: { select: { url: true } },
+  images: { select: { url: true, publicId: true, alt: true } },
 }
+
+/**
+ * Eventos activos cuya próxima fecha cae dentro de los próximos `days` días.
+ * Usado por la home para decidir el copy del hero (esta semana / mes que
+ * viene / lo que viene) sin traer toda la agenda al cliente.
+ */
+export const getUpcomingEventsWithin = unstable_cache(
+  async (days: number, limit?: number): Promise<EventSummary[]> => {
+    const now = new Date()
+    const until = new Date(now)
+    until.setDate(until.getDate() + days)
+    const events = await prisma.event.findMany({
+      where: {
+        isDeleted: false,
+        isActive: true,
+        dates: { some: { date: { gte: now, lte: until } } },
+      },
+      include: eventInclude,
+      orderBy: { createdAt: "desc" },
+      ...(limit ? { take: limit } : {}),
+    })
+    return events.map(mapToSummary)
+  },
+  ["upcoming-events-within"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+/**
+ * Próximos 3-N eventos para la sección "Imperdibles" de la home. Por ahora
+ * usamos un proxy: los próximos por fecha. TODO: cuando exista un flag
+ * `featured` en el modelo Event, filtrar por ese flag aquí.
+ */
+export const getFeaturedEvents = unstable_cache(
+  async (limit = 3): Promise<EventSummary[]> => {
+    const events = await prisma.event.findMany({
+      where: {
+        isDeleted: false,
+        isActive: true,
+        dates: { some: { date: { gte: new Date() } } },
+      },
+      include: eventInclude,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    })
+    return events.map(mapToSummary)
+  },
+  ["featured-events"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+export interface UpcomingStats {
+  shows: number
+  artists: number
+  cities: number
+  dateRange: { from: Date | null; to: Date | null }
+}
+
+/**
+ * Stats agregadas para el strip de la home: cuántos shows próximos hay,
+ * cuántos artistas distintos, cuántas ciudades distintas y el rango de
+ * fechas que cubren. Devuelve `dateRange.from/to = null` si no hay eventos.
+ */
+export const getUpcomingStats = unstable_cache(
+  async (): Promise<UpcomingStats> => {
+    const now = new Date()
+    const events = await prisma.event.findMany({
+      where: {
+        isDeleted: false,
+        isActive: true,
+        dates: { some: { date: { gte: now } } },
+      },
+      select: {
+        artistId: true,
+        location: true,
+        dates: { where: { date: { gte: now } }, select: { date: true } },
+      },
+    })
+
+    const artists = new Set<string>()
+    const cities = new Set<string>()
+    const allDates: Date[] = []
+
+    for (const ev of events) {
+      if (ev.artistId) artists.add(ev.artistId)
+      // Cities derivadas igual que `getActiveCities`: último segmento del
+      // string `location` después del último coma.
+      const parts = ev.location.split(",").map((s) => s.trim())
+      const city = parts[parts.length - 1]
+      if (city) cities.add(city)
+      for (const d of ev.dates) allDates.push(d.date)
+    }
+
+    allDates.sort((a, b) => a.getTime() - b.getTime())
+
+    return {
+      shows: events.length,
+      artists: artists.size,
+      cities: cities.size,
+      dateRange: {
+        from: allDates[0] ?? null,
+        to: allDates[allDates.length - 1] ?? null,
+      },
+    }
+  },
+  ["upcoming-stats"],
+  { revalidate: 300, tags: ["events"] }
+)
 
 export const getUpcomingEvents = unstable_cache(
   async (filters?: { genre?: string; city?: string }): Promise<EventSummary[]> => {
@@ -148,6 +264,7 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
     },
   })
   if (!event) return null
+  const cover = event.images[0] ?? null
   return {
     id: event.id,
     title: event.title,
@@ -156,7 +273,9 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
     genre: event.genre,
     dates: event.dates.map((d: { date: Date }) => d.date),
     artistName: event.artist?.name ?? null,
-    coverImage: event.images[0]?.url ?? null,
+    coverImage: cover?.url ?? null,
+    coverImagePublicId: cover?.publicId ?? null,
+    coverImageAlt: cover?.alt ?? null,
     description: event.description,
     organizer: event.organizer,
     address: event.address,

@@ -12,6 +12,8 @@ export interface ArtistSummary {
   origin: string | null
   genres: string[]
   coverImage: string | null
+  coverImagePublicId: string | null
+  coverImageAlt: string | null
 }
 
 export interface ArtistDetail extends ArtistSummary {
@@ -53,20 +55,23 @@ function mapToSummary(artist: {
   slug: string
   origin: string | null
   genres: string[]
-  images: { url: string }[]
+  images: { url: string; publicId: string; alt: string | null }[]
 }): ArtistSummary {
+  const cover = artist.images[0] ?? null
   return {
     id: artist.id,
     name: artist.name,
     slug: artist.slug,
     origin: artist.origin,
     genres: artist.genres,
-    coverImage: artist.images[0]?.url ?? null,
+    coverImage: cover?.url ?? null,
+    coverImagePublicId: cover?.publicId ?? null,
+    coverImageAlt: cover?.alt ?? null,
   }
 }
 
 const artistInclude = {
-  images: { select: { url: true } },
+  images: { select: { url: true, publicId: true, alt: true } },
 }
 
 export const getAllArtists = unstable_cache(
@@ -136,18 +141,68 @@ export async function getArtistBySlug(slug: string): Promise<ArtistDetail | null
     },
   })
   if (!artist) return null
+  const cover = artist.images[0] ?? null
   return {
     id: artist.id,
     name: artist.name,
     slug: artist.slug,
     origin: artist.origin,
     genres: artist.genres,
-    coverImage: artist.images[0]?.url ?? null,
+    coverImage: cover?.url ?? null,
+    coverImagePublicId: cover?.publicId ?? null,
+    coverImageAlt: cover?.alt ?? null,
     bio: artist.bio,
     socialMedia: artist.socialMedia,
     images: artist.images,
   }
 }
+
+/**
+ * Artistas activos para la grilla "Artistas a seguir" de la home. Ordena
+ * primero los que tienen eventos próximos (más relevantes), después por
+ * nombre alfabético. `isDeleted: false` se filtra a través de los eventos
+ * relacionados; los artistas en sí no tienen soft-delete.
+ */
+export const getActiveArtists = unstable_cache(
+  async (limit = 8): Promise<ArtistSummary[]> => {
+    const now = new Date()
+
+    const withUpcoming = await prisma.artist.findMany({
+      where: {
+        events: {
+          some: {
+            isDeleted: false,
+            isActive: true,
+            dates: { some: { date: { gte: now } } },
+          },
+        },
+      },
+      include: artistInclude,
+      orderBy: { name: "asc" },
+      take: limit,
+    })
+
+    if (withUpcoming.length >= limit) {
+      return withUpcoming.map(mapToSummary)
+    }
+
+    // Si faltan artistas para completar el límite, traer otros para
+    // rellenar (en orden alfabético, excluyendo los ya incluidos).
+    const remaining = limit - withUpcoming.length
+    const fillers = await prisma.artist.findMany({
+      where: {
+        id: { notIn: withUpcoming.map((a) => a.id) },
+      },
+      include: artistInclude,
+      orderBy: { name: "asc" },
+      take: remaining,
+    })
+
+    return [...withUpcoming, ...fillers].map(mapToSummary)
+  },
+  ["active-artists"],
+  { revalidate: 300, tags: ["artists", "events"] }
+)
 
 export async function getArtistsByUser(userId: string): Promise<ArtistSummary[]> {
   const artists = await prisma.artist.findMany({
