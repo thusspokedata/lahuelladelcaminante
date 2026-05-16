@@ -32,6 +32,7 @@ import {
   type ContactType,
 } from "@/lib/validators/contact"
 import { triggerContactNotification } from "@/lib/trigger"
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 async function resolveTypeLabel(type: ContactType, locale: string): Promise<string> {
   const t = await getTranslations({ locale, namespace: "contact.form.types" })
@@ -89,6 +90,22 @@ function fakeOk() {
 export async function POST(request: Request) {
   if (!isAllowedOrigin(request)) {
     return NextResponse.json({ error: "forbidden_origin" }, { status: 403 })
+  }
+
+  // Rate limit IP-based en memoria. 3 req/min default (definido en
+  // `src/lib/rate-limit.ts`). Threat model: bot agresivo desde IP única
+  // intentando drenar quota de Resend. Si el header está vacío, todos
+  // los anónimos caen en el bucket "unknown" y comparten el límite —
+  // browsers reales siempre traen `x-forwarded-for` desde nginx.
+  const rate = checkRateLimit(getClientIp(request.headers))
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "rate_limited", retryAfterSec: rate.retryAfterSec },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
+    )
   }
 
   let body: unknown

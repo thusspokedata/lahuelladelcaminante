@@ -8,14 +8,14 @@
  * eyebrow dorado + h1 cálido + fecha de aplicación visible + escape
  * hatch si pasaron más de 3 días.
  *
- * NOTA SOBRE EL FLUJO QUE DISPARA PENDING (handoff blocker 1):
- * El hook `databaseHooks.user.create.after` en `src/lib/auth.ts` hoy
- * siempre escribe `status: ACTIVE` (tanto si hay Application aprobada
- * como si no). En la práctica esta pantalla solo se renderiza si un
- * admin pone status PENDING manualmente en DB. Arreglar ese hook es
- * out of scope de esta PR (toca lógica de Better Auth — fuera del
- * scope explícito). Esta pantalla está lista para cuando ese arreglo
- * se haga en otro PR.
+ * FLUJO QUE DISPARA PENDING (activo desde PR #23 backend hardening):
+ * El hook `databaseHooks.user.create.after` en `src/lib/auth.ts` escribe
+ * `status: PENDING` por default para toda cuenta nueva (email/password
+ * y Google OAuth). Excepciones: cuenta con Application APPROVED previa
+ * (sign-up post-aprobación → ACTIVE + creator) o `user.role === "admin"`
+ * (seed manual → ACTIVE). Cuando admin aprueba una Application, el
+ * endpoint `/api/apply/[id]` PATCH bumpea el User asociado a ACTIVE +
+ * creator, destrabando el panel.
  *
  * Application matching: `Application` no tiene FK con `User`. Se
  * matchea por email (mismo pattern que el hook). Si no hay match

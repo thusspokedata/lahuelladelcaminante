@@ -424,6 +424,10 @@
       "title": "We couldn't send your message",
       "body": "There was a connection issue. Please try again in a moment."
     },
+    "rateLimit": {
+      "title": "Too many requests",
+      "body": "Wait a moment before trying again."
+    },
     "alternatives": {
       "title": "Other paths",
       "instagramLabel": "@lahuelladelcaminante on Instagram",

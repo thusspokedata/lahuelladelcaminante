@@ -145,10 +145,21 @@ model Image {
 
 
 model Application {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid())
   name      String
   email     String
   message   String
-  status    String   @default("pending") // pending | approved | rejected
-  createdAt DateTime @default(now())
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  // Index para los lookups por email del hook `user.create.after`
+  // (corre en cada signup) y de `/user-pending` (corre en cada visita).
+  // Ambos eran seq-scan antes de esta migración.
+  @@index([email])
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
