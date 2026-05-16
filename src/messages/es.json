@@ -539,6 +539,18 @@
       "ctaPrimary": "Ver agenda pública",
       "ctaSecondary": "Cerrar sesión",
       "escapeHatch": "¿Pasaron más de 3 días y no tuviste respuesta? Algo se rompió. <contactLink>Escribinos</contactLink> y lo resolvemos."
+    },
+    "blocked": {
+      "metaTitle": "Acceso suspendido",
+      "eyebrow": "ACCESO SUSPENDIDO",
+      "title": "Tu cuenta no puede acceder al panel.",
+      "body": "Esto puede pasar por varias razones — incumplimiento de las normas de la comunidad, contenido reportado, o un error nuestro. Si creés que es un error, hablamos.",
+      "ctaContact": "Escribirnos →",
+      "ctaLogout": "Cerrar sesión",
+      "stillWorksTitle": "QUÉ SIGUE FUNCIONANDO",
+      "canSee": "Podés ver todos los eventos públicos del sitio.",
+      "canBrowse": "Podés seguir consultando perfiles de artistas.",
+      "cannot": "No podés publicar, editar ni acceder al panel creator."
     }
   },
   "common": {

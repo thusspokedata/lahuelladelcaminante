@@ -539,6 +539,18 @@
       "ctaPrimary": "Öffentliche Agenda ansehen",
       "ctaSecondary": "Abmelden",
       "escapeHatch": "Mehr als 3 Tage und keine Antwort? Da ist was kaputt. <contactLink>Schreib uns</contactLink> und wir lösen das."
+    },
+    "blocked": {
+      "metaTitle": "Zugang gesperrt",
+      "eyebrow": "ZUGANG GESPERRT",
+      "title": "Dein Konto hat keinen Zugriff auf das Panel.",
+      "body": "Das kann mehrere Gründe haben — Verstoß gegen die Community-Regeln, gemeldete Inhalte, oder ein Fehler von uns. Wenn du denkst, es ist ein Fehler, lass uns reden.",
+      "ctaContact": "Schreib uns →",
+      "ctaLogout": "Abmelden",
+      "stillWorksTitle": "WAS NOCH FUNKTIONIERT",
+      "canSee": "Du kannst weiterhin alle öffentlichen Events der Seite sehen.",
+      "canBrowse": "Du kannst weiterhin Künstlerprofile ansehen.",
+      "cannot": "Du kannst nicht veröffentlichen, bearbeiten oder auf das Creator-Panel zugreifen."
     }
   },
   "common": {

@@ -539,6 +539,18 @@
       "ctaPrimary": "Browse the public agenda",
       "ctaSecondary": "Sign out",
       "escapeHatch": "More than 3 days and no reply? Something broke. <contactLink>Write us</contactLink> and we'll sort it out."
+    },
+    "blocked": {
+      "metaTitle": "Access suspended",
+      "eyebrow": "ACCESS SUSPENDED",
+      "title": "Your account can't access the panel.",
+      "body": "This can happen for several reasons — community-rules violation, reported content, or a mistake on our end. If you think it's a mistake, let's talk.",
+      "ctaContact": "Write to us →",
+      "ctaLogout": "Sign out",
+      "stillWorksTitle": "WHAT STILL WORKS",
+      "canSee": "You can still see all the public events on the site.",
+      "canBrowse": "You can still browse artist profiles.",
+      "cannot": "You can't publish, edit or access the creator panel."
     }
   },
   "common": {
