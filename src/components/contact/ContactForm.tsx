@@ -63,6 +63,7 @@ export default function ContactForm() {
   const tErrors = useTranslations("contact.form.errors")
   const tSuccess = useTranslations("contact.success")
   const tError = useTranslations("contact.error")
+  const tRateLimit = useTranslations("contact.rateLimit")
   const locale = useLocale()
   const errorMessageFor = (code: string): string =>
     KNOWN_ERROR_CODES.has(code) ? tErrors(code) : tErrors("generic")
@@ -140,8 +141,7 @@ export default function ContactForm() {
         // 400 validation_error: el server rechazó por schema (drift entre
         // cliente y server, o usuario tampering con el payload). Volcamos
         // las `issues` a fieldErrors para que el user vea exactamente qué
-        // campo está mal. Cualquier otro status (5xx, 429, etc) cae al
-        // toast genérico de "problema de conexión".
+        // campo está mal.
         if (res.status === 400) {
           const body = (await res.json().catch(() => null)) as
             | { issues?: Array<{ path: (string | number)[]; message: string }> }
@@ -158,6 +158,17 @@ export default function ContactForm() {
             return
           }
         }
+        // 429 rate_limited: el server cortó por exceso de requests
+        // desde la IP del cliente. Mensaje específico — distinto del
+        // genérico "problema de conexión" para que el user entienda
+        // que no es un bug, es defensa anti-spam.
+        if (res.status === 429) {
+          toast.error(tRateLimit("title"), {
+            description: tRateLimit("body"),
+          })
+          return
+        }
+        // Cualquier otro status (5xx, etc.) cae al toast genérico.
         toast.error(tError("title"), { description: tError("body") })
       } catch {
         toast.error(tError("title"), { description: tError("body") })

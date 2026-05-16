@@ -424,6 +424,10 @@
       "title": "No pudimos enviar tu mensaje",
       "body": "Hubo un problema de conexión. Probá de nuevo en un momento."
     },
+    "rateLimit": {
+      "title": "Demasiadas solicitudes",
+      "body": "Esperá un momento antes de probar de nuevo."
+    },
     "alternatives": {
       "title": "Otros caminos",
       "instagramLabel": "@lahuelladelcaminante en Instagram",

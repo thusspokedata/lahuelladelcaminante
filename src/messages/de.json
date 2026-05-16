@@ -424,6 +424,10 @@
       "title": "Nachricht konnte nicht gesendet werden",
       "body": "Es gab ein Verbindungsproblem. Versuch es gleich noch einmal."
     },
+    "rateLimit": {
+      "title": "Zu viele Anfragen",
+      "body": "Warte einen Moment, bevor du es erneut versuchst."
+    },
     "alternatives": {
       "title": "Andere Pfade, uns zu erreichen",
       "instagramLabel": "@lahuelladelcaminante auf Instagram",
