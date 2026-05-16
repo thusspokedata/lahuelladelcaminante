@@ -103,7 +103,6 @@ async function HeroSection({ variant, locale }: HeroSectionProps) {
   return (
     <section
       className={cn("relative overflow-hidden border-b border-border", SECTION_GAP_CLASS)}
-      style={{ paddingTop: "var(--space-3xl)", paddingBottom: "var(--space-3xl)" }}
     >
       <div
         className="mx-auto grid grid-cols-1 gap-xl lg:grid-cols-[1.4fr_1fr] lg:items-end"
@@ -149,7 +148,7 @@ async function StatsSection({ stats, locale }: StatsSectionProps) {
   ]
 
   return (
-    <section className="border-b border-border" style={{ paddingTop: "var(--space-xl)", paddingBottom: "var(--space-xl)" }}>
+    <section className="border-b border-border py-l">
       <div className="mx-auto grid grid-cols-2 gap-l lg:grid-cols-4" style={CONTAINER_STYLE}>
         {items.map((item) => (
           <div key={item.label} className="flex flex-col gap-xs">
