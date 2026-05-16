@@ -9,6 +9,18 @@
  * del email) se resuelve del namespace i18n `contact.form.types.*`
  * usando el locale del request. Esto evita que el founder reciba mails
  * con keys técnicas como `[Contacto · event_suggestion]`.
+ *
+ * Defensas anti-abuse acotadas (decisión de producto: sin captcha):
+ *  - Honeypot field `website` en el schema. Si llega no-vacío,
+ *    descartamos silenciosamente con 200 fake (no le damos pista al
+ *    bot).
+ *  - Origin/Referer check contra `NEXT_PUBLIC_APP_URL` para cortar el
+ *    vector "sitio tercero hace fetch cross-origin desde browser".
+ *    Defense parcial — un atacante con backend propio sin browser la
+ *    evita, pero corta el caso bot-on-third-party-site.
+ *
+ * Falta (registrado en BACKLOG como deuda ALTA): rate limit IP-based,
+ * GDPR consent + Datenschutzerklärung, security headers globales.
  */
 
 import { NextResponse } from "next/server"
@@ -36,7 +48,49 @@ function pickLocale(headerValue: string | null): string {
   return ["es", "en", "de"].includes(headerValue) ? headerValue : fallback
 }
 
+/**
+ * Chequea que el POST venga del mismo origen del sitio. Cierra el
+ * vector "browser de un tercero hace fetch cross-origin a /api/contact"
+ * que de otra forma habilitaría a bots distribuidos sin infra propia.
+ * No es defensa completa (un atacante con backend la evita), pero corta
+ * el path browser-based con cero costo.
+ */
+function isAllowedOrigin(request: Request): boolean {
+  const expected = env.NEXT_PUBLIC_APP_URL
+  if (!expected) return true // sin app URL configurada → no podemos comparar
+  const origin = request.headers.get("origin")
+  if (origin) {
+    try {
+      return new URL(origin).origin === new URL(expected).origin
+    } catch {
+      return false
+    }
+  }
+  // Si no hay Origin (algunos clientes), probar con Referer como fallback.
+  const referer = request.headers.get("referer")
+  if (referer) {
+    try {
+      return new URL(referer).origin === new URL(expected).origin
+    } catch {
+      return false
+    }
+  }
+  // Sin Origin ni Referer: rechazar conservadoramente (browsers reales
+  // mandan al menos uno en POSTs).
+  return false
+}
+
+/** "200 fake" para honeypot trips: respondemos como si todo OK pero NO
+ * disparamos el email. Sin pista para el bot. */
+function fakeOk() {
+  return NextResponse.json({ data: { success: true } })
+}
+
 export async function POST(request: Request) {
+  if (!isAllowedOrigin(request)) {
+    return NextResponse.json({ error: "forbidden_origin" }, { status: 403 })
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -50,6 +104,11 @@ export async function POST(request: Request) {
       { error: "validation_error", issues: result.error.issues },
       { status: 400 }
     )
+  }
+
+  // Honeypot trip: bot completó el campo invisible. Fake 200, sin email.
+  if (result.data.website && result.data.website.trim() !== "") {
+    return fakeOk()
   }
 
   const locale = pickLocale(request.headers.get("x-locale"))
