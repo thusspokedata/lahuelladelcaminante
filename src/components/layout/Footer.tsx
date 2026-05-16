@@ -1,61 +1,173 @@
-"use client"
+/**
+ * Footer — server component, 4 columnas en desktop, stacked en mobile.
+ *
+ * Estructura por columnas:
+ *  1. Marca: BrandLockup vertical + tagline.
+ *  2. EXPLORAR: links públicos (Eventos, Artistas, Esta semana).
+ *  3. PARA VOS: aplicar como creator, sign-in.
+ *  4. COMUNIDAD: Instagram, newsletter (placeholder), email mailto.
+ *
+ * Debajo de las columnas, línea separadora con copyright a la izquierda y
+ * links a Impressum/Datenschutz a la derecha (`#` por ahora; el contenido
+ * legal se redacta en una épica aparte).
+ *
+ * Es server component: no necesita hooks ni sesión. La distinción "mostrar
+ * email solo a creator/admin" del Footer viejo se elimina — el email
+ * `info@...` ahora aparece a todos, alineado con el handoff (sección
+ * pública de contacto).
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §6.
+ */
 
 import Link from "next/link"
-import { useTranslations, useLocale } from "next-intl"
-import { useSession } from "@/lib/auth-client"
+import { getLocale, getTranslations } from "next-intl/server"
+import { cn } from "@/lib/utils"
+import BrandLockup from "@/components/brand/BrandLockup"
+import Eyebrow from "@/components/ui/Eyebrow"
 
-export function Footer() {
-  const t = useTranslations("footer")
-  const locale = useLocale()
-  const currentYear = new Date().getFullYear()
-  const { data: session } = useSession()
-
-  const role = session?.user?.role?.toLowerCase()
-  const canCreate = role === "creator" || role === "admin"
+export async function Footer() {
+  const locale = await getLocale()
+  const t = await getTranslations("footer")
+  const tNav = await getTranslations("nav")
+  const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-border bg-card mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          {/* Brand */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-black shadow-sm">
-              ♪
-            </div>
-            <div className="leading-tight">
-              <div className="font-black text-sm">La Huella del Caminante</div>
-              <div className="text-xs text-muted-foreground">{t("tagline")}</div>
-            </div>
+    <footer
+      className="border-t border-border bg-bg-page mt-auto"
+      style={{
+        paddingTop: "var(--spacing-2xl)",
+        paddingBottom: "var(--spacing-xl)",
+      }}
+    >
+      <div
+        className="mx-auto"
+        style={{
+          maxWidth: "var(--layout-max-w)",
+          paddingLeft: "var(--layout-gutter)",
+          paddingRight: "var(--layout-gutter)",
+        }}
+      >
+        <div className="grid grid-cols-1 gap-xl lg:grid-cols-4 lg:gap-l">
+          {/* Columna 1 — Marca */}
+          <div className="flex flex-col items-start gap-m">
+            <BrandLockup orientation="vertical" />
+            <p className="text-body-s text-fg-secondary leading-relaxed max-w-[28ch]">
+              {t("tagline")}
+            </p>
           </div>
 
-          {/* Links */}
-          <nav className="flex items-center gap-5 text-sm text-muted-foreground">
-            <Link href={`/${locale}/events`} className="hover:text-foreground transition-colors">{t("events")}</Link>
-            <Link href={`/${locale}/artists`} className="hover:text-foreground transition-colors">{t("artists")}</Link>
-            <a
+          {/* Columna 2 — EXPLORAR */}
+          <FooterColumn eyebrow={t("explore")}>
+            <FooterLink href={`/${locale}/events`}>{tNav("events")}</FooterLink>
+            <FooterLink href={`/${locale}/artists`}>
+              {tNav("artists")}
+            </FooterLink>
+            <FooterLink href={`/${locale}/events#esta-semana`}>
+              {tNav("thisWeek")}
+            </FooterLink>
+          </FooterColumn>
+
+          {/* Columna 3 — PARA VOS */}
+          <FooterColumn eyebrow={t("forYou")}>
+            <FooterLink href={`/${locale}/apply`}>{t("apply")}</FooterLink>
+            <FooterLink href={`/${locale}/sign-in`}>{tNav("signIn")}</FooterLink>
+          </FooterColumn>
+
+          {/* Columna 4 — COMUNIDAD */}
+          <FooterColumn eyebrow={t("community")}>
+            <FooterLink
               href="https://www.instagram.com/lahuelladelcaminante/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
+              external
             >
               Instagram
-            </a>
-            {canCreate && (
-              <a
-                href="mailto:info@lahuelladelcaminante.de"
-                className="hover:text-foreground transition-colors"
-              >
-                info@lahuelladelcaminante.de
-              </a>
-            )}
-            <Link href={`/${locale}/sign-in`} className="hover:text-foreground transition-colors">{t("login")}</Link>
-          </nav>
+            </FooterLink>
+            {/* TODO: replace `#` with real newsletter signup once flow exists. */}
+            <FooterLink href="#" external>
+              {t("newsletter")}
+            </FooterLink>
+            <FooterLink href="mailto:info@lahuelladelcaminante.de" external>
+              info@lahuelladelcaminante.de
+            </FooterLink>
+          </FooterColumn>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border text-xs text-muted-foreground text-center">
-          {t("copyright", { year: currentYear })}
+        {/* Línea inferior: copyright + legal */}
+        <div
+          className={cn(
+            "border-t border-border mt-2xl pt-l",
+            "flex flex-col gap-s sm:flex-row sm:items-center sm:justify-between"
+          )}
+        >
+          <p className="text-caption text-fg-tertiary">
+            {t("copyright", { year })}
+          </p>
+          <div className="flex items-center gap-l">
+            {/* TODO: link to actual legal pages when content is ready. */}
+            <a
+              href="#"
+              className="text-caption text-fg-tertiary hover:text-fg-primary transition-colors duration-200 ease-out"
+            >
+              {t("impressum")}
+            </a>
+            <a
+              href="#"
+              className="text-caption text-fg-tertiary hover:text-fg-primary transition-colors duration-200 ease-out"
+            >
+              {t("datenschutz")}
+            </a>
+          </div>
         </div>
       </div>
     </footer>
+  )
+}
+
+interface FooterColumnProps {
+  eyebrow: string
+  children: React.ReactNode
+}
+
+function FooterColumn({ eyebrow, children }: FooterColumnProps) {
+  return (
+    <div className="flex flex-col gap-m">
+      <Eyebrow as="p">{eyebrow}</Eyebrow>
+      <ul className="flex flex-col gap-s">{children}</ul>
+    </div>
+  )
+}
+
+interface FooterLinkProps {
+  href: string
+  children: React.ReactNode
+  /** Si es link externo o mailto: abre en nueva pestaña con `noopener
+   * noreferrer`. Los links internos usan `next/link`. */
+  external?: boolean
+}
+
+function FooterLink({ href, children, external = false }: FooterLinkProps) {
+  const className =
+    "text-body-s text-fg-secondary hover:text-fg-primary transition-colors duration-200 ease-out"
+
+  if (external) {
+    return (
+      <li>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={className}
+        >
+          {children}
+        </a>
+      </li>
+    )
+  }
+
+  return (
+    <li>
+      <Link href={href} className={className}>
+        {children}
+      </Link>
+    </li>
   )
 }
