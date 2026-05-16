@@ -55,6 +55,8 @@ export default async function SignInPage({
 
   return (
     <AuthShell
+      formAriaLabel={t("formAriaLabel")}
+      heroAriaLabel={t("heroAriaLabel")}
       hero={
         <div className="flex flex-col gap-l">
           <Eyebrow accent="brand" as="p">

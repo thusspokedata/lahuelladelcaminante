@@ -27,12 +27,21 @@ export interface AuthShellProps {
   children: React.ReactNode
   /** Slot derecho — panel editorial. Se oculta en mobile. */
   hero: React.ReactNode
+  /** `aria-label` del `<section>` del form. El caller lo provee i18n-aware
+   * (AuthShell es server pero no consume `useTranslations`; recibirlo por
+   * prop mantiene la API simple y deja el copy en el namespace de cada
+   * página). */
+  formAriaLabel: string
+  /** `aria-label` del `<aside>` del hero. Idem `formAriaLabel`. */
+  heroAriaLabel: string
   className?: string
 }
 
 export default function AuthShell({
   children,
   hero,
+  formAriaLabel,
+  heroAriaLabel,
   className,
 }: AuthShellProps) {
   return (
@@ -48,7 +57,7 @@ export default function AuthShell({
           adentro de la columna para que no se estire en pantallas anchas. */}
       <section
         className="flex items-start justify-center px-l py-2xl lg:col-span-7 lg:items-center lg:py-3xl"
-        aria-label="Formulario"
+        aria-label={formAriaLabel}
       >
         <div className="w-full max-w-[440px]">{children}</div>
       </section>
@@ -57,7 +66,7 @@ export default function AuthShell({
           Surface elevada para distinguirla visualmente del form. */}
       <aside
         className="hidden bg-bg-surface lg:col-span-5 lg:flex lg:flex-col lg:justify-center lg:gap-xl lg:px-2xl lg:py-3xl"
-        aria-label="Manifiesto"
+        aria-label={heroAriaLabel}
       >
         {hero}
       </aside>

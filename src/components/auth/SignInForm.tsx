@@ -100,10 +100,18 @@ export default function SignInForm({ locale }: SignInFormProps) {
   })
 
   async function onSubmit(values: SignInInput) {
-    const res = await signIn.email({
-      email: values.email,
-      password: values.password,
-    })
+    let res
+    try {
+      res = await signIn.email({
+        email: values.email,
+        password: values.password,
+      })
+    } catch {
+      // Network failure / SDK lanza excepción no manejada — sin esto el
+      // botón queda en isSubmitting indefinido y el user no sabe qué pasó.
+      toast.error(errorMessageFor("generic"))
+      return
+    }
 
     if (res.error) {
       const code = mapAuthErrorToCode(res.error)

@@ -457,6 +457,8 @@
   "auth": {
     "signIn": {
       "metaTitle": "Iniciar sesión",
+      "formAriaLabel": "Formulario de inicio de sesión",
+      "heroAriaLabel": "Manifiesto y agenda",
       "eyebrow": "BIENVENIDO DE VUELTA",
       "title": "Iniciá sesión.",
       "subtitle": "¿Sos público? No necesitás cuenta para ver shows. Esto es para artistas y organizadores.",
@@ -488,6 +490,8 @@
     },
     "signUp": {
       "metaTitle": "Crear cuenta",
+      "formAriaLabel": "Formulario de registro",
+      "heroAriaLabel": "Pasos del proceso",
       "eyebrow": "CREAR CUENTA",
       "title": "Empezá a <accent>publicar.</accent>",
       "subtitle": "Crear cuenta es el primer paso. Después aplicás como creator y revisamos tu perfil — suele tomar 1-2 días.",
@@ -530,6 +534,7 @@
     }
   },
   "account": {
+    "signOutError": "No pudimos cerrar tu sesión. Probá de nuevo.",
     "pending": {
       "metaTitle": "Cuenta en revisión",
       "eyebrow": "CUENTA EN REVISIÓN",

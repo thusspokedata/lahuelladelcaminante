@@ -457,6 +457,8 @@
   "auth": {
     "signIn": {
       "metaTitle": "Sign in",
+      "formAriaLabel": "Sign-in form",
+      "heroAriaLabel": "Manifesto and agenda",
       "eyebrow": "WELCOME BACK",
       "title": "Sign in.",
       "subtitle": "Just here to browse? You don't need an account to see shows. This is for artists and organizers.",
@@ -488,6 +490,8 @@
     },
     "signUp": {
       "metaTitle": "Create account",
+      "formAriaLabel": "Sign-up form",
+      "heroAriaLabel": "Process steps",
       "eyebrow": "CREATE ACCOUNT",
       "title": "Start <accent>publishing.</accent>",
       "subtitle": "Creating an account is step one. Then you apply as a creator and we review your profile — usually 1-2 days.",
@@ -530,6 +534,7 @@
     }
   },
   "account": {
+    "signOutError": "Couldn't sign you out. Try again.",
     "pending": {
       "metaTitle": "Account under review",
       "eyebrow": "ACCOUNT UNDER REVIEW",

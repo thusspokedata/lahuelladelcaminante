@@ -457,6 +457,8 @@
   "auth": {
     "signIn": {
       "metaTitle": "Anmelden",
+      "formAriaLabel": "Anmeldeformular",
+      "heroAriaLabel": "Manifest und Agenda",
       "eyebrow": "WILLKOMMEN ZURÜCK",
       "title": "Melde dich an.",
       "subtitle": "Nur zum Stöbern hier? Du brauchst kein Konto, um Shows zu sehen. Das hier ist für Künstler und Veranstalter.",
@@ -488,6 +490,8 @@
     },
     "signUp": {
       "metaTitle": "Konto erstellen",
+      "formAriaLabel": "Registrierungsformular",
+      "heroAriaLabel": "Schritte des Ablaufs",
       "eyebrow": "KONTO ERSTELLEN",
       "title": "Fang an zu <accent>veröffentlichen.</accent>",
       "subtitle": "Konto erstellen ist der erste Schritt. Dann bewirbst du dich als Creator und wir prüfen dein Profil — meistens 1-2 Tage.",
@@ -530,6 +534,7 @@
     }
   },
   "account": {
+    "signOutError": "Abmeldung fehlgeschlagen. Versuche es erneut.",
     "pending": {
       "metaTitle": "Konto wird geprüft",
       "eyebrow": "KONTO WIRD GEPRÜFT",

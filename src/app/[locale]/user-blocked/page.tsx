@@ -57,6 +57,7 @@ export default async function UserBlockedPage({
   }
 
   const t = await getTranslations({ locale, namespace: "account.blocked" })
+  const tAccount = await getTranslations({ locale, namespace: "account" })
 
   return (
     <div className="min-h-screen bg-bg-page">
@@ -86,7 +87,11 @@ export default async function UserBlockedPage({
           >
             <Link href="/contact">{t("ctaContact")}</Link>
           </Button>
-          <SignOutButton label={t("ctaLogout")} className="h-11" />
+          <SignOutButton
+            label={t("ctaLogout")}
+            errorLabel={tAccount("signOutError")}
+            className="h-11"
+          />
         </div>
 
         {/* Bloque "qué sigue funcionando" — surface elevada, alineado

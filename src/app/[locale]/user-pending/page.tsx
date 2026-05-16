@@ -74,6 +74,7 @@ export default async function UserPendingPage({
   }
 
   const t = await getTranslations({ locale, namespace: "account.pending" })
+  const tAccount = await getTranslations({ locale, namespace: "account" })
 
   // Application por email. Devolver la más reciente — un user podría
   // haber aplicado más de una vez con el mismo email.
@@ -132,7 +133,11 @@ export default async function UserPendingPage({
           >
             <Link href="/events">{t("ctaPrimary")}</Link>
           </Button>
-          <SignOutButton label={t("ctaSecondary")} className="h-11" />
+          <SignOutButton
+            label={t("ctaSecondary")}
+            errorLabel={tAccount("signOutError")}
+            className="h-11"
+          />
         </div>
 
         <div className="mt-xl w-full rounded-l border border-border bg-bg-surface p-l text-left">

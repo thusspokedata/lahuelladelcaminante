@@ -17,6 +17,7 @@
  */
 
 import { useTransition } from "react"
+import { toast } from "sonner"
 import { useRouter } from "@/i18n/navigation"
 import { signOut } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,10 @@ import { Button } from "@/components/ui/button"
 export interface SignOutButtonProps {
   label: string
   loadingLabel?: string
+  /** Mensaje para el toast de error si signOut falla. El caller lo
+   * provee i18n-aware (este componente no consume `useTranslations`
+   * para mantener su API simple). */
+  errorLabel?: string
   variant?: "outline" | "ghost" | "default"
   className?: string
 }
@@ -31,6 +36,7 @@ export interface SignOutButtonProps {
 export default function SignOutButton({
   label,
   loadingLabel,
+  errorLabel,
   variant = "outline",
   className,
 }: SignOutButtonProps) {
@@ -39,8 +45,18 @@ export default function SignOutButton({
 
   function handleClick() {
     startTransition(async () => {
-      await signOut()
-      router.replace("/")
+      try {
+        await signOut()
+        router.replace("/")
+      } catch {
+        // Si Better Auth falla (network, server down, etc.) el user
+        // queda con sesión activa pero esperando feedback. Toast en
+        // lugar de inline error para consistencia con SignInForm /
+        // SignUpForm (mismo patrón sonner). Fallback a un mensaje
+        // genérico si el caller no pasó `errorLabel` — no rompe el
+        // botón ni deja al user en limbo silencioso.
+        toast.error(errorLabel ?? "Sign out failed. Try again.")
+      }
     })
   }
 
