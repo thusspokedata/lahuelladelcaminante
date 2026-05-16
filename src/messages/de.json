@@ -465,6 +465,48 @@
         "body": "La Huella ist ein unabhängiges Portal. Wir verkaufen keine Tickets, wir nehmen keine Provision. Wir zeigen einfach, was läuft.",
         "statsFormat": "{shows} KOMMENDE SHOWS · {cities} STÄDTE"
       }
+    },
+    "signUp": {
+      "metaTitle": "Konto erstellen",
+      "eyebrow": "KONTO ERSTELLEN",
+      "title": "Fang an zu <accent>veröffentlichen.</accent>",
+      "subtitle": "Konto erstellen ist der erste Schritt. Dann bewirbst du dich als Creator und wir prüfen dein Profil — meistens 1-2 Tage.",
+      "continueWith": "Mit {provider} fortfahren",
+      "orEmail": "ODER MIT E-MAIL",
+      "nameLabel": "Name",
+      "namePlaceholder": "Wie sollen wir dich nennen",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Wähle ein Passwort",
+      "passwordHint": "Mische Großbuchstaben, Zahlen und ein Symbol.",
+      "acceptTerms": "Ich akzeptiere die <terms>AGB</terms> und die <privacy>Datenschutzerklärung</privacy>.",
+      "submit": "Konto erstellen →",
+      "submitting": "Konto wird erstellt...",
+      "footer": "Schon ein Konto? <signInLink>Anmelden</signInLink>",
+      "errors": {
+        "email_taken": "Es gibt schon ein Konto mit dieser E-Mail. Versuche dich anzumelden.",
+        "name_too_short": "Mindestens 2 Zeichen.",
+        "name_too_long": "Maximal 120 Zeichen.",
+        "email_required": "E-Mail ist erforderlich.",
+        "email_invalid": "Ungültige E-Mail.",
+        "email_too_long": "E-Mail zu lang.",
+        "password_too_short": "Mindestens 8 Zeichen.",
+        "password_too_long": "Zu lang.",
+        "terms_required": "Du musst die AGB akzeptieren, um fortzufahren.",
+        "generic": "Wir konnten dein Konto nicht erstellen. Versuche es erneut."
+      },
+      "hero": {
+        "eyebrow": "DREI SCHRITTE · ANDERTHALB TAGE",
+        "title": "Vom neuen Konto zum Live-Event <accent>in Tagen</accent>.",
+        "step1Title": "Konto erstellen",
+        "step1Time": "Jetzt sofort · 1 Min.",
+        "step2Title": "Als Creator bewerben",
+        "step2Time": "Wir prüfen · 1-2 Tage.",
+        "step3Title": "Erstes Event veröffentlichen",
+        "step3Time": "Wann du willst · 3 Min.",
+        "support": "Wir sind in Berlin und antworten auf Spanisch, Englisch und Deutsch. Bei Fragen <contactLink>schreib uns</contactLink>."
+      }
     }
   },
   "common": {

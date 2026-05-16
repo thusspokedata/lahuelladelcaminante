@@ -465,6 +465,48 @@
         "body": "La Huella es un portal independiente. No vendemos entradas, no tomamos comisión. Solo mostramos lo que está sonando.",
         "statsFormat": "{shows} SHOWS PRÓXIMOS · {cities} CIUDADES"
       }
+    },
+    "signUp": {
+      "metaTitle": "Crear cuenta",
+      "eyebrow": "CREAR CUENTA",
+      "title": "Empezá a <accent>publicar.</accent>",
+      "subtitle": "Crear cuenta es el primer paso. Después aplicás como creator y revisamos tu perfil — suele tomar 1-2 días.",
+      "continueWith": "Continuar con {provider}",
+      "orEmail": "O CON EMAIL",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Cómo te llamamos",
+      "emailLabel": "Email",
+      "emailPlaceholder": "vos@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Creá una contraseña",
+      "passwordHint": "Mezclá mayúsculas, números y un símbolo.",
+      "acceptTerms": "Acepto los <terms>términos</terms> y la <privacy>política de privacidad</privacy>.",
+      "submit": "Crear cuenta →",
+      "submitting": "Creando cuenta...",
+      "footer": "¿Ya tenés cuenta? <signInLink>Iniciar sesión</signInLink>",
+      "errors": {
+        "email_taken": "Ya hay una cuenta con ese email. Probá iniciar sesión.",
+        "name_too_short": "Mínimo 2 caracteres.",
+        "name_too_long": "Máximo 120 caracteres.",
+        "email_required": "El email es obligatorio.",
+        "email_invalid": "Email inválido.",
+        "email_too_long": "Email demasiado largo.",
+        "password_too_short": "Mínimo 8 caracteres.",
+        "password_too_long": "Demasiado largo.",
+        "terms_required": "Tenés que aceptar los términos para continuar.",
+        "generic": "No pudimos crear tu cuenta. Probá de nuevo."
+      },
+      "hero": {
+        "eyebrow": "TRES PASOS · UN DÍA Y MEDIO",
+        "title": "De cuenta nueva a evento <accent>en vivo</accent>.",
+        "step1Title": "Creás la cuenta",
+        "step1Time": "Ahora mismo · 1 min.",
+        "step2Title": "Aplicás como creator",
+        "step2Time": "Nosotros revisamos · 1-2 días.",
+        "step3Title": "Publicás tu primer evento",
+        "step3Time": "Cuando quieras · 3 min.",
+        "support": "Vivimos en Berlín y respondemos en español, inglés y alemán. Si tenés dudas, <contactLink>escribinos</contactLink>."
+      }
     }
   },
   "common": {

@@ -465,6 +465,48 @@
         "body": "La Huella is an independent portal. We don't sell tickets, we don't take a cut. We just show what's playing.",
         "statsFormat": "{shows} UPCOMING SHOWS · {cities} CITIES"
       }
+    },
+    "signUp": {
+      "metaTitle": "Create account",
+      "eyebrow": "CREATE ACCOUNT",
+      "title": "Start <accent>publishing.</accent>",
+      "subtitle": "Creating an account is step one. Then you apply as a creator and we review your profile — usually 1-2 days.",
+      "continueWith": "Continue with {provider}",
+      "orEmail": "OR WITH EMAIL",
+      "nameLabel": "Name",
+      "namePlaceholder": "What should we call you",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "passwordHint": "Mix uppercase, numbers and a symbol.",
+      "acceptTerms": "I accept the <terms>terms</terms> and the <privacy>privacy policy</privacy>.",
+      "submit": "Create account →",
+      "submitting": "Creating account...",
+      "footer": "Already have an account? <signInLink>Sign in</signInLink>",
+      "errors": {
+        "email_taken": "There's already an account with that email. Try signing in.",
+        "name_too_short": "At least 2 characters.",
+        "name_too_long": "Maximum 120 characters.",
+        "email_required": "Email is required.",
+        "email_invalid": "Invalid email.",
+        "email_too_long": "Email too long.",
+        "password_too_short": "At least 8 characters.",
+        "password_too_long": "Too long.",
+        "terms_required": "You need to accept the terms to continue.",
+        "generic": "We couldn't create your account. Try again."
+      },
+      "hero": {
+        "eyebrow": "THREE STEPS · ONE AND A HALF DAYS",
+        "title": "From new account to live event <accent>in days</accent>.",
+        "step1Title": "Create the account",
+        "step1Time": "Right now · 1 min.",
+        "step2Title": "Apply as a creator",
+        "step2Time": "We review · 1-2 days.",
+        "step3Title": "Publish your first event",
+        "step3Time": "Whenever · 3 min.",
+        "support": "We're based in Berlin and respond in Spanish, English and German. If you have questions, <contactLink>write us</contactLink>."
+      }
     }
   },
   "common": {
