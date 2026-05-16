@@ -12,6 +12,16 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional().default(""),
   RESEND_API_KEY: z.string().optional().default(""),
   TRIGGER_SECRET_KEY: z.string().optional().default(""),
+  /**
+   * Email del founder al que llegan los mensajes de `/contact`. Si no
+   * está definida, el handler cae a `info@lahuelladelcaminante.de`
+   * (mismo destino histórico de `triggerApplicationNotification`).
+   */
+  CONTACT_RECIPIENT_EMAIL: z
+    .string()
+    .email()
+    .optional()
+    .default("info@lahuelladelcaminante.de"),
 })
 
 export const env = envSchema.parse(process.env)
