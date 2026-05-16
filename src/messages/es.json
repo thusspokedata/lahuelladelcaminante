@@ -362,6 +362,25 @@
     "active": "Activo",
     "blocked": "Bloqueado"
   },
+  "notFound": {
+    "eyebrow": "SE PERDIÓ EL CAMINANTE",
+    "title": "Esta huella todavía no existe.",
+    "body": "El evento que buscás puede haber pasado o el link es viejo. Probá la agenda actual.",
+    "cta": {
+      "agenda": "Ir a la agenda",
+      "back": "Página anterior"
+    }
+  },
+  "error": {
+    "eyebrow": "ALGO SE ROMPIÓ",
+    "title": "El camino se enredó por un momento.",
+    "body": "Volvé a intentar. Si sigue pasando, escribinos.",
+    "cta": {
+      "retry": "Reintentar",
+      "home": "Volver al inicio",
+      "contact": "Escribinos"
+    }
+  },
   "auth": {
     "signIn": "Iniciar Sesión",
     "signUp": "Registrarse",

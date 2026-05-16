@@ -362,6 +362,25 @@
     "active": "Active",
     "blocked": "Blocked"
   },
+  "notFound": {
+    "eyebrow": "THE WANDERER GOT LOST",
+    "title": "This trail doesn't exist yet.",
+    "body": "The event you're looking for may have passed or the link is stale. Try the current agenda.",
+    "cta": {
+      "agenda": "Go to the agenda",
+      "back": "Previous page"
+    }
+  },
+  "error": {
+    "eyebrow": "SOMETHING BROKE",
+    "title": "The path tangled up for a moment.",
+    "body": "Try again. If it keeps happening, let us know.",
+    "cta": {
+      "retry": "Retry",
+      "home": "Back to home",
+      "contact": "Get in touch"
+    }
+  },
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
