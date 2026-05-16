@@ -11,7 +11,7 @@
 
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
-import { requireActive, isCreatorOrAdmin } from "@/services/auth"
+import { requireActive } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
 import Eyebrow from "@/components/ui/Eyebrow"
 import { ArtistCard } from "@/components/artists/ArtistCard"
@@ -23,12 +23,10 @@ export default async function DashboardArtistsPage({
 }) {
   const { locale } = await params
   const { user } = await requireActive(locale)
+  // Role check ya lo hace `(protected)/dashboard/layout.tsx`: si no es
+  // creator/admin no llega acá. No repetimos el guard.
+
   const t = await getTranslations({ locale, namespace: "dashboard" })
-
-  if (!isCreatorOrAdmin(user.role)) {
-    return <p className="text-body text-fg-secondary">{t("noPermission")}</p>
-  }
-
   const artists = await getArtistsByUser(user.id)
   const tActions = await getTranslations({
     locale,

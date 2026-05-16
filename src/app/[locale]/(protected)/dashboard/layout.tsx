@@ -6,7 +6,8 @@
  * sidebar con el accent correcto.
  */
 
-import { requireActive } from "@/services/auth"
+import { redirect } from "next/navigation"
+import { requireActive, isCreatorOrAdmin } from "@/services/auth"
 import DashboardShell from "@/components/dashboard/DashboardShell"
 
 export default async function DashboardLayout({
@@ -18,6 +19,17 @@ export default async function DashboardLayout({
 }) {
   const { locale } = await params
   const { user } = await requireActive(locale)
+
+  // Guard de rol: el dashboard está pensado para creator/admin. Un user
+  // común autenticado (role `user`) no debería ver el shell de creator
+  // ni las pantallas que asumen capacidad de crear eventos/artistas.
+  // Redirige a la home pública (la app no tiene una landing específica
+  // para `user` regular hoy). Centralizar el check acá evita repetirlo
+  // en cada page.
+  if (!isCreatorOrAdmin(user.role)) {
+    redirect(`/${locale}`)
+  }
+
   // El dashboard de `/dashboard/**` es siempre creator-themed (fucsia +
   // tab bar mobile), aunque el user logueado sea admin. Los admins pueden
   // crear/editar artistas y eventos como un creator más; el `/admin/**`
