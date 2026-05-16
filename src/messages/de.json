@@ -362,6 +362,25 @@
     "active": "Aktiv",
     "blocked": "Gesperrt"
   },
+  "notFound": {
+    "eyebrow": "DER WANDERER HAT SICH VERLAUFEN",
+    "title": "Diese Spur gibt es noch nicht.",
+    "body": "Das Event, das du suchst, ist vielleicht schon vorbei oder der Link ist veraltet. Schau dir die kommenden Veranstaltungen an.",
+    "cta": {
+      "agenda": "Zu den Veranstaltungen",
+      "back": "Zurück"
+    }
+  },
+  "error": {
+    "eyebrow": "ETWAS IST SCHIEFGELAUFEN",
+    "title": "Der Weg hat sich kurz verheddert.",
+    "body": "Versuch es noch einmal. Wenn es weiterhin passiert, schreib uns.",
+    "cta": {
+      "retry": "Erneut versuchen",
+      "home": "Zur Startseite",
+      "contact": "Schreib uns"
+    }
+  },
   "auth": {
     "signIn": "Anmelden",
     "signUp": "Registrieren",
