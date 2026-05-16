@@ -69,80 +69,44 @@ operamos en gris legal contra GDPR/DSGVO al servir desde Alemania.
 
 Bloquea poder operar legítimamente en mercado DE a mediano plazo.
 
-### Rate limit IP-based para `/api/contact` — prioridad MEDIA
+### Bonus: FK `Application.userId` — prioridad BAJA
 
-**Origen:** PR 8.5 (`/contact`).
+**Origen:** PR de auth (`feat/redesign-auth-screens`); fragmento
+remanente del item Prisma resuelto en PR #23.
 
-El endpoint hoy se defiende con honeypot + Origin/Referer check, pero no
-hay límite por IP. Un atacante con backend propio (sin browser) que
-bypassee Origin/Referer puede hacer flood al endpoint y agotar quota de
-Resend (afecta uptime del email de aprobaciones/welcome, no solo el
-form de contacto).
+El matching User ↔ Application sigue siendo por email (el hook
+`user.create.after` y el endpoint admin approve buscan por
+`Application.email`). Si un user cambia email entre aplicar y crear
+cuenta, el match se rompe silenciosamente.
 
-- Implementar middleware o helper que use `headers().get("x-forwarded-for")`
-  (cuidado con spoofing — confiar solo en el header agregado por nginx,
-  no en el del cliente).
-- Storage del contador: edge-compatible KV (Upstash/Vercel KV) o tabla
-  Postgres con TTL si no agregamos infra. Postgres es más barato pero
-  agrega latencia al endpoint.
-- Política sugerida: 5 requests por IP por hora. Después devolver 429
-  con `Retry-After`.
-- Mismo helper se puede reusar en `/api/applications/submit` y futuros
-  endpoints públicos.
+- Agregar `userId String?` + `user User? @relation(...)` opcional al
+  modelo Application.
+- Popular el campo cuando el user crea cuenta con email matching.
+- Mantener el matching por email como fallback (cuentas creadas antes
+  de la migración no van a tener `userId`).
+- Cambiar el hook y `/api/apply/[id]` para preferir `userId` cuando
+  esté presente.
 
-### Prisma — index en `Application.email` + enum para `Application.status` — prioridad MEDIA
+## Resueltos
 
-**Origen:** PR de auth (`feat/redesign-auth-screens`). El review de
-arquitectura detectó deuda inherited que esta PR consolida.
+### ~~Rate limit IP-based para `/api/contact` — prioridad MEDIA~~
 
-Dos consumidores hoy hacen `Application.findFirst({ where: { email } })`:
-el hook `databaseHooks.user.create.after` en `src/lib/auth.ts` (corre
-en cada signup) y la nueva pantalla `/user-pending` (corre en cada
-visita). El modelo `Application` no tiene `@@index([email])` —
-seq-scan que escala mal cuando crezca la tabla.
+**Resuelto en PR #23** (`chore: backend hardening`). Utility in-memory
+en `src/lib/rate-limit.ts`, default 3 req/min por IP, aplicado a
+`/api/contact`. Si el tráfico crece, swap a Upstash/Vercel KV
+manteniendo la API `checkRateLimit`.
 
-Aparte, `Application.status: String` con comentario `// pending | approved
-| rejected` debería ser enum — hoy un typo silencioso en el hook (ej.
-`status: "aproved"`) rompe el flow de activación sin ningún error de TS.
+### ~~Prisma — index en `Application.email` + enum `ApplicationStatus` — prioridad MEDIA~~
 
-- Migration:
-  ```prisma
-  enum ApplicationStatus {
-    pending
-    approved
-    rejected
-  }
+**Resuelto en PR #23** (`chore: backend hardening`). Schema actualizado
+con `enum ApplicationStatus { PENDING APPROVED REJECTED }` + `@@index([email])`.
+Call sites migrados a UPPER. Migración SQL manual en
+`prisma/migrations-manual/` (el repo usa `db push`, no `migrate dev`).
 
-  model Application {
-    ...
-    status ApplicationStatus @default(pending)
-    @@index([email])
-  }
-  ```
-- Actualizar callers: `src/lib/auth.ts:34` y `src/app/[locale]/user-pending/page.tsx`.
-- Bonus: agregar FK opcional `Application.userId` para que el matching
-  no dependa de email (problema: user puede cambiar email después de
-  aplicar).
+### ~~Security headers globales en `next.config.ts` — prioridad MEDIA~~
 
-### Security headers globales en `next.config.ts` — prioridad MEDIA
-
-**Origen:** PR 8.5 (`/contact`) y aplicable al sitio entero.
-
-Hoy las respuestas no llevan headers de seguridad (CSP, HSTS, X-Frame,
-referrer-policy, permissions-policy). Vulnerable a clickjacking,
-mixed-content downgrade, leaks de referrer cross-origin.
-
-- Configurar `async headers()` en `next.config.ts` con:
-  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
-  - `Content-Security-Policy` ajustado a Cloudinary + Google fonts +
-    Better Auth callbacks (auditar primero qué necesita cada origin —
-    una CSP rota tira el sitio).
-  - `X-Frame-Options: DENY` (o `frame-ancestors 'none'` vía CSP).
-  - `Referrer-Policy: strict-origin-when-cross-origin`.
-  - `Permissions-Policy: camera=(), microphone=(), geolocation=()` por
-    default.
-- Verificar contra securityheaders.com — objetivo: nota A o superior.
-- Considerar `report-uri` para violaciones de CSP en producción (al
-  menos durante el primer mes después del deploy, para detectar falsos
-  positivos antes de pasar de `Content-Security-Policy-Report-Only` a
-  enforcement).
+**Resuelto en PR #23** (`chore: backend hardening`). 6 headers globales
+en `next.config.ts`: X-Frame-Options, X-Content-Type-Options,
+Referrer-Policy, Permissions-Policy, HSTS y CSP. CSP va en modo
+**report-only** por ahora — promover a enforcement en PR siguiente
+después de observar violaciones reales en producción durante 1-2 semanas.
