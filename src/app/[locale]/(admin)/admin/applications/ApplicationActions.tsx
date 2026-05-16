@@ -15,9 +15,9 @@ interface Props {
 export function ApplicationActions({ id, email, name }: Props) {
   const t = useTranslations("admin")
   const router = useRouter()
-  const [loading, setLoading] = useState<"approved" | "rejected" | null>(null)
+  const [loading, setLoading] = useState<"APPROVED" | "REJECTED" | null>(null)
 
-  async function update(status: "approved" | "rejected") {
+  async function update(status: "APPROVED" | "REJECTED") {
     setLoading(status)
     try {
       await fetch(`/api/apply/${id}`, {
@@ -25,7 +25,7 @@ export function ApplicationActions({ id, email, name }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, email, name }),
       })
-      toast.success(status === "approved" ? t("applicationsApprovedMsg") : t("applicationsRejectedMsg"))
+      toast.success(status === "APPROVED" ? t("applicationsApprovedMsg") : t("applicationsRejectedMsg"))
       router.refresh()
     } catch {
       toast.error("Error")
@@ -41,17 +41,17 @@ export function ApplicationActions({ id, email, name }: Props) {
         variant="outline"
         className="text-red-400 border-red-400/30 hover:bg-red-500/10 hover:text-red-400 rounded-full"
         disabled={!!loading}
-        onClick={() => update("rejected")}
+        onClick={() => update("REJECTED")}
       >
-        {loading === "rejected" ? "..." : t("applicationsReject")}
+        {loading === "REJECTED" ? "..." : t("applicationsReject")}
       </Button>
       <Button
         size="sm"
         className="rounded-full bg-green-600 hover:bg-green-500 text-white"
         disabled={!!loading}
-        onClick={() => update("approved")}
+        onClick={() => update("APPROVED")}
       >
-        {loading === "approved" ? "..." : t("applicationsAccept")}
+        {loading === "APPROVED" ? "..." : t("applicationsAccept")}
       </Button>
     </div>
   )

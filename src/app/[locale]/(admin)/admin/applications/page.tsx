@@ -15,8 +15,8 @@ export default async function ApplicationsPage({
     orderBy: { createdAt: "desc" },
   })
 
-  const pending = applications.filter((a) => a.status === "pending")
-  const reviewed = applications.filter((a) => a.status !== "pending")
+  const pending = applications.filter((a) => a.status === "PENDING")
+  const reviewed = applications.filter((a) => a.status !== "PENDING")
 
   return (
     <div className="space-y-8">
@@ -77,11 +77,11 @@ export default async function ApplicationsPage({
                   </div>
                 </div>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                  app.status === "approved"
+                  app.status === "APPROVED"
                     ? "bg-green-500/15 text-green-500"
                     : "bg-red-500/15 text-red-400"
                 }`}>
-                  {app.status === "approved" ? t("applicationsApproved") : t("applicationsRejected")}
+                  {app.status === "APPROVED" ? t("applicationsApproved") : t("applicationsRejected")}
                 </span>
               </div>
             ))}

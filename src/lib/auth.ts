@@ -47,7 +47,7 @@ export const auth = betterAuth({
           }
 
           const approvedApplication = await prisma.application.findFirst({
-            where: { email: user.email, status: "approved" },
+            where: { email: user.email, status: "APPROVED" },
           })
 
           if (approvedApplication) {

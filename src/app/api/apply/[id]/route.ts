@@ -5,7 +5,7 @@ import { z } from "zod"
 import { triggerApplicationApproved } from "@/lib/trigger"
 
 const schema = z.object({
-  status: z.enum(["approved", "rejected"]),
+  status: z.enum(["APPROVED", "REJECTED"]),
   email: z.string().email(),
   name: z.string(),
 })
@@ -35,7 +35,7 @@ export async function PATCH(
     data: { status: result.data.status },
   })
 
-  if (result.data.status === "approved") {
+  if (result.data.status === "APPROVED") {
     // Si el aplicante ya tiene cuenta (caso usual: aplicó después de
     // signup), bump su UserProfile.status a ACTIVE y role a creator
     // para destrabar el panel. Si todavía no tiene cuenta (aplicó como
