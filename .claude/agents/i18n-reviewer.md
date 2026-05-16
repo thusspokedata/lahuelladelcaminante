@@ -54,7 +54,7 @@ Cuando se te invoque, vas a revisar el código/diff que el dev te indique buscan
 - Longitud relativa: traducciones DE son ~15-30% más largas que ES, EN suele ser ~10-20% más cortas. Outliers (DE 3x más largo, EN igual de largo que ES) suelen ser síntoma de traducción literal o uso de palabras incorrectas.
 - Terminología compartida: si "evento" se traduce a "event" en un lugar y "show" en otro, decidir y unificar.
 - Tono coherente: si ES dice "Conseguí tus entradas", EN no debe decir formal "Please obtain your tickets". DE no debe pasar a "Sie".
-- Mismo símbolo/puntuación: si ES usa `· ` (middle dot espaciado) como separador, EN y DE deberían usar lo mismo o un equivalente cultural acordado.
+- Mismo símbolo/puntuación: si ES usa `·` (middle dot, separado del texto con espacios) como separador, EN y DE deberían usar lo mismo o un equivalente cultural acordado.
 
 ### 3. Estructura de keys y namespaces
 
