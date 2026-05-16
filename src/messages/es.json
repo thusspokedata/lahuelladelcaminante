@@ -115,7 +115,7 @@
       "voluntaryNote": "Lo que cada uno pueda. Tickets disponibles en la puerta.",
       "free": "Entrada libre",
       "freeNote": "No requiere reserva.",
-      "door": "Entrada en puerta",
+      "door": "Se paga en la puerta",
       "unknownNote": "Consultá al organizador para más info."
     },
     "about": "Sobre el show",
@@ -281,6 +281,6 @@
     "artistUpdated": "Artista actualizado",
     "artistCreated": "Artista creado",
     "eventDeleted": "Evento eliminado",
-    "notFound": "No encontrado"
+    "notFound": "Página no encontrada"
   }
 }

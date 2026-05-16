@@ -112,7 +112,7 @@
     "access": {
       "tickets": "Get tickets",
       "voluntary": "Pay what you can",
-      "voluntaryNote": "Whatever you can contribute. Available at the door.",
+      "voluntaryNote": "Whatever you can contribute. Pay at the door.",
       "free": "Free entry",
       "freeNote": "No booking required.",
       "door": "Pay at the door",
@@ -281,6 +281,6 @@
     "artistUpdated": "Artist updated",
     "artistCreated": "Artist created",
     "eventDeleted": "Event deleted",
-    "notFound": "Not found"
+    "notFound": "Page not found"
   }
 }

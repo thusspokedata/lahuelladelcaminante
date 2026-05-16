@@ -101,7 +101,7 @@
   "eventDetail": {
     "eyebrow": {
       "live": "LIVE",
-      "featured": "★ EMPFEHLUNG"
+      "featured": "★ HIGHLIGHT"
     },
     "facts": {
       "when": "WANN",
@@ -112,7 +112,7 @@
     "access": {
       "tickets": "Tickets holen",
       "voluntary": "Spendenbasis",
-      "voluntaryNote": "Zahl, was du kannst. Tickets auch an der Abendkasse.",
+      "voluntaryNote": "Zahl, was du kannst. Tickets an der Abendkasse.",
       "free": "Eintritt frei",
       "freeNote": "Keine Reservierung nötig.",
       "door": "Abendkasse",
@@ -124,14 +124,14 @@
     "share": "Teilen",
     "calendar": "Zum Kalender",
     "save": "Speichern",
-    "backToEvents": "Veranstaltungen"
+    "backToEvents": "Zu den Veranstaltungen"
   },
   "artistDetail": {
     "upcomingShows": "Kommende Termine",
     "noUpcomingShows": "Aktuell keine Shows geplant. Folge uns auf Social Media, um nichts zu verpassen.",
     "bioShowMore": "Mehr anzeigen",
     "bioShowLess": "Weniger anzeigen",
-    "backToArtists": "Künstler"
+    "backToArtists": "Zu den Künstlern"
   },
   "dashboard": {
     "title": "Mein Dashboard",
@@ -281,6 +281,6 @@
     "artistUpdated": "Künstler aktualisiert",
     "artistCreated": "Künstler erstellt",
     "eventDeleted": "Veranstaltung gelöscht",
-    "notFound": "Nicht gefunden"
+    "notFound": "Seite nicht gefunden"
   }
 }

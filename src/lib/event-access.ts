@@ -44,8 +44,13 @@ export interface EventAccessInfo {
 }
 
 const URL_RE = /(https?:\/\/[^\s)]+)/i
-// "€15", "$ 20", "15€", "12,50", "10.5" — número opcional con símbolo de moneda
-const PRICE_ONLY_RE = /^[€$£]?\s*\d+([.,]\d+)?\s*[€$£]?$/
+// Precio "solo número" en formatos comunes de Berlín/Hamburgo/Múnich:
+//   - símbolo prefijo o sufijo: "€15", "15€", "$ 20", "£10"
+//   - decimales: "12,50", "10.5"
+//   - notación DE sin decimales: "15,-" (15 euros exactos)
+//   - código de moneda 3 letras: "EUR 15", "15 EUR", "USD 20"
+const PRICE_ONLY_RE =
+  /^(?:[€$£]\s*\d+(?:[.,]\d+|,-)?|\d+(?:[.,]\d+|,-)?\s*[€$£]?|(?:EUR|USD|GBP)\s*\d+(?:[.,]\d+|,-)?|\d+(?:[.,]\d+|,-)?\s*(?:EUR|USD|GBP))$/i
 
 export function getEventAccessMode(price: string | null | undefined): EventAccessInfo {
   const raw = price?.trim() ?? ""
