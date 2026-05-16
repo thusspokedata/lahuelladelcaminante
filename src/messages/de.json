@@ -73,8 +73,28 @@
     "messagePlaceholder": "Wer bist du? Welche Art von Events organisierst du oder in welcher Stadt trittst du auf? Je mehr du uns erzählst, desto besser können wir es beurteilen.",
     "messageHint": "Mindestens 10 Zeichen.",
     "submit": "Anfrage senden",
-    "successTitle": "Anfrage gesendet!",
-    "successBody": "Wir prüfen deine Anfrage und melden uns per E-Mail. Das dauert in der Regel weniger als 48 Stunden."
+    "submitted": {
+      "badge": "✓ ANFRAGE ERHALTEN",
+      "title": "Wir haben deine Anfrage erhalten, <accent>Wandersleute.</accent>",
+      "body": "Ein Mensch schaut sie sich in den nächsten 1-2 Tagen an. Wenn alles passt, melden wir uns per E-Mail und schalten dein Panel zum Veröffentlichen frei.",
+      "ctaPrimary": "Inzwischen die Agenda ansehen →",
+      "ctaSecondary": "Zur Startseite",
+      "instagramHint": "In der Zwischenzeit: folge uns auf <ig>Instagram @lahuelladelcaminante</ig> — wir posten, wenn wir einen neuen Creator freischalten.",
+      "timeline": {
+        "title": "WAS PASSIERT ALS NÄCHSTES",
+        "received": "Empfangen",
+        "receivedSub": "Gerade eben",
+        "reviewing": "In Prüfung",
+        "reviewingSub": "Ein Mensch schaut sich dein Profil an",
+        "reviewingWhen": "≈ 1-2 Tage",
+        "approval": "Genehmigt · E-Mail",
+        "approvalSub": "Du bekommst eine E-Mail mit dem Link zu deinem Panel",
+        "approvalWhen": "Wenn wir genehmigen",
+        "publishing": "Veröffentlichen",
+        "publishingSub": "Lade dein erstes Event hoch",
+        "publishingWhen": "Wann immer du bereit bist"
+      }
+    }
   },
   "events": {
     "title": "Kommende Veranstaltungen",
@@ -435,19 +455,108 @@
     }
   },
   "auth": {
-    "signIn": "Anmelden",
-    "signUp": "Registrieren",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "name": "Vollständiger Name",
-    "continueWithGoogle": "Mit Google fortfahren",
-    "pendingTitle": "Konto wird geprüft",
-    "pendingDescription": "Ihr Konto wird vom Team geprüft. Wir benachrichtigen Sie per E-Mail, wenn es genehmigt wurde.",
-    "blockedTitle": "Konto gesperrt",
-    "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator.",
-    "noAccount": "Noch kein Konto?",
-    "haveAccount": "Schon ein Konto?",
-    "backHome": "Zur Startseite"
+    "signIn": {
+      "metaTitle": "Anmelden",
+      "formAriaLabel": "Anmeldeformular",
+      "heroAriaLabel": "Manifest und Agenda",
+      "eyebrow": "WILLKOMMEN ZURÜCK",
+      "title": "Melde dich an.",
+      "subtitle": "Nur zum Stöbern hier? Du brauchst kein Konto, um Shows zu sehen. Das hier ist für Künstler und Veranstalter.",
+      "continueWith": "Mit {provider} fortfahren",
+      "orEmail": "ODER MIT E-MAIL",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Dein Passwort",
+      "forgot": "Passwort vergessen?",
+      "submit": "Anmelden →",
+      "submitting": "Anmeldung läuft...",
+      "footer": "Zum ersten Mal hier? <createAccount>Konto erstellen</createAccount> oder <applyAsArtist>als Künstler bewerben →</applyAsArtist>",
+      "errors": {
+        "credentials": "E-Mail oder Passwort falsch.",
+        "email_required": "E-Mail ist erforderlich.",
+        "email_invalid": "Ungültige E-Mail.",
+        "email_too_long": "E-Mail zu lang.",
+        "password_too_short": "Mindestens 8 Zeichen.",
+        "password_too_long": "Zu lang.",
+        "generic": "Anmeldung fehlgeschlagen. Versuche es gleich noch einmal."
+      },
+      "hero": {
+        "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · DEUTSCHLAND",
+        "title": "Gemacht von einem <accent>von euch</accent>.",
+        "body": "La Huella ist ein unabhängiges Portal. Wir verkaufen keine Tickets, wir nehmen keine Provision. Wir zeigen einfach, was läuft.",
+        "statsFormat": "{shows} KOMMENDE SHOWS · {cities} STÄDTE"
+      }
+    },
+    "signUp": {
+      "metaTitle": "Konto erstellen",
+      "formAriaLabel": "Registrierungsformular",
+      "heroAriaLabel": "Schritte des Ablaufs",
+      "eyebrow": "KONTO ERSTELLEN",
+      "title": "Fang an zu <accent>veröffentlichen.</accent>",
+      "subtitle": "Konto erstellen ist der erste Schritt. Dann bewirbst du dich als Creator und wir prüfen dein Profil — meistens 1-2 Tage.",
+      "continueWith": "Mit {provider} fortfahren",
+      "orEmail": "ODER MIT E-MAIL",
+      "nameLabel": "Name",
+      "namePlaceholder": "Wie sollen wir dich nennen",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Wähle ein Passwort",
+      "passwordHint": "Mische Großbuchstaben, Zahlen und ein Symbol.",
+      "acceptTerms": "Ich akzeptiere die <terms>AGB</terms> und die <privacy>Datenschutzerklärung</privacy>.",
+      "submit": "Konto erstellen →",
+      "submitting": "Konto wird erstellt...",
+      "footer": "Schon ein Konto? <signInLink>Anmelden</signInLink>",
+      "errors": {
+        "email_taken": "Es gibt schon ein Konto mit dieser E-Mail. Versuche dich anzumelden.",
+        "name_too_short": "Mindestens 2 Zeichen.",
+        "name_too_long": "Maximal 120 Zeichen.",
+        "email_required": "E-Mail ist erforderlich.",
+        "email_invalid": "Ungültige E-Mail.",
+        "email_too_long": "E-Mail zu lang.",
+        "password_too_short": "Mindestens 8 Zeichen.",
+        "password_too_long": "Zu lang.",
+        "terms_required": "Du musst die AGB akzeptieren, um fortzufahren.",
+        "generic": "Wir konnten dein Konto nicht erstellen. Versuche es erneut."
+      },
+      "hero": {
+        "eyebrow": "DREI SCHRITTE · ANDERTHALB TAGE",
+        "title": "Vom neuen Konto zum Live-Event <accent>in Tagen</accent>.",
+        "step1Title": "Konto erstellen",
+        "step1Time": "Jetzt sofort · 1 Min.",
+        "step2Title": "Als Creator bewerben",
+        "step2Time": "Wir prüfen · 1-2 Tage.",
+        "step3Title": "Erstes Event veröffentlichen",
+        "step3Time": "Wann du willst · 3 Min.",
+        "support": "Wir sind in Berlin und antworten auf Spanisch, Englisch und Deutsch. Bei Fragen <contactLink>schreib uns</contactLink>."
+      }
+    }
+  },
+  "account": {
+    "signOutError": "Abmeldung fehlgeschlagen. Versuche es erneut.",
+    "pending": {
+      "metaTitle": "Konto wird geprüft",
+      "eyebrow": "KONTO WIRD GEPRÜFT",
+      "title": "Deine Anfrage wird <accent>gerade gebacken.</accent>",
+      "bodyWithDate": "Du hast dich am <strong>{date}</strong> als Creator beworben. Wir prüfen in Reihenfolge — meistens 1-2 Werktage. Wir melden uns per E-Mail, sobald es genehmigt ist.",
+      "bodyNoDate": "Wir prüfen in Reihenfolge — meistens 1-2 Werktage. Wir melden uns per E-Mail, sobald es genehmigt ist.",
+      "ctaPrimary": "Öffentliche Agenda ansehen",
+      "ctaSecondary": "Abmelden",
+      "escapeHatch": "Mehr als 3 Tage und keine Antwort? Da ist was kaputt. <contactLink>Schreib uns</contactLink> und wir lösen das."
+    },
+    "blocked": {
+      "metaTitle": "Zugang gesperrt",
+      "eyebrow": "ZUGANG GESPERRT",
+      "title": "Dein Konto hat keinen Zugriff auf das Panel.",
+      "body": "Das kann mehrere Gründe haben — Verstoß gegen die Community-Regeln, gemeldete Inhalte, oder ein Fehler von uns. Wenn du denkst, es ist ein Fehler, lass uns reden.",
+      "ctaContact": "Schreib uns →",
+      "ctaLogout": "Abmelden",
+      "stillWorksTitle": "WAS NOCH FUNKTIONIERT",
+      "canSee": "Du kannst weiterhin alle öffentlichen Events der Seite sehen.",
+      "canBrowse": "Du kannst weiterhin Künstlerprofile ansehen.",
+      "cannot": "Du kannst nicht veröffentlichen, bearbeiten oder auf das Creator-Panel zugreifen."
+    }
   },
   "common": {
     "save": "Speichern",

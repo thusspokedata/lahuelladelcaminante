@@ -1,93 +1,142 @@
-"use client"
+/**
+ * `/[locale]/sign-up` — pantalla de crear cuenta rediseñada.
+ *
+ * Server component que arma el `AuthShell` 7:5 con:
+ *  - Columna izquierda (col-span-7): heading + `<SignUpForm>` (client) +
+ *    footer con link a sign-in.
+ *  - Columna derecha (col-span-5, hidden en mobile): 3 step cards del
+ *    journey (creás cuenta → aplicás → publicás) con tiempos + bloque
+ *    de soporte con link a `/contact`.
+ *
+ * Sin datos dinámicos en esta pantalla (a diferencia de /sign-in que
+ * fetcha eventos destacados) — el hero es puro contenido editorial.
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT_v2.md` §1.2.
+ */
 
-import { useTranslations } from "next-intl"
-import { useParams, useRouter } from "next/navigation"
-import { signUp } from "@/lib/auth-client"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { toast } from "sonner"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
+import AuthShell from "@/components/auth/AuthShell"
+import SignUpForm from "@/components/auth/SignUpForm"
+import Eyebrow from "@/components/ui/Eyebrow"
 
-const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
-})
-type FormData = z.infer<typeof schema>
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "auth.signUp" })
+  return { title: t("metaTitle") }
+}
 
-export default function SignUpPage() {
-  const t = useTranslations("auth")
-  const tCommon = useTranslations("common")
-  const router = useRouter()
-  const { locale } = useParams<{ locale: string }>()
+/** Step cards de la columna hero. Los textos vienen de i18n; este array
+ * solo define la estructura visual (número + key del título + key del
+ * timing). Mantener acá (no en el JSON) para que la cantidad de pasos
+ * sea decisión de código, no de traducción. */
+const STEPS = [
+  { number: "01", titleKey: "step1Title", timeKey: "step1Time" },
+  { number: "02", titleKey: "step2Title", timeKey: "step2Time" },
+  { number: "03", titleKey: "step3Title", timeKey: "step3Time" },
+] as const
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  })
+export default async function SignUpPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
 
-  async function onSubmit(data: FormData) {
-    const res = await signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-    })
-
-    if (res.error) {
-      toast.error(res.error.message ?? tCommon("error"))
-      return
-    }
-
-    router.push(`/${locale}`)
-  }
+  const t = await getTranslations({ locale, namespace: "auth.signUp" })
+  const tHero = await getTranslations({ locale, namespace: "auth.signUp.hero" })
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>{t("signUp")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="name">{t("name")}</Label>
-            <Input id="name" type="text" {...register("name")} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-          </div>
+    <AuthShell
+      formAriaLabel={t("formAriaLabel")}
+      heroAriaLabel={t("heroAriaLabel")}
+      hero={
+        <div className="flex flex-col gap-l">
+          <Eyebrow accent="brand" as="p">
+            {tHero("eyebrow")}
+          </Eyebrow>
+          <h2 className="text-display-m font-display leading-tight text-fg-primary">
+            {tHero.rich("title", {
+              accent: (chunks) => (
+                <span className="text-editorial italic">{chunks}</span>
+              ),
+            })}
+          </h2>
 
-          <div className="space-y-1">
-            <Label htmlFor="email">{t("email")}</Label>
-            <Input id="email" type="email" {...register("email")} />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
+          <ol className="mt-l flex flex-col gap-m">
+            {STEPS.map((step) => (
+              <li
+                key={step.number}
+                className="flex items-start gap-m rounded-l border border-border bg-bg-surface-2 p-l"
+              >
+                <span
+                  aria-hidden={true}
+                  className="font-mono text-eyebrow text-editorial leading-none pt-[2px]"
+                >
+                  {step.number}
+                </span>
+                <div className="flex flex-col gap-xs">
+                  <p className="text-body font-semibold text-fg-primary leading-snug">
+                    {tHero(step.titleKey)}
+                  </p>
+                  <p className="text-caption text-fg-tertiary">
+                    {tHero(step.timeKey)}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
 
-          <div className="space-y-1">
-            <Label htmlFor="password">{t("password")}</Label>
-            <Input id="password" type="password" {...register("password")} />
-            {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? tCommon("loading") : t("signUp")}
-          </Button>
-
-          <p className="text-center text-sm text-muted-foreground">
-            {t("haveAccount")}{" "}
-            <Link href={`/${locale}/sign-in`} className="underline">
-              {t("signIn")}
-            </Link>
+          <p className="mt-l text-body-s leading-relaxed text-fg-secondary">
+            {tHero.rich("support", {
+              contactLink: (chunks) => (
+                <Link
+                  href="/contact"
+                  className="font-semibold text-fg-primary underline-offset-4 hover:underline"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-l">
+        <Eyebrow accent="brand" as="p">
+          {t("eyebrow")}
+        </Eyebrow>
+        <h1 className="text-display-l font-display leading-tight text-fg-primary">
+          {t.rich("title", {
+            accent: (chunks) => (
+              <span className="text-brand italic">{chunks}</span>
+            ),
+          })}
+        </h1>
+        <p className="text-body leading-relaxed text-fg-secondary">
+          {t("subtitle")}
+        </p>
 
-          <div className="text-center">
-            <Link href={`/${locale}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              ← {t("backHome")}
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        <SignUpForm locale={locale} />
+
+        <p className="text-body-s text-fg-secondary">
+          {t.rich("footer", {
+            signInLink: (chunks) => (
+              <Link
+                href="/sign-in"
+                className="font-semibold text-fg-primary underline-offset-4 hover:underline"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      </div>
+    </AuthShell>
   )
 }

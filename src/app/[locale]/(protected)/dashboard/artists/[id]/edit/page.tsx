@@ -22,13 +22,21 @@ export default async function EditArtistPage({
   })
   if (!artistData) notFound()
 
+  // `coverImage*` se deriva del primer Image relacionado. `ArtistDetail`
+  // (en `src/services/artists.ts`) requiere los 3 campos — derivamos
+  // los tres del mismo origen para mantener consistencia con cómo lo
+  // arma el service oficial. Sin esto, TS falla por shape incompleto
+  // (regresión inherited de PR 8).
+  const firstImage = artistData.images[0]
   const artist = {
     id: artistData.id,
     name: artistData.name,
     slug: artistData.slug,
     origin: artistData.origin,
     genres: artistData.genres,
-    coverImage: artistData.images[0]?.url ?? null,
+    coverImage: firstImage?.url ?? null,
+    coverImagePublicId: firstImage?.publicId ?? null,
+    coverImageAlt: firstImage?.alt ?? null,
     bio: artistData.bio,
     socialMedia: artistData.socialMedia,
     images: artistData.images,

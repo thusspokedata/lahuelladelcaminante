@@ -73,8 +73,28 @@
     "messagePlaceholder": "¿Quién sos? ¿Qué tipo de eventos organizás o en qué ciudad tocás? Cuanto más nos contés, mejor podemos evaluarlo.",
     "messageHint": "Mínimo 10 caracteres.",
     "submit": "Enviar solicitud",
-    "successTitle": "¡Solicitud enviada!",
-    "successBody": "Revisamos tu solicitud y te escribimos al email que dejaste. Suele tardar menos de 48 horas."
+    "submitted": {
+      "badge": "✓ SOLICITUD RECIBIDA",
+      "title": "Recibimos tu solicitud, <accent>caminante.</accent>",
+      "body": "Un humano la mira en los próximos 1-2 días. Si todo da, te avisamos por mail y desbloqueamos tu panel para que publiques.",
+      "ctaPrimary": "Ver agenda mientras tanto →",
+      "ctaSecondary": "Volver al inicio",
+      "instagramHint": "Mientras tanto: seguinos en <ig>Instagram @lahuelladelcaminante</ig> — ahí avisamos cada vez que aprobamos un creator nuevo.",
+      "timeline": {
+        "title": "QUÉ SIGUE",
+        "received": "Recibida",
+        "receivedSub": "Hace un momento",
+        "reviewing": "En revisión",
+        "reviewingSub": "Un humano mira tu perfil",
+        "reviewingWhen": "≈ 1-2 días",
+        "approval": "Aprobada · email",
+        "approvalSub": "Te llega un mail con el link a tu panel",
+        "approvalWhen": "Cuando aprobemos",
+        "publishing": "Publicás",
+        "publishingSub": "Subís tu primer evento",
+        "publishingWhen": "Cuando estés"
+      }
+    }
   },
   "events": {
     "title": "Próximos Eventos",
@@ -435,19 +455,108 @@
     }
   },
   "auth": {
-    "signIn": "Iniciar Sesión",
-    "signUp": "Registrarse",
-    "email": "Email",
-    "password": "Contraseña",
-    "name": "Nombre completo",
-    "continueWithGoogle": "Continuar con Google",
-    "pendingTitle": "Cuenta en revisión",
-    "pendingDescription": "Tu cuenta está siendo revisada por el equipo. Te notificaremos por email cuando sea aprobada.",
-    "blockedTitle": "Cuenta suspendida",
-    "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador.",
-    "noAccount": "¿No tienes cuenta?",
-    "haveAccount": "¿Ya tienes cuenta?",
-    "backHome": "Volver al inicio"
+    "signIn": {
+      "metaTitle": "Iniciar sesión",
+      "formAriaLabel": "Formulario de inicio de sesión",
+      "heroAriaLabel": "Manifiesto y agenda",
+      "eyebrow": "BIENVENIDO DE VUELTA",
+      "title": "Iniciá sesión.",
+      "subtitle": "¿Sos público? No necesitás cuenta para ver shows. Esto es para artistas y organizadores.",
+      "continueWith": "Continuar con {provider}",
+      "orEmail": "O CON EMAIL",
+      "emailLabel": "Email",
+      "emailPlaceholder": "vos@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión →",
+      "submitting": "Iniciando sesión...",
+      "footer": "¿Primera vez por acá? <createAccount>Crear cuenta</createAccount> o <applyAsArtist>aplicá como artista →</applyAsArtist>",
+      "errors": {
+        "credentials": "Email o contraseña incorrectos.",
+        "email_required": "El email es obligatorio.",
+        "email_invalid": "Email inválido.",
+        "email_too_long": "Email demasiado largo.",
+        "password_too_short": "Mínimo 8 caracteres.",
+        "password_too_long": "Demasiado largo.",
+        "generic": "No pudimos iniciar sesión. Probá de nuevo."
+      },
+      "hero": {
+        "eyebrow": "EN VIVO · MÚSICA LATINA · ALEMANIA",
+        "title": "Hecho por uno <accent>de ustedes</accent>.",
+        "body": "La Huella es un portal independiente. No vendemos entradas, no tomamos comisión. Solo mostramos lo que está sonando.",
+        "statsFormat": "{shows} SHOWS PRÓXIMOS · {cities} CIUDADES"
+      }
+    },
+    "signUp": {
+      "metaTitle": "Crear cuenta",
+      "formAriaLabel": "Formulario de registro",
+      "heroAriaLabel": "Pasos del proceso",
+      "eyebrow": "CREAR CUENTA",
+      "title": "Empezá a <accent>publicar.</accent>",
+      "subtitle": "Crear cuenta es el primer paso. Después aplicás como creator y revisamos tu perfil — suele tomar 1-2 días.",
+      "continueWith": "Continuar con {provider}",
+      "orEmail": "O CON EMAIL",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Cómo te llamamos",
+      "emailLabel": "Email",
+      "emailPlaceholder": "vos@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Creá una contraseña",
+      "passwordHint": "Mezclá mayúsculas, números y un símbolo.",
+      "acceptTerms": "Acepto los <terms>términos</terms> y la <privacy>política de privacidad</privacy>.",
+      "submit": "Crear cuenta →",
+      "submitting": "Creando cuenta...",
+      "footer": "¿Ya tenés cuenta? <signInLink>Iniciar sesión</signInLink>",
+      "errors": {
+        "email_taken": "Ya hay una cuenta con ese email. Probá iniciar sesión.",
+        "name_too_short": "Mínimo 2 caracteres.",
+        "name_too_long": "Máximo 120 caracteres.",
+        "email_required": "El email es obligatorio.",
+        "email_invalid": "Email inválido.",
+        "email_too_long": "Email demasiado largo.",
+        "password_too_short": "Mínimo 8 caracteres.",
+        "password_too_long": "Demasiado largo.",
+        "terms_required": "Tenés que aceptar los términos para continuar.",
+        "generic": "No pudimos crear tu cuenta. Probá de nuevo."
+      },
+      "hero": {
+        "eyebrow": "TRES PASOS · UN DÍA Y MEDIO",
+        "title": "De cuenta nueva a evento <accent>en vivo</accent>.",
+        "step1Title": "Creás la cuenta",
+        "step1Time": "Ahora mismo · 1 min.",
+        "step2Title": "Aplicás como creator",
+        "step2Time": "Nosotros revisamos · 1-2 días.",
+        "step3Title": "Publicás tu primer evento",
+        "step3Time": "Cuando quieras · 3 min.",
+        "support": "Vivimos en Berlín y respondemos en español, inglés y alemán. Si tenés dudas, <contactLink>escribinos</contactLink>."
+      }
+    }
+  },
+  "account": {
+    "signOutError": "No pudimos cerrar tu sesión. Probá de nuevo.",
+    "pending": {
+      "metaTitle": "Cuenta en revisión",
+      "eyebrow": "CUENTA EN REVISIÓN",
+      "title": "Tu solicitud está <accent>prendida y se está horneando.</accent>",
+      "bodyWithDate": "Aplicaste como creator el <strong>{date}</strong>. La revisamos en orden de llegada — solemos tardar 1-2 días hábiles. Te avisamos por mail apenas se apruebe.",
+      "bodyNoDate": "La revisamos en orden de llegada — solemos tardar 1-2 días hábiles. Te avisamos por mail apenas se apruebe.",
+      "ctaPrimary": "Ver agenda pública",
+      "ctaSecondary": "Cerrar sesión",
+      "escapeHatch": "¿Pasaron más de 3 días y no tuviste respuesta? Algo se rompió. <contactLink>Escribinos</contactLink> y lo resolvemos."
+    },
+    "blocked": {
+      "metaTitle": "Acceso suspendido",
+      "eyebrow": "ACCESO SUSPENDIDO",
+      "title": "Tu cuenta no puede acceder al panel.",
+      "body": "Esto puede pasar por varias razones — incumplimiento de las normas de la comunidad, contenido reportado, o un error nuestro. Si creés que es un error, hablamos.",
+      "ctaContact": "Escribirnos →",
+      "ctaLogout": "Cerrar sesión",
+      "stillWorksTitle": "QUÉ SIGUE FUNCIONANDO",
+      "canSee": "Podés ver todos los eventos públicos del sitio.",
+      "canBrowse": "Podés seguir consultando perfiles de artistas.",
+      "cannot": "No podés publicar, editar ni acceder al panel creator."
+    }
   },
   "common": {
     "save": "Guardar",

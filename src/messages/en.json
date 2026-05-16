@@ -73,8 +73,28 @@
     "messagePlaceholder": "Who are you? What kind of events do you organize or where do you perform? The more you tell us, the better we can evaluate.",
     "messageHint": "Minimum 10 characters.",
     "submit": "Send request",
-    "successTitle": "Request sent!",
-    "successBody": "We'll review your request and reach out to the email you provided. It usually takes less than 48 hours."
+    "submitted": {
+      "badge": "✓ REQUEST RECEIVED",
+      "title": "We got your request, <accent>wanderer.</accent>",
+      "body": "A human reviews it in the next 1-2 days. If everything checks out, we email you and unlock your panel so you can publish.",
+      "ctaPrimary": "Browse the agenda meanwhile →",
+      "ctaSecondary": "Back to home",
+      "instagramHint": "Meanwhile: follow us on <ig>Instagram @lahuelladelcaminante</ig> — we post every time we approve a new creator.",
+      "timeline": {
+        "title": "WHAT'S NEXT",
+        "received": "Received",
+        "receivedSub": "Just now",
+        "reviewing": "Under review",
+        "reviewingSub": "A human is looking at your profile",
+        "reviewingWhen": "≈ 1-2 days",
+        "approval": "Approved · email",
+        "approvalSub": "You'll get an email with the link to your panel",
+        "approvalWhen": "When we approve",
+        "publishing": "Publish",
+        "publishingSub": "Upload your first event",
+        "publishingWhen": "Whenever you're ready"
+      }
+    }
   },
   "events": {
     "title": "Upcoming Events",
@@ -435,19 +455,108 @@
     }
   },
   "auth": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "email": "Email",
-    "password": "Password",
-    "name": "Full name",
-    "continueWithGoogle": "Continue with Google",
-    "pendingTitle": "Account under review",
-    "pendingDescription": "Your account is being reviewed by the team. We will notify you by email when it is approved.",
-    "blockedTitle": "Account suspended",
-    "blockedDescription": "Your account has been suspended. Contact the administrator.",
-    "noAccount": "Don't have an account?",
-    "haveAccount": "Already have an account?",
-    "backHome": "Back to home"
+    "signIn": {
+      "metaTitle": "Sign in",
+      "formAriaLabel": "Sign-in form",
+      "heroAriaLabel": "Manifesto and agenda",
+      "eyebrow": "WELCOME BACK",
+      "title": "Sign in.",
+      "subtitle": "Just here to browse? You don't need an account to see shows. This is for artists and organizers.",
+      "continueWith": "Continue with {provider}",
+      "orEmail": "OR WITH EMAIL",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Your password",
+      "forgot": "Forgot your password?",
+      "submit": "Sign in →",
+      "submitting": "Signing in...",
+      "footer": "First time here? <createAccount>Create account</createAccount> or <applyAsArtist>apply as an artist →</applyAsArtist>",
+      "errors": {
+        "credentials": "Wrong email or password.",
+        "email_required": "Email is required.",
+        "email_invalid": "Invalid email.",
+        "email_too_long": "Email too long.",
+        "password_too_short": "At least 8 characters.",
+        "password_too_long": "Too long.",
+        "generic": "Sign-in failed. Try again in a moment."
+      },
+      "hero": {
+        "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+        "title": "Made by one <accent>of you</accent>.",
+        "body": "La Huella is an independent portal. We don't sell tickets, we don't take a cut. We just show what's playing.",
+        "statsFormat": "{shows} UPCOMING SHOWS · {cities} CITIES"
+      }
+    },
+    "signUp": {
+      "metaTitle": "Create account",
+      "formAriaLabel": "Sign-up form",
+      "heroAriaLabel": "Process steps",
+      "eyebrow": "CREATE ACCOUNT",
+      "title": "Start <accent>publishing.</accent>",
+      "subtitle": "Creating an account is step one. Then you apply as a creator and we review your profile — usually 1-2 days.",
+      "continueWith": "Continue with {provider}",
+      "orEmail": "OR WITH EMAIL",
+      "nameLabel": "Name",
+      "namePlaceholder": "What should we call you",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "passwordHint": "Mix uppercase, numbers and a symbol.",
+      "acceptTerms": "I accept the <terms>terms</terms> and the <privacy>privacy policy</privacy>.",
+      "submit": "Create account →",
+      "submitting": "Creating account...",
+      "footer": "Already have an account? <signInLink>Sign in</signInLink>",
+      "errors": {
+        "email_taken": "There's already an account with that email. Try signing in.",
+        "name_too_short": "At least 2 characters.",
+        "name_too_long": "Maximum 120 characters.",
+        "email_required": "Email is required.",
+        "email_invalid": "Invalid email.",
+        "email_too_long": "Email too long.",
+        "password_too_short": "At least 8 characters.",
+        "password_too_long": "Too long.",
+        "terms_required": "You need to accept the terms to continue.",
+        "generic": "We couldn't create your account. Try again."
+      },
+      "hero": {
+        "eyebrow": "THREE STEPS · ONE AND A HALF DAYS",
+        "title": "From new account to live event <accent>in days</accent>.",
+        "step1Title": "Create the account",
+        "step1Time": "Right now · 1 min.",
+        "step2Title": "Apply as a creator",
+        "step2Time": "We review · 1-2 days.",
+        "step3Title": "Publish your first event",
+        "step3Time": "Whenever · 3 min.",
+        "support": "We're based in Berlin and respond in Spanish, English and German. If you have questions, <contactLink>write us</contactLink>."
+      }
+    }
+  },
+  "account": {
+    "signOutError": "Couldn't sign you out. Try again.",
+    "pending": {
+      "metaTitle": "Account under review",
+      "eyebrow": "ACCOUNT UNDER REVIEW",
+      "title": "Your request is <accent>warming up in the oven.</accent>",
+      "bodyWithDate": "You applied as a creator on <strong>{date}</strong>. We review in order of arrival — usually 1-2 business days. We'll email you the moment it's approved.",
+      "bodyNoDate": "We review in order of arrival — usually 1-2 business days. We'll email you the moment it's approved.",
+      "ctaPrimary": "Browse the public agenda",
+      "ctaSecondary": "Sign out",
+      "escapeHatch": "More than 3 days and no reply? Something broke. <contactLink>Write us</contactLink> and we'll sort it out."
+    },
+    "blocked": {
+      "metaTitle": "Access suspended",
+      "eyebrow": "ACCESS SUSPENDED",
+      "title": "Your account can't access the panel.",
+      "body": "This can happen for several reasons — community-rules violation, reported content, or a mistake on our end. If you think it's a mistake, let's talk.",
+      "ctaContact": "Write to us →",
+      "ctaLogout": "Sign out",
+      "stillWorksTitle": "WHAT STILL WORKS",
+      "canSee": "You can still see all the public events on the site.",
+      "canBrowse": "You can still browse artist profiles.",
+      "cannot": "You can't publish, edit or access the creator panel."
+    }
   },
   "common": {
     "save": "Save",
