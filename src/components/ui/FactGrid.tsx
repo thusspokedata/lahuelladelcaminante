@@ -14,6 +14,14 @@ import { cn } from "@/lib/utils"
 import Eyebrow from "@/components/ui/Eyebrow"
 
 export interface FactGridItem {
+  /**
+   * Identificador estable para el `key` de React. Requerido porque
+   * los `label` pueden colisionar (dos celdas con el mismo eyebrow no
+   * son inválidas) o cambiar por i18n entre renders — confiar en label
+   * para el key arriesga bugs de reconciliación. Usar slugs como `"when"`,
+   * `"timing"`, etc.
+   */
+  id: string
   /** Label corto del eyebrow (ej. "CUÁNDO"). */
   label: string
   /**
@@ -37,7 +45,7 @@ export default function FactGrid({ items, className }: FactGridProps) {
       {visible.map((item) => (
         // `<div>` agrupando `<dt>/<dd>` es permitido por HTML5 dentro de `<dl>`
         // y mantiene la asociación semántica de termino → valor.
-        <div key={item.label} className="flex flex-col gap-xs">
+        <div key={item.id} className="flex flex-col gap-xs">
           <Eyebrow as="dt">{item.label}</Eyebrow>
           <dd className="text-body text-fg-primary leading-snug">{item.value}</dd>
         </div>

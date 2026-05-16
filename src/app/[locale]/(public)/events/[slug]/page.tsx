@@ -228,20 +228,24 @@ export default async function EventDetailPage({
             <FactGrid
               items={[
                 {
+                  id: "when",
                   label: t("facts.when"),
                   value: nextDate
                     ? formatEventDateLong(nextDate, event.time, resolvedLocale)
                     : null,
                 },
                 {
+                  id: "timing",
                   label: t("facts.timing"),
                   value: timeRange,
                 },
                 {
+                  id: "where",
                   label: t("facts.where"),
                   value: event.location,
                 },
                 {
+                  id: "address",
                   label: t("facts.address"),
                   value: event.address,
                 },
