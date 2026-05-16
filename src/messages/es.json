@@ -247,7 +247,7 @@
     "artists": {
       "eyebrow": "Mis artistas",
       "title": "Mis artistas",
-      "count": "activos",
+      "count": "{count, plural, =0 {sin artistas activos} one {# artista activo} other {# artistas activos}}",
       "empty": "Todavía no creaste ningún artista.",
       "emptyCta": "Crear tu primer artista",
       "action": { "new": "+ Nuevo artista" },

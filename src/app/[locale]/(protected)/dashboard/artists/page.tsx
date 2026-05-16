@@ -42,7 +42,7 @@ export default async function DashboardArtistsPage({
             {t("artists.title")}
           </h1>
           <p className="text-body-s text-fg-secondary">
-            {artists.length} {t("artists.count")}
+            {t("artists.count", { count: artists.length })}
           </p>
         </div>
         <Link
