@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
 import { getArtistBySlug } from "@/services/artists"
 import { getEventsByArtist } from "@/services/events"
 import { EventList } from "@/components/events/EventList"
@@ -13,6 +14,7 @@ export default async function ArtistDetailPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: "artists" })
   const artist = await getArtistBySlug(slug)
 
   if (!artist) notFound()
@@ -41,7 +43,7 @@ export default async function ArtistDetailPage({
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 -mt-10 relative">
-        <BackButton label="Artistas" />
+        <BackButton label={t("title")} />
 
         {/* Name + meta */}
         <div className="mb-8">
@@ -121,7 +123,7 @@ export default async function ArtistDetailPage({
         {/* Photo gallery (all images) */}
         {images.length > 1 && (
           <section className="mb-12">
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">Fotos</p>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("photosLabel")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {images.map((img, i) => (
                 <div
@@ -146,7 +148,7 @@ export default async function ArtistDetailPage({
         {/* Events */}
         {events.length > 0 && (
           <section>
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">Próximas fechas</p>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("upcomingDatesLabel")}</p>
             <EventList events={events} />
           </section>
         )}

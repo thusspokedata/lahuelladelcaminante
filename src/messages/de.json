@@ -94,7 +94,9 @@
     "title": "Künstler",
     "search": "Künstler suchen...",
     "noArtists": "Keine Künstler gefunden",
-    "createArtist": "Künstler erstellen"
+    "createArtist": "Künstler erstellen",
+    "photosLabel": "Fotos",
+    "upcomingDatesLabel": "Kommende Termine"
   },
   "dashboard": {
     "title": "Mein Dashboard",

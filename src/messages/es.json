@@ -94,7 +94,9 @@
     "title": "Artistas",
     "search": "Buscar artista...",
     "noArtists": "No se encontraron artistas",
-    "createArtist": "Crear Artista"
+    "createArtist": "Crear Artista",
+    "photosLabel": "Fotos",
+    "upcomingDatesLabel": "Próximas fechas"
   },
   "dashboard": {
     "title": "Mi Panel",
