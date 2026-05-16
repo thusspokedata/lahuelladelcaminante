@@ -54,13 +54,21 @@ export const auth = betterAuth({
             // Cuenta nace ACTIVE + creator solo si ya hubo aprobación
             // previa de su Application — el matching es por email
             // porque Application no tiene FK a User.
-            await prisma.userProfile.create({
-              data: { userId: user.id, status: "ACTIVE" },
-            })
-            await prisma.user.update({
-              where: { id: user.id },
-              data: { role: "creator" },
-            })
+            //
+            // Las dos writes van en una transacción para que el
+            // onboarding sea atómico: si falla la promoción a creator
+            // tras crear el profile, no quedamos con UserProfile
+            // ACTIVE pero role "user" (caso silencioso donde el user
+            // tiene panel destrabado pero sin permisos de creación).
+            await prisma.$transaction([
+              prisma.userProfile.create({
+                data: { userId: user.id, status: "ACTIVE" },
+              }),
+              prisma.user.update({
+                where: { id: user.id },
+                data: { role: "creator" },
+              }),
+            ])
           } else {
             // Caso default: cuenta nueva sin Application aprobada nace
             // PENDING. El usuario puede browsear el sitio público; al

@@ -29,6 +29,10 @@ const isDev = process.env.NODE_ENV !== "production"
  */
 const cspDirectives = [
   "default-src 'self'",
+  // `object-src 'none'` explícito (en lugar de heredar de default-src):
+  // bloquea <object>, <embed>, <applet> — superficie clásica de XSS via
+  // plugin. Recomendación de OWASP incluso si default-src ya es 'self'.
+  "object-src 'none'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://res.cloudinary.com",

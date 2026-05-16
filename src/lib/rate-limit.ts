@@ -112,23 +112,57 @@ export function checkRateLimit(
   return { ok: true }
 }
 
+/**
+ * Validación format-only de IPv4 e IPv6. NO valida ranges, reserved
+ * blocks, ni semántica — solo "esto tiene forma de IP". Lo suficiente
+ * para descartar strings arbitrarios inyectados como `x-forwarded-for`
+ * en un setup mal configurado (sin nginx delante limpiando el header).
+ *
+ * - IPv4: 4 octets 0-255 separados por punto. Regex liberal (acepta
+ *   ceros leading, ej. `001.002.003.004`); el goal es format, no
+ *   canonicalización.
+ * - IPv6: hex y `:`, con soporte para `::` compresión. Regex simple
+ *   pero suficiente para descartar payload tipo `<script>` o `'OR 1=1`.
+ */
+const IPV4_RE = /^(\d{1,3}\.){3}\d{1,3}$/
+const IPV6_RE = /^[0-9a-fA-F:]+$/
+
+function isValidIp(value: string): boolean {
+  if (IPV4_RE.test(value)) {
+    return value
+      .split(".")
+      .every((oct) => {
+        const n = Number(oct)
+        return n >= 0 && n <= 255
+      })
+  }
+  return IPV6_RE.test(value) && value.includes(":")
+}
+
 /** Extrae IP del request priorizando `x-forwarded-for` (set por nginx)
- * sobre `x-real-ip` (fallback). Si ambos faltan, devuelve "unknown" —
- * el rate limit agrupa todos los anónimos bajo esa misma key, lo que
- * NO bloquea tráfico legítimo (browsers reales siempre pasan headers)
- * pero sí limita a un atacante que pase los headers vacíos.
+ * sobre `x-real-ip` (fallback). Valida formato antes de devolver — si
+ * el header trae basura (atacante inyectando `x-forwarded-for: foo` en
+ * un setup sin proxy delante), no la usamos como key del rate limit
+ * (sería bypass trivial: rotar `x-forwarded-for` por cada request).
+ *
+ * Si nada pasa validación, devuelve "unknown" — agrupa todos los
+ * anónimos bajo esa misma key. NO bloquea tráfico legítimo (browsers
+ * reales detrás de nginx pasan IPs válidas) pero sí limita al atacante
+ * con headers vacíos o inválidos.
  *
  * `x-forwarded-for` puede traer una lista `client, proxy1, proxy2` —
- * tomamos el primer valor (el IP del cliente original). nginx en
- * nuestro setup ya agrega el correcto al principio.
+ * tomamos el primer valor (IP del cliente original). nginx en nuestro
+ * setup ya agrega el correcto al principio. Si el repo cambia a estar
+ * detrás de un CDN (Cloudflare, etc.), revisar este orden — algunos
+ * CDNs agregan su edge al principio en lugar del final.
  */
 export function getClientIp(headers: Headers): string {
   const forwardedFor = headers.get("x-forwarded-for")
   if (forwardedFor) {
     const first = forwardedFor.split(",")[0]?.trim()
-    if (first) return first
+    if (first && isValidIp(first)) return first
   }
-  const realIp = headers.get("x-real-ip")
-  if (realIp) return realIp.trim()
+  const realIp = headers.get("x-real-ip")?.trim()
+  if (realIp && isValidIp(realIp)) return realIp
   return "unknown"
 }

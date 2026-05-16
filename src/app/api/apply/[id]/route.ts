@@ -37,8 +37,21 @@ export async function PATCH(
   // El trigger del email queda AFUERA de la transacción a propósito:
   //  - No debe bloquear el commit (Resend roundtrip ~200-400ms).
   //  - Un fallo de Resend no debe rollbackear la promoción.
-  const { application, userMatched } = await prisma.$transaction(
-    async (tx) => {
+  //
+  // Además, leemos el status previo dentro de la transacción para detectar
+  // la transición real: solo notificamos en el "salto a APPROVED", no en
+  // re-clicks del admin sobre una Application ya aprobada (que de otra
+  // manera dispararían un mail duplicado al applicant).
+  const { application, userMatched, transitionedToApproved } =
+    await prisma.$transaction(async (tx) => {
+      const previous = await tx.application.findUnique({
+        where: { id },
+        select: { status: true },
+      })
+      if (!previous) {
+        throw new Error("application_not_found")
+      }
+
       const application = await tx.application.update({
         where: { id },
         data: { status: result.data.status },
@@ -46,10 +59,9 @@ export async function PATCH(
 
       let userMatched = 0
       if (result.data.status === "APPROVED") {
-        // Si el aplicante ya tiene cuenta, bump role + UserProfile.status.
-        // Si todavía no la tiene (caso anónimo via email-de-aprobación),
-        // `updateMany` matchea 0 filas — el hook `user.create.after`
-        // detectará la Application APPROVED cuando se registre.
+        // Los bumps del User corren incluso si ya estaba APPROVED — son
+        // idempotentes y sirven de "self-heal" si el primer approve falló
+        // a mitad antes de la transacción (commits previos al fix).
         //
         // `role: { not: "admin" }` excluye al founder en el caso edge
         // donde aplica con su mismo email — no degradarlo a creator.
@@ -64,18 +76,22 @@ export async function PATCH(
         userMatched = userResult.count
       }
 
-      return { application, userMatched }
-    }
-  )
+      const transitionedToApproved =
+        previous.status !== "APPROVED" &&
+        result.data.status === "APPROVED"
 
-  if (result.data.status === "APPROVED") {
-    // Log estructurado para distinguir "promoví a user existente" de
-    // "no había a quién promover, esperando signup". Sin esto no hay
-    // forma operacional de detectar applicants que se aprobaron pero
-    // nunca volvieron a registrarse.
+      return { application, userMatched, transitionedToApproved }
+    })
+
+  // Solo notificamos (email + log) en la transición real para evitar
+  // duplicados. Si el admin clickea "aprobar" dos veces o vuelve a PATCH
+  // sobre una Application ya APPROVED, no se dispara nada.
+  if (transitionedToApproved) {
+    // Log estructurado SIN PII. Antes incluía `email` crudo — sacado:
+    // operacionalmente alcanza con `id` y `userMatched` para correlacionar
+    // contra Application; el email del applicante no debe vivir en logs.
     console.info("application_approved", {
       id: application.id,
-      email: application.email,
       userMatched: userMatched > 0,
     })
 
