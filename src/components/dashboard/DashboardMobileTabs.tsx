@@ -15,6 +15,7 @@
  * tree-shake del bundle. La key string es la forma idiomática.
  */
 
+import type { ComponentType } from "react"
 import { Link, usePathname } from "@/i18n/navigation"
 import { Home, Calendar, Users, User, ClipboardList, UserCog } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -32,7 +33,7 @@ export type DashboardTabIconKey =
 
 const ICON_BY_KEY: Record<
   DashboardTabIconKey,
-  React.ComponentType<{ className?: string }>
+  ComponentType<{ className?: string }>
 > = {
   home: Home,
   calendar: Calendar,
