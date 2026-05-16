@@ -136,11 +136,12 @@ export async function EventCard({
 /** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date
  * o la date es inválida.
  *
- * IMPORTANTE: acepta `Date | string` porque `unstable_cache` de Next.js
- * serializa los `Date` a string ISO al guardar en cache y NO los re-hidrata
- * al leer. La declaración de `EventSummary.dates` como `Date[]` es honesta
- * en compile-time pero en runtime, después del primer cache hit, los items
- * vienen como strings. */
+ * Re-hidratación: a partir de este PR los services rehidratan `Date` post-
+ * cache (ver `src/lib/date.ts`), así que en uso normal `date` viene como
+ * `Date` real. La signature `Date | string` y la conversión defensiva
+ * quedan como red de seguridad para callers que pudieran pasar el ISO
+ * string directamente (ej. data de una API externa, fixtures de test,
+ * nuevos servicios que olviden el wrapper). */
 function formatEyebrow(
   date: Date | string | null,
   time: string | null,

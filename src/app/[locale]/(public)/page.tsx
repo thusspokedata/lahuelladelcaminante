@@ -365,11 +365,11 @@ const LOCALE_MAP: Record<string, string> = {
 }
 
 /**
- * Acepta `Date | string` en `from`/`to` porque `unstable_cache` de Next.js
- * serializa los `Date` a string ISO al guardar y NO los re-hidrata al leer.
- * `UpcomingStats.dateRange` viene del cache de `getUpcomingStats()`, así
- * que después del primer hit los campos llegan como strings y `Intl.format()`
- * sobre un string tira `RangeError: Invalid time value`. */
+ * Re-hidratación: a partir de este PR `getUpcomingStats()` rehidrata el
+ * `dateRange` antes de devolverlo (ver `src/lib/date.ts`), así que `from`
+ * y `to` vienen como `Date` real en uso normal. La signature `Date | string`
+ * y la conversión defensiva quedan como red de seguridad para callers que
+ * pudieran pasar ISO strings directamente. */
 function formatDateRange(
   range: { from: Date | string | null; to: Date | string | null },
   locale: string
