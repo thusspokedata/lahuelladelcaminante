@@ -364,17 +364,27 @@ const LOCALE_MAP: Record<string, string> = {
   de: "de-DE",
 }
 
+/**
+ * Re-hidratación: a partir de este PR `getUpcomingStats()` rehidrata el
+ * `dateRange` antes de devolverlo (ver `src/lib/date.ts`), así que `from`
+ * y `to` vienen como `Date` real en uso normal. La signature `Date | string`
+ * y la conversión defensiva quedan como red de seguridad para callers que
+ * pudieran pasar ISO strings directamente. */
 function formatDateRange(
-  range: { from: Date | null; to: Date | null },
+  range: { from: Date | string | null; to: Date | string | null },
   locale: string
 ): string {
   if (!range.from || !range.to) return ""
+  const fromObj =
+    range.from instanceof Date ? range.from : new Date(range.from)
+  const toObj = range.to instanceof Date ? range.to : new Date(range.to)
+  if (isNaN(fromObj.getTime()) || isNaN(toObj.getTime())) return ""
   const intl = new Intl.DateTimeFormat(LOCALE_MAP[locale] ?? "es-ES", {
     day: "numeric",
     month: "short",
   })
-  const from = intl.format(range.from).replace(/\./g, "")
-  const to = intl.format(range.to).replace(/\./g, "")
+  const from = intl.format(fromObj).replace(/\./g, "")
+  const to = intl.format(toObj).replace(/\./g, "")
   if (from === to) return from
   return `${from} – ${to}`
 }

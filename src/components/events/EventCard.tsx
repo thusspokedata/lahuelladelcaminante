@@ -133,19 +133,29 @@ export async function EventCard({
   )
 }
 
-/** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date. */
+/** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date
+ * o la date es inválida.
+ *
+ * Re-hidratación: a partir de este PR los services rehidratan `Date` post-
+ * cache (ver `src/lib/date.ts`), así que en uso normal `date` viene como
+ * `Date` real. La signature `Date | string` y la conversión defensiva
+ * quedan como red de seguridad para callers que pudieran pasar el ISO
+ * string directamente (ej. data de una API externa, fixtures de test,
+ * nuevos servicios que olviden el wrapper). */
 function formatEyebrow(
-  date: Date | null,
+  date: Date | string | null,
   time: string | null,
   locale: string
 ): string {
   if (!date) return ""
+  const dateObj = date instanceof Date ? date : new Date(date)
+  if (isNaN(dateObj.getTime())) return ""
   const intl = new Intl.DateTimeFormat(MONTHS_BY_LOCALE[locale] ?? "es-ES", {
     weekday: "short",
     day: "numeric",
     month: "short",
   })
-  const label = intl.format(date).replace(/\./g, "").toUpperCase()
+  const label = intl.format(dateObj).replace(/\./g, "").toUpperCase()
   return time ? `${label} · ${time}` : label
 }
 

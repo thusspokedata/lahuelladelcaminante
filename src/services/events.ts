@@ -2,8 +2,18 @@ import "server-only"
 
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { rehydrateDate, rehydrateDates } from "@/lib/date"
 import { generateUniqueSlug } from "@/lib/slugify"
 import { deleteImages } from "./cloudinary"
+
+/**
+ * Re-hidrata los `Date` de un `EventSummary` por si vienen como string
+ * desde `unstable_cache`. Ver `src/lib/date.ts` para el porqué. Es un
+ * no-op cuando se llama sobre un objeto cuyas dates ya son Date reales
+ * (caso pre-cache dentro de un callback de `unstable_cache`). */
+function rehydrateEvent(e: EventSummary): EventSummary {
+  return { ...e, dates: rehydrateDates(e.dates) }
+}
 
 export interface EventSummary {
   id: string
@@ -176,7 +186,7 @@ export const getHeroVariant = unstable_cache(
  * futuras y los resultados se ordenan por la próxima fecha (no por
  * createdAt) — la card depende de `event.dates[0]` para mostrar "JUN 7".
  */
-export const getUpcomingEventsWithin = unstable_cache(
+const _getUpcomingEventsWithin = unstable_cache(
   async (days: number, limit?: number): Promise<EventSummary[]> => {
     const now = new Date()
     const until = new Date(now)
@@ -196,6 +206,13 @@ export const getUpcomingEventsWithin = unstable_cache(
   { revalidate: 300, tags: ["events"] }
 )
 
+export async function getUpcomingEventsWithin(
+  days: number,
+  limit?: number
+): Promise<EventSummary[]> {
+  return (await _getUpcomingEventsWithin(days, limit)).map(rehydrateEvent)
+}
+
 /**
  * Próximos 3-N eventos para la sección "Imperdibles" de la home. Por ahora
  * usamos un proxy: los próximos por fecha. TODO: cuando exista un flag
@@ -203,7 +220,7 @@ export const getUpcomingEventsWithin = unstable_cache(
  * filtra dates a futuras y los resultados se ordenan por la próxima fecha
  * (no por createdAt) para que la card muestre la fecha próxima real.
  */
-export const getFeaturedEvents = unstable_cache(
+const _getFeaturedEvents = unstable_cache(
   async (limit = 3): Promise<EventSummary[]> => {
     const now = new Date()
     const events = await prisma.event.findMany({
@@ -220,6 +237,10 @@ export const getFeaturedEvents = unstable_cache(
   { revalidate: 300, tags: ["events"] }
 )
 
+export async function getFeaturedEvents(limit = 3): Promise<EventSummary[]> {
+  return (await _getFeaturedEvents(limit)).map(rehydrateEvent)
+}
+
 export interface UpcomingStats {
   shows: number
   artists: number
@@ -232,7 +253,7 @@ export interface UpcomingStats {
  * cuántos artistas distintos, cuántas ciudades distintas y el rango de
  * fechas que cubren. Devuelve `dateRange.from/to = null` si no hay eventos.
  */
-export const getUpcomingStats = unstable_cache(
+const _getUpcomingStats = unstable_cache(
   async (): Promise<UpcomingStats> => {
     const now = new Date()
     const events = await prisma.event.findMany({
@@ -281,7 +302,18 @@ export const getUpcomingStats = unstable_cache(
   { revalidate: 300, tags: ["events"] }
 )
 
-export const getUpcomingEvents = unstable_cache(
+export async function getUpcomingStats(): Promise<UpcomingStats> {
+  const s = await _getUpcomingStats()
+  return {
+    ...s,
+    dateRange: {
+      from: rehydrateDate(s.dateRange.from),
+      to: rehydrateDate(s.dateRange.to),
+    },
+  }
+}
+
+const _getUpcomingEvents = unstable_cache(
   async (filters?: { genre?: string; city?: string }): Promise<EventSummary[]> => {
     const events = await prisma.event.findMany({
       where: {
@@ -300,7 +332,13 @@ export const getUpcomingEvents = unstable_cache(
   { revalidate: 300, tags: ["events"] }
 )
 
-export const getPastEvents = unstable_cache(
+export async function getUpcomingEvents(
+  filters?: { genre?: string; city?: string }
+): Promise<EventSummary[]> {
+  return (await _getUpcomingEvents(filters)).map(rehydrateEvent)
+}
+
+const _getPastEvents = unstable_cache(
   async (): Promise<EventSummary[]> => {
     const events = await prisma.event.findMany({
       where: {
@@ -315,6 +353,10 @@ export const getPastEvents = unstable_cache(
   ["past-events"],
   { revalidate: 600, tags: ["events"] }
 )
+
+export async function getPastEvents(): Promise<EventSummary[]> {
+  return (await _getPastEvents()).map(rehydrateEvent)
+}
 
 export async function getEventBySlug(slug: string): Promise<EventDetail | null> {
   const event = await prisma.event.findUnique({
