@@ -612,8 +612,19 @@ export async function getEventsByUserGrouped(
       continue
     }
     const lastDate = summary.dates[summary.dates.length - 1]
-    if (lastDate && lastDate >= now) upcoming.push(summary)
-    else past.push(summary)
+    if (lastDate && lastDate >= now) {
+      // En upcoming filtramos las fechas a solo las futuras, para que el
+      // `EventRow` muestre la próxima cronológica real (`dates[0]`) en su
+      // `DateTile`. Sin este filtro, un evento con varias funciones (una
+      // pasada + una futura) mostraría la pasada porque `dates` viene
+      // ordenado asc desde el include.
+      upcoming.push({
+        ...summary,
+        dates: summary.dates.filter((d) => d >= now),
+      })
+    } else {
+      past.push(summary)
+    }
   }
 
   return {
