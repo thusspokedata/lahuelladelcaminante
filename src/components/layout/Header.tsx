@@ -321,11 +321,14 @@ function MobileDrawer({
         style={{ top: "var(--layout-header-h)" }}
       />
 
+      {/* Sin role="dialog"/aria-modal mientras el componente no tenga un
+          focus trap real. El `<nav>` interno ya aporta semántica de
+          navegación; `inert` cubre el orden de tabulación cuando está
+          cerrado. Cuando se introduzca el dialog primitive compartido
+          (PR de overlays), volvemos a marcar role="dialog" junto con
+          el focus trap + inert global. */}
       <div
         id="header-mobile-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-hidden={!open}
         inert={!open}
         className={cn(
           "md:hidden fixed inset-x-0 z-50 bg-bg-page border-b border-border",
@@ -342,6 +345,7 @@ function MobileDrawer({
                 key={item.href}
                 href={item.href}
                 ref={index === 0 ? firstLinkRef : undefined}
+                onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "text-body-l py-s rounded-m px-m transition-colors",
@@ -363,12 +367,14 @@ function MobileDrawer({
             <div className="flex flex-col gap-s">
               <Link
                 href="/sign-in"
+                onClick={onClose}
                 className="text-body-s text-fg-secondary hover:text-fg-primary py-s"
               >
                 {t("signIn")}
               </Link>
               <Link
                 href="/apply"
+                onClick={onClose}
                 className={cn(
                   "inline-flex items-center justify-center rounded-pill",
                   "bg-brand text-on-brand px-l py-s text-body-s font-semibold",
