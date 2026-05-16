@@ -135,13 +135,24 @@ export default async function EventDetailPage({
   const otherDates = event.dates.slice(1)
   const timeRange = extractTimeRange(event.time)
 
-  // Eyebrow "live" si la próxima fecha cae en los próximos 7 días. Calculado
-  // acá para no agregar otra dependencia de cache — la decision es trivial
-  // y solo afecta el chip visual.
+  // Eyebrow "live" si la próxima fecha cae en los próximos 7 días.
+  // Comparamos contra **bounds de día calendario** (todayStart 00:00 →
+  // in7End 23:59:59.999), no contra timestamps exactos: si un evento es
+  // hoy a las 21:00 y son las 22:00 del día anterior + 1 minuto (00:01),
+  // sigue siendo "hoy" para nosotros — no debe salir del rango EN VIVO
+  // por la hora del clock. La decisión es visual, no necesita más precisión.
   const now = new Date()
-  const in7 = new Date(now)
-  in7.setDate(in7.getDate() + 7)
-  const isLive = nextDate ? nextDate >= now && nextDate <= in7 : false
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const in7End = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 7,
+    23,
+    59,
+    59,
+    999
+  )
+  const isLive = nextDate ? nextDate >= todayStart && nextDate <= in7End : false
 
   return (
     <>
