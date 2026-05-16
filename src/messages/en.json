@@ -4,7 +4,11 @@
     "artists": "Artists",
     "dashboard": "Dashboard",
     "signIn": "Sign In",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "thisWeek": "This week",
+    "forArtists": "For artists",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "home": {
     "badge": "Berlin · Latin Music",
@@ -168,11 +172,18 @@
     "createEvent": "Create Event"
   },
   "footer": {
-    "tagline": "Latin American Music · Berlin",
+    "tagline": "Live Latin music in Germany. Made in Berlin.",
     "events": "Events",
     "artists": "Artists",
     "login": "Log in",
-    "copyright": "© {year} La Huella del Caminante. Made with ♥ in Berlin by Thusspokedata"
+    "copyright": "© {year} La Huella del Caminante. Made with ♥ in Berlin by Thusspokedata",
+    "explore": "Explore",
+    "forYou": "For you",
+    "community": "Community",
+    "apply": "Apply",
+    "newsletter": "Newsletter",
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
   },
   "status": {
     "pending": "Pending",
