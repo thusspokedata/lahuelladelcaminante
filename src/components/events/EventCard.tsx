@@ -1,106 +1,155 @@
-"use client"
+/**
+ * EventCard — card pública de evento, ratio 4:5.
+ *
+ * Composición:
+ *  - `FlyerImage` arriba (4:5) con overlay de `DateTile` (top-left) y
+ *    `Chip` del género (top-right, accent según `genreAccent`).
+ *  - Bloque de info debajo: eyebrow con fecha + hora, título, lugar y
+ *    artista, precio o modo de acceso.
+ *
+ * La card entera es un `<Link>` al detalle. Hover → lift 2px + brillo
+ * del borde, transición 200ms ease-out (handoff §5.3 regla 2).
+ *
+ * Variantes:
+ *  - `default`: card estándar (próximos, agenda densa).
+ *  - `featured`: tratamiento destacado, borde dorado sutil, eyebrow del
+ *    encabezado en accent editorial.
+ *
+ * Es server async porque renderiza `DateTile` (async server).
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §4.1.
+ */
 
-import Link from "next/link"
-import Image from "next/image"
-import { useLocale } from "next-intl"
-import { formatDate } from "@/lib/utils"
-import { MapPin, Clock } from "lucide-react"
+import { getLocale } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
+import { genreAccent } from "@/lib/genre-accent"
 import type { EventSummary } from "@/services/events"
+import Chip from "@/components/ui/Chip"
+import Eyebrow from "@/components/ui/Eyebrow"
+import FlyerImage from "@/components/ui/FlyerImage"
+import DateTile from "./DateTile"
 
-const GENRE_COLORS: Record<string, string> = {
-  Tango: "bg-rose-700",
-  Salsa: "bg-orange-600",
-  Cumbia: "bg-amber-600",
-  Reggaeton: "bg-violet-600",
-  Merengue: "bg-pink-600",
-  "Son Cubano": "bg-red-700",
-  "Bossa Nova": "bg-emerald-700",
-  Vallenato: "bg-sky-700",
-  "Flamenco Latino": "bg-orange-700",
-  "Latin Jazz": "bg-indigo-700",
+export interface EventCardProps {
+  event: EventSummary
+  variant?: "default" | "featured"
+  /** Pasar `true` solo en eventos above-the-fold (LCP). */
+  priority?: boolean
+  /** Si el caller ya resolvió el locale, pasarlo evita un await por card. */
+  locale?: string
 }
 
-export function EventCard({ event }: { event: EventSummary }) {
-  const locale = useLocale()
-  const nextDate = event.dates[0] ? new Date(event.dates[0]) : null
-  const genreColor = event.genre ? (GENRE_COLORS[event.genre] ?? "bg-primary") : ""
+const MONTHS_BY_LOCALE: Record<string, string> = {
+  es: "es-ES",
+  en: "en-US",
+  de: "de-DE",
+}
+
+export async function EventCard({
+  event,
+  variant = "default",
+  priority = false,
+  locale,
+}: EventCardProps) {
+  const resolvedLocale = locale ?? (await getLocale())
+  const nextDate = event.dates[0] ?? null
+  const accent = genreAccent(event.genre)
+  const isFeatured = variant === "featured"
+
+  const eyebrowText = formatEyebrow(nextDate, event.time, resolvedLocale)
 
   return (
-    <Link href={`/${locale}/events/${event.slug}`} className="group block h-full">
-      <article className="rounded-2xl overflow-hidden bg-card border border-border/50 shadow-sm hover:shadow-2xl hover:shadow-black/10 transition-all duration-300 group-hover:-translate-y-1.5 h-full flex flex-col">
+    <Link
+      href={`/events/${event.slug}`}
+      className={cn(
+        "group flex flex-col h-full overflow-hidden rounded-l bg-bg-surface border",
+        "transition-all duration-200 ease-out",
+        "hover:-translate-y-[2px] hover:border-border-hi",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+        "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
+        isFeatured ? "border-editorial/40" : "border-border"
+      )}
+    >
+      {/* Imagen 4:5 con overlays */}
+      <div className="relative">
+        <FlyerImage
+          publicId={event.coverImagePublicId ?? undefined}
+          src={event.coverImage ?? undefined}
+          alt={event.coverImageAlt ?? event.title}
+          aspectRatio="4:5"
+          priority={priority}
+          fallbackAccent={accent === "neutral" ? "brand" : accent}
+        />
 
-        {/* Image */}
-        <div className="relative h-52 overflow-hidden">
-          {event.coverImage ? (
-            <Image
-              src={event.coverImage}
-              alt={event.title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-accent/15 to-primary/10 flex items-center justify-center">
-              <span className="text-7xl opacity-15 select-none">🎶</span>
-            </div>
-          )}
+        {nextDate ? (
+          <div className="absolute top-m left-m">
+            <DateTile date={nextDate} size="m" locale={resolvedLocale} />
+          </div>
+        ) : null}
 
-          {/* Bottom gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-
-          {/* Date bubble */}
-          {nextDate && (
-            <div className="absolute top-3 left-3 bg-white rounded-xl px-2 py-1.5 text-center shadow-lg min-w-[46px]">
-              <div className="text-[10px] font-extrabold text-primary uppercase tracking-wider leading-none">
-                {nextDate.toLocaleDateString(
-                  locale === "es" ? "es-ES" : locale === "de" ? "de-DE" : "en-US",
-                  { month: "short" }
-                )}
-              </div>
-              <div className="text-2xl font-black text-foreground leading-none mt-0.5">
-                {nextDate.getDate()}
-              </div>
-            </div>
-          )}
-
-          {/* Genre pill */}
-          {event.genre && (
-            <div className={cn("absolute top-3 right-3 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md", genreColor)}>
+        {event.genre ? (
+          <div className="absolute top-m right-m">
+            <Chip accent={accent} active size="s">
               {event.genre}
-            </div>
-          )}
-
-          {/* Title on image */}
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="font-bold text-white text-base leading-snug line-clamp-2 drop-shadow">
-              {event.title}
-            </h3>
+            </Chip>
           </div>
-        </div>
+        ) : null}
+      </div>
 
-        {/* Info */}
-        <div className="p-4 flex flex-col gap-1.5 flex-1">
-          {nextDate && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="w-3.5 h-3.5 shrink-0 text-primary/50" />
-              <span className="truncate">{formatDate(nextDate, locale)}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-primary/50" />
-            <span className="truncate">{event.location}</span>
-          </div>
+      {/* Info debajo del flyer */}
+      <div className="flex flex-col gap-xs p-m flex-1">
+        {eyebrowText ? (
+          <Eyebrow accent={isFeatured ? "editorial" : "neutral"}>
+            {eyebrowText}
+          </Eyebrow>
+        ) : null}
 
-          {event.artistName && (
-            <div className="mt-auto pt-2.5 border-t border-border/60">
-              <span className="text-xs font-bold text-primary uppercase tracking-wide">
+        <h3 className="text-heading-s font-display text-fg-primary line-clamp-2">
+          {event.title}
+        </h3>
+
+        <p className="text-body-s text-fg-secondary line-clamp-1">
+          {event.location}
+        </p>
+
+        {event.artistName || event.price ? (
+          <div className="mt-auto pt-s flex items-end justify-between gap-s">
+            {event.artistName ? (
+              <span className="text-caption text-fg-tertiary font-mono uppercase line-clamp-1">
                 {event.artistName}
               </span>
-            </div>
-          )}
-        </div>
-      </article>
+            ) : (
+              <span />
+            )}
+            {event.price ? (
+              <span className="text-body-s font-semibold text-fg-primary shrink-0">
+                {event.price}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
     </Link>
   )
 }
+
+/** "DOM 7 JUN · 19:30" (o equivalente por locale). Vacío si no hay date. */
+function formatEyebrow(
+  date: Date | null,
+  time: string | null,
+  locale: string
+): string {
+  if (!date) return ""
+  const intl = new Intl.DateTimeFormat(MONTHS_BY_LOCALE[locale] ?? "es-ES", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  })
+  const label = intl.format(date).replace(/\./g, "").toUpperCase()
+  return time ? `${label} · ${time}` : label
+}
+
+// Mantiene compat con consumidores que importan `{ EventCard }` (named) y
+// otros que prefieran default export. La card ya estaba exportada como
+// named; los nuevos consumidores pueden importar via default.
+export default EventCard
