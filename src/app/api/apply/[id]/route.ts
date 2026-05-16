@@ -4,10 +4,12 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { triggerApplicationApproved } from "@/lib/trigger"
 
+/** Schema reducido — el body solo trae el status nuevo. El email y
+ * name del aplicante se leen del row del DB (no del body) para defensa
+ * contra falsificación: un admin malicioso con credenciales válidas no
+ * podría aprobar una Application apuntando email/name a otra cuenta. */
 const schema = z.object({
   status: z.enum(["APPROVED", "REJECTED"]),
-  email: z.string().email(),
-  name: z.string(),
 })
 
 export async function PATCH(
@@ -26,35 +28,55 @@ export async function PATCH(
     return NextResponse.json({ error: "Validation error" }, { status: 400 })
   }
 
-  // Update + read en una sola operación. Usamos el email/name del row
-  // del DB (no del body del request) como fuente de verdad para el
-  // matching del User y para el trigger del email — no confiamos en
-  // strings que vienen del cliente para identificar al user.
-  const application = await prisma.application.update({
-    where: { id },
-    data: { status: result.data.status },
-  })
+  // Los 3 writes (application + user role + userProfile status) van en
+  // una transacción para que el approve sea atómico: si falla la conexión
+  // a mitad, no quedamos con Application APPROVED pero User sin promover
+  // (caso silencioso donde el applicant ve "fuiste aprobado" en el mail
+  // pero al loguearse sigue redirigido a `/user-pending`).
+  //
+  // El trigger del email queda AFUERA de la transacción a propósito:
+  //  - No debe bloquear el commit (Resend roundtrip ~200-400ms).
+  //  - Un fallo de Resend no debe rollbackear la promoción.
+  const { application, userMatched } = await prisma.$transaction(
+    async (tx) => {
+      const application = await tx.application.update({
+        where: { id },
+        data: { status: result.data.status },
+      })
+
+      let userMatched = 0
+      if (result.data.status === "APPROVED") {
+        // Si el aplicante ya tiene cuenta, bump role + UserProfile.status.
+        // Si todavía no la tiene (caso anónimo via email-de-aprobación),
+        // `updateMany` matchea 0 filas — el hook `user.create.after`
+        // detectará la Application APPROVED cuando se registre.
+        //
+        // `role: { not: "admin" }` excluye al founder en el caso edge
+        // donde aplica con su mismo email — no degradarlo a creator.
+        const userResult = await tx.user.updateMany({
+          where: { email: application.email, role: { not: "admin" } },
+          data: { role: "creator" },
+        })
+        await tx.userProfile.updateMany({
+          where: { user: { email: application.email } },
+          data: { status: "ACTIVE" },
+        })
+        userMatched = userResult.count
+      }
+
+      return { application, userMatched }
+    }
+  )
 
   if (result.data.status === "APPROVED") {
-    // Si el aplicante ya tiene cuenta (caso usual: aplicó después de
-    // signup), bump su UserProfile.status a ACTIVE y role a creator
-    // para destrabar el panel. Si todavía no tiene cuenta (aplicó como
-    // anónimo via email-de-aprobación), el hook `user.create.after`
-    // detectará la Application aprobada cuando se registre y le dará
-    // ACTIVE + creator inmediato.
-    //
-    // `updateMany` con `where` por email permite el caso "0 matches" sin
-    // tirar (a diferencia de `update` que rechaza si no encuentra). El
-    // role bump excluye admins por defensa — un admin con la misma email
-    // (caso edge: founder aplicando como creator) no debería degradar a
-    // creator.
-    await prisma.user.updateMany({
-      where: { email: application.email, role: { not: "admin" } },
-      data: { role: "creator" },
-    })
-    await prisma.userProfile.updateMany({
-      where: { user: { email: application.email } },
-      data: { status: "ACTIVE" },
+    // Log estructurado para distinguir "promoví a user existente" de
+    // "no había a quién promover, esperando signup". Sin esto no hay
+    // forma operacional de detectar applicants que se aprobaron pero
+    // nunca volvieron a registrarse.
+    console.info("application_approved", {
+      id: application.id,
+      email: application.email,
+      userMatched: userMatched > 0,
     })
 
     triggerApplicationApproved({

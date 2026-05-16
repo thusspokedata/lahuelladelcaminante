@@ -49,9 +49,13 @@ const DEFAULT_CONFIG: RateLimitConfig = {
   maxRequests: 3,
 }
 
-/** Cleanup oportunista: al crear bucket nuevo, recorre el Map y borra
- * todos los expirados. Cost-amortizado bajo (solo corre cuando aparece
- * IP nueva, y solo borra). Evita memory leak sin necesidad de setInterval. */
+/** Cleanup: recorre el Map y borra todos los expirados. Costo bajo
+ * (Map.size típico < cantidad de IPs únicas en la ventana actual), y
+ * la operación es O(n). Llamado al inicio de cada `checkRateLimit` —
+ * garantiza limpieza periódica sin necesidad de `setInterval` ni
+ * runtime separado. Antes corría solo "al crear bucket nuevo", lo que
+ * dejaba un caso patológico: tráfico dominado por las mismas IPs nunca
+ * disparaba cleanup. */
 function pruneExpired(now: number): void {
   for (const [key, bucket] of buckets) {
     if (bucket.resetAt <= now) {
@@ -63,6 +67,13 @@ function pruneExpired(now: number): void {
 /**
  * Verifica si una request del `key` (típicamente IP) puede pasar.
  * Side-effect: incrementa el contador si pasa, o devuelve cuánto esperar.
+ *
+ * En **development** (`NODE_ENV !== "production"`), si la `key` es
+ * `"unknown"` (típicamente porque nginx no está delante seteando
+ * `x-forwarded-for`), se hace **bypass** del rate limit. Evita el
+ * caso "todos los requests del dev local caen en el mismo bucket
+ * y se rate-limitean entre sí". En production NO hay bypass —
+ * `"unknown"` sigue compartiendo bucket para defensa.
  *
  * Uso típico:
  * ```ts
@@ -77,11 +88,15 @@ export function checkRateLimit(
   key: string,
   config: RateLimitConfig = DEFAULT_CONFIG
 ): RateLimitResult {
+  if (process.env.NODE_ENV !== "production" && key === "unknown") {
+    return { ok: true }
+  }
+
   const now = Date.now()
+  pruneExpired(now)
   const bucket = buckets.get(key)
 
   if (!bucket || bucket.resetAt <= now) {
-    pruneExpired(now)
     buckets.set(key, { count: 1, resetAt: now + config.windowMs })
     return { ok: true }
   }

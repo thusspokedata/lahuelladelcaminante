@@ -8,11 +8,9 @@ import { toast } from "sonner"
 
 interface Props {
   id: string
-  email: string
-  name: string
 }
 
-export function ApplicationActions({ id, email, name }: Props) {
+export function ApplicationActions({ id }: Props) {
   const t = useTranslations("admin")
   const router = useRouter()
   const [loading, setLoading] = useState<"APPROVED" | "REJECTED" | null>(null)
@@ -20,11 +18,17 @@ export function ApplicationActions({ id, email, name }: Props) {
   async function update(status: "APPROVED" | "REJECTED") {
     setLoading(status)
     try {
-      await fetch(`/api/apply/${id}`, {
+      const res = await fetch(`/api/apply/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, email, name }),
+        body: JSON.stringify({ status }),
       })
+      // Verificar `res.ok` antes de mostrar success — sin esto un 403/500
+      // del server queda como "Aprobado" en el toast (falso positivo).
+      if (!res.ok) {
+        toast.error("Error")
+        return
+      }
       toast.success(status === "APPROVED" ? t("applicationsApprovedMsg") : t("applicationsRejectedMsg"))
       router.refresh()
     } catch {

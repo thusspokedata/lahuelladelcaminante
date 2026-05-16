@@ -46,7 +46,7 @@ export default async function ApplicationsPage({
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{app.message}</p>
                 </div>
-                <ApplicationActions id={app.id} email={app.email} name={app.name} />
+                <ApplicationActions id={app.id} />
               </div>
             ))}
           </div>
