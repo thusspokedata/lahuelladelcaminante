@@ -1,5 +1,6 @@
 import "server-only"
 
+import { cache } from "react"
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { generateUniqueSlug } from "@/lib/slugify"
@@ -133,7 +134,15 @@ export async function getPastArtists(): Promise<ArtistSummary[]> {
   return artists.map(mapToSummary)
 }
 
-export async function getArtistBySlug(slug: string): Promise<ArtistDetail | null> {
+/**
+ * Wrapeado con `cache()` de React para dedupe **dentro del mismo request**:
+ * `generateMetadata` y el `page` default del detalle de artista llaman a
+ * `getArtistBySlug(slug)` por separado. Sin este wrapper, dos queries
+ * Prisma idénticas con includes. `cache()` reusa el resultado.
+ */
+export const getArtistBySlug = cache(_getArtistBySlugImpl)
+
+async function _getArtistBySlugImpl(slug: string): Promise<ArtistDetail | null> {
   const artist = await prisma.artist.findUnique({
     where: { slug },
     include: {

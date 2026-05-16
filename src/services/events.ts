@@ -1,5 +1,6 @@
 import "server-only"
 
+import { cache } from "react"
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { rehydrateDate, rehydrateDates } from "@/lib/date"
@@ -358,7 +359,21 @@ export async function getPastEvents(): Promise<EventSummary[]> {
   return (await _getPastEvents()).map(rehydrateEvent)
 }
 
-export async function getEventBySlug(slug: string): Promise<EventDetail | null> {
+/**
+ * Wrapeado con `cache()` de React para dedupe **dentro del mismo request**:
+ * `generateMetadata` y el `page` default llaman a `getEventBySlug(slug)`
+ * por separado en el render del detalle. Sin este wrapper, son dos queries
+ * a Prisma con includes pesados. `cache()` hace que la segunda llamada
+ * con el mismo arg reuse el resultado de la primera.
+ *
+ * No usamos `unstable_cache` porque la invalidación de events ya se hace
+ * por tag desde `updateEvent`/`softDeleteEvent`, y la frecuencia de hits
+ * al detalle no justifica el overhead de cache de Next; el dedupe
+ * request-scoped es suficiente para evitar el bug obvio.
+ */
+export const getEventBySlug = cache(_getEventBySlugImpl)
+
+async function _getEventBySlugImpl(slug: string): Promise<EventDetail | null> {
   const event = await prisma.event.findUnique({
     where: { slug, isDeleted: false },
     include: {
@@ -453,6 +468,78 @@ export async function getEventsByArtist(artistId: string): Promise<EventSummary[
     orderBy: { createdAt: "desc" },
   })
   return events.map(mapToSummary)
+}
+
+/**
+ * Próximos eventos de un artista, ordenados por la próxima fecha (más
+ * cercana primero). Usado por el detalle de artista para la sección
+ * "Próximas fechas". Solo trae la próxima fecha futura del evento (no
+ * todas las fechas pasadas), igual que `getUpcomingEventsWithin`.
+ */
+const _getUpcomingEventsByArtist = unstable_cache(
+  async (artistId: string, limit?: number): Promise<EventSummary[]> => {
+    const now = new Date()
+    const events = await prisma.event.findMany({
+      where: {
+        artistId,
+        isDeleted: false,
+        isActive: true,
+        dates: { some: { date: { gte: now } } },
+      },
+      include: futureEventInclude(now),
+    })
+    const ordered = sortByNextDate(events.map(mapToSummary))
+    return limit ? ordered.slice(0, limit) : ordered
+  },
+  ["upcoming-events-by-artist"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+export async function getUpcomingEventsByArtist(
+  artistId: string,
+  limit?: number
+): Promise<EventSummary[]> {
+  return (await _getUpcomingEventsByArtist(artistId, limit)).map(rehydrateEvent)
+}
+
+/**
+ * Otros próximos eventos de un artista, excluyendo uno específico. Usado
+ * por el detalle de evento para la sección "Otros shows de este artista".
+ * Ordena por próxima fecha. Reusa la lógica de `_getUpcomingEventsByArtist`
+ * porque el filtro adicional es solo `excludeEventId`.
+ */
+const _getOtherEventsByArtist = unstable_cache(
+  async (
+    artistId: string,
+    excludeEventId: string,
+    limit?: number
+  ): Promise<EventSummary[]> => {
+    const now = new Date()
+    const events = await prisma.event.findMany({
+      where: {
+        artistId,
+        isDeleted: false,
+        isActive: true,
+        id: { not: excludeEventId },
+        dates: { some: { date: { gte: now } } },
+      },
+      include: futureEventInclude(now),
+    })
+    const ordered = sortByNextDate(events.map(mapToSummary))
+    return limit ? ordered.slice(0, limit) : ordered
+  },
+  ["other-events-by-artist"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+export async function getOtherEventsByArtist(
+  artistId: string,
+  excludeEventId: string,
+  limit?: number
+): Promise<EventSummary[]> {
+  return (await _getOtherEventsByArtist(artistId, excludeEventId, limit)).map(
+    rehydrateEvent
+  )
 }
 
 export async function getEventsByUser(userId: string): Promise<EventSummary[]> {

@@ -20,7 +20,7 @@ export interface EyebrowProps {
   children: React.ReactNode
   accent?: Accent
   className?: string
-  as?: "span" | "p" | "div"
+  as?: "span" | "p" | "div" | "h2" | "h3" | "h4" | "dt"
 }
 
 const ACCENT_COLOR: Record<Accent, string> = {
