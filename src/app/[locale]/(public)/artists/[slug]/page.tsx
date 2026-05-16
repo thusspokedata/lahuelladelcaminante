@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { getArtistBySlug } from "@/services/artists"
 import { getEventsByArtist } from "@/services/events"
 import { EventList } from "@/components/events/EventList"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ExternalLink } from "lucide-react"
+import { BackButton } from "@/components/ui/BackButton"
+import { ExternalLink } from "lucide-react"
 
 export default async function ArtistDetailPage({
   params,
@@ -14,6 +14,7 @@ export default async function ArtistDetailPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: "artists" })
   const artist = await getArtistBySlug(slug)
 
   if (!artist) notFound()
@@ -31,6 +32,7 @@ export default async function ArtistDetailPage({
             src={images[0].url}
             alt={artist.name}
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -41,12 +43,7 @@ export default async function ArtistDetailPage({
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 -mt-10 relative">
-        <Button variant="ghost" asChild className="mb-4 text-muted-foreground hover:text-foreground rounded-full -ml-2">
-          <Link href={`/${locale}/artists`}>
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Artistas
-          </Link>
-        </Button>
+        <BackButton label={t("title")} />
 
         {/* Name + meta */}
         <div className="mb-8">
@@ -126,7 +123,7 @@ export default async function ArtistDetailPage({
         {/* Photo gallery (all images) */}
         {images.length > 1 && (
           <section className="mb-12">
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">Fotos</p>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("photosLabel")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {images.map((img, i) => (
                 <div
@@ -151,7 +148,7 @@ export default async function ArtistDetailPage({
         {/* Events */}
         {events.length > 0 && (
           <section>
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">Próximos eventos</p>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("upcomingDatesLabel")}</p>
             <EventList events={events} />
           </section>
         )}

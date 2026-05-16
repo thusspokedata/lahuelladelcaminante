@@ -94,7 +94,9 @@
     "title": "Artistas",
     "search": "Buscar artista...",
     "noArtists": "No se encontraron artistas",
-    "createArtist": "Crear Artista"
+    "createArtist": "Crear Artista",
+    "photosLabel": "Fotos",
+    "upcomingDatesLabel": "Próximas fechas"
   },
   "dashboard": {
     "title": "Mi Panel",
@@ -221,7 +223,8 @@
     "blockedTitle": "Cuenta suspendida",
     "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador.",
     "noAccount": "¿No tienes cuenta?",
-    "haveAccount": "¿Ya tienes cuenta?"
+    "haveAccount": "¿Ya tienes cuenta?",
+    "backHome": "Volver al inicio"
   },
   "common": {
     "save": "Guardar",

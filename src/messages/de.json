@@ -94,7 +94,9 @@
     "title": "Künstler",
     "search": "Künstler suchen...",
     "noArtists": "Keine Künstler gefunden",
-    "createArtist": "Künstler erstellen"
+    "createArtist": "Künstler erstellen",
+    "photosLabel": "Fotos",
+    "upcomingDatesLabel": "Kommende Termine"
   },
   "dashboard": {
     "title": "Mein Dashboard",
@@ -221,7 +223,8 @@
     "blockedTitle": "Konto gesperrt",
     "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator.",
     "noAccount": "Noch kein Konto?",
-    "haveAccount": "Schon ein Konto?"
+    "haveAccount": "Schon ein Konto?",
+    "backHome": "Zur Startseite"
   },
   "common": {
     "save": "Speichern",
