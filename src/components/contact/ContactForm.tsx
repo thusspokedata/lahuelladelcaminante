@@ -43,6 +43,7 @@ const INITIAL_STATE: ContactInput = {
   email: "",
   type: "event_suggestion",
   message: "",
+  website: "", // honeypot
 }
 
 /** Códigos de error definidos en el schema. Cualquier código no listado
@@ -281,6 +282,25 @@ export default function ContactForm() {
             {tForm("messageHint")}
           </p>
         )}
+      </div>
+
+      {/* Honeypot — campo invisible para humanos pero llenable por bots
+          de spam clásicos. Si llega no-vacío, el server descarta el
+          request silenciosamente. `aria-hidden` + `tabIndex={-1}` para
+          que asistencias técnicas y navegación por teclado lo salteen.
+          `autoComplete="off"` y `name="website"` (campo común que los
+          bots agresivos completan por inferencia del name). */}
+      <div aria-hidden className="absolute -left-[9999px] w-0 h-0 overflow-hidden">
+        <label htmlFor="contact-website">Website</label>
+        <input
+          id="contact-website"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={values.website ?? ""}
+          onChange={(e) => update("website", e.target.value)}
+        />
       </div>
 
       <Button
