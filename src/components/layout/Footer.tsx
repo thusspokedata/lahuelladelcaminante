@@ -5,16 +5,15 @@
  *  1. Marca: BrandLockup vertical + tagline.
  *  2. EXPLORAR: links públicos (Eventos, Artistas, Esta semana).
  *  3. PARA VOS: aplicar como creator, sign-in.
- *  4. COMUNIDAD: Instagram, newsletter (placeholder), email mailto.
+ *  4. COMUNIDAD: Instagram, newsletter (placeholder), link a /contact.
+ *
+ * **`mailto:info@lahuelladelcaminante.de` removido**: el email expuesto
+ * era invitación abierta a scrapers. Reemplazado por link a `/contact`
+ * con form (decisión de producto, PR 8.5).
  *
  * Debajo de las columnas, línea separadora con copyright a la izquierda y
  * links a Impressum/Datenschutz a la derecha (`#` por ahora; el contenido
  * legal se redacta en una épica aparte).
- *
- * Es server component: no necesita hooks ni sesión. La distinción "mostrar
- * email solo a creator/admin" del Footer viejo se elimina — el email
- * `info@...` ahora aparece a todos, alineado con el handoff (sección
- * pública de contacto).
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §6.
  */
@@ -82,9 +81,7 @@ export async function Footer() {
             <FooterLink href="#" external>
               {t("newsletter")}
             </FooterLink>
-            <FooterLink href="mailto:info@lahuelladelcaminante.de" external>
-              info@lahuelladelcaminante.de
-            </FooterLink>
+            <FooterLink href="/contact">{t("contact")}</FooterLink>
           </FooterColumn>
         </div>
 
