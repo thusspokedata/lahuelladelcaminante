@@ -22,6 +22,11 @@ import EventRowActions from "@/components/dashboard/EventRowActions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type TabKey = "upcoming" | "drafts" | "past" | "all"
+type BadgeAccent = "brand" | "editorial" | "creator" | "neutral"
+interface StatusBadge {
+  label: string
+  accent: BadgeAccent
+}
 
 export default async function DashboardEventsPage({
   params,
@@ -38,39 +43,52 @@ export default async function DashboardEventsPage({
     namespace: "dashboard.events.status",
   })
 
+  const PUBLISHED: StatusBadge = { label: tStatus("published"), accent: "neutral" }
+  const DRAFT: StatusBadge = { label: tStatus("draft"), accent: "editorial" }
+  const PAST: StatusBadge = { label: tStatus("past"), accent: "neutral" }
+
+  // Lookup eventId → bucket name, para que el tab "Todos" pueda derivar
+  // el badge correcto por fila (cualquier evento del bucket `all` puede
+  // ser draft/upcoming/past, no aplica un único badge para todos).
+  const statusById = new Map<string, StatusBadge>()
+  for (const ev of grouped.upcoming) statusById.set(ev.id, PUBLISHED)
+  for (const ev of grouped.drafts) statusById.set(ev.id, DRAFT)
+  for (const ev of grouped.past) statusById.set(ev.id, PAST)
+
   const tabs: Array<{
     key: TabKey
     label: string
     events: EventSummary[]
-    badge: { label: string; accent: "brand" | "editorial" | "creator" | "neutral" }
+    /** `null` significa "derivar el badge por evento" (usado en el tab `all`). */
+    badge: StatusBadge | null
     emptyKey: string
   }> = [
     {
       key: "upcoming",
       label: t("tabs.upcoming"),
       events: grouped.upcoming,
-      badge: { label: tStatus("published"), accent: "neutral" },
+      badge: PUBLISHED,
       emptyKey: "empty.upcoming",
     },
     {
       key: "drafts",
       label: t("tabs.drafts"),
       events: grouped.drafts,
-      badge: { label: tStatus("draft"), accent: "editorial" },
+      badge: DRAFT,
       emptyKey: "empty.drafts",
     },
     {
       key: "past",
       label: t("tabs.past"),
       events: grouped.past,
-      badge: { label: tStatus("past"), accent: "neutral" },
+      badge: PAST,
       emptyKey: "empty.past",
     },
     {
       key: "all",
       label: t("tabs.all"),
       events: grouped.all,
-      badge: { label: tStatus("published"), accent: "neutral" },
+      badge: null,
       emptyKey: "empty.all",
     },
   ]
@@ -116,23 +134,26 @@ export default async function DashboardEventsPage({
               </p>
             ) : (
               <ul className="flex flex-col gap-xs">
-                {tab.events.map((event) => (
-                  <li key={event.id}>
-                    <EventRow
-                      event={event}
-                      locale={locale}
-                      dashboard
-                      statusBadge={tab.badge}
-                      actions={
-                        <EventRowActions
-                          eventId={event.id}
-                          eventSlug={event.slug}
-                          locale={locale}
-                        />
-                      }
-                    />
-                  </li>
-                ))}
+                {tab.events.map((event) => {
+                  const badge = tab.badge ?? statusById.get(event.id) ?? PUBLISHED
+                  return (
+                    <li key={event.id}>
+                      <EventRow
+                        event={event}
+                        locale={locale}
+                        dashboard
+                        statusBadge={badge}
+                        actions={
+                          <EventRowActions
+                            eventId={event.id}
+                            eventSlug={event.slug}
+                            locale={locale}
+                          />
+                        }
+                      />
+                    </li>
+                  )
+                })}
               </ul>
             )}
           </TabsContent>
