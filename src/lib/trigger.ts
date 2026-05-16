@@ -1,4 +1,9 @@
-async function sendEmail(to: string, subject: string, html: string) {
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  options: { replyTo?: string } = {}
+) {
   if (!process.env.RESEND_API_KEY) return
   const { getResend } = await import("./email")
   await getResend().emails.send({
@@ -6,6 +11,7 @@ async function sendEmail(to: string, subject: string, html: string) {
     to,
     subject,
     html,
+    ...(options.replyTo ? { replyTo: options.replyTo } : {}),
   })
 }
 
@@ -249,4 +255,106 @@ export async function triggerApplicationNotification(payload: {
     `Nueva solicitud: ${payload.name} quiere publicar eventos`,
     html
   )
+}
+
+/**
+ * Email al founder con un mensaje del form de `/contact`. Subject
+ * pre-clasificado para que sea fácil triage en la inbox:
+ * `[Contacto · {typeLabel}] {nombre}`.
+ *
+ * - `to`: destinatario, resuelto por el caller desde
+ *   `env.CONTACT_RECIPIENT_EMAIL` (fallback a `info@lahuelladelcaminante.de`).
+ * - `typeLabel`: label legible del tipo (ej. "Prensa o medios") — el
+ *   caller ya lo resolvió con i18n.
+ * - `replyTo`: el email del remitente se setea como Reply-To para que
+ *   responder desde la inbox vaya directo a la persona, sin tener que
+ *   copiar el campo Email del cuerpo del mail.
+ */
+export async function triggerContactNotification(payload: {
+  to: string
+  name: string
+  email: string
+  type: string
+  typeLabel: string
+  message: string
+  /** Locale del request que originó el mensaje. Setea `lang` del HTML
+   * del email para que clientes de mail con corrección ortográfica/
+   * traducción usen el idioma correcto. El header visible del email
+   * sigue en castellano (lo lee el founder), pero el `lang` refleja la
+   * realidad de quién escribió el contenido. */
+  locale: string
+}) {
+  // Sanitización defensiva: zod ya valida `name` con `max(120)`, pero un
+  // CRLF en el medio pasaría el length check y podría meterse en el
+  // `Subject:` MIME header. Resend probablemente lo cubre, pero defendemos
+  // en profundidad — colapsamos newlines a espacio y recortamos extra.
+  const safeSubjectName = payload.name.replace(/[\r\n]+/g, " ").trim().slice(0, 100)
+  const safeSubjectLabel = payload.typeLabel.replace(/[\r\n]+/g, " ").trim().slice(0, 60)
+
+  const html = `<!DOCTYPE html>
+<html lang="${escapeHtml(payload.locale)}">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0e0407;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;padding:40px 20px">
+    <tr><td align="center">
+      <table width="100%" style="max-width:580px;background:#130609;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+
+        <tr><td style="background:#1a0c10;padding:28px 32px;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 6px">La Huella del Caminante</p>
+          <h1 style="color:#ffffff;font-size:20px;font-weight:800;margin:0">Nuevo mensaje desde /contact</h1>
+        </td></tr>
+
+        <tr><td style="padding:32px">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;border-radius:10px;overflow:hidden">
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Tipo de consulta</p>
+              <p style="color:#ffffff;font-size:15px;font-weight:600;margin:0">${escapeHtml(payload.typeLabel)}</p>
+            </td></tr>
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Nombre</p>
+              <p style="color:#ffffff;font-size:15px;font-weight:600;margin:0">${escapeHtml(payload.name)}</p>
+            </td></tr>
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Email</p>
+              <p style="color:#c0392b;font-size:15px;font-weight:600;margin:0">
+                <a href="mailto:${encodeURIComponent(payload.email)}" style="color:#c0392b;text-decoration:none">${escapeHtml(payload.email)}</a>
+              </p>
+            </td></tr>
+            <tr><td style="padding:14px 20px">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 8px">Mensaje</p>
+              <p style="color:#e8d5d0;font-size:14px;line-height:1.7;margin:0;white-space:pre-wrap">${escapeHtml(payload.message)}</p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="border-top:1px solid rgba(255,255,255,0.06);padding:18px 32px;text-align:center">
+          <p style="color:rgba(255,255,255,0.2);font-size:12px;margin:0">
+            © ${new Date().getFullYear()} La Huella del Caminante · Berlín
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  await sendEmail(
+    payload.to,
+    `[Contacto · ${safeSubjectLabel}] ${safeSubjectName}`,
+    html,
+    { replyTo: payload.email }
+  )
+}
+
+/** Escape mínimo para interpolar input del user en el HTML del email.
+ * Suficiente para evitar HTML injection en una plantilla controlada
+ * (no markdown ni script tags). */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }
