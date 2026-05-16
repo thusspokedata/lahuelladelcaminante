@@ -15,7 +15,7 @@
 
 "use client"
 
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { usePathname, useRouter } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
@@ -36,6 +36,7 @@ export default function LanguageSwitcher({
   const activeLocale = useLocale() as Locale
   const router = useRouter()
   const pathname = usePathname()
+  const tNav = useTranslations("nav")
 
   function switchTo(next: Locale) {
     if (next === activeLocale) return
@@ -58,7 +59,7 @@ export default function LanguageSwitcher({
         className
       )}
       role="group"
-      aria-label="Language switcher"
+      aria-label={tNav("languageSwitcherLabel")}
     >
       {routing.locales.map((loc, i) => {
         const isActive = loc === activeLocale

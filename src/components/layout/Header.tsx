@@ -277,9 +277,12 @@ function MobileDrawer({
 
   // Lock body scroll cuando el drawer está abierto + cerrar con Escape +
   // gestionar foco (al abrir, mover al primer link; al cerrar, restaurar
-  // al hamburger). TODO: agregar focus trap completo (Tab cycling) y
-  // `inert` sobre el resto del DOM cuando agreguemos un primitivo de
-  // dialog compartido (probable PR de overlays/modals).
+  // al hamburger). El `inert={!open}` sobre el div del drawer se aplica
+  // abajo en el JSX y descalifica el subtree del orden de tabulación
+  // cuando está cerrado (los Links/buttons internos no son focusables
+  // hasta que el drawer abra). TODO pendiente para un PR de overlays:
+  // focus trap completo (Tab cycling adentro del drawer) e `inert`
+  // sobre el resto del DOM cuando se introduzca un primitivo dialog.
   useEffect(() => {
     if (!open) return
 
@@ -323,6 +326,7 @@ function MobileDrawer({
         role="dialog"
         aria-modal="true"
         aria-hidden={!open}
+        inert={!open}
         className={cn(
           "md:hidden fixed inset-x-0 z-50 bg-bg-page border-b border-border",
           "transition-transform duration-200 ease-out",
