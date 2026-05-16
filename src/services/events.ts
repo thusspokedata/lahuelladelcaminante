@@ -103,6 +103,39 @@ const eventInclude = {
 }
 
 /**
+ * Variante de `eventInclude` para queries de "lo que viene": solo trae
+ * la próxima fecha futura (no las pasadas) y solo una. Así `event.dates[0]`
+ * en el `mapToSummary` resulta en la próxima fecha real del evento, no
+ * en una fecha pasada de un evento que tiene varias funciones.
+ */
+function futureEventInclude(now: Date, until?: Date) {
+  return {
+    dates: {
+      where: {
+        date: { gte: now, ...(until ? { lte: until } : {}) },
+      },
+      orderBy: { date: "asc" as const },
+      take: 1,
+    },
+    artist: { select: { name: true } },
+    images: { select: { url: true, publicId: true, alt: true } },
+  }
+}
+
+/**
+ * Ordena un set de EventSummary por su próxima fecha (ascendente). Asume
+ * que cada summary ya viene con `dates` filtradas a futuras (la primera es
+ * la próxima). Los que no tienen dates van al final.
+ */
+function sortByNextDate(events: EventSummary[]): EventSummary[] {
+  return [...events].sort((a, b) => {
+    const da = a.dates[0]?.getTime() ?? Infinity
+    const db = b.dates[0]?.getTime() ?? Infinity
+    return da - db
+  })
+}
+
+/**
  * Decide cuál variante de copy mostrar en el hero de la home, en una sola
  * query liviana (sin includes pesados). Resuelve la cascada:
  *  - hay shows en los próximos 7 días        → `"thisWeek"`
@@ -139,7 +172,9 @@ export const getHeroVariant = unstable_cache(
 /**
  * Eventos activos cuya próxima fecha cae dentro de los próximos `days` días.
  * Usado por la home para llenar las listas (agenda compacta) con un set
- * acotado en lugar de toda la agenda futura.
+ * acotado en lugar de toda la agenda futura. El include filtra dates a
+ * futuras y los resultados se ordenan por la próxima fecha (no por
+ * createdAt) — la card depende de `event.dates[0]` para mostrar "JUN 7".
  */
 export const getUpcomingEventsWithin = unstable_cache(
   async (days: number, limit?: number): Promise<EventSummary[]> => {
@@ -152,11 +187,10 @@ export const getUpcomingEventsWithin = unstable_cache(
         isActive: true,
         dates: { some: { date: { gte: now, lte: until } } },
       },
-      include: eventInclude,
-      orderBy: { createdAt: "desc" },
-      ...(limit ? { take: limit } : {}),
+      include: futureEventInclude(now, until),
     })
-    return events.map(mapToSummary)
+    const ordered = sortByNextDate(events.map(mapToSummary))
+    return limit ? ordered.slice(0, limit) : ordered
   },
   ["upcoming-events-within"],
   { revalidate: 300, tags: ["events"] }
@@ -165,21 +199,22 @@ export const getUpcomingEventsWithin = unstable_cache(
 /**
  * Próximos 3-N eventos para la sección "Imperdibles" de la home. Por ahora
  * usamos un proxy: los próximos por fecha. TODO: cuando exista un flag
- * `featured` en el modelo Event, filtrar por ese flag aquí.
+ * `featured` en el modelo Event, filtrar por ese flag aquí. El include
+ * filtra dates a futuras y los resultados se ordenan por la próxima fecha
+ * (no por createdAt) para que la card muestre la fecha próxima real.
  */
 export const getFeaturedEvents = unstable_cache(
   async (limit = 3): Promise<EventSummary[]> => {
+    const now = new Date()
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: new Date() } } },
+        dates: { some: { date: { gte: now } } },
       },
-      include: eventInclude,
-      orderBy: { createdAt: "desc" },
-      take: limit,
+      include: futureEventInclude(now),
     })
-    return events.map(mapToSummary)
+    return sortByNextDate(events.map(mapToSummary)).slice(0, limit)
   },
   ["featured-events"],
   { revalidate: 300, tags: ["events"] }
@@ -230,7 +265,10 @@ export const getUpcomingStats = unstable_cache(
     allDates.sort((a, b) => a.getTime() - b.getTime())
 
     return {
-      shows: events.length,
+      // "shows" cuenta instancias/funciones, no eventos: una banda que
+      // toca 3 noches consecutivas son 3 shows. Coincide con la jerga
+      // del producto y con el rango de fechas mostrado abajo.
+      shows: allDates.length,
       artists: artists.size,
       cities: cities.size,
       dateRange: {

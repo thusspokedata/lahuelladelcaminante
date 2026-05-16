@@ -77,7 +77,7 @@ export default async function HomePage({
       ) : null}
 
       {activeArtists.length > 0 ? (
-        <ArtistsSection artists={activeArtists} />
+        <ArtistsSection artists={activeArtists} locale={locale} />
       ) : null}
 
       {!user ? <CtaSection /> : null}
@@ -287,10 +287,11 @@ function FilterShortcut({ href, label, highlight = false }: FilterShortcutProps)
 
 interface ArtistsSectionProps {
   artists: Awaited<ReturnType<typeof getActiveArtists>>
+  locale: string
 }
 
-async function ArtistsSection({ artists }: ArtistsSectionProps) {
-  const t = await getTranslations("home.artists")
+async function ArtistsSection({ artists, locale }: ArtistsSectionProps) {
+  const t = await getTranslations({ locale, namespace: "home.artists" })
 
   return (
     <section className={cn(SECTION_GAP_CLASS, "border-t border-border")}>
