@@ -29,6 +29,7 @@ export default async function EventDetailPage({
             src={event.coverImage}
             alt={event.title}
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
