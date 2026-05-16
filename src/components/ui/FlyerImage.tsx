@@ -4,8 +4,9 @@
  * en ratio Instagram (4:5 o 1:1), no en landscape, y no deben recortarse.
  *
  * Comportamiento por orden de prioridad:
- *  1. Si hay `publicId`: usa `<CldImage>` (Cloudinary) con `crop="pad"` +
- *     `gravity="auto"` y format/quality automáticos.
+ *  1. Si hay `publicId`: usa `<CldImage>` (Cloudinary) con `crop="pad"` y
+ *     format/quality automáticos. NO se pasa `gravity` porque `pad` no
+ *     recorta (Cloudinary la ignoraría y avisaría en consola).
  *  2. Si hay `src` pero no `publicId`: usa `<Image>` de Next con object-contain.
  *  3. Si no hay ninguno: renderiza fallback de iniciales gigantes sobre un
  *     fondo con radial gradient del color accent (estilo "MS / WP / FC" del
@@ -105,13 +106,19 @@ export default function FlyerImage({
     const { width, height } = ASPECT_DIMENSIONS[aspectRatio]
     return (
       <div className={containerClass}>
+        {/* No usamos `gravity` con `crop="pad"`: Cloudinary solo respeta
+            gravity con crops que recortan (`fill`, `thumb`, etc.). `pad`
+            rellena con bandas, así que la gravity es irrelevante y
+            agregarla dispara un warning ("Auto gravity can only be used
+            with crop modes: auto, crop, fill, lfill, fill_pad, thumb").
+            Si en algún momento se vuelve a `crop="fill"` o `fill_pad`,
+            re-agregar `gravity="auto"`. */}
         <CldImage
           src={publicId}
           alt={alt}
           width={width}
           height={height}
           crop="pad"
-          gravity="auto"
           format="auto"
           quality="auto"
           priority={priority}
