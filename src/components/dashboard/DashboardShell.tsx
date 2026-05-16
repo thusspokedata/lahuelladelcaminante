@@ -20,7 +20,6 @@
 
 import { Link } from "@/i18n/navigation"
 import { getTranslations } from "next-intl/server"
-import { Home, Calendar, Users, User, ClipboardList, UserCog } from "lucide-react"
 import { cn } from "@/lib/utils"
 import DashboardSidebarNav, {
   type DashboardSidebarNavItem,
@@ -92,10 +91,10 @@ async function getDashboardNavItems(
 
   if (role === "creator") {
     return [
-      { label: tSidebar("creator.dashboard"), shortLabel: tMobile("dashboard"), href: "/dashboard", Icon: Home },
-      { label: tSidebar("creator.events"), shortLabel: tMobile("events"), href: "/dashboard/events", Icon: Calendar },
-      { label: tSidebar("creator.artists"), shortLabel: tMobile("artists"), href: "/dashboard/artists", Icon: Users },
-      { label: tSidebar("creator.profile"), shortLabel: tMobile("profile"), href: "/dashboard/profile", Icon: User },
+      { label: tSidebar("creator.dashboard"), shortLabel: tMobile("dashboard"), href: "/dashboard", iconKey: "home" },
+      { label: tSidebar("creator.events"), shortLabel: tMobile("events"), href: "/dashboard/events", iconKey: "calendar" },
+      { label: tSidebar("creator.artists"), shortLabel: tMobile("artists"), href: "/dashboard/artists", iconKey: "users" },
+      { label: tSidebar("creator.profile"), shortLabel: tMobile("profile"), href: "/dashboard/profile", iconKey: "user" },
     ]
   }
 
@@ -107,19 +106,19 @@ async function getDashboardNavItems(
       label: tSidebar("admin.applications"),
       shortLabel: tSidebar("admin.applications"),
       href: "/admin/applications",
-      Icon: ClipboardList,
+      iconKey: "clipboardList",
     },
     {
       label: tSidebar("admin.users"),
       shortLabel: tSidebar("admin.users"),
       href: "/admin/users",
-      Icon: UserCog,
+      iconKey: "userCog",
     },
     {
       label: tSidebar("admin.events"),
       shortLabel: tSidebar("admin.events"),
       href: "/admin/events",
-      Icon: Calendar,
+      iconKey: "calendar",
     },
   ]
 }

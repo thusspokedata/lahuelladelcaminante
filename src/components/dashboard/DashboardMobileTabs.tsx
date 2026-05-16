@@ -2,28 +2,55 @@
 
 /**
  * DashboardMobileTabs — tab bar fija al pie del viewport en mobile (<md).
- * Client por el `usePathname` + porque los iconos vienen como
- * componentes pre-pasados.
+ * Client por el `usePathname` y por el map `iconKey → componente`.
  *
  * Acepta items por rol (creator: 4, admin: 3). El color del item activo
  * se tiñe según el rol (`creator` fucsia, `admin` sangre) para mantener
- * coherencia con el sidebar desktop. Se renderiza siempre (no más
- * "creator-only") — admin también necesita navegación mobile.
+ * coherencia con el sidebar desktop.
+ *
+ * **Iconos por key serializable**: el server pasa `iconKey: "home"`,
+ * etc., y este cliente mapea a su componente Lucide. Pasar referencias
+ * a componentes server→client funciona técnicamente en RSC pero rompe
+ * la metáfora de "props serializables" y bloquea optimizaciones de
+ * tree-shake del bundle. La key string es la forma idiomática.
  */
 
 import { Link, usePathname } from "@/i18n/navigation"
+import { Home, Calendar, Users, User, ClipboardList, UserCog } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { DashboardRole } from "./shell-constants"
+
+/** Whitelist de iconos disponibles para los tabs. Agregar acá si hace
+ * falta uno nuevo (Lucide v1.8 disponible). */
+export type DashboardTabIconKey =
+  | "home"
+  | "calendar"
+  | "users"
+  | "user"
+  | "clipboardList"
+  | "userCog"
+
+const ICON_BY_KEY: Record<
+  DashboardTabIconKey,
+  React.ComponentType<{ className?: string }>
+> = {
+  home: Home,
+  calendar: Calendar,
+  users: Users,
+  user: User,
+  clipboardList: ClipboardList,
+  userCog: UserCog,
+}
 
 export interface DashboardMobileTabItem {
   /** Label largo para el sidebar desktop (ej. "Mis eventos"). */
   label: string
-  /** Label corto para el tab bar mobile (ej. "Eventos"). Suele venir
-   * del namespace `dashboard.shell.mobileTabs.*`. */
+  /** Label corto para el tab bar mobile (ej. "Eventos"). */
   shortLabel: string
   /** Href locale-relativo (`/dashboard/events`). */
   href: string
-  Icon: React.ComponentType<{ className?: string }>
+  /** Key serializable del icono. Mapeada a componente acá adentro. */
+  iconKey: DashboardTabIconKey
 }
 
 export interface DashboardMobileTabsProps {
@@ -69,6 +96,7 @@ export default function DashboardMobileTabs({
       <ul className={cn("grid gap-xs", colsClass)}>
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href)
+          const Icon = ICON_BY_KEY[tab.iconKey]
           return (
             <li key={tab.href}>
               <Link
@@ -83,7 +111,7 @@ export default function DashboardMobileTabs({
                   active ? ACTIVE_BY_ROLE[accent] : "text-fg-tertiary hover:text-fg-primary"
                 )}
               >
-                <tab.Icon className="w-5 h-5" aria-hidden />
+                <Icon className="w-5 h-5" aria-hidden />
                 <span>{tab.shortLabel}</span>
               </Link>
             </li>
