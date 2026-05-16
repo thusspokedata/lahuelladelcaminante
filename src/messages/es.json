@@ -529,6 +529,18 @@
       }
     }
   },
+  "account": {
+    "pending": {
+      "metaTitle": "Cuenta en revisión",
+      "eyebrow": "CUENTA EN REVISIÓN",
+      "title": "Tu solicitud está <accent>prendida y se está horneando.</accent>",
+      "bodyWithDate": "Aplicaste como creator el <strong>{date}</strong>. La revisamos en orden de llegada — solemos tardar 1-2 días hábiles. Te avisamos por mail apenas se apruebe.",
+      "bodyNoDate": "La revisamos en orden de llegada — solemos tardar 1-2 días hábiles. Te avisamos por mail apenas se apruebe.",
+      "ctaPrimary": "Ver agenda pública",
+      "ctaSecondary": "Cerrar sesión",
+      "escapeHatch": "¿Pasaron más de 3 días y no tuviste respuesta? Algo se rompió. <contactLink>Escribinos</contactLink> y lo resolvemos."
+    }
+  },
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",

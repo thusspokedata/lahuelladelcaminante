@@ -529,6 +529,18 @@
       }
     }
   },
+  "account": {
+    "pending": {
+      "metaTitle": "Konto wird geprüft",
+      "eyebrow": "KONTO WIRD GEPRÜFT",
+      "title": "Deine Anfrage wird <accent>gerade gebacken.</accent>",
+      "bodyWithDate": "Du hast dich am <strong>{date}</strong> als Creator beworben. Wir prüfen in Reihenfolge — meistens 1-2 Werktage. Wir melden uns per E-Mail, sobald es genehmigt ist.",
+      "bodyNoDate": "Wir prüfen in Reihenfolge — meistens 1-2 Werktage. Wir melden uns per E-Mail, sobald es genehmigt ist.",
+      "ctaPrimary": "Öffentliche Agenda ansehen",
+      "ctaSecondary": "Abmelden",
+      "escapeHatch": "Mehr als 3 Tage und keine Antwort? Da ist was kaputt. <contactLink>Schreib uns</contactLink> und wir lösen das."
+    }
+  },
   "common": {
     "save": "Speichern",
     "cancel": "Abbrechen",

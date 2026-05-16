@@ -529,6 +529,18 @@
       }
     }
   },
+  "account": {
+    "pending": {
+      "metaTitle": "Account under review",
+      "eyebrow": "ACCOUNT UNDER REVIEW",
+      "title": "Your request is <accent>warming up in the oven.</accent>",
+      "bodyWithDate": "You applied as a creator on <strong>{date}</strong>. We review in order of arrival — usually 1-2 business days. We'll email you the moment it's approved.",
+      "bodyNoDate": "We review in order of arrival — usually 1-2 business days. We'll email you the moment it's approved.",
+      "ctaPrimary": "Browse the public agenda",
+      "ctaSecondary": "Sign out",
+      "escapeHatch": "More than 3 days and no reply? Something broke. <contactLink>Write us</contactLink> and we'll sort it out."
+    }
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
