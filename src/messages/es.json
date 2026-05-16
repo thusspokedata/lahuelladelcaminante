@@ -184,12 +184,12 @@
       },
       "event": {
         "title": "Publicá tu primer evento",
-        "body": "Subí flyer de Instagram (1:1 o 4:5), buscá venue, agregá fecha, género.",
+        "body": "Subí tu flyer de Instagram (1:1 o 4:5), buscá venue, agregá fecha, género.",
         "cta": "Crear evento"
       },
       "share": {
         "title": "Compartí tu link",
-        "body": "Tu evento queda visible en lahuelladelcaminante.de/events. Pegalo en tus stories, grupos, donde sea.",
+        "body": "Tu evento queda visible en lahuelladelcaminante.de/events. Pégalo en tus stories, grupos, donde sea.",
         "cta": "Ver ejemplo"
       }
     },

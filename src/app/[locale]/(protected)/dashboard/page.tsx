@@ -101,13 +101,10 @@ async function EmptyState({ locale }: { locale: string }) {
         <p className="text-body text-fg-secondary leading-relaxed">
           {t("help.body")}
         </p>
-        {/* TODO: cuando exista la guía real, cambiar `#` por su slug. */}
-        <Link
-          href="#"
-          className="text-body-s font-semibold text-creator hover:text-creator/80 transition-colors"
-        >
-          {t("help.guideLink")} →
-        </Link>
+        {/* TODO: cuando exista la guía real, renderizar acá un `<Link>` con
+            `t("help.guideLink")` apuntando a su slug. Por ahora ocultamos
+            el link para no exponer un `href="#"` muerto. La key i18n
+            queda parkeada en `dashboard.help.guideLink`. */}
       </section>
     </div>
   )
