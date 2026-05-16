@@ -80,6 +80,12 @@ export default function SignUpPage() {
               {t("signIn")}
             </Link>
           </p>
+
+          <div className="text-center">
+            <Link href={`/${locale}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              ← {t("backHome")}
+            </Link>
+          </div>
         </form>
       </CardContent>
     </Card>

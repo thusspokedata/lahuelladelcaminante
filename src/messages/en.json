@@ -221,7 +221,8 @@
     "blockedTitle": "Account suspended",
     "blockedDescription": "Your account has been suspended. Contact the administrator.",
     "noAccount": "Don't have an account?",
-    "haveAccount": "Already have an account?"
+    "haveAccount": "Already have an account?",
+    "backHome": "Back to home"
   },
   "common": {
     "save": "Save",

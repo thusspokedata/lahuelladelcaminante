@@ -221,7 +221,8 @@
     "blockedTitle": "Konto gesperrt",
     "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator.",
     "noAccount": "Noch kein Konto?",
-    "haveAccount": "Schon ein Konto?"
+    "haveAccount": "Schon ein Konto?",
+    "backHome": "Zur Startseite"
   },
   "common": {
     "save": "Speichern",

@@ -221,7 +221,8 @@
     "blockedTitle": "Cuenta suspendida",
     "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador.",
     "noAccount": "¿No tienes cuenta?",
-    "haveAccount": "¿Ya tienes cuenta?"
+    "haveAccount": "¿Ya tienes cuenta?",
+    "backHome": "Volver al inicio"
   },
   "common": {
     "save": "Guardar",
