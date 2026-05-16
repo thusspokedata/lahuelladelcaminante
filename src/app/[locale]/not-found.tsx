@@ -38,7 +38,7 @@ export default async function NotFoundPage() {
       <main className="flex-1 flex items-center justify-center px-m py-2xl">
         <div className="max-w-2xl mx-auto flex flex-col items-center text-center gap-m">
           <p
-            aria-hidden
+            aria-hidden={true}
             className="text-[120px] sm:text-[180px] lg:text-[220px] font-display font-extrabold text-brand leading-none"
           >
             404

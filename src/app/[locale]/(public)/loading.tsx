@@ -13,7 +13,10 @@ import EventRowSkeleton from "@/components/events/EventRowSkeleton"
 
 export default function PublicLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl flex flex-col gap-3xl">
+    <div
+      aria-hidden={true}
+      className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl flex flex-col gap-3xl"
+    >
       {/* Hero placeholder */}
       <div className="flex flex-col gap-m">
         <SkeletonBox aspectRatio="auto" className="h-4 w-40" />

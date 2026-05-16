@@ -17,7 +17,7 @@ export interface EventCardSkeletonProps {
 export default function EventCardSkeleton({ className }: EventCardSkeletonProps) {
   return (
     <article
-      aria-hidden
+      aria-hidden={true}
       className={cn(
         "flex flex-col h-full overflow-hidden rounded-l bg-bg-surface border border-border",
         className

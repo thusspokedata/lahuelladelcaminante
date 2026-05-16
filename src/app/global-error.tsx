@@ -129,6 +129,7 @@ export default function GlobalError({ error, unstable_retry }: GlobalErrorProps)
             >
               Reintentar
             </button>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- usamos <a> a propósito: cuando este boundary se monta, `<Link>` de Next puede haber explotado junto con el resto del shell. */}
             <a
               href="/"
               style={{

@@ -5,7 +5,7 @@ import ArtistCardSkeleton from "@/components/artists/ArtistCardSkeleton"
 
 export default function DashboardArtistsLoading() {
   return (
-    <div className="flex flex-col gap-l">
+    <div aria-hidden={true} className="flex flex-col gap-l">
       <div className="flex flex-col gap-s sm:flex-row sm:items-end sm:justify-between sm:gap-m">
         <div className="flex flex-col gap-xs">
           <SkeletonBox aspectRatio="auto" className="h-4 w-32" />

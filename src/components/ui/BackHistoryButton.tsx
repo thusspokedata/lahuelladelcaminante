@@ -49,7 +49,7 @@ export default function BackHistoryButton({
         className
       )}
     >
-      <span aria-hidden>←</span>
+      <span aria-hidden={true}>←</span>
       <span className="ml-xs">{label}</span>
     </button>
   )

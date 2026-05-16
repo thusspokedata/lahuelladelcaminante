@@ -15,7 +15,7 @@ export interface ArtistCardSkeletonProps {
 export default function ArtistCardSkeleton({ className }: ArtistCardSkeletonProps) {
   return (
     <article
-      aria-hidden
+      aria-hidden={true}
       className={cn(
         "flex flex-col h-full overflow-hidden rounded-l bg-bg-surface border border-border",
         className

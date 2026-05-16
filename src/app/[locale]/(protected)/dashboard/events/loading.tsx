@@ -5,7 +5,7 @@ import EventRowSkeleton from "@/components/events/EventRowSkeleton"
 
 export default function DashboardEventsLoading() {
   return (
-    <div className="flex flex-col gap-l">
+    <div aria-hidden={true} className="flex flex-col gap-l">
       {/* Header + CTA */}
       <div className="flex flex-col gap-s sm:flex-row sm:items-end sm:justify-between sm:gap-m">
         <div className="flex flex-col gap-xs">

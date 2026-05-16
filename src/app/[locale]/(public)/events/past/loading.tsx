@@ -9,7 +9,10 @@ import EventCardSkeleton from "@/components/events/EventCardSkeleton"
 
 export default function EventsPastLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl flex flex-col gap-l opacity-60">
+    <div
+      aria-hidden={true}
+      className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl flex flex-col gap-l opacity-60"
+    >
       <div className="flex flex-col gap-s">
         <SkeletonBox aspectRatio="auto" className="h-4 w-32" />
         <SkeletonBox aspectRatio="auto" className="h-12 w-2/3 max-w-xl" />

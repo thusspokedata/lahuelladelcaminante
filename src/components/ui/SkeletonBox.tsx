@@ -45,7 +45,7 @@ export default function SkeletonBox({
 }: SkeletonBoxProps) {
   return (
     <div
-      aria-hidden
+      aria-hidden={true}
       className={cn(
         "rounded-m animate-pulse",
         VARIANT_BG[variant],

@@ -14,7 +14,7 @@ import ArtistCardSkeleton from "@/components/artists/ArtistCardSkeleton"
 
 export default function DashboardLoading() {
   return (
-    <div className="flex flex-col gap-3xl">
+    <div aria-hidden={true} className="flex flex-col gap-3xl">
       {/* Header con counts */}
       <div className="flex flex-col gap-xs">
         <SkeletonBox aspectRatio="auto" className="h-4 w-24" />

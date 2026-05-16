@@ -11,7 +11,7 @@ import SkeletonBox from "@/components/ui/SkeletonBox"
 
 export default function AdminLoading() {
   return (
-    <div className="flex flex-col gap-l p-m">
+    <div aria-hidden={true} className="flex flex-col gap-l p-m">
       <div className="flex flex-col gap-xs">
         <SkeletonBox aspectRatio="auto" className="h-4 w-32" />
         <SkeletonBox aspectRatio="auto" className="h-10 w-1/2 max-w-md" />

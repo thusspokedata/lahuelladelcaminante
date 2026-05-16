@@ -7,7 +7,10 @@ import SkeletonBox from "@/components/ui/SkeletonBox"
 
 export default function EventDetailLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
+    <div
+      aria-hidden={true}
+      className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl"
+    >
       <SkeletonBox aspectRatio="auto" className="h-4 w-24 mb-l" />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">

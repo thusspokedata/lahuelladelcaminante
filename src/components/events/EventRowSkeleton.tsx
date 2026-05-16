@@ -16,7 +16,7 @@ export interface EventRowSkeletonProps {
 export default function EventRowSkeleton({ className }: EventRowSkeletonProps) {
   return (
     <article
-      aria-hidden
+      aria-hidden={true}
       className={cn(
         "flex items-center gap-m p-s rounded-m bg-bg-surface border border-border",
         className
