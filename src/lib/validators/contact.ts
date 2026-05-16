@@ -1,7 +1,14 @@
 /**
- * Schema zod compartido cliente/servidor para el form de contacto
- * (`/contact`). El cliente lo usa para validar antes del submit; el route
- * handler `/api/contact` lo re-aplica para no confiar en el cliente.
+ * Schemas zod del form de contacto (`/contact`). Hay dos:
+ *
+ *  - `contactSchema`: el contrato user-facing. Lo usa el cliente para
+ *    validar antes del submit y para tipar el estado del form. NO
+ *    incluye el honeypot — los bots que inspeccionan el bundle del
+ *    cliente no encuentran pista de que existe.
+ *  - `contactRequestSchema`: extiende `contactSchema` agregando el
+ *    campo honeypot `website`. Es el schema que aplica el server al
+ *    re-validar el payload entrante. Si `website` viene no-vacío, el
+ *    handler descarta silenciosamente (200 fake, sin pista al bot).
  *
  * Mantener un único `safeParse` en server es la línea anti-tampering;
  * la validación de cliente es solo UX (feedback inmediato).
@@ -45,6 +52,9 @@ function normalizeAndStrip(value: string): string {
   return stripInvisibleAbusableChars(value.normalize("NFKC"))
 }
 
+/** Schema user-facing — sin honeypot. Consumido por el cliente para
+ * validación + tipado del state del form. El bundle del cliente NO
+ * expone que existe un honeypot. */
 export const contactSchema = z.object({
   name: z
     .string()
@@ -74,20 +84,25 @@ export const contactSchema = z.object({
         .min(10, { message: "message_too_short" })
         .max(2000, { message: "message_too_long" })
     ),
-  /**
-   * Honeypot — campo invisible (CSS `display:none`) que un humano nunca
-   * llena pero los bots de spam clásicos sí. Si llega no-vacío, el
-   * server descarta silenciosamente el request con un 200 fake (no le
-   * damos pista al bot de que detectamos el honeypot — si rebota 4xx,
-   * el atacante ajusta el bot).
-   *
-   * Opcional en el schema (puede no estar presente en el payload) pero
-   * si está, debe estar vacío para pasar el check del server.
-   */
-  website: z.string().optional(),
 })
 
 export type ContactInput = z.infer<typeof contactSchema>
+
+/**
+ * Schema server-side — extiende `contactSchema` con el honeypot
+ * `website`. Si llega no-vacío, el handler descarta silenciosamente
+ * (200 fake, sin pista al bot para que no ajuste su estrategia).
+ *
+ * Opcional en el schema (puede no estar presente en el payload — un
+ * cliente legítimo no manda el campo) pero si está, no debe contener
+ * data. El handler aplica la verificación de "no-vacío" sobre el
+ * resultado del parse.
+ */
+export const contactRequestSchema = contactSchema.extend({
+  website: z.string().optional(),
+})
+
+export type ContactRequest = z.infer<typeof contactRequestSchema>
 
 /**
  * Mapeo `ContactType` → key dentro del namespace i18n `contact.form.types`.

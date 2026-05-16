@@ -43,7 +43,6 @@ const INITIAL_STATE: ContactInput = {
   email: "",
   type: "event_suggestion",
   message: "",
-  website: "", // honeypot
 }
 
 /** Códigos de error definidos en el schema. Cualquier código no listado
@@ -72,6 +71,13 @@ export default function ContactForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [sentName, setSentName] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  // Honeypot — vive en estado separado a propósito: NO forma parte del
+  // tipo `ContactInput` ni del schema de validación cliente, así el
+  // bundle del cliente no tiene una pista de que existe (un atacante
+  // que inspecciona el zod schema en el JS no ve `website`). El input
+  // sigue presente en el DOM porque ahí es donde el bot lo completa;
+  // mandamos su valor al server junto con el resto del payload.
+  const [honeypot, setHoneypot] = useState("")
 
   function update<K extends keyof ContactInput>(key: K, value: ContactInput[K]) {
     setValues((prev) => ({ ...prev, [key]: value }))
@@ -90,6 +96,7 @@ export default function ContactForm() {
     setValues(INITIAL_STATE)
     setFieldErrors({})
     setSentName(null)
+    setHoneypot("")
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -117,7 +124,14 @@ export default function ContactForm() {
             // del `type` en el subject del email.
             "x-locale": locale,
           },
-          body: JSON.stringify(parsed.data),
+          // Mergeamos el honeypot fuera del schema cliente — el server
+          // lo valida con `contactRequestSchema` (que sí lo conoce) y
+          // descarta el request si viene no-vacío. Si el honeypot está
+          // vacío (caso humano), lo omitimos para no enviar string vacío
+          // al server (se valida con `.optional()`).
+          body: JSON.stringify(
+            honeypot ? { ...parsed.data, website: honeypot } : parsed.data
+          ),
         })
         if (res.ok) {
           setSentName(parsed.data.name)
@@ -158,7 +172,7 @@ export default function ContactForm() {
         role="status"
       >
         <div className="w-16 h-16 rounded-full bg-editorial/15 flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-editorial" aria-hidden />
+          <CheckCircle2 className="w-8 h-8 text-editorial" aria-hidden={true} />
         </div>
         <Eyebrow accent="editorial">{tSuccess("eyebrow")}</Eyebrow>
         <h2 className="text-heading-l font-display text-fg-primary">
@@ -289,8 +303,14 @@ export default function ContactForm() {
           request silenciosamente. `aria-hidden` + `tabIndex={-1}` para
           que asistencias técnicas y navegación por teclado lo salteen.
           `autoComplete="off"` y `name="website"` (campo común que los
-          bots agresivos completan por inferencia del name). */}
-      <div aria-hidden className="absolute -left-[9999px] w-0 h-0 overflow-hidden">
+          bots agresivos completan por inferencia del name).
+          El valor vive en `honeypot` (state separado, fuera de `values`)
+          para que el bundle del cliente no exponga el campo en el zod
+          schema. */}
+      <div
+        aria-hidden={true}
+        className="absolute -left-[9999px] w-0 h-0 overflow-hidden"
+      >
         <label htmlFor="contact-website">Website</label>
         <input
           id="contact-website"
@@ -298,8 +318,8 @@ export default function ContactForm() {
           name="website"
           tabIndex={-1}
           autoComplete="off"
-          value={values.website ?? ""}
-          onChange={(e) => update("website", e.target.value)}
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
         />
       </div>
 

@@ -27,7 +27,7 @@ import { NextResponse } from "next/server"
 import { getTranslations } from "next-intl/server"
 import { env } from "@/lib/env"
 import {
-  contactSchema,
+  contactRequestSchema,
   CONTACT_TYPE_I18N_KEY,
   type ContactType,
 } from "@/lib/validators/contact"
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 })
   }
 
-  const result = contactSchema.safeParse(body)
+  const result = contactRequestSchema.safeParse(body)
   if (!result.success) {
     return NextResponse.json(
       { error: "validation_error", issues: result.error.issues },
@@ -114,19 +114,38 @@ export async function POST(request: Request) {
   const locale = pickLocale(request.headers.get("x-locale"))
   const typeLabel = await resolveTypeLabel(result.data.type, locale)
 
-  // Fire-and-forget igual que `/apply` — si Resend falla, no queremos
-  // bloquear al user con un 500. El catch silencioso es deuda conocida
-  // del patrón existente; cuando se agregue logging estructurado, atar
-  // acá también.
-  triggerContactNotification({
-    to: env.CONTACT_RECIPIENT_EMAIL,
-    name: result.data.name,
-    email: result.data.email,
-    type: result.data.type,
-    typeLabel,
-    message: result.data.message,
-    locale,
-  }).catch(() => {})
+  // Await el envío del email — si Resend falla, queremos saberlo antes
+  // de devolver 200 al cliente. El catch loggea estructurado para que
+  // se pueda diagnosticar sin filtrar PII al log (no logueamos `name`,
+  // `email` ni `message` — solo metadata mínima para correlacionar con
+  // el dashboard de Resend).
+  //
+  // Trade-off: el user espera el roundtrip de Resend (~200-400ms extra)
+  // antes de ver el toast de éxito. Aceptable para este formulario de
+  // baja frecuencia; si en el futuro hay carga, mover a queue (Trigger.dev
+  // job real) y devolver 202 con tracking id.
+  try {
+    await triggerContactNotification({
+      to: env.CONTACT_RECIPIENT_EMAIL,
+      name: result.data.name,
+      email: result.data.email,
+      type: result.data.type,
+      typeLabel,
+      message: result.data.message,
+      locale,
+    })
+  } catch (error) {
+    console.error("contact_notification_failed", {
+      error,
+      recipient: env.CONTACT_RECIPIENT_EMAIL,
+      type: result.data.type,
+      locale,
+    })
+    return NextResponse.json(
+      { error: "notification_failed" },
+      { status: 502 }
+    )
+  }
 
   return NextResponse.json({ data: { success: true } })
 }
