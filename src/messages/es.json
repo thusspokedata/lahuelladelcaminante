@@ -98,6 +98,41 @@
     "photosLabel": "Fotos",
     "upcomingDatesLabel": "Próximas fechas"
   },
+  "eventDetail": {
+    "eyebrow": {
+      "live": "EN VIVO",
+      "featured": "★ DESTACADO"
+    },
+    "facts": {
+      "when": "CUÁNDO",
+      "timing": "HORARIO",
+      "where": "DÓNDE",
+      "address": "DIRECCIÓN"
+    },
+    "access": {
+      "tickets": "Conseguir entradas",
+      "voluntary": "Aporte voluntario",
+      "voluntaryNote": "Lo que cada uno pueda. Tickets disponibles en la puerta.",
+      "free": "Entrada libre",
+      "freeNote": "No requiere reserva.",
+      "door": "Entrada en puerta",
+      "unknownNote": "Consultá al organizador para más info."
+    },
+    "about": "Sobre el show",
+    "moreDates": "Más fechas de este show",
+    "otherEvents": "Otros shows de este artista",
+    "share": "Compartir",
+    "calendar": "Agendar",
+    "save": "Guardar",
+    "backToEvents": "Eventos"
+  },
+  "artistDetail": {
+    "upcomingShows": "Próximas fechas",
+    "noUpcomingShows": "Por ahora no hay shows próximos. Seguinos en redes para enterarte.",
+    "bioShowMore": "Mostrar más",
+    "bioShowLess": "Mostrar menos",
+    "backToArtists": "Artistas"
+  },
   "dashboard": {
     "title": "Mi Panel",
     "myEvents": "Mis Eventos",
@@ -245,6 +280,7 @@
     "eventCreated": "Evento creado",
     "artistUpdated": "Artista actualizado",
     "artistCreated": "Artista creado",
-    "eventDeleted": "Evento eliminado"
+    "eventDeleted": "Evento eliminado",
+    "notFound": "No encontrado"
   }
 }

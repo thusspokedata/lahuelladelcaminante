@@ -98,6 +98,41 @@
     "photosLabel": "Photos",
     "upcomingDatesLabel": "Upcoming dates"
   },
+  "eventDetail": {
+    "eyebrow": {
+      "live": "LIVE",
+      "featured": "★ FEATURED"
+    },
+    "facts": {
+      "when": "WHEN",
+      "timing": "TIME",
+      "where": "WHERE",
+      "address": "ADDRESS"
+    },
+    "access": {
+      "tickets": "Get tickets",
+      "voluntary": "Pay what you can",
+      "voluntaryNote": "Whatever you can contribute. Available at the door.",
+      "free": "Free entry",
+      "freeNote": "No booking required.",
+      "door": "Pay at the door",
+      "unknownNote": "Reach out to the organizer for more info."
+    },
+    "about": "About the show",
+    "moreDates": "More dates for this show",
+    "otherEvents": "Other shows by this artist",
+    "share": "Share",
+    "calendar": "Add to calendar",
+    "save": "Save",
+    "backToEvents": "Events"
+  },
+  "artistDetail": {
+    "upcomingShows": "Upcoming dates",
+    "noUpcomingShows": "No upcoming shows for now. Follow us on socials to stay tuned.",
+    "bioShowMore": "Show more",
+    "bioShowLess": "Show less",
+    "backToArtists": "Artists"
+  },
   "dashboard": {
     "title": "My Dashboard",
     "myEvents": "My Events",
@@ -245,6 +280,7 @@
     "eventCreated": "Event created",
     "artistUpdated": "Artist updated",
     "artistCreated": "Artist created",
-    "eventDeleted": "Event deleted"
+    "eventDeleted": "Event deleted",
+    "notFound": "Not found"
   }
 }
