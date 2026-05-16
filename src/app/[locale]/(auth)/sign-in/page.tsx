@@ -1,94 +1,137 @@
-"use client"
+/**
+ * `/[locale]/sign-in` — pantalla de inicio de sesión rediseñada.
+ *
+ * Server component que arma el `AuthShell` 7:5 con:
+ *  - Columna izquierda (col-span-7): heading + `<SignInForm>` (client) +
+ *    footer rich-text con links a sign-up y apply.
+ *  - Columna derecha (col-span-5, hidden en mobile): manifiesto editorial
+ *    + 3 thumbnails 1:1 de eventos destacados + stats strip.
+ *
+ * Las dos queries de datos del panel (`getFeaturedEvents(3)` y
+ * `getUpcomingStats()`) se disparan en paralelo. Ambas están cacheadas
+ * con `unstable_cache` (5 min) — no añaden carga relevante a esta ruta
+ * caliente.
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT_v2.md` §1.1.
+ */
 
-import { useTranslations } from "next-intl"
-import { useParams, useRouter } from "next/navigation"
-import { signIn } from "@/lib/auth-client"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { toast } from "sonner"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
+import AuthShell from "@/components/auth/AuthShell"
+import SignInForm from "@/components/auth/SignInForm"
+import Eyebrow from "@/components/ui/Eyebrow"
+import FlyerImage from "@/components/ui/FlyerImage"
+import { getFeaturedEvents, getUpcomingStats } from "@/services/events"
 
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-})
-type FormData = z.infer<typeof schema>
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "auth.signIn" })
+  return { title: t("metaTitle") }
+}
 
-export default function SignInPage() {
-  const t = useTranslations("auth")
-  const tCommon = useTranslations("common")
-  const router = useRouter()
-  const { locale } = useParams<{ locale: string }>()
+export default async function SignInPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  })
+  const t = await getTranslations({ locale, namespace: "auth.signIn" })
+  const tHero = await getTranslations({ locale, namespace: "auth.signIn.hero" })
 
-  async function onSubmit(data: FormData) {
-    const res = await signIn.email({
-      email: data.email,
-      password: data.password,
-    })
-
-    if (res.error) {
-      toast.error(res.error.message ?? tCommon("error"))
-      return
-    }
-
-    router.push(`/${locale}/dashboard`)
-  }
+  // Disparar las dos queries en paralelo — son independientes y ambas
+  // cacheadas. Si una falla, igual queremos renderizar la otra (el form
+  // izquierdo no depende de los datos del hero, sería peor degradar el
+  // sign-in entero por una query de eventos).
+  const [events, stats] = await Promise.all([
+    getFeaturedEvents(3).catch(() => []),
+    getUpcomingStats().catch(() => null),
+  ])
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>{t("signIn")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="email">{t("email")}</Label>
-            <Input id="email" type="email" {...register("email")} />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="password">{t("password")}</Label>
-            <Input id="password" type="password" {...register("password")} />
-            {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? tCommon("loading") : t("signIn")}
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => signIn.social({ provider: "google", callbackURL: `/${locale}/dashboard` })}
-          >
-            {t("continueWithGoogle")}
-          </Button>
-
-          <p className="text-center text-sm text-muted-foreground">
-            {t("noAccount")}{" "}
-            <Link href={`/${locale}/sign-up`} className="underline">
-              {t("signUp")}
-            </Link>
+    <AuthShell
+      hero={
+        <div className="flex flex-col gap-l">
+          <Eyebrow accent="brand" as="p">
+            {tHero("eyebrow")}
+          </Eyebrow>
+          <h2 className="text-display-m font-display leading-tight text-fg-primary">
+            {tHero.rich("title", {
+              accent: (chunks) => (
+                <span className="text-editorial italic">{chunks}</span>
+              ),
+            })}
+          </h2>
+          <p className="text-body-l leading-relaxed text-fg-secondary max-w-[44ch]">
+            {tHero("body")}
           </p>
 
-          <div className="text-center">
-            <Link href={`/${locale}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              ← {t("backHome")}
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+          {events.length > 0 ? (
+            <div className="mt-l grid grid-cols-3 gap-s">
+              {events.map((ev) => (
+                <FlyerImage
+                  key={ev.id}
+                  publicId={ev.coverImagePublicId ?? undefined}
+                  src={ev.coverImage ?? undefined}
+                  alt={ev.coverImageAlt ?? ev.title}
+                  aspectRatio="1:1"
+                  fallbackAccent="brand"
+                  className="rounded-m"
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {stats ? (
+            <p className="mt-s font-mono text-eyebrow uppercase text-fg-tertiary">
+              {tHero("statsFormat", {
+                shows: stats.shows,
+                cities: stats.cities,
+              })}
+            </p>
+          ) : null}
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-l">
+        <Eyebrow accent="brand" as="p">
+          {t("eyebrow")}
+        </Eyebrow>
+        <h1 className="text-display-l font-display leading-tight text-fg-primary">
+          {t("title")}
+        </h1>
+        <p className="text-body leading-relaxed text-fg-secondary">
+          {t("subtitle")}
+        </p>
+
+        <SignInForm locale={locale} />
+
+        <p className="text-body-s text-fg-secondary">
+          {t.rich("footer", {
+            createAccount: (chunks) => (
+              <Link
+                href="/sign-up"
+                className="font-semibold text-fg-primary underline-offset-4 hover:underline"
+              >
+                {chunks}
+              </Link>
+            ),
+            applyAsArtist: (chunks) => (
+              <Link
+                href="/apply"
+                className="font-semibold text-fg-primary underline-offset-4 hover:underline"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      </div>
+    </AuthShell>
   )
 }

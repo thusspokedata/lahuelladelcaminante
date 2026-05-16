@@ -435,19 +435,37 @@
     }
   },
   "auth": {
-    "signIn": "Iniciar Sesión",
-    "signUp": "Registrarse",
-    "email": "Email",
-    "password": "Contraseña",
-    "name": "Nombre completo",
-    "continueWithGoogle": "Continuar con Google",
-    "pendingTitle": "Cuenta en revisión",
-    "pendingDescription": "Tu cuenta está siendo revisada por el equipo. Te notificaremos por email cuando sea aprobada.",
-    "blockedTitle": "Cuenta suspendida",
-    "blockedDescription": "Tu cuenta ha sido suspendida. Contacta al administrador.",
-    "noAccount": "¿No tienes cuenta?",
-    "haveAccount": "¿Ya tienes cuenta?",
-    "backHome": "Volver al inicio"
+    "signIn": {
+      "metaTitle": "Iniciar sesión",
+      "eyebrow": "BIENVENIDO DE VUELTA",
+      "title": "Iniciá sesión.",
+      "subtitle": "¿Sos público? No necesitás cuenta para ver shows. Esto es para artistas y organizadores.",
+      "continueWith": "Continuar con {provider}",
+      "orEmail": "O CON EMAIL",
+      "emailLabel": "Email",
+      "emailPlaceholder": "vos@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión →",
+      "submitting": "Iniciando sesión...",
+      "footer": "¿Primera vez por acá? <createAccount>Crear cuenta</createAccount> o <applyAsArtist>aplicá como artista →</applyAsArtist>",
+      "errors": {
+        "credentials": "Email o contraseña incorrectos.",
+        "email_required": "El email es obligatorio.",
+        "email_invalid": "Email inválido.",
+        "email_too_long": "Email demasiado largo.",
+        "password_too_short": "Mínimo 8 caracteres.",
+        "password_too_long": "Demasiado largo.",
+        "generic": "No pudimos iniciar sesión. Probá de nuevo."
+      },
+      "hero": {
+        "eyebrow": "EN VIVO · MÚSICA LATINA · ALEMANIA",
+        "title": "Hecho por uno <accent>de ustedes</accent>.",
+        "body": "La Huella es un portal independiente. No vendemos entradas, no tomamos comisión. Solo mostramos lo que está sonando.",
+        "statsFormat": "{shows} SHOWS PRÓXIMOS · {cities} CIUDADES"
+      }
+    }
   },
   "common": {
     "save": "Guardar",

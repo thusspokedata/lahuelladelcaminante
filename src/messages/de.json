@@ -435,19 +435,37 @@
     }
   },
   "auth": {
-    "signIn": "Anmelden",
-    "signUp": "Registrieren",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "name": "Vollständiger Name",
-    "continueWithGoogle": "Mit Google fortfahren",
-    "pendingTitle": "Konto wird geprüft",
-    "pendingDescription": "Ihr Konto wird vom Team geprüft. Wir benachrichtigen Sie per E-Mail, wenn es genehmigt wurde.",
-    "blockedTitle": "Konto gesperrt",
-    "blockedDescription": "Ihr Konto wurde gesperrt. Kontaktieren Sie den Administrator.",
-    "noAccount": "Noch kein Konto?",
-    "haveAccount": "Schon ein Konto?",
-    "backHome": "Zur Startseite"
+    "signIn": {
+      "metaTitle": "Anmelden",
+      "eyebrow": "WILLKOMMEN ZURÜCK",
+      "title": "Melde dich an.",
+      "subtitle": "Nur zum Stöbern hier? Du brauchst kein Konto, um Shows zu sehen. Das hier ist für Künstler und Veranstalter.",
+      "continueWith": "Mit {provider} fortfahren",
+      "orEmail": "ODER MIT E-MAIL",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Dein Passwort",
+      "forgot": "Passwort vergessen?",
+      "submit": "Anmelden →",
+      "submitting": "Anmeldung läuft...",
+      "footer": "Zum ersten Mal hier? <createAccount>Konto erstellen</createAccount> oder <applyAsArtist>als Künstler bewerben →</applyAsArtist>",
+      "errors": {
+        "credentials": "E-Mail oder Passwort falsch.",
+        "email_required": "E-Mail ist erforderlich.",
+        "email_invalid": "Ungültige E-Mail.",
+        "email_too_long": "E-Mail zu lang.",
+        "password_too_short": "Mindestens 8 Zeichen.",
+        "password_too_long": "Zu lang.",
+        "generic": "Anmeldung fehlgeschlagen. Versuche es gleich noch einmal."
+      },
+      "hero": {
+        "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · DEUTSCHLAND",
+        "title": "Gemacht von einem <accent>von euch</accent>.",
+        "body": "La Huella ist ein unabhängiges Portal. Wir verkaufen keine Tickets, wir nehmen keine Provision. Wir zeigen einfach, was läuft.",
+        "statsFormat": "{shows} KOMMENDE SHOWS · {cities} STÄDTE"
+      }
+    }
   },
   "common": {
     "save": "Speichern",
