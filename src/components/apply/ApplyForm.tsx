@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { CheckCircle2 } from "lucide-react"
+import ApplySubmittedScreen from "./ApplySubmittedScreen"
 
 export function ApplyForm() {
   const t = useTranslations("apply")
@@ -16,7 +16,12 @@ export function ApplyForm() {
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
+  // `submittedAt` reemplaza al booleano `sent` previo: además de servir
+  // como flag de "ya se envió" (truthy / falsy), guarda el instante
+  // exacto del submit para mostrarlo en el primer paso del timeline
+  // del rediseño (`ApplySubmittedScreen`). El handoff v2 §1.3 pide ese
+  // timestamp explícito en el paso "Recibida".
+  const [submittedAt, setSubmittedAt] = useState<Date | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,7 +38,9 @@ export function ApplyForm() {
         const data = await res.json()
         throw new Error(data.error ?? "Error")
       }
-      setSent(true)
+      // `new Date()` acá (no en el render condicional) para que el
+      // timestamp se congele al momento del éxito, no en cada rerender.
+      setSubmittedAt(new Date())
     } catch {
       setError(tCommon("error"))
     } finally {
@@ -41,16 +48,8 @@ export function ApplyForm() {
     }
   }
 
-  if (sent) {
-    return (
-      <div className="flex flex-col items-center gap-5 py-12 text-center">
-        <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-primary" />
-        </div>
-        <h3 className="text-2xl font-black">{t("successTitle")}</h3>
-        <p className="text-muted-foreground max-w-sm leading-relaxed">{t("successBody")}</p>
-      </div>
-    )
+  if (submittedAt) {
+    return <ApplySubmittedScreen submittedAt={submittedAt} />
   }
 
   return (

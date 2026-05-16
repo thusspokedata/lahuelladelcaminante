@@ -73,8 +73,28 @@
     "messagePlaceholder": "Who are you? What kind of events do you organize or where do you perform? The more you tell us, the better we can evaluate.",
     "messageHint": "Minimum 10 characters.",
     "submit": "Send request",
-    "successTitle": "Request sent!",
-    "successBody": "We'll review your request and reach out to the email you provided. It usually takes less than 48 hours."
+    "submitted": {
+      "badge": "✓ REQUEST RECEIVED",
+      "title": "We got your request, <accent>wanderer.</accent>",
+      "body": "A human reviews it in the next 1-2 days. If everything checks out, we email you and unlock your panel so you can publish.",
+      "ctaPrimary": "Browse the agenda meanwhile →",
+      "ctaSecondary": "Back to home",
+      "instagramHint": "Meanwhile: follow us on <ig>Instagram @lahuelladelcaminante</ig> — we post every time we approve a new creator.",
+      "timeline": {
+        "title": "WHAT'S NEXT",
+        "received": "Received",
+        "receivedSub": "Just now",
+        "reviewing": "Under review",
+        "reviewingSub": "A human is looking at your profile",
+        "reviewingWhen": "≈ 1-2 days",
+        "approval": "Approved · email",
+        "approvalSub": "You'll get an email with the link to your panel",
+        "approvalWhen": "When we approve",
+        "publishing": "Publish",
+        "publishingSub": "Upload your first event",
+        "publishingWhen": "Whenever you're ready"
+      }
+    }
   },
   "events": {
     "title": "Upcoming Events",

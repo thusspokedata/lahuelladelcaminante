@@ -73,8 +73,28 @@
     "messagePlaceholder": "¿Quién sos? ¿Qué tipo de eventos organizás o en qué ciudad tocás? Cuanto más nos contés, mejor podemos evaluarlo.",
     "messageHint": "Mínimo 10 caracteres.",
     "submit": "Enviar solicitud",
-    "successTitle": "¡Solicitud enviada!",
-    "successBody": "Revisamos tu solicitud y te escribimos al email que dejaste. Suele tardar menos de 48 horas."
+    "submitted": {
+      "badge": "✓ SOLICITUD RECIBIDA",
+      "title": "Recibimos tu solicitud, <accent>caminante.</accent>",
+      "body": "Un humano la mira en los próximos 1-2 días. Si todo da, te avisamos por mail y desbloqueamos tu panel para que publiques.",
+      "ctaPrimary": "Ver agenda mientras tanto →",
+      "ctaSecondary": "Volver al inicio",
+      "instagramHint": "Mientras tanto: seguinos en <ig>Instagram @lahuelladelcaminante</ig> — ahí avisamos cada vez que aprobamos un creator nuevo.",
+      "timeline": {
+        "title": "QUÉ SIGUE",
+        "received": "Recibida",
+        "receivedSub": "Hace un momento",
+        "reviewing": "En revisión",
+        "reviewingSub": "Un humano mira tu perfil",
+        "reviewingWhen": "≈ 1-2 días",
+        "approval": "Aprobada · email",
+        "approvalSub": "Te llega un mail con el link a tu panel",
+        "approvalWhen": "Cuando aprobemos",
+        "publishing": "Publicás",
+        "publishingSub": "Subís tu primer evento",
+        "publishingWhen": "Cuando estés"
+      }
+    }
   },
   "events": {
     "title": "Próximos Eventos",

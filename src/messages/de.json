@@ -73,8 +73,28 @@
     "messagePlaceholder": "Wer bist du? Welche Art von Events organisierst du oder in welcher Stadt trittst du auf? Je mehr du uns erzählst, desto besser können wir es beurteilen.",
     "messageHint": "Mindestens 10 Zeichen.",
     "submit": "Anfrage senden",
-    "successTitle": "Anfrage gesendet!",
-    "successBody": "Wir prüfen deine Anfrage und melden uns per E-Mail. Das dauert in der Regel weniger als 48 Stunden."
+    "submitted": {
+      "badge": "✓ ANFRAGE ERHALTEN",
+      "title": "Wir haben deine Anfrage erhalten, <accent>Wandersleute.</accent>",
+      "body": "Ein Mensch schaut sie sich in den nächsten 1-2 Tagen an. Wenn alles passt, melden wir uns per E-Mail und schalten dein Panel zum Veröffentlichen frei.",
+      "ctaPrimary": "Inzwischen die Agenda ansehen →",
+      "ctaSecondary": "Zur Startseite",
+      "instagramHint": "In der Zwischenzeit: folge uns auf <ig>Instagram @lahuelladelcaminante</ig> — wir posten, wenn wir einen neuen Creator freischalten.",
+      "timeline": {
+        "title": "WAS PASSIERT ALS NÄCHSTES",
+        "received": "Empfangen",
+        "receivedSub": "Gerade eben",
+        "reviewing": "In Prüfung",
+        "reviewingSub": "Ein Mensch schaut sich dein Profil an",
+        "reviewingWhen": "≈ 1-2 Tage",
+        "approval": "Genehmigt · E-Mail",
+        "approvalSub": "Du bekommst eine E-Mail mit dem Link zu deinem Panel",
+        "approvalWhen": "Wenn wir genehmigen",
+        "publishing": "Veröffentlichen",
+        "publishingSub": "Lade dein erstes Event hoch",
+        "publishingWhen": "Wann immer du bereit bist"
+      }
+    }
   },
   "events": {
     "title": "Kommende Veranstaltungen",
