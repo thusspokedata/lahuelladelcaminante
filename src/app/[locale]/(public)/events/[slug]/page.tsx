@@ -1,11 +1,115 @@
+/**
+ * `/events/[slug]` — detalle de evento.
+ *
+ * Layout 5+7 desktop (flyer sticky a la izquierda, info a la derecha) y
+ * stack vertical en mobile con `EventAccessCTA` adicional fijado al fondo
+ * vía `StickyCTABar`. Estructura del bloque de info: breadcrumb, eyebrow
+ * con chips, h1, artista vinculado, fact grid 2×2, CTA contextual, bloque
+ * "sobre el show", más fechas (si hay), otros shows del artista (si hay).
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 "Evento · detalle".
+ */
+
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
 import { getTranslations } from "next-intl/server"
-import { getEventBySlug } from "@/services/events"
-import { formatDate } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { CalendarDays, MapPin, Clock, Ticket, Users, ArrowLeft, Navigation } from "lucide-react"
+import { Link } from "@/i18n/navigation"
+import { getEventBySlug, getOtherEventsByArtist } from "@/services/events"
+import { genreAccent } from "@/lib/genre-accent"
+import { getCloudinaryUrl } from "@/lib/cloudinary-url"
+import { ArrowLeft } from "lucide-react"
+import Chip from "@/components/ui/Chip"
+import Eyebrow from "@/components/ui/Eyebrow"
+import FactGrid from "@/components/ui/FactGrid"
+import FlyerImage from "@/components/ui/FlyerImage"
+import StickyCTABar from "@/components/ui/StickyCTABar"
+import { EventCard } from "@/components/events/EventCard"
+import EventAccessCTA from "@/components/events/EventAccessCTA"
+
+/** Formatea "Lun 7 jun · 19:30" (o equivalente por locale). Vacío si no hay
+ * date o la date es inválida. Replica el patrón de `EventCard` para
+ * consistencia visual entre la card y el detalle. */
+const LOCALE_MAP: Record<string, string> = {
+  es: "es-ES",
+  en: "en-US",
+  de: "de-DE",
+}
+
+function formatEventDateLong(
+  date: Date | null,
+  time: string | null,
+  locale: string
+): string {
+  if (!date) return ""
+  const intl = new Intl.DateTimeFormat(LOCALE_MAP[locale] ?? "es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  })
+  const label = intl.format(date).replace(/\./g, "")
+  return time ? `${label} · ${time}` : label
+}
+
+/** "19:30 — 23:00" si tenemos campo `time` con rango; null si solo hay hora
+ * de inicio o nada. Por ahora `Event.time` es string libre — si el creator
+ * escribe "19:30 - 23:00" lo mostramos tal cual; si escribe solo "19:30",
+ * `null` (el dato ya va en el fact "CUÁNDO" como sufijo). */
+function extractTimeRange(time: string | null): string | null {
+  if (!time) return null
+  const trimmed = time.trim()
+  return /[-—–]/.test(trimmed) ? trimmed : null
+}
+
+function extractCity(location: string): string {
+  const parts = location.split(",").map((s) => s.trim())
+  return parts[parts.length - 1] ?? location
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const tCommon = await getTranslations({ locale, namespace: "common" })
+  const event = await getEventBySlug(slug)
+  if (!event) {
+    return { title: `${tCommon("notFound")} · La Huella del Caminante` }
+  }
+
+  const nextDate = event.dates[0] ?? null
+  const description = [
+    event.title,
+    extractCity(event.location),
+    nextDate
+      ? new Intl.DateTimeFormat(LOCALE_MAP[locale] ?? "es-ES", {
+          day: "numeric",
+          month: "long",
+        }).format(nextDate)
+      : null,
+    event.location,
+  ]
+    .filter(Boolean)
+    .join(" · ")
+
+  // Cascada de fallback: Cloudinary (transformaciones OG) → URL plana del
+  // cover → sin imagen. Si el cloud name no está configurado o no hay
+  // publicId, todavía podemos usar la URL plana en `event.coverImage`.
+  const ogUrl =
+    (event.coverImagePublicId && getCloudinaryUrl(event.coverImagePublicId)) ??
+    event.coverImage
+  const images = ogUrl ? [{ url: ogUrl }] : []
+
+  return {
+    title: `${event.title} · La Huella del Caminante`,
+    description,
+    openGraph: {
+      title: event.title,
+      description: event.description?.slice(0, 160) ?? description,
+      images,
+    },
+  }
+}
 
 export default async function EventDetailPage({
   params,
@@ -13,155 +117,178 @@ export default async function EventDetailPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
-  const t = await getTranslations({ locale, namespace: "events" })
-  const tCommon = await getTranslations({ locale, namespace: "common" })
-  const tForms = await getTranslations({ locale, namespace: "forms" })
   const event = await getEventBySlug(slug)
-
   if (!event) notFound()
 
+  const t = await getTranslations({ locale, namespace: "eventDetail" })
+
+  const otherEvents = event.artist
+    ? await getOtherEventsByArtist(event.artist.id, event.id, 3)
+    : []
+
+  const accent = genreAccent(event.genre)
+  const chipAccent = accent === "neutral" ? "brand" : accent
+  const fallbackAccent = accent === "neutral" ? "brand" : accent
+  const resolvedLocale = locale
+
+  const nextDate = event.dates[0] ?? null
+  const otherDates = event.dates.slice(1)
+  const timeRange = extractTimeRange(event.time)
+
+  // Eyebrow "live" si la próxima fecha cae en los próximos 7 días. Calculado
+  // acá para no agregar otra dependencia de cache — la decision es trivial
+  // y solo afecta el chip visual.
+  const now = new Date()
+  const in7 = new Date(now)
+  in7.setDate(in7.getDate() + 7)
+  const isLive = nextDate ? nextDate >= now && nextDate <= in7 : false
+
   return (
-    <div>
-      {/* Hero image */}
-      <div className="relative w-full h-72 sm:h-96 bg-gradient-to-br from-primary/20 via-accent/10 to-background overflow-hidden">
-        {event.coverImage ? (
-          <Image
-            src={event.coverImage}
-            alt={event.title}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-8xl opacity-10 select-none">
-            🎶
+    <>
+      <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
+        {/* Breadcrumb */}
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-xs text-body-s text-fg-secondary hover:text-fg-primary transition-colors mb-l"
+        >
+          <ArrowLeft className="w-4 h-4" aria-hidden />
+          <span>{t("backToEvents")}</span>
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+          {/* Columna izquierda: flyer sticky */}
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-[calc(var(--layout-header-h)+24px)]">
+              <FlyerImage
+                publicId={event.coverImagePublicId ?? undefined}
+                src={event.coverImage ?? undefined}
+                alt={event.coverImageAlt ?? event.title}
+                aspectRatio="4:5"
+                fallbackAccent={fallbackAccent}
+                priority
+              />
+            </div>
           </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
-        {/* Genre badge */}
-        {event.genre && (
-          <div className="absolute top-5 right-5 bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full shadow-lg">
-            {event.genre}
-          </div>
-        )}
-      </div>
+          {/* Columna derecha: info */}
+          <div className="lg:col-span-7 flex flex-col gap-l pb-[calc(env(safe-area-inset-bottom)+96px)] lg:pb-0">
+            {/* Eyebrow con chips */}
+            <div className="flex flex-wrap items-center gap-xs">
+              {isLive ? (
+                <Chip accent="brand" active size="s">
+                  {t("eyebrow.live")}
+                </Chip>
+              ) : null}
+              {event.genre ? (
+                <Chip accent={chipAccent} active size="s">
+                  {event.genre}
+                </Chip>
+              ) : null}
+            </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 -mt-8 relative">
-        <Button variant="ghost" asChild className="mb-6 text-muted-foreground hover:text-foreground rounded-full -ml-2">
-          <Link href={`/${locale}/events`}>
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            {tCommon("back")}
-          </Link>
-        </Button>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main */}
-          <div className="lg:col-span-2 space-y-6">
-            <h1 className="text-4xl sm:text-5xl font-black leading-tight">{event.title}</h1>
-
-            {event.description && (
-              <p className="text-muted-foreground leading-relaxed text-base">{event.description}</p>
-            )}
-
-            {/* Artist card */}
-            {event.artist && (
-              <div className="rounded-2xl border border-border bg-card p-5 flex items-center gap-4 shadow-sm">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Users className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">{tForms("artistField")}</p>
+            {/* Título + artista vinculado */}
+            <header className="flex flex-col gap-s">
+              <h1 className="text-heading-l sm:text-display-m font-display text-fg-primary leading-tight">
+                {event.title}
+              </h1>
+              {event.artist ? (
+                <p className="text-body-l text-fg-secondary">
                   <Link
-                    href={`/${locale}/artists/${event.artist.slug}`}
-                    className="text-lg font-bold hover:text-primary transition-colors"
+                    href={`/artists/${event.artist.slug}`}
+                    className="hover:text-fg-primary transition-colors font-medium"
                   >
                     {event.artist.name}
                   </Link>
-                  {event.artist.origin && (
-                    <p className="text-sm text-muted-foreground">{event.artist.origin}</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+                  {event.artist.origin ? (
+                    <span className="text-fg-tertiary">
+                      {" "}
+                      · {event.artist.origin}
+                    </span>
+                  ) : null}
+                </p>
+              ) : event.artistName ? (
+                <p className="text-body-l text-fg-secondary font-medium">
+                  {event.artistName}
+                </p>
+              ) : null}
+            </header>
 
-          {/* Sidebar */}
-          <div className="space-y-3">
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-sm">
-              {/* Dates */}
-              <div className="flex gap-3">
-                <CalendarDays className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">
-                    {event.dates.length > 1 ? t("dates") : t("date")}
-                  </p>
-                  <div className="space-y-0.5">
-                    {event.dates.map((d, i) => (
-                      <p key={i} className="text-sm font-medium">{formatDate(d, locale)}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {/* Fact grid 2×2 */}
+            <FactGrid
+              items={[
+                {
+                  label: t("facts.when"),
+                  value: nextDate
+                    ? formatEventDateLong(nextDate, event.time, resolvedLocale)
+                    : null,
+                },
+                {
+                  label: t("facts.timing"),
+                  value: timeRange,
+                },
+                {
+                  label: t("facts.where"),
+                  value: event.location,
+                },
+                {
+                  label: t("facts.address"),
+                  value: event.address,
+                },
+              ]}
+            />
 
-              {event.time && (
-                <div className="flex gap-3">
-                  <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">{tForms("time")}</p>
-                    <p className="text-sm font-medium">{event.time}</p>
-                  </div>
-                </div>
-              )}
+            {/* CTA principal */}
+            <EventAccessCTA price={event.price} locale={resolvedLocale} />
 
-              <div className="flex gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">{tForms("venue")}</p>
-                  <p className="text-sm font-medium">{event.location}</p>
-                  {event.address && (
-                    <p className="text-sm text-muted-foreground mt-0.5">{event.address}</p>
-                  )}
-                </div>
-              </div>
+            {/* About */}
+            {event.description ? (
+              <section className="flex flex-col gap-s">
+                <Eyebrow as="h2">{t("about")}</Eyebrow>
+                <p className="text-body text-fg-primary leading-relaxed whitespace-pre-line">
+                  {event.description}
+                </p>
+              </section>
+            ) : null}
 
-              {event.address && (
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 w-full justify-center bg-primary/8 hover:bg-primary/15 border border-primary/20 text-primary text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
-                >
-                  <Navigation className="w-4 h-4" />
-                  Abrir en Google Maps
-                </a>
-              )}
+            {/* Más fechas del mismo evento */}
+            {otherDates.length > 0 ? (
+              <section className="flex flex-col gap-s">
+                <Eyebrow as="h2">{t("moreDates")}</Eyebrow>
+                <ul className="flex flex-col gap-xs">
+                  {otherDates.map((d, i) => (
+                    <li key={i} className="text-body text-fg-secondary">
+                      {formatEventDateLong(d, event.time, resolvedLocale)}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
-              {event.price && (
-                <div className="flex gap-3">
-                  <Ticket className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">{tForms("price")}</p>
-                    <p className="text-sm font-medium">{event.price}</p>
-                  </div>
-                </div>
-              )}
-
-              {event.organizer && (
-                <div className="flex gap-3">
-                  <Users className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">{tForms("organizer")}</p>
-                    <p className="text-sm font-medium">{event.organizer}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Otros shows del artista */}
+            {otherEvents.length > 0 ? (
+              <section className="flex flex-col gap-m">
+                <Eyebrow as="h2">{t("otherEvents")}</Eyebrow>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-m">
+                  {otherEvents.map((ev) => (
+                    <li key={ev.id}>
+                      <EventCard event={ev} locale={resolvedLocale} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Sticky CTA mobile */}
+      <StickyCTABar>
+        <EventAccessCTA
+          price={event.price}
+          locale={resolvedLocale}
+          variant="compact"
+        />
+      </StickyCTABar>
+    </>
   )
 }

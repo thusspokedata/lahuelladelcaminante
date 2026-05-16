@@ -1,12 +1,73 @@
+/**
+ * `/artists/[slug]` — detalle de artista.
+ *
+ * Layout 5+7 desktop: portrait sticky a la izquierda, info a la derecha.
+ * Mobile: portrait full-width arriba, info debajo. La bio se renderiza
+ * como texto plano por ahora — TODO: parser markdown básico (bold/italic/
+ * link) cuando lo necesitemos.
+ *
+ * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 "Artista · detalle".
+ */
+
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import Image from "next/image"
 import { getTranslations } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { getArtistBySlug } from "@/services/artists"
-import { getEventsByArtist } from "@/services/events"
-import { EventList } from "@/components/events/EventList"
-import { Badge } from "@/components/ui/badge"
-import { BackButton } from "@/components/ui/BackButton"
-import { ExternalLink } from "lucide-react"
+import { getUpcomingEventsByArtist } from "@/services/events"
+import { genreAccent } from "@/lib/genre-accent"
+import { getCloudinaryUrl } from "@/lib/cloudinary-url"
+import { ArrowLeft } from "lucide-react"
+import Chip from "@/components/ui/Chip"
+import Eyebrow from "@/components/ui/Eyebrow"
+import FlyerImage from "@/components/ui/FlyerImage"
+import SocialLinks from "@/components/artists/SocialLinks"
+import { EventCard } from "@/components/events/EventCard"
+
+function originEyebrow(genres: string[], origin: string | null): string | null {
+  const parts: string[] = []
+  if (genres[0]) parts.push(genres[0].toUpperCase())
+  if (origin) parts.push(origin.toUpperCase())
+  return parts.length > 0 ? parts.join(" · ") : null
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const tCommon = await getTranslations({ locale, namespace: "common" })
+  const artist = await getArtistBySlug(slug)
+  if (!artist) {
+    return { title: `${tCommon("notFound")} · La Huella del Caminante` }
+  }
+
+  const description = [
+    artist.name,
+    artist.origin,
+    artist.genres.length > 0 ? artist.genres.join(", ") : null,
+  ]
+    .filter(Boolean)
+    .join(" — ")
+
+  // Cascada de fallback: Cloudinary → URL plana → sin imagen. Ver
+  // comentario equivalente en `/events/[slug]/page.tsx`.
+  const ogUrl =
+    (artist.coverImagePublicId && getCloudinaryUrl(artist.coverImagePublicId)) ??
+    artist.coverImage
+  const images = ogUrl ? [{ url: ogUrl }] : []
+
+  return {
+    title: `${artist.name} · La Huella del Caminante`,
+    description,
+    openGraph: {
+      title: artist.name,
+      description: artist.bio?.slice(0, 160) ?? description,
+      images,
+    },
+  }
+}
 
 export default async function ArtistDetailPage({
   params,
@@ -14,144 +75,93 @@ export default async function ArtistDetailPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale, slug } = await params
-  const t = await getTranslations({ locale, namespace: "artists" })
   const artist = await getArtistBySlug(slug)
-
   if (!artist) notFound()
 
-  const events = await getEventsByArtist(artist.id)
-  const social = artist.socialMedia as Record<string, string> | null
-  const images = artist.images ?? []
+  const t = await getTranslations({ locale, namespace: "artistDetail" })
+  const upcomingEvents = await getUpcomingEventsByArtist(artist.id)
+
+  const accent = genreAccent(artist.genres[0])
+  const fallbackAccent = accent === "neutral" ? "creator" : accent
+  const eyebrowText = originEyebrow(artist.genres, artist.origin)
+  const resolvedLocale = locale
 
   return (
-    <div>
-      {/* Hero image (first photo, full bleed) */}
-      <div className="relative w-full h-64 sm:h-80 bg-gradient-to-br from-primary/20 via-accent/10 to-background overflow-hidden">
-        {images[0] ? (
-          <Image
-            src={images[0].url}
-            alt={artist.name}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-8xl opacity-10 select-none">🎵</div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-      </div>
+    <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
+      {/* Breadcrumb */}
+      <Link
+        href="/artists"
+        className="inline-flex items-center gap-xs text-body-s text-fg-secondary hover:text-fg-primary transition-colors mb-l"
+      >
+        <ArrowLeft className="w-4 h-4" aria-hidden />
+        <span>{t("backToArtists")}</span>
+      </Link>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 -mt-10 relative">
-        <BackButton label={t("title")} />
-
-        {/* Name + meta */}
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-black leading-tight mb-2">{artist.name}</h1>
-          {artist.origin && (
-            <p className="text-muted-foreground text-lg mb-3">{artist.origin}</p>
-          )}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {artist.genres.map((g) => (
-              <Badge key={g} variant="secondary" className="rounded-full px-3">{g}</Badge>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+        {/* Portrait sticky */}
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-[calc(var(--layout-header-h)+24px)]">
+            <FlyerImage
+              publicId={artist.coverImagePublicId ?? undefined}
+              src={artist.coverImage ?? undefined}
+              alt={artist.coverImageAlt ?? artist.name}
+              aspectRatio="4:5"
+              fallbackAccent={fallbackAccent}
+              priority
+            />
           </div>
-          {/* Social links */}
-          {social && (
-            <div className="flex flex-wrap gap-3">
-              {social.instagram && (
-                <a
-                  href={social.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> Instagram
-                </a>
-              )}
-              {social.spotify && (
-                <a
-                  href={social.spotify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> Spotify
-                </a>
-              )}
-              {social.youtube && (
-                <a
-                  href={social.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> YouTube
-                </a>
-              )}
-              {social.tiktok && (
-                <a
-                  href={social.tiktok}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> TikTok
-                </a>
-              )}
-              {social.website && (
-                <a
-                  href={social.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> Web
-                </a>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* Bio */}
-        {artist.bio && (
-          <p className="text-muted-foreground leading-relaxed text-base mb-10 max-w-2xl">
-            {artist.bio}
-          </p>
-        )}
+        {/* Info */}
+        <div className="lg:col-span-7 flex flex-col gap-l">
+          {eyebrowText ? <Eyebrow>{eyebrowText}</Eyebrow> : null}
 
-        {/* Photo gallery (all images) */}
-        {images.length > 1 && (
-          <section className="mb-12">
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("photosLabel")}</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {images.map((img, i) => (
-                <div
-                  key={img.id}
-                  className={`relative overflow-hidden rounded-xl bg-muted ${
-                    i === 0 ? "col-span-2 sm:col-span-1 aspect-square" : "aspect-square"
-                  }`}
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.alt ?? artist.name}
-                    fill
-                    sizes="(max-width: 640px) 50vw, 33vw"
-                    className="object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+          <h1 className="text-heading-l sm:text-display-m font-display text-fg-primary leading-tight">
+            {artist.name}
+          </h1>
 
-        {/* Events */}
-        {events.length > 0 && (
-          <section>
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-4">{t("upcomingDatesLabel")}</p>
-            <EventList events={events} />
+          {/* Bio (texto plano por ahora — TODO: markdown básico bold/italic/link) */}
+          {artist.bio ? (
+            <p className="text-body-l text-fg-primary leading-relaxed whitespace-pre-line max-w-2xl">
+              {artist.bio}
+            </p>
+          ) : null}
+
+          {/* Géneros */}
+          {artist.genres.length > 0 ? (
+            <ul className="flex flex-wrap gap-xs">
+              {artist.genres.map((g) => {
+                const a = genreAccent(g)
+                return (
+                  <li key={g}>
+                    <Chip accent={a === "neutral" ? "creator" : a} active size="s">
+                      {g}
+                    </Chip>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : null}
+
+          {/* Redes sociales */}
+          <SocialLinks socialMedia={artist.socialMedia} />
+
+          {/* Próximas fechas */}
+          <section className="flex flex-col gap-m">
+            <Eyebrow as="h2">{t("upcomingShows")}</Eyebrow>
+            {upcomingEvents.length > 0 ? (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-m">
+                {upcomingEvents.map((ev) => (
+                  <li key={ev.id}>
+                    <EventCard event={ev} locale={resolvedLocale} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-body text-fg-secondary">{t("noUpcomingShows")}</p>
+            )}
           </section>
-        )}
+        </div>
       </div>
     </div>
   )
