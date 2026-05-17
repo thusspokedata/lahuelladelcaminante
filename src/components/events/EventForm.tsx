@@ -239,13 +239,21 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
         eyebrow={tEvent("sections.when.eyebrow")}
         title={tEvent("sections.when.title")}
       >
-        <div className="flex flex-col gap-xs">
-          <label className="font-mono text-eyebrow uppercase text-fg-secondary leading-tight">
+        {/* fieldset + legend semánticos para agrupar los inputs del field
+            array — escapa al FormField wrapper (no aplica el patrón
+            label-htmlFor cuando hay N inputs dinámicos). `aria-invalid`
+            propagado a cada input cuando `errors.dates` está presente. */}
+        <fieldset
+          className="flex flex-col gap-xs border-0 p-0 m-0"
+          aria-describedby={errors.dates ? "event-dates-error" : undefined}
+        >
+          <legend className="font-mono text-eyebrow uppercase text-fg-secondary leading-tight">
             {tEvent("fields.dates")}
             <span aria-hidden={true} className="ml-1 text-brand">
               *
             </span>
-          </label>
+            <span className="sr-only"> (requerido)</span>
+          </legend>
           <div className="flex flex-col gap-xs">
             {dateFields.map((field, i) => (
               <div key={field.id} className="flex items-center gap-xs">
@@ -253,6 +261,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
                   type="date"
                   className="flex-1"
                   aria-label={tEvent("fields.dateNth", { n: i + 1 })}
+                  aria-invalid={Boolean(errors.dates)}
                   {...register(`dates.${i}.value`)}
                 />
                 {dateFields.length > 1 ? (
@@ -271,7 +280,9 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
             ))}
           </div>
           {errors.dates ? (
-            <FormError>{tEvent("fields.dateRequired")}</FormError>
+            <FormError id="event-dates-error">
+              {tEvent("fields.dateRequired")}
+            </FormError>
           ) : null}
           <Button
             type="button"
@@ -282,7 +293,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
           >
             {tEvent("fields.addDate")}
           </Button>
-        </div>
+        </fieldset>
 
         <FormField label={tEvent("fields.time")} name="event-time">
           <FormInput

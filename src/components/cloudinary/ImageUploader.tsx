@@ -34,6 +34,23 @@ import Image from "next/image"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+/** Preset de upload de Cloudinary. `process.env.NEXT_PUBLIC_*` puede
+ * ser `undefined` si la env var no está seteada en build/runtime —
+ * antes de extraer este componente, cada caller pasaba el valor
+ * directo y fallaba silencioso si faltaba (modal opaco de Cloudinary).
+ * Acá lo capturamos en un const con warning explícito en dev y
+ * disabled state en runtime — el user ve por qué no puede subir
+ * en lugar de un click que no hace nada. */
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+
+if (!UPLOAD_PRESET && process.env.NODE_ENV !== "production") {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[ImageUploader] NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET no está seteada. " +
+      "El uploader va a estar deshabilitado. Setear en `.env.local`."
+  )
+}
+
 export interface ExistingImage {
   id: string
   url: string
@@ -99,50 +116,69 @@ export default function ImageUploader({
         </div>
       ) : null}
 
-      <CldUploadWidget
-        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-        options={{ multiple: true, maxFiles }}
-        onSuccess={(result) => {
-          // Mismo parseo defensivo que el código original — `result.info`
-          // puede ser string (caso "upload from URL") u objeto con
-          // `secure_url` + `public_id`. Solo procesamos el caso objeto.
-          if (
-            result.info &&
-            typeof result.info === "object" &&
-            "secure_url" in result.info
-          ) {
-            const info = result.info as {
-              secure_url: string
-              public_id: string
+      {UPLOAD_PRESET ? (
+        <CldUploadWidget
+          uploadPreset={UPLOAD_PRESET}
+          options={{ multiple: true, maxFiles }}
+          onSuccess={(result) => {
+            // Mismo parseo defensivo que el código original — `result.info`
+            // puede ser string (caso "upload from URL") u objeto con
+            // `secure_url` + `public_id`. Solo procesamos el caso objeto.
+            if (
+              result.info &&
+              typeof result.info === "object" &&
+              "secure_url" in result.info
+            ) {
+              const info = result.info as {
+                secure_url: string
+                public_id: string
+              }
+              onUpload({ url: info.secure_url, publicId: info.public_id })
             }
-            onUpload({ url: info.secure_url, publicId: info.public_id })
-          }
-        }}
-      >
-        {({ open }) => (
-          <button
-            type="button"
-            onClick={() => open()}
-            className={cn(
-              "flex flex-col items-center justify-center gap-xs",
-              "min-h-[120px] rounded-m px-l py-l",
-              "bg-bg-surface-2 border border-dashed border-border",
-              "text-body-s text-fg-secondary",
-              "transition-colors cursor-pointer",
-              "hover:border-brand hover:text-fg-primary",
-              "focus-visible:outline-none focus-visible:border-brand",
-              "focus-visible:ring-2 focus-visible:ring-brand/30"
-            )}
-          >
-            <span className="font-mono text-eyebrow uppercase text-fg-tertiary">
-              {triggerLabel}
-            </span>
-            {!hasAny ? (
-              <span className="text-caption text-fg-tertiary">{emptyLabel}</span>
-            ) : null}
-          </button>
-        )}
-      </CldUploadWidget>
+          }}
+        >
+          {({ open }) => (
+            <button
+              type="button"
+              onClick={() => open()}
+              className={cn(
+                "flex flex-col items-center justify-center gap-xs",
+                "min-h-[120px] rounded-m px-l py-l",
+                "bg-bg-surface-2 border border-dashed border-border",
+                "text-body-s text-fg-secondary",
+                "transition-colors cursor-pointer",
+                "hover:border-brand hover:text-fg-primary",
+                "focus-visible:outline-none focus-visible:border-brand",
+                "focus-visible:ring-2 focus-visible:ring-brand/30"
+              )}
+            >
+              <span className="font-mono text-eyebrow uppercase text-fg-tertiary">
+                {triggerLabel}
+              </span>
+              {!hasAny ? (
+                <span className="text-caption text-fg-tertiary">{emptyLabel}</span>
+              ) : null}
+            </button>
+          )}
+        </CldUploadWidget>
+      ) : (
+        <div
+          role="alert"
+          className={cn(
+            "flex flex-col items-center justify-center gap-xs",
+            "min-h-[120px] rounded-m px-l py-l",
+            "bg-bg-surface-2 border border-dashed border-status-danger/40",
+            "text-body-s text-fg-tertiary cursor-not-allowed"
+          )}
+        >
+          <span className="font-mono text-eyebrow uppercase text-status-danger">
+            UPLOADER DESHABILITADO
+          </span>
+          <span className="text-caption">
+            Falta NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET en el env.
+          </span>
+        </div>
+      )}
     </div>
   )
 }

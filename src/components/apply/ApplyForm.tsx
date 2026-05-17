@@ -52,13 +52,16 @@ export function ApplyForm() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => null)
-        throw new Error(data?.error ?? "Error")
+        // Si el server devuelve `error` (típicamente "Validation error" del
+        // route handler), preferirlo sobre el genérico. Sin esto el user
+        // ve "error inesperado" cuando hay info concreta disponible.
+        throw new Error(data?.error ?? tCommon("error"))
       }
       // `new Date()` acá (no en el render condicional) para congelar el
       // timestamp al momento del éxito, no en cada rerender.
       setSubmittedAt(new Date())
-    } catch {
-      toast.error(tCommon("error"))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : tCommon("error"))
     } finally {
       setLoading(false)
     }
