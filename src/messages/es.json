@@ -168,6 +168,63 @@
       "noGenre": "— Sin género —"
     }
   },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NUEVO ARTISTA",
+      "title": "¿A quién vas a presentar?"
+    },
+    "edit": {
+      "eyebrow": "EDITAR ARTISTA"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTIDAD",
+        "title": "Quién es"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "La historia",
+        "description": "Contala como si estuvieras hablando con un amigo. Lo que no escribís hoy, lo escribís mañana."
+      },
+      "genres": {
+        "eyebrow": "03 · GÉNEROS",
+        "title": "Qué hace"
+      },
+      "image": {
+        "eyebrow": "04 · IMAGEN",
+        "title": "Fotos",
+        "description": "Subí 1-3 fotos buenas. Apuestan a presencia, no a perfección."
+      },
+      "social": {
+        "eyebrow": "05 · REDES",
+        "title": "Dónde encontrarlo",
+        "description": "Todas opcionales. Si no tiene cuenta en alguna red, dejá el campo vacío."
+      }
+    },
+    "fields": {
+      "name": "Nombre artístico",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Origen",
+      "originPlaceholder": "Argentina · México · Cuba · Brasil",
+      "bio": "Biografía",
+      "bioPlaceholder": "Qué hace, dónde tocó, qué referentes tiene...",
+      "genres": "Géneros",
+      "genresHelper": "Separados por coma.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/usuario",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@canal",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@usuario",
+        "website": "Sitio web",
+        "websitePlaceholder": "https://tudominio.com"
+      }
+    }
+  },
   "artists": {
     "title": "Artistas",
     "search": "Buscar artista...",

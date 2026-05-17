@@ -168,6 +168,63 @@
       "noGenre": "— Kein Genre —"
     }
   },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NEUER KÜNSTLER",
+      "title": "Wen möchtest du präsentieren?"
+    },
+    "edit": {
+      "eyebrow": "KÜNSTLER BEARBEITEN"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTITÄT",
+        "title": "Wer er/sie ist"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "Die Geschichte",
+        "description": "Erzähl sie, als würdest du mit einem Freund sprechen. Was du heute nicht schreibst, schreibst du morgen."
+      },
+      "genres": {
+        "eyebrow": "03 · GENRES",
+        "title": "Was er/sie spielt"
+      },
+      "image": {
+        "eyebrow": "04 · BILD",
+        "title": "Fotos",
+        "description": "Lade 1-3 starke Fotos hoch. Präsenz vor Perfektion."
+      },
+      "social": {
+        "eyebrow": "05 · LINKS",
+        "title": "Wo zu finden",
+        "description": "Alle optional. Wenn kein Konto auf einem Netzwerk vorhanden ist, leer lassen."
+      }
+    },
+    "fields": {
+      "name": "Künstlername",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Herkunft",
+      "originPlaceholder": "Argentinien · Mexiko · Kuba · Brasilien",
+      "bio": "Biografie",
+      "bioPlaceholder": "Was er/sie macht, wo er/sie gespielt hat, woran er/sie sich orientiert...",
+      "genres": "Genres",
+      "genresHelper": "Mit Komma getrennt.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/handle",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@kanal",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@handle",
+        "website": "Webseite",
+        "websitePlaceholder": "https://deinedomain.com"
+      }
+    }
+  },
   "artists": {
     "title": "Künstler",
     "search": "Künstler suchen...",

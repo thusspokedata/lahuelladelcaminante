@@ -168,6 +168,63 @@
       "noGenre": "— No genre —"
     }
   },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NEW ARTIST",
+      "title": "Who are you putting on?"
+    },
+    "edit": {
+      "eyebrow": "EDIT ARTIST"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTITY",
+        "title": "Who they are"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "The story",
+        "description": "Tell it as if talking to a friend. What you don't write today, you write tomorrow."
+      },
+      "genres": {
+        "eyebrow": "03 · GENRES",
+        "title": "What they play"
+      },
+      "image": {
+        "eyebrow": "04 · IMAGE",
+        "title": "Photos",
+        "description": "Upload 1-3 strong photos. Aim for presence, not perfection."
+      },
+      "social": {
+        "eyebrow": "05 · LINKS",
+        "title": "Where to find them",
+        "description": "All optional. If they don't have an account on a network, leave it blank."
+      }
+    },
+    "fields": {
+      "name": "Artist name",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Origin",
+      "originPlaceholder": "Argentina · Mexico · Cuba · Brazil",
+      "bio": "Biography",
+      "bioPlaceholder": "What they do, where they played, who they look up to...",
+      "genres": "Genres",
+      "genresHelper": "Comma-separated.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/handle",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@channel",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@handle",
+        "website": "Website",
+        "websitePlaceholder": "https://yourdomain.com"
+      }
+    }
+  },
   "artists": {
     "title": "Artists",
     "search": "Search artist...",
