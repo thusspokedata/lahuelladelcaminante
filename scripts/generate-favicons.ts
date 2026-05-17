@@ -30,10 +30,17 @@
 import sharp from "sharp"
 import pngToIco from "png-to-ico"
 import { readFileSync, writeFileSync } from "node:fs"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 
-const SOURCE_SVG = join(process.cwd(), "scripts/favicon-source.svg")
-const APP_DIR = join(process.cwd(), "src/app")
+// Paths anclados al archivo del script (NO a `process.cwd()`) — el dev
+// puede correr `tsx scripts/generate-favicons.ts` desde cualquier
+// directorio (raíz del repo, subdir, IDE con cwd al archivo) y siempre
+// encuentra el SVG fuente + escribe los outputs al lugar correcto.
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = join(SCRIPT_DIR, "..")
+const SOURCE_SVG = join(SCRIPT_DIR, "favicon-source.svg")
+const APP_DIR = join(REPO_ROOT, "src/app")
 
 /** Tamaños del multi-resolution ICO. 16/32/48 son los estándar histórico
  * (Win/Linux). 64+ se sirve desde `icon.png` que tiene mejor compresión. */

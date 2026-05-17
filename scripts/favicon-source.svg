@@ -1,3 +1,16 @@
+<!--
+  Fuente del favicon (NO confundir con el SVG del BrandMark en
+  src/components/brand/BrandMark.tsx, son SVGs distintos a proposito;
+  ver docs/design/FAVICONS.md).
+
+  Colores hardcoded por diseño (favicon es asset estático sin contexto
+  de color heredado, currentColor no aplica):
+    #D43029 = color-brand token  (rojo sangre)
+    #FFE6E3 = color-on-brand token (crema)
+
+  Si cambian esos tokens en src/app/globals.css, actualizar aca y
+  regenerar los binarios con `npm run favicons`.
+-->
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
   <rect width="16" height="16" rx="2" fill="#D43029"/>
   <g fill="#FFE6E3">

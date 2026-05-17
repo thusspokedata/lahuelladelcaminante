@@ -17,6 +17,11 @@ de editar `metadata.icons` ni el layout root. Si alguna vez aparece
 ahí una `metadata.icons` apuntando a otros paths, eliminarla — gana
 la inferencia de App Router.
 
+**Importante**: los binarios viven en `src/app/`, **no** en
+`src/app/[locale]/`. La inferencia de iconos es por root del segmento
+`app`; si se mueven al subsegmento de locale, dejan de emitirse para
+la página raíz `/` y para rutas no-localizadas.
+
 ## Fuente
 
 Los binarios se generan a partir de **un único SVG fuente**:
@@ -78,9 +83,14 @@ libvips) no afecta el bundle ni el runtime de producción.
 ## Cuándo regenerar
 
 - La marca cambia (SVG nuevo de Claude Design).
+- Cambian los tokens `--color-brand` o `--color-on-brand` en
+  `src/app/globals.css` (el SVG fuente los hardcodea; ver comentario
+  al tope del SVG).
 - Querés ajustar tamaños o redondeos.
 - Querés agregar otro formato (ej. `manifest-icon-192.png` para
-  Android PWA).
+  Android PWA — hoy no se genera porque el sitio no tiene
+  `manifest.webmanifest`; Android Chrome cae al `apple-icon` o al
+  `icon.png` 512. Cuando se agregue PWA, regenerar incluyendo 192).
 
 ## Especificaciones visuales
 
