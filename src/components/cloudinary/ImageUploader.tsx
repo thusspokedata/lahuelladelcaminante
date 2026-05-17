@@ -121,13 +121,16 @@ export default function ImageUploader({
           uploadPreset={UPLOAD_PRESET}
           options={{ multiple: true, maxFiles }}
           onSuccess={(result) => {
-            // Mismo parseo defensivo que el código original — `result.info`
-            // puede ser string (caso "upload from URL") u objeto con
-            // `secure_url` + `public_id`. Solo procesamos el caso objeto.
+            // `result.info` puede ser string (caso "upload from URL")
+            // u objeto con `secure_url` + `public_id`. Validamos AMBOS
+            // campos antes del cast — si Cloudinary devuelve un payload
+            // incompleto (edge case), no propagamos `undefined` al
+            // `PendingImage` que declara `publicId: string` requerido.
             if (
               result.info &&
               typeof result.info === "object" &&
-              "secure_url" in result.info
+              "secure_url" in result.info &&
+              "public_id" in result.info
             ) {
               const info = result.info as {
                 secure_url: string

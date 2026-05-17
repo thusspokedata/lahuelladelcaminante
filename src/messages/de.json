@@ -165,7 +165,8 @@
       "price": "Preis oder Zugangsmodus",
       "pricePlaceholder": "€10 · Spendenbasiert · Eintritt frei",
       "genre": "Genre",
-      "noGenre": "— Kein Genre —"
+      "noGenre": "— Kein Genre —",
+      "genreOther": "Andere"
     }
   },
   "artistForm": {
@@ -443,6 +444,7 @@
     "applicationsRejectedMsg": "Bewerbung abgelehnt"
   },
   "forms": {
+    "required": "(erforderlich)",
     "titleRequired": "Titel ist erforderlich.",
     "venueRequired": "Venue ist erforderlich.",
     "nameRequired": "Name ist erforderlich.",

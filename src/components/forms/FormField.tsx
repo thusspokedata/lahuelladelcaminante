@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * FormField — wrapper de un campo del form: label + slot del input +
  * mensaje (helper o error).
@@ -6,7 +8,7 @@
  * `<FormTextarea>` / `<FormSelect>` como children con sus propias
  * props. Este wrapper se encarga de:
  *  - Label arriba con estilo eyebrow (mono uppercase tracking).
- *  - Asterisco sangre si `required`.
+ *  - Asterisco sangre si `required` + texto sr-only i18n para SR users.
  *  - Helper text gris debajo (si no hay error).
  *  - `<FormError>` debajo si hay error.
  *
@@ -17,11 +19,16 @@
  *    a `{name}-error` o `{name}-helper` — los IDs los expone este
  *    componente para que el caller los referencie.
  *
- * Server-compat, sin estado interno.
+ * Client component porque consume `useTranslations` para el texto
+ * sr-only del required hint ("(requerido)" / "(required)" /
+ * "(erforderlich)"). Como todos los callers ya son client components
+ * (los forms usan react-hook-form), el upgrade no cambia el árbol
+ * runtime.
  *
  * Spec: PR #24 "Rediseño de forms internos".
  */
 
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import FormError from "./FormError"
 
@@ -46,6 +53,7 @@ export default function FormField({
   children,
   className,
 }: FormFieldProps) {
+  const t = useTranslations("forms")
   const helperId = `${name}-helper`
   const errorId = `${name}-error`
 
@@ -65,7 +73,7 @@ export default function FormField({
           </span>
         ) : null}
         {required ? (
-          <span className="sr-only"> (requerido)</span>
+          <span className="sr-only"> {t("required")}</span>
         ) : null}
       </label>
 

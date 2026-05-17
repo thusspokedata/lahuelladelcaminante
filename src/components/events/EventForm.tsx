@@ -252,7 +252,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
             <span aria-hidden={true} className="ml-1 text-brand">
               *
             </span>
-            <span className="sr-only"> (requerido)</span>
+            <span className="sr-only"> {tForms("required")}</span>
           </legend>
           <div className="flex flex-col gap-xs">
             {dateFields.map((field, i) => (
@@ -371,11 +371,25 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
 
         <FormField label={tEvent("fields.genre")} name="event-genre">
           <FormSelect id="event-genre" {...register("genre")}>
-            {GENRES.map((g) => (
-              <option key={g} value={g}>
-                {g || tEvent("fields.noGenre")}
-              </option>
-            ))}
+            {GENRES.map((g) => {
+              // Display label: la mayoría de los géneros son nombres
+              // propios del estilo musical y no se traducen (Tango,
+              // Cumbia, Salsa, etc. se mantienen igual en ES/EN/DE).
+              // La excepción es "Otros" que SÍ varía por locale —
+              // mapeamos el value crudo (que va al DB) al label
+              // traducido solo para ese caso.
+              const label =
+                g === ""
+                  ? tEvent("fields.noGenre")
+                  : g === "Otros"
+                    ? tEvent("fields.genreOther")
+                    : g
+              return (
+                <option key={g} value={g}>
+                  {label}
+                </option>
+              )
+            })}
           </FormSelect>
         </FormField>
       </FormSection>

@@ -32,9 +32,17 @@ export interface FormCheckboxProps
 
 const FormCheckbox = React.forwardRef<HTMLInputElement, FormCheckboxProps>(
   function FormCheckbox({ className, label, id, ...props }, ref) {
+    // El `<label>` envolvente asocia el click implícitamente, pero
+    // `htmlFor`/`id` explícitos hacen la asociación tools-friendly
+    // (testing-library `getByLabelText`, screen readers que prefieren
+    // la asociación explícita, etc.). Si el caller no pasa `id`,
+    // generamos uno estable con `useId()`.
+    const fallbackId = React.useId()
+    const inputId = id ?? fallbackId
+
     return (
       <label
-        htmlFor={id}
+        htmlFor={inputId}
         className={cn(
           "flex items-start gap-s cursor-pointer select-none",
           "text-body-s text-fg-secondary leading-relaxed",
@@ -44,7 +52,7 @@ const FormCheckbox = React.forwardRef<HTMLInputElement, FormCheckboxProps>(
       >
         <input
           ref={ref}
-          id={id}
+          id={inputId}
           type="checkbox"
           className={cn(
             "mt-[3px] h-4 w-4 shrink-0 rounded-sm",

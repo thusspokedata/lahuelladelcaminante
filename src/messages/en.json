@@ -165,7 +165,8 @@
       "price": "Price or access mode",
       "pricePlaceholder": "€10 · Donation-based · Free entry",
       "genre": "Genre",
-      "noGenre": "— No genre —"
+      "noGenre": "— No genre —",
+      "genreOther": "Other"
     }
   },
   "artistForm": {
@@ -443,6 +444,7 @@
     "applicationsRejectedMsg": "Application rejected"
   },
   "forms": {
+    "required": "(required)",
     "titleRequired": "Title is required.",
     "venueRequired": "Venue is required.",
     "nameRequired": "Name is required.",

@@ -165,7 +165,8 @@
       "price": "Precio o modo",
       "pricePlaceholder": "€10 · Aporte voluntario · Entrada libre",
       "genre": "Género",
-      "noGenre": "— Sin género —"
+      "noGenre": "— Sin género —",
+      "genreOther": "Otros"
     }
   },
   "artistForm": {
@@ -443,6 +444,7 @@
     "applicationsRejectedMsg": "Solicitud rechazada"
   },
   "forms": {
+    "required": "(requerido)",
     "titleRequired": "El título es obligatorio.",
     "venueRequired": "El venue es obligatorio.",
     "nameRequired": "El nombre es obligatorio.",
