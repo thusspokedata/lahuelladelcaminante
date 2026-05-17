@@ -1,5 +1,25 @@
 "use client"
 
+/**
+ * ArtistForm — crear o editar un perfil de artista desde el dashboard
+ * creator.
+ *
+ * Rediseñado al sistema visual usando los primitives nuevos
+ * (`FormField`, `FormInput`, `FormTextarea`, `FormSection`) +
+ * `ImageUploader` extraído. **Lógica intacta** per spec: mismo schema
+ * zod, mismo useForm, mismo state pattern para images, mismo payload
+ * al `/api/artists` endpoint.
+ *
+ * Estructura en secciones:
+ *  - "01 · Identidad": nombre, origen.
+ *  - "02 · Bio": textarea con helper afectivo.
+ *  - "03 · Géneros": input libre separado por comas.
+ *  - "04 · Imagen": ImageUploader.
+ *  - "05 · Redes sociales": 5 inputs URL opcionales agrupados.
+ *
+ * Sin cambios en campos, validaciones ni payload — solo presentación.
+ */
+
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -8,11 +28,14 @@ import { z } from "zod"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { CldUploadWidget } from "next-cloudinary"
-import Image from "next/image"
-import { X } from "lucide-react"
+import FormField from "@/components/forms/FormField"
+import FormInput from "@/components/forms/FormInput"
+import FormTextarea from "@/components/forms/FormTextarea"
+import FormSection from "@/components/forms/FormSection"
+import ImageUploader, {
+  type ExistingImage,
+  type PendingImage,
+} from "@/components/cloudinary/ImageUploader"
 import type { ArtistDetail } from "@/services/artists"
 
 const schema = z.object({
@@ -29,17 +52,21 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-interface ExistingImage { id: string; url: string; publicId: string }
-interface NewImage { url: string; publicId: string }
-
 interface ArtistFormProps {
   artist?: ArtistDetail
   artistId?: string
 }
 
+/** Networks que renderizamos en la sección de redes sociales. Mantenido
+ * como `const` array para que TS infiera el tuple — los `register(field)`
+ * matchean el schema. Si se agrega/quita una red, actualizar el schema
+ * arriba y este array juntos. */
+const SOCIAL_FIELDS = ["instagram", "spotify", "youtube", "tiktok", "website"] as const
+
 export function ArtistForm({ artist, artistId }: ArtistFormProps) {
   const tCommon = useTranslations("common")
   const tForms = useTranslations("forms")
+  const tArtist = useTranslations("artistForm")
   const router = useRouter()
   const { locale } = useParams<{ locale: string }>()
 
@@ -49,9 +76,13 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
   const [existingImages, setExistingImages] = useState<ExistingImage[]>(
     artist?.images ?? []
   )
-  const [newImages, setNewImages] = useState<NewImage[]>([])
+  const [newImages, setNewImages] = useState<PendingImage[]>([])
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: artist?.name ?? "",
@@ -66,20 +97,17 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
     },
   })
 
-  function removeExistingImage(id: string) {
-    setExistingImages((prev) => prev.filter((img) => img.id !== id))
-  }
-
-  function removeNewImage(publicId: string) {
-    setNewImages((prev) => prev.filter((img) => img.publicId !== publicId))
-  }
-
   async function onSubmit(data: FormData) {
     const payload = {
       name: data.name,
       bio: data.bio || undefined,
       origin: data.origin || undefined,
-      genres: data.genres ? data.genres.split(",").map((g) => g.trim()).filter(Boolean) : [],
+      genres: data.genres
+        ? data.genres
+            .split(",")
+            .map((g) => g.trim())
+            .filter(Boolean)
+        : [],
       socialMedia: {
         instagram: data.instagram || undefined,
         spotify: data.spotify || undefined,
@@ -97,15 +125,18 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
           }),
     }
 
-    const res = await fetch(isEdit ? `/api/artists/${artistId}` : "/api/artists", {
-      method: isEdit ? "PATCH" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
+    const res = await fetch(
+      isEdit ? `/api/artists/${artistId}` : "/api/artists",
+      {
+        method: isEdit ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    )
 
     if (!res.ok) {
-      const err = await res.json()
-      toast.error(err.error ?? tCommon("error"))
+      const err = await res.json().catch(() => null)
+      toast.error(err?.error ?? tCommon("error"))
       return
     }
 
@@ -115,124 +146,127 @@ export function ArtistForm({ artist, artistId }: ArtistFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-
-      {/* Name */}
-      <div className="space-y-1.5">
-        <Label htmlFor="name">{tForms("nameField")}</Label>
-        <Input id="name" {...register("name")} />
-        {errors.name && <p className="text-xs text-destructive">{tForms("nameRequired")}</p>}
-      </div>
-
-      {/* Bio */}
-      <div className="space-y-1.5">
-        <Label htmlFor="bio">{tForms("bio")}</Label>
-        <textarea
-          id="bio"
-          {...register("bio")}
-          rows={4}
-          className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-        />
-      </div>
-
-      {/* Origin + genres */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="origin">{tForms("origin")}</Label>
-          <Input id="origin" {...register("origin")} placeholder="Argentina" />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="genres">{tForms("genres")}</Label>
-          <Input id="genres" {...register("genres")} placeholder="Tango, Milonga" />
-        </div>
-      </div>
-
-      {/* Social */}
-      <fieldset className="space-y-3 border border-border rounded-xl p-4">
-        <legend className="text-sm font-semibold px-1">{tForms("socialMedia")}</legend>
-        {(["instagram", "spotify", "youtube", "tiktok", "website"] as const).map((field) => (
-          <div key={field} className="flex items-center gap-3">
-            <Label className="w-20 text-xs capitalize shrink-0">{field}</Label>
-            <Input {...register(field)} placeholder={`URL ${field}`} className="text-sm" />
-          </div>
-        ))}
-      </fieldset>
-
-      {/* Images */}
-      <div className="space-y-3">
-        <Label>{tForms("photos")}</Label>
-
-        {/* Existing */}
-        {existingImages.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {existingImages.map((img) => (
-              <div key={img.id} className="relative group">
-                <div className="w-24 h-24 rounded-xl overflow-hidden border border-border">
-                  <Image src={img.url} alt="" width={96} height={96} className="object-cover w-full h-full" />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeExistingImage(img.id)}
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* New */}
-        {newImages.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {newImages.map((img) => (
-              <div key={img.publicId} className="relative group">
-                <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-primary/30">
-                  <Image src={img.url} alt="" width={96} height={96} className="object-cover w-full h-full" />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeNewImage(img.publicId)}
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute bottom-1 left-1 right-1 bg-primary/80 text-white text-[9px] text-center rounded px-1 py-0.5">
-                  {tForms("newBadge")}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <CldUploadWidget
-          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-          options={{ multiple: true, maxFiles: 10 }}
-          onSuccess={(result) => {
-            if (result.info && typeof result.info === "object" && "secure_url" in result.info) {
-              const info = result.info as { secure_url: string; public_id: string }
-              setNewImages((prev) => [...prev, { url: info.secure_url, publicId: info.public_id }])
-            }
-          }}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-2xl max-w-3xl"
+      noValidate
+    >
+      <FormSection
+        eyebrow={tArtist("sections.identity.eyebrow")}
+        title={tArtist("sections.identity.title")}
+      >
+        <FormField
+          label={tArtist("fields.name")}
+          name="artist-name"
+          required
+          error={errors.name ? tForms("nameRequired") : undefined}
         >
-          {({ open }) => (
-            <Button type="button" variant="outline" size="sm" onClick={() => open()} className="rounded-full">
-              {tForms("uploadPhotos")}
-            </Button>
-          )}
-        </CldUploadWidget>
+          <FormInput
+            id="artist-name"
+            placeholder={tArtist("fields.namePlaceholder")}
+            aria-invalid={Boolean(errors.name)}
+            {...register("name")}
+          />
+        </FormField>
 
-        {existingImages.length === 0 && newImages.length === 0 && (
-          <p className="text-xs text-muted-foreground">{tForms("noPhotos")}</p>
-        )}
-      </div>
+        <FormField label={tArtist("fields.origin")} name="artist-origin">
+          <FormInput
+            id="artist-origin"
+            placeholder={tArtist("fields.originPlaceholder")}
+            {...register("origin")}
+          />
+        </FormField>
+      </FormSection>
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-2">
-        <Button type="submit" disabled={isSubmitting} className="rounded-full px-8">
+      <FormSection
+        eyebrow={tArtist("sections.bio.eyebrow")}
+        title={tArtist("sections.bio.title")}
+        description={tArtist("sections.bio.description")}
+      >
+        <FormField label={tArtist("fields.bio")} name="artist-bio">
+          <FormTextarea
+            id="artist-bio"
+            placeholder={tArtist("fields.bioPlaceholder")}
+            rows={6}
+            {...register("bio")}
+          />
+        </FormField>
+      </FormSection>
+
+      <FormSection
+        eyebrow={tArtist("sections.genres.eyebrow")}
+        title={tArtist("sections.genres.title")}
+      >
+        <FormField
+          label={tArtist("fields.genres")}
+          name="artist-genres"
+          helper={tArtist("fields.genresHelper")}
+        >
+          <FormInput
+            id="artist-genres"
+            placeholder={tArtist("fields.genresPlaceholder")}
+            {...register("genres")}
+          />
+        </FormField>
+      </FormSection>
+
+      <FormSection
+        eyebrow={tArtist("sections.image.eyebrow")}
+        title={tArtist("sections.image.title")}
+        description={tArtist("sections.image.description")}
+      >
+        <ImageUploader
+          existing={existingImages}
+          pending={newImages}
+          onRemoveExisting={(id) =>
+            setExistingImages((prev) => prev.filter((img) => img.id !== id))
+          }
+          onRemovePending={(publicId) =>
+            setNewImages((prev) => prev.filter((img) => img.publicId !== publicId))
+          }
+          onUpload={(img) => setNewImages((prev) => [...prev, img])}
+          triggerLabel={tForms("uploadPhotos")}
+          emptyLabel={tForms("noImages")}
+          newBadgeLabel={tForms("newBadge")}
+        />
+      </FormSection>
+
+      <FormSection
+        eyebrow={tArtist("sections.social.eyebrow")}
+        title={tArtist("sections.social.title")}
+        description={tArtist("sections.social.description")}
+      >
+        {SOCIAL_FIELDS.map((field) => (
+          <FormField
+            key={field}
+            label={tArtist(`fields.social.${field}`)}
+            name={`artist-${field}`}
+          >
+            <FormInput
+              id={`artist-${field}`}
+              type="url"
+              inputMode="url"
+              placeholder={tArtist(`fields.social.${field}Placeholder`)}
+              {...register(field)}
+            />
+          </FormField>
+        ))}
+      </FormSection>
+
+      <div className="flex flex-wrap items-center gap-s border-t border-border pt-l">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-11 bg-brand text-on-brand font-semibold hover:bg-brand-dim disabled:opacity-60"
+        >
           {isSubmitting ? tCommon("loading") : tCommon("save")}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()} className="rounded-full px-8">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+          className="h-11"
+        >
           {tCommon("cancel")}
         </Button>
       </div>

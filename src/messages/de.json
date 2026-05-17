@@ -50,29 +50,27 @@
     }
   },
   "apply": {
-    "badge": "Für Künstler & Veranstalter",
-    "heroTitle": "Möchtest du deine",
-    "heroSubtitle": "Events veröffentlichen?",
-    "heroDescription": "Füll das Formular aus und wir melden uns bei dir. Nach der Genehmigung kannst du deine Shows direkt auf der Plattform veröffentlichen.",
-    "whyLabel": "Warum mitmachen",
-    "whyTitle": "Die lateinamerikanische Szene in Deutschland wartet auf dich",
-    "whyBody": "La Huella del Caminante ist das Referenzportal für lateinamerikanische Musik in Deutschland. Erreiche Tausende von Menschen, die in Berlin, München, Hamburg und weiteren Städten nach lateinamerikanischen Events suchen.",
-    "feature1Title": "Events mit Terminen und Ort veröffentlichen",
-    "feature1Body": "Erstelle Events mit mehreren Terminen, genauer Adresse und Google Maps-Link.",
-    "feature2Title": "Präsenz in ganz Deutschland",
-    "feature2Body": "Dein Event sichtbar für die lateinamerikanische Community in den wichtigsten deutschen Städten.",
-    "feature3Title": "Dein Künstlerprofil",
-    "feature3Body": "Erstelle dein Profil mit Fotos, Biografie, Genres und Social-Media-Links.",
-    "formTitle": "Zugang beantragen",
-    "formSubtitle": "Wir antworten innerhalb von 48 Stunden.",
-    "nameLabel": "Dein Name oder Künstlername *",
-    "namePlaceholder": "Z.B.: DJ Cumbia, Banda XYZ, María García",
-    "emailLabel": "Deine E-Mail *",
-    "emailPlaceholder": "du@email.com",
-    "messageLabel": "Erzähl uns von dir und deinen Events *",
-    "messagePlaceholder": "Wer bist du? Welche Art von Events organisierst du oder in welcher Stadt trittst du auf? Je mehr du uns erzählst, desto besser können wir es beurteilen.",
-    "messageHint": "Mindestens 10 Zeichen.",
-    "submit": "Anfrage senden",
+    "metaTitle": "Als Creator bewerben",
+    "metaDescription": "Werde Creator bei La Huella del Caminante: bewirb dich, wir prüfen in 1-2 Tagen, du veröffentlichst deine Events.",
+    "eyebrow": "ALS CREATOR BEWERBEN",
+    "title": "Erzähl uns, wer du bist.",
+    "body": "Die Bewerbung ist der zweite Schritt. Wir prüfen dein Profil — meistens 1-2 Tage. Wenn alles passt, wird dein Konto zum Veröffentlichen von Events freigeschaltet.",
+    "form": {
+      "section": {
+        "eyebrow": "DEINE BEWERBUNG",
+        "title": "Über dich",
+        "description": "Erzähl uns, wer du bist, was du machst und was gerade ansteht. Je mehr du teilst, desto besser können wir bewerten."
+      },
+      "name": "Dein Name oder Künstlername",
+      "namePlaceholder": "DJ Cumbia · Banda XYZ · María García",
+      "email": "Deine E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "message": "Erzähl uns von dir und deinen Events",
+      "messagePlaceholder": "Wer bist du? Welche Art von Events organisierst du oder in welcher Stadt trittst du auf?",
+      "messageHint": "Mindestens 10 Zeichen.",
+      "submit": "Anfrage senden →",
+      "submitting": "Wird gesendet..."
+    },
     "submitted": {
       "badge": "✓ ANFRAGE ERHALTEN",
       "title": "Wir haben deine Anfrage erhalten, <accent>Wandersleute.</accent>",
@@ -109,6 +107,124 @@
     "dates": "Termine",
     "noDate": "Kein Datum",
     "musicLabel": "Lateinamerikanische Livemusik · Deutschland"
+  },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NEUES EVENT",
+      "title": "Was möchtest du präsentieren?"
+    },
+    "edit": {
+      "eyebrow": "EVENT BEARBEITEN"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · DAS WESENTLICHE",
+        "title": "Das Event"
+      },
+      "when": {
+        "eyebrow": "02 · WANN",
+        "title": "Termine und Uhrzeit"
+      },
+      "where": {
+        "eyebrow": "03 · WO",
+        "title": "Ort"
+      },
+      "access": {
+        "eyebrow": "04 · ZUGANG & GENRE",
+        "title": "Preis und Kategorie"
+      },
+      "image": {
+        "eyebrow": "05 · BILD",
+        "title": "Flyer",
+        "description": "Lade den Event-Flyer hoch. JPG und PNG, bis zu 10 Dateien."
+      }
+    },
+    "fields": {
+      "title": "Event-Titel",
+      "titlePlaceholder": "Cumbia Night · Tango Live · Latino-Festival",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Erzähl uns, was bei der Show passiert: Bands, DJs, Format...",
+      "artist": "Verknüpfter Künstler",
+      "noArtistLinked": "— Kein Künstler verknüpft —",
+      "dates": "Termine",
+      "dateNth": "Termin {n}",
+      "dateRequired": "Füg mindestens einen Termin hinzu.",
+      "removeDate": "Diesen Termin entfernen",
+      "addDate": "+ Termin hinzufügen",
+      "time": "Anfangszeit",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "Stadt",
+      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityRequired": "Stadt ist erforderlich.",
+      "address": "Adresse",
+      "addressHelper": "So genau wie möglich — wir nutzen sie für Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Veranstalter",
+      "organizerPlaceholder": "Name des Kollektivs / Promoters / veranstaltenden Künstlers",
+      "price": "Preis oder Zugangsmodus",
+      "pricePlaceholder": "€10 · Spendenbasiert · Eintritt frei",
+      "genre": "Genre",
+      "noGenre": "— Kein Genre —",
+      "genreOther": "Andere"
+    }
+  },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NEUER KÜNSTLER",
+      "title": "Wen möchtest du präsentieren?"
+    },
+    "edit": {
+      "eyebrow": "KÜNSTLER BEARBEITEN"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTITÄT",
+        "title": "Wer er/sie ist"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "Die Geschichte",
+        "description": "Erzähl sie, als würdest du mit einem Freund sprechen. Was du heute nicht schreibst, schreibst du morgen."
+      },
+      "genres": {
+        "eyebrow": "03 · GENRES",
+        "title": "Was er/sie spielt"
+      },
+      "image": {
+        "eyebrow": "04 · BILD",
+        "title": "Fotos",
+        "description": "Lade 1-3 starke Fotos hoch. Präsenz vor Perfektion."
+      },
+      "social": {
+        "eyebrow": "05 · LINKS",
+        "title": "Wo zu finden",
+        "description": "Alle optional. Wenn kein Konto auf einem Netzwerk vorhanden ist, leer lassen."
+      }
+    },
+    "fields": {
+      "name": "Künstlername",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Herkunft",
+      "originPlaceholder": "Argentinien · Mexiko · Kuba · Brasilien",
+      "bio": "Biografie",
+      "bioPlaceholder": "Was er/sie macht, wo er/sie gespielt hat, woran er/sie sich orientiert...",
+      "genres": "Genres",
+      "genresHelper": "Mit Komma getrennt.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/handle",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@kanal",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@handle",
+        "website": "Webseite",
+        "websitePlaceholder": "https://deinedomain.com"
+      }
+    }
   },
   "artists": {
     "title": "Künstler",
@@ -328,43 +444,13 @@
     "applicationsRejectedMsg": "Bewerbung abgelehnt"
   },
   "forms": {
-    "titleField": "Titel *",
-    "description": "Beschreibung",
-    "venue": "Veranstaltungsort *",
-    "city": "Stadt *",
-    "address": "Adresse",
-    "artistField": "Künstler",
-    "genre": "Genre",
-    "time": "Uhrzeit",
-    "price": "Preis",
-    "organizer": "Veranstalter",
-    "dates": "Termine *",
-    "images": "Bilder",
-    "addDate": "+ Datum hinzufügen",
-    "uploadPhotos": "↑ Fotos hochladen (mehrere auswählbar)",
-    "noArtistLinked": "— Kein Künstler verknüpft —",
-    "noGenre": "— Kein Genre —",
-    "noPhotos": "Noch keine Fotos.",
-    "nameField": "Name *",
-    "bio": "Biografie",
-    "origin": "Herkunft",
-    "genres": "Genres (durch Komma getrennt)",
-    "socialMedia": "Social Media",
-    "photos": "Fotos",
-    "newBadge": "Neu",
-    "noImages": "Keine Bilder. Sie können eines oder mehrere hochladen.",
-    "mapsHint": "Ein Link zum Öffnen in Google Maps wird angezeigt.",
-    "titlePlaceholder": "Z.B.: Tango-Abend in Berlin",
-    "venuePlaceholder": "Z.B.: Tango Bar Loca",
-    "cityPlaceholder": "Z.B.: Berlin",
-    "addressPlaceholder": "Z.B.: Schlesische Str. 38, 10997 Berlin",
-    "titleRequired": "Titel ist erforderlich",
-    "venueRequired": "Veranstaltungsort ist erforderlich",
-    "nameRequired": "Name ist erforderlich",
-    "editArtist": "Künstler bearbeiten",
-    "createArtist": "Künstler erstellen",
-    "editEvent": "Veranstaltung bearbeiten",
-    "createEvent": "Veranstaltung erstellen"
+    "required": "(erforderlich)",
+    "titleRequired": "Titel ist erforderlich.",
+    "venueRequired": "Venue ist erforderlich.",
+    "nameRequired": "Name ist erforderlich.",
+    "uploadPhotos": "↑ Bilder hochladen",
+    "noImages": "Noch keine Bilder. Lade 1 oder mehr hoch.",
+    "newBadge": "Neu"
   },
   "footer": {
     "tagline": "Lebendige lateinamerikanische Musik in Deutschland. Aus Berlin.",

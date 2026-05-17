@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { requireRole } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
 import { EventForm } from "@/components/events/EventForm"
+import Eyebrow from "@/components/ui/Eyebrow"
 
 export default async function CreateEventPage({
   params,
@@ -10,15 +11,17 @@ export default async function CreateEventPage({
 }) {
   const { locale } = await params
   const user = await requireRole("creator", locale)
-  const tForms = await getTranslations({ locale, namespace: "forms" })
+  const t = await getTranslations({ locale, namespace: "eventForm.create" })
   const artists = await getArtistsByUser(user.id)
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">Dashboard</p>
-        <h1 className="text-3xl font-black">{tForms("createEvent")}</h1>
-      </div>
+    <div className="flex flex-col gap-xl">
+      <header className="flex flex-col gap-xs">
+        <Eyebrow accent="brand">{t("eyebrow")}</Eyebrow>
+        <h1 className="text-display-m font-display text-fg-primary leading-tight">
+          {t("title")}
+        </h1>
+      </header>
       <EventForm artists={artists.map((a) => ({ id: a.id, name: a.name }))} />
     </div>
   )
