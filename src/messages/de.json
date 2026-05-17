@@ -108,6 +108,66 @@
     "noDate": "Kein Datum",
     "musicLabel": "Lateinamerikanische Livemusik · Deutschland"
   },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NEUES EVENT",
+      "title": "Was möchtest du präsentieren?"
+    },
+    "edit": {
+      "eyebrow": "EVENT BEARBEITEN"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · DAS WESENTLICHE",
+        "title": "Das Event"
+      },
+      "when": {
+        "eyebrow": "02 · WANN",
+        "title": "Termine und Uhrzeit"
+      },
+      "where": {
+        "eyebrow": "03 · WO",
+        "title": "Ort"
+      },
+      "access": {
+        "eyebrow": "04 · ZUGANG & GENRE",
+        "title": "Preis und Kategorie"
+      },
+      "image": {
+        "eyebrow": "05 · BILD",
+        "title": "Flyer",
+        "description": "Lade den Event-Flyer hoch. JPG und PNG, bis zu 10 Dateien."
+      }
+    },
+    "fields": {
+      "title": "Event-Titel",
+      "titlePlaceholder": "Cumbia Night · Tango Live · Latino-Festival",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Erzähl uns, was bei der Show passiert: Bands, DJs, Format...",
+      "artist": "Verknüpfter Künstler",
+      "noArtistLinked": "— Kein Künstler verknüpft —",
+      "dates": "Termine",
+      "dateNth": "Termin {n}",
+      "dateRequired": "Füg mindestens einen Termin hinzu.",
+      "removeDate": "Diesen Termin entfernen",
+      "addDate": "+ Termin hinzufügen",
+      "time": "Anfangszeit",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "Stadt",
+      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityRequired": "Stadt ist erforderlich.",
+      "address": "Adresse",
+      "addressHelper": "So genau wie möglich — wir nutzen sie für Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Veranstalter",
+      "organizerPlaceholder": "Name des Kollektivs / Promoters / veranstaltenden Künstlers",
+      "price": "Preis oder Zugangsmodus",
+      "pricePlaceholder": "€10 · Spendenbasiert · Eintritt frei",
+      "genre": "Genre",
+      "noGenre": "— Kein Genre —"
+    }
+  },
   "artists": {
     "title": "Künstler",
     "search": "Künstler suchen...",

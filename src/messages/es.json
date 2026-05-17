@@ -108,6 +108,66 @@
     "noDate": "Sin fecha",
     "musicLabel": "Música latina en vivo · Alemania"
   },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NUEVO EVENTO",
+      "title": "¿Qué vas a presentar?"
+    },
+    "edit": {
+      "eyebrow": "EDITAR EVENTO"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · LO BÁSICO",
+        "title": "El evento"
+      },
+      "when": {
+        "eyebrow": "02 · CUÁNDO",
+        "title": "Fechas y horario"
+      },
+      "where": {
+        "eyebrow": "03 · DÓNDE",
+        "title": "Ubicación"
+      },
+      "access": {
+        "eyebrow": "04 · ACCESO Y GÉNERO",
+        "title": "Precio y categoría"
+      },
+      "image": {
+        "eyebrow": "05 · IMAGEN",
+        "title": "Flyer",
+        "description": "Subí el flyer del evento. Soportamos JPG y PNG hasta 10 archivos."
+      }
+    },
+    "fields": {
+      "title": "Título del evento",
+      "titlePlaceholder": "Cumbia Night · Tango en vivo · Festival latino",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Contanos qué pasa en el show: bandas, DJs, formato...",
+      "artist": "Artista vinculado",
+      "noArtistLinked": "— Sin artista vinculado —",
+      "dates": "Fechas",
+      "dateNth": "Fecha {n}",
+      "dateRequired": "Agregá al menos una fecha.",
+      "removeDate": "Quitar esta fecha",
+      "addDate": "+ Agregar fecha",
+      "time": "Hora de inicio",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "Ciudad",
+      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityRequired": "Indicá la ciudad.",
+      "address": "Dirección",
+      "addressHelper": "Lo más exacta posible — la usamos para Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Organizador",
+      "organizerPlaceholder": "Nombre del colectivo / promotor / artista que organiza",
+      "price": "Precio o modo",
+      "pricePlaceholder": "€10 · Aporte voluntario · Entrada libre",
+      "genre": "Género",
+      "noGenre": "— Sin género —"
+    }
+  },
   "artists": {
     "title": "Artistas",
     "search": "Buscar artista...",

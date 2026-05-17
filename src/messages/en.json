@@ -108,6 +108,66 @@
     "noDate": "No date",
     "musicLabel": "Live Latin Music · Germany"
   },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NEW EVENT",
+      "title": "What are you putting on?"
+    },
+    "edit": {
+      "eyebrow": "EDIT EVENT"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · THE BASICS",
+        "title": "The event"
+      },
+      "when": {
+        "eyebrow": "02 · WHEN",
+        "title": "Dates and time"
+      },
+      "where": {
+        "eyebrow": "03 · WHERE",
+        "title": "Location"
+      },
+      "access": {
+        "eyebrow": "04 · ACCESS & GENRE",
+        "title": "Price and category"
+      },
+      "image": {
+        "eyebrow": "05 · IMAGE",
+        "title": "Flyer",
+        "description": "Upload the event flyer. JPG and PNG, up to 10 files."
+      }
+    },
+    "fields": {
+      "title": "Event title",
+      "titlePlaceholder": "Cumbia Night · Tango Live · Latino Festival",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell us what happens at the show: bands, DJs, format...",
+      "artist": "Linked artist",
+      "noArtistLinked": "— No linked artist —",
+      "dates": "Dates",
+      "dateNth": "Date {n}",
+      "dateRequired": "Add at least one date.",
+      "removeDate": "Remove this date",
+      "addDate": "+ Add date",
+      "time": "Start time",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "City",
+      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityRequired": "City is required.",
+      "address": "Address",
+      "addressHelper": "As exact as possible — used for Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Organizer",
+      "organizerPlaceholder": "Name of the collective / promoter / organizing artist",
+      "price": "Price or access mode",
+      "pricePlaceholder": "€10 · Donation-based · Free entry",
+      "genre": "Genre",
+      "noGenre": "— No genre —"
+    }
+  },
   "artists": {
     "title": "Artists",
     "search": "Search artist...",
