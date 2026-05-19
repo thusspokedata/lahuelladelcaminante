@@ -1,33 +1,49 @@
 "use client"
 
+/**
+ * ApplyForm — form público de aplicación a creator.
+ *
+ * Rediseñado al sistema visual usando los primitives nuevos
+ * (`FormField`, `FormInput`, `FormTextarea`, `FormSection`). Lógica
+ * de submit intacta: fetch a `/api/apply`, manejo de error, congela
+ * `submittedAt` al éxito y rendea `ApplySubmittedScreen` con timeline.
+ *
+ * **Sin cambios en campos** (decisión cerrada del spec): solo restyling
+ * de los 3 campos existentes (name, email, message). Si en el futuro
+ * se agregan campos (projectName, origin, etc.), entran en otra PR con
+ * cambio de schema/API/admin.
+ *
+ * Mantiene `useState` en lugar de migrar a react-hook-form — son 3
+ * campos simples y la lógica del submit ya está consolidada. No vale
+ * la pena el churn para esta PR (scope: presentación).
+ */
+
 import { useState } from "react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import FormField from "@/components/forms/FormField"
+import FormInput from "@/components/forms/FormInput"
+import FormTextarea from "@/components/forms/FormTextarea"
+import FormSection from "@/components/forms/FormSection"
 import ApplySubmittedScreen from "./ApplySubmittedScreen"
 
 export function ApplyForm() {
-  const t = useTranslations("apply")
+  const tForm = useTranslations("apply.form")
   const tCommon = useTranslations("common")
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
-  // `submittedAt` reemplaza al booleano `sent` previo: además de servir
-  // como flag de "ya se envió" (truthy / falsy), guarda el instante
-  // exacto del submit para mostrarlo en el primer paso del timeline
-  // del rediseño (`ApplySubmittedScreen`). El handoff v2 §1.3 pide ese
-  // timestamp explícito en el paso "Recibida".
+  // `submittedAt` reemplaza al booleano `sent` previo (cambiado en PR #22):
+  // además de flag de "ya se envió" (truthy/falsy), guarda el instante
+  // exacto del submit para mostrarlo en el primer paso del timeline.
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
@@ -35,14 +51,17 @@ export function ApplyForm() {
         body: JSON.stringify({ name, email, message }),
       })
       if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error ?? "Error")
+        const data = await res.json().catch(() => null)
+        // Si el server devuelve `error` (típicamente "Validation error" del
+        // route handler), preferirlo sobre el genérico. Sin esto el user
+        // ve "error inesperado" cuando hay info concreta disponible.
+        throw new Error(data?.error ?? tCommon("error"))
       }
-      // `new Date()` acá (no en el render condicional) para que el
-      // timestamp se congele al momento del éxito, no en cada rerender.
+      // `new Date()` acá (no en el render condicional) para congelar el
+      // timestamp al momento del éxito, no en cada rerender.
       setSubmittedAt(new Date())
-    } catch {
-      setError(tCommon("error"))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : tCommon("error"))
     } finally {
       setLoading(false)
     }
@@ -53,57 +72,68 @@ export function ApplyForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor="name">{t("nameLabel")}</Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t("namePlaceholder")}
-          required
-          minLength={2}
-        />
-      </div>
+    <form
+      method="post"
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2xl"
+      noValidate
+    >
+      <FormSection
+        eyebrow={tForm("section.eyebrow")}
+        title={tForm("section.title")}
+        description={tForm("section.description")}
+      >
+        <FormField label={tForm("name")} name="apply-name" required>
+          <FormInput
+            id="apply-name"
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={tForm("namePlaceholder")}
+            required
+            minLength={2}
+            autoComplete="name"
+          />
+        </FormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">{t("emailLabel")}</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t("emailPlaceholder")}
-          required
-        />
-      </div>
+        <FormField label={tForm("email")} name="apply-email" required>
+          <FormInput
+            id="apply-email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={tForm("emailPlaceholder")}
+            required
+            autoComplete="email"
+          />
+        </FormField>
 
-      <div className="space-y-2">
-        <Label htmlFor="message">{t("messageLabel")}</Label>
-        <Textarea
-          id="message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={t("messagePlaceholder")}
-          rows={5}
+        <FormField
+          label={tForm("message")}
+          name="apply-message"
           required
-          minLength={10}
-          className="resize-none"
-        />
-        <p className="text-xs text-muted-foreground">{t("messageHint")}</p>
-      </div>
-
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+          helper={tForm("messageHint")}
+        >
+          <FormTextarea
+            id="apply-message"
+            name="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={tForm("messagePlaceholder")}
+            rows={6}
+            required
+            minLength={10}
+          />
+        </FormField>
+      </FormSection>
 
       <Button
         type="submit"
-        size="lg"
         disabled={loading}
-        className="w-full font-bold rounded-full h-12 shadow-xl shadow-primary/30"
+        className="h-11 w-full bg-brand text-on-brand font-semibold hover:bg-brand-dim disabled:opacity-60"
       >
-        {loading ? tCommon("loading") : t("submit")}
+        {loading ? tForm("submitting") : tForm("submit")}
       </Button>
     </form>
   )

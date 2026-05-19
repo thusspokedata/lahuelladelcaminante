@@ -50,29 +50,27 @@
     }
   },
   "apply": {
-    "badge": "For artists & organizers",
-    "heroTitle": "Want to post",
-    "heroSubtitle": "your events?",
-    "heroDescription": "Fill out the form and we'll get back to you. Once approved, you can publish your shows directly on the platform.",
-    "whyLabel": "Why join",
-    "whyTitle": "The Latin scene in Germany is waiting for you",
-    "whyBody": "La Huella del Caminante is the go-to portal for Latin American music in Germany. Reach thousands of people looking for Latin events in Berlin, Munich, Hamburg and more.",
-    "feature1Title": "Post with dates and location",
-    "feature1Body": "Create events with multiple dates, exact address and a Google Maps link.",
-    "feature2Title": "Presence across Germany",
-    "feature2Body": "Your event visible to the Latin community in major German cities.",
-    "feature3Title": "Your artist profile",
-    "feature3Body": "Create your profile with photos, bio, genres and social media links.",
-    "formTitle": "Request access",
-    "formSubtitle": "We'll get back to you within 48 hours.",
-    "nameLabel": "Your name or artist name *",
-    "namePlaceholder": "E.g.: DJ Cumbia, Banda XYZ, María García",
-    "emailLabel": "Your email *",
-    "emailPlaceholder": "you@email.com",
-    "messageLabel": "Tell us about yourself and your events *",
-    "messagePlaceholder": "Who are you? What kind of events do you organize or where do you perform? The more you tell us, the better we can evaluate.",
-    "messageHint": "Minimum 10 characters.",
-    "submit": "Send request",
+    "metaTitle": "Apply as a creator",
+    "metaDescription": "Join La Huella del Caminante as a creator: apply, we review in 1-2 days, you publish your events.",
+    "eyebrow": "APPLY AS A CREATOR",
+    "title": "Tell us who you are.",
+    "body": "Applying is step two. We review your profile — usually 1-2 days. If everything checks out, your account is activated to publish events.",
+    "form": {
+      "section": {
+        "eyebrow": "YOUR APPLICATION",
+        "title": "About you",
+        "description": "Tell us who you are, what you do, what you're working on. The more you share, the better we can evaluate."
+      },
+      "name": "Your name or artist name",
+      "namePlaceholder": "DJ Cumbia · Banda XYZ · María García",
+      "email": "Your email",
+      "emailPlaceholder": "you@email.com",
+      "message": "Tell us about yourself and your events",
+      "messagePlaceholder": "Who are you? What kind of events do you organize or where do you perform?",
+      "messageHint": "Minimum 10 characters.",
+      "submit": "Send request →",
+      "submitting": "Sending..."
+    },
     "submitted": {
       "badge": "✓ REQUEST RECEIVED",
       "title": "We got your request, <accent>wanderer.</accent>",
@@ -109,6 +107,124 @@
     "dates": "Dates",
     "noDate": "No date",
     "musicLabel": "Live Latin Music · Germany"
+  },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NEW EVENT",
+      "title": "What are you putting on?"
+    },
+    "edit": {
+      "eyebrow": "EDIT EVENT"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · THE BASICS",
+        "title": "The event"
+      },
+      "when": {
+        "eyebrow": "02 · WHEN",
+        "title": "Dates and time"
+      },
+      "where": {
+        "eyebrow": "03 · WHERE",
+        "title": "Location"
+      },
+      "access": {
+        "eyebrow": "04 · ACCESS & GENRE",
+        "title": "Price and category"
+      },
+      "image": {
+        "eyebrow": "05 · IMAGE",
+        "title": "Flyer",
+        "description": "Upload the event flyer. JPG and PNG, up to 10 files."
+      }
+    },
+    "fields": {
+      "title": "Event title",
+      "titlePlaceholder": "Cumbia Night · Tango Live · Latino Festival",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell us what happens at the show: bands, DJs, format...",
+      "artist": "Linked artist",
+      "noArtistLinked": "— No linked artist —",
+      "dates": "Dates",
+      "dateNth": "Date {n}",
+      "dateRequired": "Add at least one date.",
+      "removeDate": "Remove this date",
+      "addDate": "+ Add date",
+      "time": "Start time",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "City",
+      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityRequired": "City is required.",
+      "address": "Address",
+      "addressHelper": "As exact as possible — used for Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Organizer",
+      "organizerPlaceholder": "Name of the collective / promoter / organizing artist",
+      "price": "Price or access mode",
+      "pricePlaceholder": "€10 · Donation-based · Free entry",
+      "genre": "Genre",
+      "noGenre": "— No genre —",
+      "genreOther": "Other"
+    }
+  },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NEW ARTIST",
+      "title": "Who are you putting on?"
+    },
+    "edit": {
+      "eyebrow": "EDIT ARTIST"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTITY",
+        "title": "Who they are"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "The story",
+        "description": "Tell it as if talking to a friend. What you don't write today, you write tomorrow."
+      },
+      "genres": {
+        "eyebrow": "03 · GENRES",
+        "title": "What they play"
+      },
+      "image": {
+        "eyebrow": "04 · IMAGE",
+        "title": "Photos",
+        "description": "Upload 1-3 strong photos. Aim for presence, not perfection."
+      },
+      "social": {
+        "eyebrow": "05 · LINKS",
+        "title": "Where to find them",
+        "description": "All optional. If they don't have an account on a network, leave it blank."
+      }
+    },
+    "fields": {
+      "name": "Artist name",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Origin",
+      "originPlaceholder": "Argentina · Mexico · Cuba · Brazil",
+      "bio": "Biography",
+      "bioPlaceholder": "What they do, where they played, who they look up to...",
+      "genres": "Genres",
+      "genresHelper": "Comma-separated.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/handle",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@channel",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@handle",
+        "website": "Website",
+        "websitePlaceholder": "https://yourdomain.com"
+      }
+    }
   },
   "artists": {
     "title": "Artists",
@@ -328,43 +444,13 @@
     "applicationsRejectedMsg": "Application rejected"
   },
   "forms": {
-    "titleField": "Title *",
-    "description": "Description",
-    "venue": "Venue *",
-    "city": "City *",
-    "address": "Address",
-    "artistField": "Artist",
-    "genre": "Genre",
-    "time": "Time",
-    "price": "Price",
-    "organizer": "Organizer",
-    "dates": "Dates *",
-    "images": "Images",
-    "addDate": "+ Add date",
-    "uploadPhotos": "↑ Upload photos (you can select multiple)",
-    "noArtistLinked": "— No artist linked —",
-    "noGenre": "— No genre —",
-    "noPhotos": "No photos yet.",
-    "nameField": "Name *",
-    "bio": "Biography",
-    "origin": "Origin",
-    "genres": "Genres (comma separated)",
-    "socialMedia": "Social media",
-    "photos": "Photos",
-    "newBadge": "New",
-    "noImages": "No images. You can upload one or more.",
-    "mapsHint": "A link to open in Google Maps will be shown.",
-    "titlePlaceholder": "E.g.: Tango Night in Berlin",
-    "venuePlaceholder": "E.g.: Tango Bar Loca",
-    "cityPlaceholder": "E.g.: Berlin",
-    "addressPlaceholder": "E.g.: Schlesische Str. 38, 10997 Berlin",
-    "titleRequired": "Title is required",
-    "venueRequired": "Venue is required",
-    "nameRequired": "Name is required",
-    "editArtist": "Edit Artist",
-    "createArtist": "Create Artist",
-    "editEvent": "Edit event",
-    "createEvent": "Create Event"
+    "required": "(required)",
+    "titleRequired": "Title is required.",
+    "venueRequired": "Venue is required.",
+    "nameRequired": "Name is required.",
+    "uploadPhotos": "↑ Upload images",
+    "noImages": "No images yet. Upload 1 or more.",
+    "newBadge": "New"
   },
   "footer": {
     "tagline": "Live Latin music in Germany. Made in Berlin.",

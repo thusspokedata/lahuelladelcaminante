@@ -4,6 +4,7 @@ import { requireActive, canEditEvent } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
 import { prisma } from "@/lib/prisma"
 import { EventForm } from "@/components/events/EventForm"
+import Eyebrow from "@/components/ui/Eyebrow"
 
 export default async function EditEventPage({
   params,
@@ -12,7 +13,7 @@ export default async function EditEventPage({
 }) {
   const { locale, id } = await params
   const { user } = await requireActive(locale)
-  const tForms = await getTranslations({ locale, namespace: "forms" })
+  const t = await getTranslations({ locale, namespace: "eventForm.edit" })
 
   const canEdit = await canEditEvent(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
@@ -51,11 +52,13 @@ export default async function EditEventPage({
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold text-primary uppercase tracking-[0.15em] mb-1">{tForms("editEvent")}</p>
-        <h1 className="text-3xl font-black">{event.title}</h1>
-      </div>
+    <div className="flex flex-col gap-xl">
+      <header className="flex flex-col gap-xs">
+        <Eyebrow accent="brand">{t("eyebrow")}</Eyebrow>
+        <h1 className="text-display-m font-display text-fg-primary leading-tight">
+          {event.title}
+        </h1>
+      </header>
       <EventForm
         eventId={id}
         defaultValues={defaultValues}

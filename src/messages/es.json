@@ -50,29 +50,27 @@
     }
   },
   "apply": {
-    "badge": "Para artistas y organizadores",
-    "heroTitle": "¿Querés subir",
-    "heroSubtitle": "tus eventos?",
-    "heroDescription": "Completá el formulario y nos ponemos en contacto. Una vez aprobado, podés publicar tus shows directamente en la plataforma.",
-    "whyLabel": "Por qué unirte",
-    "whyTitle": "La escena latina en Alemania te espera",
-    "whyBody": "La Huella del Caminante es el portal de referencia para la música latinoamericana en Alemania. Llegá a miles de personas que buscan eventos latinos en Berlín, Múnich, Hamburgo y más.",
-    "feature1Title": "Publicá con fechas y lugar",
-    "feature1Body": "Creá eventos con múltiples fechas, dirección exacta y link a Google Maps.",
-    "feature2Title": "Presencia en toda Alemania",
-    "feature2Body": "Tu evento visible para la comunidad latina en las principales ciudades alemanas.",
-    "feature3Title": "Tu perfil de artista",
-    "feature3Body": "Creá tu perfil con fotos, biografía, géneros y redes sociales.",
-    "formTitle": "Solicitar acceso",
-    "formSubtitle": "Te respondemos en menos de 48 horas.",
-    "nameLabel": "Tu nombre o nombre artístico *",
-    "namePlaceholder": "Ej: DJ Cumbia, Banda XYZ, María García",
-    "emailLabel": "Tu email *",
-    "emailPlaceholder": "tu@email.com",
-    "messageLabel": "Contanos sobre vos y tus eventos *",
-    "messagePlaceholder": "¿Quién sos? ¿Qué tipo de eventos organizás o en qué ciudad tocás? Cuanto más nos contés, mejor podemos evaluarlo.",
-    "messageHint": "Mínimo 10 caracteres.",
-    "submit": "Enviar solicitud",
+    "metaTitle": "Aplicar como creator",
+    "metaDescription": "Sumate como creator a La Huella del Caminante: aplicá, te revisamos en 1-2 días y publicás tus eventos.",
+    "eyebrow": "APLICAR COMO CREATOR",
+    "title": "Contanos quién sos.",
+    "body": "Aplicar es el segundo paso. Nosotros revisamos tu perfil — suele tomar 1-2 días. Si todo da, tu cuenta queda activa para publicar eventos.",
+    "form": {
+      "section": {
+        "eyebrow": "TU APLICACIÓN",
+        "title": "Sobre vos",
+        "description": "Contanos quién sos, qué hacés y en qué andás. Cuanto más nos cuentes, mejor podemos evaluar."
+      },
+      "name": "Tu nombre o nombre artístico",
+      "namePlaceholder": "DJ Cumbia · Banda XYZ · María García",
+      "email": "Tu email",
+      "emailPlaceholder": "vos@email.com",
+      "message": "Contanos sobre vos y tus eventos",
+      "messagePlaceholder": "¿Quién sos? ¿Qué tipo de eventos organizás o en qué ciudad tocás?",
+      "messageHint": "Mínimo 10 caracteres.",
+      "submit": "Enviar solicitud →",
+      "submitting": "Enviando..."
+    },
     "submitted": {
       "badge": "✓ SOLICITUD RECIBIDA",
       "title": "Recibimos tu solicitud, <accent>caminante.</accent>",
@@ -109,6 +107,124 @@
     "dates": "Fechas",
     "noDate": "Sin fecha",
     "musicLabel": "Música latina en vivo · Alemania"
+  },
+  "eventForm": {
+    "create": {
+      "eyebrow": "NUEVO EVENTO",
+      "title": "¿Qué vas a presentar?"
+    },
+    "edit": {
+      "eyebrow": "EDITAR EVENTO"
+    },
+    "sections": {
+      "basics": {
+        "eyebrow": "01 · LO BÁSICO",
+        "title": "El evento"
+      },
+      "when": {
+        "eyebrow": "02 · CUÁNDO",
+        "title": "Fechas y horario"
+      },
+      "where": {
+        "eyebrow": "03 · DÓNDE",
+        "title": "Ubicación"
+      },
+      "access": {
+        "eyebrow": "04 · ACCESO Y GÉNERO",
+        "title": "Precio y categoría"
+      },
+      "image": {
+        "eyebrow": "05 · IMAGEN",
+        "title": "Flyer",
+        "description": "Subí el flyer del evento. Soportamos JPG y PNG hasta 10 archivos."
+      }
+    },
+    "fields": {
+      "title": "Título del evento",
+      "titlePlaceholder": "Cumbia Night · Tango en vivo · Festival latino",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Contanos qué pasa en el show: bandas, DJs, formato...",
+      "artist": "Artista vinculado",
+      "noArtistLinked": "— Sin artista vinculado —",
+      "dates": "Fechas",
+      "dateNth": "Fecha {n}",
+      "dateRequired": "Agregá al menos una fecha.",
+      "removeDate": "Quitar esta fecha",
+      "addDate": "+ Agregar fecha",
+      "time": "Hora de inicio",
+      "venue": "Venue",
+      "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
+      "city": "Ciudad",
+      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "cityRequired": "Indicá la ciudad.",
+      "address": "Dirección",
+      "addressHelper": "Lo más exacta posible — la usamos para Google Maps.",
+      "addressPlaceholder": "Schlesische Str. 38, 10997 Berlin",
+      "organizer": "Organizador",
+      "organizerPlaceholder": "Nombre del colectivo / promotor / artista que organiza",
+      "price": "Precio o modo",
+      "pricePlaceholder": "€10 · Aporte voluntario · Entrada libre",
+      "genre": "Género",
+      "noGenre": "— Sin género —",
+      "genreOther": "Otros"
+    }
+  },
+  "artistForm": {
+    "create": {
+      "eyebrow": "NUEVO ARTISTA",
+      "title": "¿A quién vas a presentar?"
+    },
+    "edit": {
+      "eyebrow": "EDITAR ARTISTA"
+    },
+    "sections": {
+      "identity": {
+        "eyebrow": "01 · IDENTIDAD",
+        "title": "Quién es"
+      },
+      "bio": {
+        "eyebrow": "02 · BIO",
+        "title": "La historia",
+        "description": "Contala como si estuvieras hablando con un amigo. Lo que no escribís hoy, lo escribís mañana."
+      },
+      "genres": {
+        "eyebrow": "03 · GÉNEROS",
+        "title": "Qué hace"
+      },
+      "image": {
+        "eyebrow": "04 · IMAGEN",
+        "title": "Fotos",
+        "description": "Subí 1-3 fotos buenas. Apuestan a presencia, no a perfección."
+      },
+      "social": {
+        "eyebrow": "05 · REDES",
+        "title": "Dónde encontrarlo",
+        "description": "Todas opcionales. Si no tiene cuenta en alguna red, dejá el campo vacío."
+      }
+    },
+    "fields": {
+      "name": "Nombre artístico",
+      "namePlaceholder": "Karina Beorlegui · Trío La Cumbiamba",
+      "origin": "Origen",
+      "originPlaceholder": "Argentina · México · Cuba · Brasil",
+      "bio": "Biografía",
+      "bioPlaceholder": "Qué hace, dónde tocó, qué referentes tiene...",
+      "genres": "Géneros",
+      "genresHelper": "Separados por coma.",
+      "genresPlaceholder": "Tango, Milonga, Folklore",
+      "social": {
+        "instagram": "Instagram",
+        "instagramPlaceholder": "https://instagram.com/usuario",
+        "spotify": "Spotify",
+        "spotifyPlaceholder": "https://open.spotify.com/artist/...",
+        "youtube": "YouTube",
+        "youtubePlaceholder": "https://youtube.com/@canal",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "https://tiktok.com/@usuario",
+        "website": "Sitio web",
+        "websitePlaceholder": "https://tudominio.com"
+      }
+    }
   },
   "artists": {
     "title": "Artistas",
@@ -328,43 +444,13 @@
     "applicationsRejectedMsg": "Solicitud rechazada"
   },
   "forms": {
-    "titleField": "Título *",
-    "description": "Descripción",
-    "venue": "Venue / Lugar *",
-    "city": "Ciudad *",
-    "address": "Dirección",
-    "artistField": "Artista",
-    "genre": "Género",
-    "time": "Hora",
-    "price": "Precio",
-    "organizer": "Organizador",
-    "dates": "Fechas *",
-    "images": "Imágenes",
-    "addDate": "+ Agregar fecha",
-    "uploadPhotos": "↑ Subir fotos (podés seleccionar varias)",
-    "noArtistLinked": "— Sin artista vinculado —",
-    "noGenre": "— Sin género —",
-    "noPhotos": "Sin fotos aún.",
-    "nameField": "Nombre *",
-    "bio": "Biografía",
-    "origin": "Origen",
-    "genres": "Géneros (separados por coma)",
-    "socialMedia": "Redes sociales",
-    "photos": "Fotos",
-    "newBadge": "Nueva",
-    "noImages": "Sin imágenes. Puedes subir una o más.",
-    "mapsHint": "Se mostrará un enlace para abrir en Google Maps.",
-    "titlePlaceholder": "Ej: Noche de Tango en Berlín",
-    "venuePlaceholder": "Ej: Tango Bar Loca",
-    "cityPlaceholder": "Ej: Berlin",
-    "addressPlaceholder": "Ej: Schlesische Str. 38, 10997 Berlin",
-    "titleRequired": "El título es obligatorio",
-    "venueRequired": "El venue es obligatorio",
-    "nameRequired": "El nombre es obligatorio",
-    "editArtist": "Editar Artista",
-    "createArtist": "Crear Artista",
-    "editEvent": "Editar evento",
-    "createEvent": "Crear Evento"
+    "required": "(requerido)",
+    "titleRequired": "El título es obligatorio.",
+    "venueRequired": "El venue es obligatorio.",
+    "nameRequired": "El nombre es obligatorio.",
+    "uploadPhotos": "↑ Subir imágenes",
+    "noImages": "Todavía no hay imágenes. Subí 1 o más.",
+    "newBadge": "Nueva"
   },
   "footer": {
     "tagline": "Música latina viva en Alemania. Hecha en Berlín.",

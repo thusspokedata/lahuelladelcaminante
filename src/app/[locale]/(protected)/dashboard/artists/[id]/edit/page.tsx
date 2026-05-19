@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { requireActive, canEditArtist } from "@/services/auth"
 import { prisma } from "@/lib/prisma"
 import { ArtistForm } from "@/components/artists/ArtistForm"
+import Eyebrow from "@/components/ui/Eyebrow"
 
 export default async function EditArtistPage({
   params,
@@ -11,7 +12,7 @@ export default async function EditArtistPage({
 }) {
   const { locale, id } = await params
   await requireActive(locale)
-  const tForms = await getTranslations({ locale, namespace: "forms" })
+  const t = await getTranslations({ locale, namespace: "artistForm.edit" })
 
   const canEdit = await canEditArtist(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
@@ -43,8 +44,13 @@ export default async function EditArtistPage({
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{tForms("editArtist")}</h1>
+    <div className="flex flex-col gap-xl">
+      <header className="flex flex-col gap-xs">
+        <Eyebrow accent="brand">{t("eyebrow")}</Eyebrow>
+        <h1 className="text-display-m font-display text-fg-primary leading-tight">
+          {artist.name}
+        </h1>
+      </header>
       <ArtistForm artist={artist} artistId={id} />
     </div>
   )
