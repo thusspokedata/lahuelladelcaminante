@@ -26,7 +26,7 @@ la página raíz `/` y para rutas no-localizadas.
 
 Los binarios se generan a partir de **un único SVG fuente**:
 
-```
+```text
 scripts/favicon-source.svg
 ```
 
