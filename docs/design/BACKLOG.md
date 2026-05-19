@@ -171,6 +171,50 @@ Modelo: necesita una entidad `CreatorProfile` con campos como `bio`,
 el `User` + `UserProfile.status`. Hay que agregar el modelo y un form
 en el dashboard para que el creator complete su perfil.
 
+### Eventos favoritos (guardar/desguardar) — prioridad MEDIA
+
+**Origen:** feedback del dev (2026-05-20).
+
+El user logueado debería poder marcar un evento como favorito y volver
+a encontrarlo más tarde sin tener que rebuscar en la agenda. Caso de
+uso: encontrás un show interesante navegando pero no podés decidir hoy
+si vas, lo guardás y lo revisitás antes de la fecha.
+
+UX mínimo:
+- Botón ♡ (corazón / bookmark / "Guardar", elegir lenguaje) en cada
+  `EventCard` (listados, home, /events) y en `/events/[slug]`. Toggle
+  on/off según estado actual.
+- Si no está logueado, click redirige a `/sign-in?next=/events/<slug>`.
+- Página `/dashboard/saved` (o `/favoritos` público según rol) listando
+  los eventos guardados, ordenados por próxima fecha.
+- Counter opcional en el header del dashboard ("3 guardados").
+
+Modelo:
+```prisma
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  @@unique([userId, eventId])
+  @@index([userId])
+}
+```
+
+Endpoints:
+- `POST /api/favorites/:eventId` — toggle (crea si no existe, borra si
+  existe). Idempotente.
+- `GET /api/favorites` — lista del user actual (consumido por
+  `/dashboard/saved`).
+
+Consideración: el flow PENDING actual (mientras el item de "separar
+signup público" no esté implementado) bloquea esto si el user no puede
+acceder al panel. Por eso: el botón ♡ debería funcionar para CUALQUIER
+user logueado, independiente de su `UserProfile.status`. Es feature de
+público (rol `user`), no de creator.
+
 ### Naming: "artista" vs "creator" en dashboard de onboarding — prioridad BAJA (cosmético)
 
 **Origen:** validación del deploy de PR #23 (2026-05-19).
