@@ -87,6 +87,111 @@ cuenta, el match se rompe silenciosamente.
 - Cambiar el hook y `/api/apply/[id]` para preferir `userId` cuando
   esté presente.
 
+## Operacional / observabilidad
+
+### Verificar entrega del email "Nueva solicitud" al admin — prioridad ALTA (sanity check)
+
+**Origen:** primer deploy a producción de PR #23 (2026-05-19).
+
+Cuando alguien crea una `Application` via `/apply`, el endpoint dispara
+`triggerApplicationNotification(...)` que manda un email a
+`info@lahuelladelcaminante.de` (hardcoded en `src/lib/trigger.ts:254`).
+Sin esa notificación, el admin no se entera de que hay applications
+pendientes — y "ni se fija en el admin panel". El flow está implementado
+pero al testear post-deploy el dev (admin) no recibió el email, y
+quedó pendiente verificar si:
+
+- El email salió de Resend (chequear dashboard Resend para ver delivery
+  log).
+- Llegó pero quedó en spam (primera vez que un dominio nuevo manda).
+- El hardcode `info@lahuelladelcaminante.de` es la inbox correcta o
+  conviene parametrizar via `CONTACT_RECIPIENT_EMAIL` (var ya existente
+  con default a `info@...`).
+
+Si todo OK, queda como sanity check resuelto. Si falla algo, fix:
+- Refactor `triggerApplicationNotification` para leer
+  `env.CONTACT_RECIPIENT_EMAIL` en lugar del hardcode.
+- O agregar var nueva `ADMIN_NOTIFICATION_EMAIL` (dedicada vs reusar la
+  de `/contact`). Decisión del dev.
+
+## Producto y flow de cuenta
+
+### Separar signup público del flujo creator — prioridad ALTA (UX)
+
+**Origen:** validación del deploy de PR #23 (2026-05-19).
+
+Hoy: cualquier signup nace `PENDING` y requiere aprobación admin
+**antes** de poder hacer nada (incluso publicar). Es overkill —
+significa que un usuario que solo quiere navegar el sitio igual tiene
+que esperar a un humano.
+
+Propuesto:
+- **Signup público es inmediato**: cualquier persona se registra y la
+  cuenta nace `ACTIVE` con `role: user`. Acceso normal al sitio.
+- **Solo quien quiere publicar eventos** aplica como creator
+  (`/apply`) — eso sí requiere review admin antes de que el `role`
+  suba a `creator`.
+
+Cambios necesarios (no triviales):
+- `databaseHooks.user.create.after` en `src/lib/auth.ts`: cambiar
+  default de `PENDING` a `ACTIVE`. Mantener la excepción "si hay
+  Application APPROVED previa, también activar role creator".
+- `requireActive` y los redirects ya no aplican como hoy — un user
+  ACTIVE sin role creator que entra a `/dashboard` debería ver una
+  pantalla "tu cuenta no es creator, aplicá acá" (nueva), no
+  `/user-pending`.
+- `/user-pending` se reusa solo para el caso `applied as creator y
+  todavía no aprobado` (vs hoy que dispara para cualquier signup).
+- Copy de las pantallas de auth (sign-in/sign-up) revisar — hoy hablan
+  del flujo "te revisamos 1-2 días" como si fuera universal.
+
+Impacto en flujo de hoy: las 4 applications existentes con status
+APPROVED siguen funcionando igual. Las cuentas existentes con
+`UserProfile.status = PENDING` (creadas por hook viejo) habría que
+decidir si bumpear masivamente a ACTIVE o dejarlas.
+
+### Directorio público de creators (`/creators`) — prioridad MEDIA
+
+**Origen:** validación del deploy de PR #23 (2026-05-19).
+
+Hoy no hay forma pública de descubrir quién organiza eventos. Caso de
+uso concreto: un artista latinoamericano que viene a Berlín quiere
+contactar a un creator local para tocar — no tiene cómo encontrarlo.
+
+- Página `/creators` (también `/promotores` o el nombre que decida el
+  dev) listando todos los users con `role: creator` activos.
+- Cada item: nombre del creator + ciudad principal + eventos publicados
+  recientes + medio de contacto (Instagram / email / contact form
+  específico).
+- Eventualmente: filtros por ciudad (Berlín / Múnich / Hamburgo) y por
+  género de eventos que organiza.
+
+Modelo: necesita una entidad `CreatorProfile` con campos como `bio`,
+`city`, `socialMedia`, `contactEmail`, etc. Hoy el creator solo tiene
+el `User` + `UserProfile.status`. Hay que agregar el modelo y un form
+en el dashboard para que el creator complete su perfil.
+
+### Naming: "artista" vs "creator" en dashboard de onboarding — prioridad BAJA (cosmético)
+
+**Origen:** validación del deploy de PR #23 (2026-05-19).
+
+El dashboard onboarding (`/dashboard` post-aprobación) muestra los 3
+pasos:
+
+1. "Crear tu perfil de artista" ← **wrong**, debería ser "perfil de
+   creator" (o "perfil de organizador" / "perfil de promotor", según
+   la copy que prefiera el dev).
+2. "Publicá tu primer evento" ← OK.
+3. "Compartí tu link" ← OK.
+
+El **artista es una entidad separada** (lo que vive en `/artists` y
+gestiona el creator desde su panel). El **creator de eventos** es la
+persona que se registra, aplica y publica — y ese es el perfil que el
+paso 01 debería referir.
+
+Cambio: editar copy del paso 01 del onboarding (y cualquier lugar del
+dashboard que confunda los dos términos).
+
 ## Resueltos
 
 ### ~~Rate limit IP-based para `/api/contact` — prioridad MEDIA~~
