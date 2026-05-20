@@ -403,12 +403,19 @@ export async function triggerSignupAdminNotification(payload: {
   createdAt: Date
 }) {
   const locale = normalizeEmailLocale(payload.locale)
-  // Defensa en profundidad: colapsar CRLF antes de que `name` toque el
-  // `Subject:` MIME header (mismo tratamiento que triggerContactNotification).
+  // Defensa en profundidad: colapsar CRLF antes de que `name` o `email`
+  // toquen el `Subject:` MIME header (mismo tratamiento que
+  // `triggerContactNotification`). El email se usa como fallback del
+  // subject cuando no hay nombre — Better Auth ya valida su formato,
+  // pero lo saneamos igual por consistencia con `safeSubjectName`.
   const safeSubjectName = payload.name
     .replace(/[\r\n]+/g, " ")
     .trim()
     .slice(0, 100)
+  const safeSubjectEmail = payload.email
+    .replace(/[\r\n]+/g, " ")
+    .trim()
+    .slice(0, 120)
   const fecha = new Intl.DateTimeFormat("es-ES", {
     dateStyle: "long",
     timeStyle: "short",
@@ -478,7 +485,7 @@ export async function triggerSignupAdminNotification(payload: {
 
   await sendEmail(
     env.ADMIN_NOTIFICATION_EMAIL,
-    `Nuevo registro en La Huella: ${safeSubjectName || payload.email}`,
+    `Nuevo registro en La Huella: ${safeSubjectName || safeSubjectEmail}`,
     html
   )
 }
