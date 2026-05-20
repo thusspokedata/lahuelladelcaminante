@@ -8,14 +8,12 @@
  * eyebrow dorado + h1 cálido + fecha de aplicación visible + escape
  * hatch si pasaron más de 3 días.
  *
- * FLUJO QUE DISPARA PENDING (activo desde PR #23 backend hardening):
- * El hook `databaseHooks.user.create.after` en `src/lib/auth.ts` escribe
- * `status: PENDING` por default para toda cuenta nueva (email/password
- * y Google OAuth). Excepciones: cuenta con Application APPROVED previa
- * (sign-up post-aprobación → ACTIVE + creator) o `user.role === "admin"`
- * (seed manual → ACTIVE). Cuando admin aprueba una Application, el
- * endpoint `/api/apply/[id]` PATCH bumpea el User asociado a ACTIVE +
- * creator, destrabando el panel.
+ * CUÁNDO SE LLEGA ACÁ: desde el signup público (PR #29) toda cuenta
+ * nueva nace con `UserProfile.status: ACTIVE` — ninguna nace `PENDING`.
+ * Por eso esta pantalla es hoy un caso de borde: solo se alcanza si un
+ * admin pone manualmente el status de una cuenta en `PENDING` desde el
+ * panel de usuarios. `requireActive` (`src/services/auth.ts`) sigue
+ * cubriendo ese caso y redirige acá.
  *
  * Application matching: `Application` no tiene FK con `User`. Se
  * matchea por email (mismo pattern que el hook). Si no hay match
