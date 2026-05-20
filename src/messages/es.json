@@ -307,16 +307,16 @@
     },
     "welcome": {
       "eyebrow": "Te damos la bienvenida",
-      "title": "Tres pasos para que tu música aparezca.",
+      "title": "Tres pasos para publicar tu primer evento.",
       "body": "Tu cuenta fue aprobada — qué bueno tenerte en la huella. Te acompañamos hasta publicar tu primer evento."
     },
     "steps": {
       "pending": "Pendiente",
       "done": "Hecho",
       "profile": {
-        "title": "Creá tu perfil de artista",
-        "body": "Foto, biografía, links de Instagram, Spotify. Es la página que aparece cuando alguien hace clic en tu evento.",
-        "cta": "Crear perfil"
+        "title": "Creá tu primer artista",
+        "body": "El artista es el músico o banda que presentás — foto, bio, links a Instagram y Spotify. Es la ficha que se abre cuando alguien toca tu evento.",
+        "cta": "Crear artista"
       },
       "event": {
         "title": "Publicá tu primer evento",
