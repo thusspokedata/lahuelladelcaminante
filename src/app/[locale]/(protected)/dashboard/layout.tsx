@@ -2,13 +2,23 @@
  * Layout del dashboard del creator (y admin que tenga contenido propio).
  * Envuelve todo `/dashboard/**` con `DashboardShell` (sidebar desktop +
  * tab bar mobile). El check de auth ya lo hace `(protected)/layout.tsx`
- * arriba; acá solo necesitamos resolver el rol del user para pintar el
- * sidebar con el accent correcto.
+ * arriba; acá resolvemos el rol para decidir qué renderizar.
+ *
+ * Modelo de cuenta (`feat/public-signup-creator-flow`): un `role: user`
+ * autenticado es legítimo — navega el sitio público — pero NO accede al
+ * panel creator. Cuando intenta entrar a `/dashboard/**`, en lugar de un
+ * redirect abrupto ve la pantalla intermedia `CreatorGate` (con 3
+ * sub-estados según su `Application`: nunca aplicó / esperando / rechazado).
+ *
+ * `CreatorGate` se renderiza acá en el LAYOUT — no en `page.tsx` — para
+ * que cubra todo `/dashboard/**` (events, artists, profile, create…) con
+ * un solo punto de decisión. Un `user` no-creator que escriba a mano
+ * `/dashboard/events/create` ve el gate, no el shell de creator.
  */
 
-import { redirect } from "next/navigation"
 import { requireActive, isCreatorOrAdmin } from "@/services/auth"
 import DashboardShell from "@/components/dashboard/DashboardShell"
+import CreatorGate from "@/components/dashboard/CreatorGate"
 
 export default async function DashboardLayout({
   children,
@@ -20,14 +30,15 @@ export default async function DashboardLayout({
   const { locale } = await params
   const { user } = await requireActive(locale)
 
-  // Guard de rol: el dashboard está pensado para creator/admin. Un user
-  // común autenticado (role `user`) no debería ver el shell de creator
-  // ni las pantallas que asumen capacidad de crear eventos/artistas.
-  // Redirige a la home pública (la app no tiene una landing específica
-  // para `user` regular hoy). Centralizar el check acá evita repetirlo
-  // en cada page.
+  // Un `role: user` no es creator todavía → pantalla intermedia en vez
+  // del shell. Al no devolver `children`, los `page.tsx` de las
+  // sub-rutas ni siquiera se invocan (RSC los construye lazy como prop):
+  // su `requireRole("creator")` y sus fetches no corren. Por eso un user
+  // no-creator en `/dashboard/events/create` ve el gate sin loop ni
+  // doble-redirect. Invariante a preservar: este branch NUNCA debe
+  // renderizar `children`.
   if (!isCreatorOrAdmin(user.role)) {
-    redirect(`/${locale}`)
+    return <CreatorGate locale={locale} userEmail={user.email} />
   }
 
   // El dashboard de `/dashboard/**` es siempre creator-themed (fucsia +

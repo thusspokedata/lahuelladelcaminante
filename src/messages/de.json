@@ -551,7 +551,7 @@
       "heroAriaLabel": "Manifest und Agenda",
       "eyebrow": "WILLKOMMEN ZURÜCK",
       "title": "Melde dich an.",
-      "subtitle": "Nur zum Stöbern hier? Du brauchst kein Konto, um Shows zu sehen. Das hier ist für Künstler und Veranstalter.",
+      "subtitle": "Du brauchst kein Konto, um Shows zu sehen. Melde dich an, um zu deinem Konto zurückzukehren.",
       "continueWith": "Mit {provider} fortfahren",
       "orEmail": "ODER MIT E-MAIL",
       "emailLabel": "E-Mail",
@@ -561,7 +561,7 @@
       "forgot": "Passwort vergessen?",
       "submit": "Anmelden →",
       "submitting": "Anmeldung läuft...",
-      "footer": "Zum ersten Mal hier? <createAccount>Konto erstellen</createAccount> oder <applyAsArtist>als Künstler bewerben →</applyAsArtist>",
+      "footer": "Zum ersten Mal hier? <createAccount>Konto erstellen</createAccount> oder <applyAsArtist>als Creator bewerben →</applyAsArtist>",
       "errors": {
         "credentials": "E-Mail oder Passwort falsch.",
         "email_required": "E-Mail ist erforderlich.",
@@ -584,7 +584,7 @@
       "heroAriaLabel": "Schritte des Ablaufs",
       "eyebrow": "KONTO ERSTELLEN",
       "title": "Fang an zu <accent>veröffentlichen.</accent>",
-      "subtitle": "Konto erstellen ist der erste Schritt. Dann bewirbst du dich als Creator und wir prüfen dein Profil — meistens 1-2 Tage.",
+      "subtitle": "Ein Konto zu erstellen ist kostenlos und sofort. Wenn du später Events veröffentlichen willst, bewirbst du dich als Creator — das prüfen wir, meistens 1-2 Tage.",
       "continueWith": "Mit {provider} fortfahren",
       "orEmail": "ODER MIT E-MAIL",
       "nameLabel": "Name",
@@ -611,7 +611,7 @@
         "generic": "Wir konnten dein Konto nicht erstellen. Versuche es erneut."
       },
       "hero": {
-        "eyebrow": "DREI SCHRITTE · ANDERTHALB TAGE",
+        "eyebrow": "DREI SCHRITTE ZUM VERÖFFENTLICHEN",
         "title": "Vom neuen Konto zum Live-Event <accent>in Tagen</accent>.",
         "step1Title": "Konto erstellen",
         "step1Time": "Jetzt sofort · 1 Min.",
@@ -646,6 +646,22 @@
       "canSee": "Du kannst weiterhin alle öffentlichen Events der Seite sehen.",
       "canBrowse": "Du kannst weiterhin Künstlerprofile ansehen.",
       "cannot": "Du kannst nicht veröffentlichen, bearbeiten oder auf das Creator-Panel zugreifen."
+    },
+    "creatorGate": {
+      "notCreator": {
+        "eyebrow": "CREATOR-PANEL",
+        "title": "Dein Konto ist noch kein Creator-Konto.",
+        "body": "Um Events auf La Huella zu veröffentlichen, musst du dich zuerst als Creator bewerben. Wir prüfen jede Anfrage — meistens dauert es 1-2 Tage.",
+        "ctaApply": "Als Creator bewerben →",
+        "ctaHome": "Zur Startseite"
+      },
+      "rejected": {
+        "eyebrow": "ANFRAGE GEPRÜFT",
+        "title": "Deine Anfrage wurde diesmal nicht genehmigt.",
+        "body": "Du kannst dich jederzeit erneut bewerben. Wenn du Fragen zum Warum hast, schreib uns.",
+        "ctaReapply": "Erneut bewerben →",
+        "ctaContact": "Schreib uns"
+      }
     }
   },
   "common": {

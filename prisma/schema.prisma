@@ -68,9 +68,14 @@ model Verification {
 // --- Tablas de dominio ---
 
 model UserProfile {
-  id        String     @id @default(cuid())
-  userId    String     @unique
-  status    UserStatus @default(PENDING)
+  id     String @id @default(cuid())
+  userId String @unique
+  // Estado de la CUENTA, no del rol. Toda cuenta nueva nace `ACTIVE`
+  // (signup público inmediato). `BLOCKED` solo si un admin la bloquea.
+  // El "pending" de "todavía no sos creator" vive en `Application.status`,
+  // no acá. El hook `user.create.after` siempre setea status explícito;
+  // este default cubre cualquier insert que lo omita.
+  status    UserStatus @default(ACTIVE)
   bio       String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

@@ -30,15 +30,22 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          // Decisión de producto cerrada: cuenta nace PENDING para que
-          // el flow de `/user-pending` se active de verdad. Excepciones:
-          //  - Cuenta con Application APPROVED previa (sign-up post
-          //    aprobación) → activar y subir a creator inmediatamente.
-          //  - Cuenta con `role: admin` (seed manual o creación interna
-          //    desde código) → respetar y dejar ACTIVE. Sign-up público
-          //    no puede asignar role admin (Better Auth `defaultRole:
-          //    "user"` lo bloquea), pero el check defensivo evita
-          //    bloquear al primer admin del seed si lo creamos via DB.
+          // Modelo de cuenta (decisión cerrada — ver
+          // `feat/public-signup-creator-flow`): `UserProfile.status`
+          // representa el estado de la CUENTA, no del rol. Toda cuenta
+          // nueva nace `ACTIVE` — el signup es público e inmediato. El
+          // "pending" de "todavía no sos creator" no vive acá, vive en
+          // `Application.status`.
+          //
+          // Tres caminos:
+          //  - `role: admin` → ACTIVE (seed manual / creación interna).
+          //  - Application APPROVED previa por email → ACTIVE + sube
+          //    role a `creator` (alguien aplicó, fue aprobado, y recién
+          //    después crea la cuenta).
+          //  - Default → ACTIVE + role `user`. Navega el sitio público;
+          //    si quiere publicar eventos, aplica como creator vía
+          //    `/apply` y la `Application` queda PENDING hasta que un
+          //    admin la apruebe.
           if (user.role === "admin") {
             await prisma.userProfile.create({
               data: { userId: user.id, status: "ACTIVE" },
@@ -51,7 +58,7 @@ export const auth = betterAuth({
           })
 
           if (approvedApplication) {
-            // Cuenta nace ACTIVE + creator solo si ya hubo aprobación
+            // Cuenta nace ACTIVE + creator porque ya hubo aprobación
             // previa de su Application — el matching es por email
             // porque Application no tiene FK a User.
             //
@@ -70,14 +77,14 @@ export const auth = betterAuth({
               }),
             ])
           } else {
-            // Caso default: cuenta nueva sin Application aprobada nace
-            // PENDING. El usuario puede browsear el sitio público; al
-            // intentar entrar a `/dashboard`, `requireActive()` lo
-            // redirige a `/user-pending`. Pasa a ACTIVE cuando admin
-            // aprueba una Application con su mismo email (ver
-            // `src/app/api/apply/[id]/route.ts`).
+            // Caso default: cuenta nueva nace ACTIVE + role `user`
+            // (heredado del `defaultRole: "user"` de Better Auth). El
+            // usuario tiene acceso normal al sitio público. Al intentar
+            // entrar a `/dashboard`, el layout le muestra la pantalla
+            // intermedia de creator-gate (`CreatorGate`) en lugar del
+            // panel — desde ahí puede aplicar como creator.
             await prisma.userProfile.create({
-              data: { userId: user.id, status: "PENDING" },
+              data: { userId: user.id, status: "ACTIVE" },
             })
           }
         },

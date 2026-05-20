@@ -551,7 +551,7 @@
       "heroAriaLabel": "Manifiesto y agenda",
       "eyebrow": "BIENVENIDO DE VUELTA",
       "title": "Iniciá sesión.",
-      "subtitle": "¿Sos público? No necesitás cuenta para ver shows. Esto es para artistas y organizadores.",
+      "subtitle": "No necesitás cuenta para ver shows. Iniciá sesión para volver a la tuya.",
       "continueWith": "Continuar con {provider}",
       "orEmail": "O CON EMAIL",
       "emailLabel": "Email",
@@ -561,7 +561,7 @@
       "forgot": "¿Olvidaste tu contraseña?",
       "submit": "Iniciar sesión →",
       "submitting": "Iniciando sesión...",
-      "footer": "¿Primera vez por acá? <createAccount>Crear cuenta</createAccount> o <applyAsArtist>aplicá como artista →</applyAsArtist>",
+      "footer": "¿Primera vez por acá? <createAccount>Crear cuenta</createAccount> o <applyAsArtist>aplicá como creator →</applyAsArtist>",
       "errors": {
         "credentials": "Email o contraseña incorrectos.",
         "email_required": "El email es obligatorio.",
@@ -584,7 +584,7 @@
       "heroAriaLabel": "Pasos del proceso",
       "eyebrow": "CREAR CUENTA",
       "title": "Empezá a <accent>publicar.</accent>",
-      "subtitle": "Crear cuenta es el primer paso. Después aplicás como creator y revisamos tu perfil — suele tomar 1-2 días.",
+      "subtitle": "Crear cuenta es gratis e inmediato. Si después querés publicar eventos, aplicás como creator — eso lo revisamos, suele tomar 1-2 días.",
       "continueWith": "Continuar con {provider}",
       "orEmail": "O CON EMAIL",
       "nameLabel": "Nombre",
@@ -611,7 +611,7 @@
         "generic": "No pudimos crear tu cuenta. Probá de nuevo."
       },
       "hero": {
-        "eyebrow": "TRES PASOS · UN DÍA Y MEDIO",
+        "eyebrow": "TRES PASOS PARA PUBLICAR",
         "title": "De cuenta nueva a evento <accent>en vivo</accent>.",
         "step1Title": "Creás la cuenta",
         "step1Time": "Ahora mismo · 1 min.",
@@ -646,6 +646,22 @@
       "canSee": "Podés ver todos los eventos públicos del sitio.",
       "canBrowse": "Podés seguir consultando perfiles de artistas.",
       "cannot": "No podés publicar, editar ni acceder al panel creator."
+    },
+    "creatorGate": {
+      "notCreator": {
+        "eyebrow": "PANEL DE CREATOR",
+        "title": "Tu cuenta todavía no es de creator.",
+        "body": "Para publicar eventos en La Huella, primero tenés que aplicar como creator. Revisamos cada solicitud — suele tomar 1-2 días.",
+        "ctaApply": "Aplicar como creator →",
+        "ctaHome": "Volver al inicio"
+      },
+      "rejected": {
+        "eyebrow": "SOLICITUD REVISADA",
+        "title": "Tu solicitud no fue aprobada esta vez.",
+        "body": "Podés volver a aplicar cuando quieras. Si tenés dudas sobre por qué, escribinos.",
+        "ctaReapply": "Volver a aplicar →",
+        "ctaContact": "Escribinos"
+      }
     }
   },
   "common": {
