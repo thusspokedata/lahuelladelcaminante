@@ -1,9 +1,10 @@
 "use client"
 
 /**
- * SignInForm — form client de `/sign-in`. Maneja:
+ * SignInForm — form client de `/sign-in`. Único método de auth:
+ * email/password (Better Auth). El login con Google OAuth se removió —
+ * ver `chore/remove-google-oauth`. Maneja:
  *  - Validación cliente con zod (`signInSchema`) via react-hook-form.
- *  - OAuth Google via Better Auth `signIn.social` (redirect del browser).
  *  - Email/password via Better Auth `signIn.email`. En éxito navega a la
  *    ruta `returnTo` si la persona llegó desde una ruta protegida (el
  *    `proxy.ts` propaga ese param), o a `/dashboard` por default.
@@ -25,13 +26,10 @@ import { toast } from "sonner"
 import { useRouter } from "@/i18n/navigation"
 import { Link } from "@/i18n/navigation"
 import { signIn } from "@/lib/auth-client"
-import { withLocale } from "@/lib/safe-redirect"
 import { signInSchema, type SignInInput } from "@/lib/validators/auth"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import AuthField from "@/components/auth/AuthField"
-import OAuthButton from "@/components/auth/OAuthButton"
-import OrDivider from "@/components/auth/OrDivider"
 
 /** Códigos de error que el form sabe traducir. Combina:
  *  - Códigos del schema zod (`email_invalid`, etc.).
@@ -80,16 +78,13 @@ function mapAuthErrorToCode(error?: {
 }
 
 export interface SignInFormProps {
-  /** Locale activo del request — usado para el `callbackURL` de OAuth y
-   * para resolver redirects post-login. */
-  locale: string
   /** Ruta interna (locale-less, ej. `/dashboard`) a la que volver tras el
    * login. La pasa la page ya validada con `sanitizeReturnTo`. Si no
    * viene, el login cae a `/dashboard`. */
   returnTo?: string
 }
 
-export default function SignInForm({ locale, returnTo }: SignInFormProps) {
+export default function SignInForm({ returnTo }: SignInFormProps) {
   const t = useTranslations("auth.signIn")
   const tErrors = useTranslations("auth.signIn.errors")
   const router = useRouter()
@@ -130,22 +125,6 @@ export default function SignInForm({ locale, returnTo }: SignInFormProps) {
     router.push(returnTo ?? "/dashboard")
   }
 
-  function handleGoogleClick() {
-    // signIn.social dispara redirect del browser y normalmente no
-    // devuelve. Try/catch defensivo por si el SDK rechaza síncronamente
-    // (config inválida, popup bloqueado, etc.) — sin esto el botón
-    // queda en disabled silencioso. `callbackURL` debe incluir el
-    // locale (Better Auth redirige el browser sin pasar por next-intl).
-    try {
-      signIn.social({
-        provider: "google",
-        callbackURL: withLocale(locale, returnTo ?? "/dashboard"),
-      })
-    } catch {
-      toast.error(errorMessageFor("generic"))
-    }
-  }
-
   return (
     <form
       method="post"
@@ -153,15 +132,6 @@ export default function SignInForm({ locale, returnTo }: SignInFormProps) {
       className="flex flex-col gap-l"
       noValidate
     >
-      <OAuthButton
-        provider="google"
-        label={t("continueWith", { provider: "Google" })}
-        onClick={handleGoogleClick}
-        disabled={isSubmitting}
-      />
-
-      <OrDivider label={t("orEmail")} />
-
       <AuthField
         id="signin-email"
         label={t("emailLabel")}

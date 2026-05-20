@@ -1,19 +1,19 @@
 /**
- * Helpers para los redirects post-auth (sign-up / sign-in).
+ * Helper de validación para el redirect post-auth (sign-up / sign-in).
  *
  * El flujo `returnTo`: cuando el `proxy.ts` intercepta un acceso no
  * autenticado a una ruta protegida, redirige a `/sign-in` agregando un
- * `?returnTo=<ruta>`. Los forms de auth leen ese param y, tras
- * autenticarse, mandan al user de vuelta a donde quería ir. Si no hay
- * `returnTo`, el signup cae a la home y el sign-in al dashboard.
+ * `?returnTo=<ruta>`. Las pages de auth leen ese param, lo validan acá,
+ * y se lo pasan a los forms, que tras autenticarse mandan al user de
+ * vuelta a donde quería ir. Si no hay `returnTo`, el signup cae a la
+ * home y el sign-in al dashboard.
  *
  * El `returnTo` que produce el proxy es SIN prefijo de locale (ej.
  * `/dashboard`) — el router locale-aware de next-intl le re-agrega el
- * locale activo. Por eso estos helpers trabajan con rutas locale-less.
+ * locale activo.
  *
- * Módulo puro (sin imports): se usa tanto en server components (las
- * pages de auth, donde se valida el param) como en client components
- * (los forms, para el `callbackURL` de OAuth).
+ * Módulo puro (sin imports). `sanitizeReturnTo` se usa en las pages de
+ * auth (server components): el trust boundary donde se lee el param.
  */
 
 /** Tope de longitud defensivo para el `returnTo`. Una ruta interna real
@@ -65,26 +65,4 @@ export function sanitizeReturnTo(
   if (hasControlChar(value)) return null
   if (/\s/.test(value)) return null
   return value
-}
-
-/**
- * Construye una URL interna locale-prefijada y segura. Se usa para el
- * `callbackURL` de OAuth (Better Auth hace un redirect directo del
- * browser, no pasa por el router de next-intl, así que necesita la ruta
- * con el locale ya incluido).
- *
- * Pasa `path` por `sanitizeReturnTo`: si no es una ruta interna válida,
- * cae a la home del locale. Así el resultado SIEMPRE es una ruta interna
- * de nuestro dominio — la función es segura aunque un caller futuro le
- * pase un `path` sin sanear (defensa en profundidad, no depende de la
- * disciplina del caller).
- *
- * `withLocale("es", "/")` → `/es`
- * `withLocale("es", "/dashboard")` → `/es/dashboard`
- * `withLocale("es", "https://evil.com")` → `/es` (input inválido → home)
- */
-export function withLocale(locale: string, path: string): string {
-  const safe = sanitizeReturnTo(path)
-  if (!safe || safe === "/") return `/${locale}`
-  return `/${locale}${safe}`
 }

@@ -141,7 +141,7 @@ export default async function SignUpPage({
           {t("subtitle")}
         </p>
 
-        <SignUpForm locale={locale} returnTo={returnTo} />
+        <SignUpForm returnTo={returnTo} />
 
         <p className="text-body-s text-fg-secondary">
           {t.rich("footer", {
