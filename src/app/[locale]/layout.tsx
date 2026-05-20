@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server"
 import { notFound } from "next/navigation"
 import { routing } from "@/i18n/routing"
 import { Toaster } from "@/components/ui/sonner"
+import CookieNotice from "@/components/legal/CookieNotice"
 import "../globals.css"
 
 const display = Bricolage_Grotesque({
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-bg-page text-fg-primary">
         <NextIntlClientProvider messages={messages}>
           {children}
+          <CookieNotice />
           <Toaster />
         </NextIntlClientProvider>
       </body>
