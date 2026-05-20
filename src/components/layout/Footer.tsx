@@ -12,8 +12,8 @@
  * con form (decisión de producto, PR 8.5).
  *
  * Debajo de las columnas, línea separadora con copyright a la izquierda y
- * links a Impressum/Datenschutz a la derecha (`#` por ahora; el contenido
- * legal se redacta en una épica aparte).
+ * links a las páginas legales `/impressum` y `/datenschutz` a la derecha
+ * (obligatorios por ley alemana, visibles desde todas las páginas).
  *
  * Spec: `docs/design/DESIGN_HANDOFF_OUTPUT.md` §3 + §6.
  */
@@ -96,19 +96,18 @@ export async function Footer() {
             {t("copyright", { year })}
           </p>
           <div className="flex items-center gap-l">
-            {/* TODO: link to actual legal pages when content is ready. */}
-            <a
-              href="#"
+            <Link
+              href="/impressum"
               className="text-caption text-fg-tertiary hover:text-fg-primary transition-colors duration-200 ease-out"
             >
               {t("impressum")}
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/datenschutz"
               className="text-caption text-fg-tertiary hover:text-fg-primary transition-colors duration-200 ease-out"
             >
               {t("datenschutz")}
-            </a>
+            </Link>
           </div>
         </div>
       </div>
