@@ -18,14 +18,6 @@ async function sendEmail(
   })
 }
 
-export async function triggerWelcomeEmail(payload: { email: string; name: string }) {
-  await sendEmail(
-    payload.email,
-    "Tu cuenta está en revisión — La Huella del Caminante",
-    `<p>Hola ${payload.name}, tu cuenta está siendo revisada. Te avisaremos cuando sea aprobada.</p>`
-  )
-}
-
 export async function triggerAccountApproved(payload: { email: string; name: string }) {
   await sendEmail(
     payload.email,
@@ -112,80 +104,6 @@ export async function triggerApplicationApproved(payload: { email: string; name:
   await sendEmail(
     payload.email,
     "¡Tu solicitud fue aprobada! — La Huella del Caminante",
-    html
-  )
-}
-
-// Sent to the artist when an admin promotes them to role=artist
-export async function triggerArtistWelcome(payload: { email: string; name: string }) {
-  const html = `<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#0e0407;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;padding:40px 20px">
-    <tr><td align="center">
-      <table width="100%" style="max-width:580px;background:#130609;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
-
-        <tr><td style="background:linear-gradient(135deg,#7a1a0e 0%,#c0392b 50%,#7a1a0e 100%);padding:40px 32px;text-align:center">
-          <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 12px">La Huella del Caminante</p>
-          <h1 style="color:#ffffff;font-size:28px;font-weight:900;margin:0;line-height:1.2">¡Ya podés publicar<br>tus eventos!</h1>
-        </td></tr>
-
-        <tr><td style="padding:36px 32px">
-          <p style="color:#e8d5d0;font-size:16px;margin:0 0 20px;line-height:1.6">
-            Hola <strong style="color:#ffffff">${payload.name}</strong>,
-          </p>
-          <p style="color:#c4a9a4;font-size:15px;margin:0 0 28px;line-height:1.7">
-            Tu solicitud fue aprobada. Ya tenés acceso como artista en
-            <strong style="color:#c0392b">La Huella del Caminante</strong> —
-            la escena musical latinoamericana en Alemania.
-          </p>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0">
-            <tr><td align="center">
-              <a href="https://lahuelladelcaminante.de/es/dashboard/events/create"
-                 style="display:inline-block;background:#c0392b;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:50px;letter-spacing:0.02em">
-                Publicar mi primer evento →
-              </a>
-            </td></tr>
-          </table>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;border-radius:10px;padding:20px 24px;margin:8px 0 28px">
-            <tr><td>
-              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;margin:0 0 14px">Cómo empezar</p>
-              <p style="color:#c4a9a4;font-size:14px;margin:0 0 10px;line-height:1.6">
-                <span style="color:#c0392b;font-weight:700">1.</span> Ingresá con tu cuenta en <a href="https://lahuelladelcaminante.de" style="color:#c0392b;text-decoration:none">lahuelladelcaminante.de</a>
-              </p>
-              <p style="color:#c4a9a4;font-size:14px;margin:0 0 10px;line-height:1.6">
-                <span style="color:#c0392b;font-weight:700">2.</span> Desde el panel, creá tu perfil de artista
-              </p>
-              <p style="color:#c4a9a4;font-size:14px;margin:0;line-height:1.6">
-                <span style="color:#c0392b;font-weight:700">3.</span> Publicá tus eventos con fechas, lugar y fotos
-              </p>
-            </td></tr>
-          </table>
-
-          <p style="color:rgba(255,255,255,0.35);font-size:13px;margin:0;line-height:1.6">
-            ¿Alguna pregunta? Escribinos a
-            <a href="mailto:info@lahuelladelcaminante.de" style="color:#c0392b;text-decoration:none">info@lahuelladelcaminante.de</a>
-          </p>
-        </td></tr>
-
-        <tr><td style="border-top:1px solid rgba(255,255,255,0.06);padding:20px 32px;text-align:center">
-          <p style="color:rgba(255,255,255,0.2);font-size:12px;margin:0">
-            © ${new Date().getFullYear()} La Huella del Caminante · Berlín
-          </p>
-        </td></tr>
-
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`
-
-  await sendEmail(
-    payload.email,
-    "¡Ya podés publicar tus eventos en La Huella del Caminante!",
     html
   )
 }
