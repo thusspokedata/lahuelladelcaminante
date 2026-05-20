@@ -307,16 +307,16 @@
     },
     "welcome": {
       "eyebrow": "Welcome to La Huella",
-      "title": "Three steps to get your music out there.",
+      "title": "Three steps to publish your first event.",
       "body": "Your account was approved — welcome to la huella. We'll walk you through publishing your first event."
     },
     "steps": {
       "pending": "Pending",
       "done": "Done",
       "profile": {
-        "title": "Create your artist profile",
-        "body": "Photo, bio, links to Instagram, Spotify. It's the page that shows up when someone clicks your event.",
-        "cta": "Create profile"
+        "title": "Create your first artist",
+        "body": "An artist is the musician or band you present — photo, bio, links to Instagram and Spotify. It's the page that opens when someone taps your event.",
+        "cta": "Create artist"
       },
       "event": {
         "title": "Publish your first event",

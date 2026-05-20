@@ -307,16 +307,16 @@
     },
     "welcome": {
       "eyebrow": "Willkommen bei La Huella",
-      "title": "Drei Schritte, damit deine Musik sichtbar wird.",
+      "title": "Drei Schritte, um dein erstes Event zu veröffentlichen.",
       "body": "Dein Konto wurde freigegeben — willkommen bei la huella. Wir begleiten dich bis zur ersten veröffentlichten Veranstaltung."
     },
     "steps": {
       "pending": "Offen",
       "done": "Erledigt",
       "profile": {
-        "title": "Erstelle dein Künstlerprofil",
-        "body": "Foto, Bio, Links zu Instagram und Spotify. Das ist die Seite, die erscheint, wenn jemand auf deine Veranstaltung klickt.",
-        "cta": "Profil erstellen"
+        "title": "Erstelle deinen ersten Künstler",
+        "body": "Ein Künstler ist der Musiker oder die Band, die du präsentierst — Foto, Bio, Links zu Instagram und Spotify. Das ist die Seite, die sich öffnet, wenn jemand auf dein Event tippt.",
+        "cta": "Künstler erstellen"
       },
       "event": {
         "title": "Veröffentliche deine erste Veranstaltung",

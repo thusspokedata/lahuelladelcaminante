@@ -1,8 +1,14 @@
 /**
  * OnboardingChecklist — los 3 StepCards del primer ingreso al dashboard del
- * creator: (1) crear perfil de artista, (2) publicar evento, (3) compartir
+ * creator: (1) crear el primer artista, (2) publicar evento, (3) compartir
  * link. Recibe el estado de cada paso (`hasArtist`, `hasEvent`) y resuelve
  * los textos vía i18n.
+ *
+ * Nota de naming: el paso 1 da de alta una entidad `Artist` (el músico /
+ * banda que el creator presenta), NO el perfil del creator mismo. El
+ * `profile` en `labels`/`hrefs` es un nombre de slot legacy — el copy
+ * visible ya dice "artista". (Renombrar el slot tocaría el caller; queda
+ * fuera del scope "solo copy" de este fix.)
  *
  * Estados de cada paso:
  *  - Pendiente: card en su estado completo (eyebrow número + título + descr.
