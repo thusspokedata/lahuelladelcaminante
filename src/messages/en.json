@@ -551,7 +551,7 @@
       "heroAriaLabel": "Manifesto and agenda",
       "eyebrow": "WELCOME BACK",
       "title": "Sign in.",
-      "subtitle": "Just here to browse? You don't need an account to see shows. This is for artists and organizers.",
+      "subtitle": "You don't need an account to see shows. Sign in to get back into yours.",
       "continueWith": "Continue with {provider}",
       "orEmail": "OR WITH EMAIL",
       "emailLabel": "Email",
@@ -561,7 +561,7 @@
       "forgot": "Forgot your password?",
       "submit": "Sign in →",
       "submitting": "Signing in...",
-      "footer": "First time here? <createAccount>Create account</createAccount> or <applyAsArtist>apply as an artist →</applyAsArtist>",
+      "footer": "First time here? <createAccount>Create account</createAccount> or <applyAsArtist>apply as a creator →</applyAsArtist>",
       "errors": {
         "credentials": "Wrong email or password.",
         "email_required": "Email is required.",
@@ -584,7 +584,7 @@
       "heroAriaLabel": "Process steps",
       "eyebrow": "CREATE ACCOUNT",
       "title": "Start <accent>publishing.</accent>",
-      "subtitle": "Creating an account is step one. Then you apply as a creator and we review your profile — usually 1-2 days.",
+      "subtitle": "Creating an account is free and instant. If you later want to publish events, you apply as a creator — that part we review, usually 1-2 days.",
       "continueWith": "Continue with {provider}",
       "orEmail": "OR WITH EMAIL",
       "nameLabel": "Name",
@@ -611,7 +611,7 @@
         "generic": "We couldn't create your account. Try again."
       },
       "hero": {
-        "eyebrow": "THREE STEPS · ONE AND A HALF DAYS",
+        "eyebrow": "THREE STEPS TO PUBLISH",
         "title": "From new account to live event <accent>in days</accent>.",
         "step1Title": "Create the account",
         "step1Time": "Right now · 1 min.",
