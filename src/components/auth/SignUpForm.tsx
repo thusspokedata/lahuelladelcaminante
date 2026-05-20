@@ -12,11 +12,12 @@
  *  - OAuth Google (decisión consistente con sign-in: mantener el flow
  *    OAuth disponible en ambos lados).
  *
- * En éxito: redirige a `/dashboard`. Ahí `requireActive()` decide qué
- * mostrar según el `UserProfile.status` (PENDING → `/user-pending`,
- * BLOCKED → `/user-blocked`, ACTIVE → render del dashboard). No
- * deciden acá — toda la lógica de routing post-auth es responsabilidad
- * del guard de auth.
+ * En éxito redirige a la home (`/`, respetando el locale activo), o a la
+ * ruta `returnTo` si la persona llegó al sign-up desde una ruta protegida
+ * (el `proxy.ts` propaga ese param a sign-in/sign-up). Decisión de
+ * producto: la mayoría de los signups NO buscan el panel creator, así
+ * que el default es la home y no `/dashboard`. El `returnTo` ya llega
+ * validado como ruta interna desde la page (anti open-redirect).
  */
 
 import { useTranslations } from "next-intl"
@@ -25,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useRouter, Link } from "@/i18n/navigation"
 import { signUp, signIn } from "@/lib/auth-client"
+import { withLocale } from "@/lib/safe-redirect"
 import { signUpSchema, type SignUpInput } from "@/lib/validators/auth"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -75,9 +77,13 @@ function mapAuthErrorToCode(error?: {
 
 export interface SignUpFormProps {
   locale: string
+  /** Ruta interna (locale-less, ej. `/dashboard`) a la que volver tras el
+   * signup. La pasa la page ya validada con `sanitizeReturnTo`. Si no
+   * viene, el signup directo cae a la home. */
+  returnTo?: string
 }
 
-export default function SignUpForm({ locale }: SignUpFormProps) {
+export default function SignUpForm({ locale, returnTo }: SignUpFormProps) {
   const t = useTranslations("auth.signUp")
   const tErrors = useTranslations("auth.signUp.errors")
   const router = useRouter()
@@ -115,7 +121,8 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
       return
     }
 
-    router.push("/dashboard")
+    // `router` es locale-aware: `/` → `/es`, `/dashboard` → `/es/dashboard`.
+    router.push(returnTo ?? "/")
   }
 
   function handleGoogleClick() {
@@ -125,7 +132,9 @@ export default function SignUpForm({ locale }: SignUpFormProps) {
     try {
       signIn.social({
         provider: "google",
-        callbackURL: `/${locale}/dashboard`,
+        // `callbackURL` necesita el locale explícito: Better Auth hace un
+        // redirect directo del browser, no pasa por el router de next-intl.
+        callbackURL: withLocale(locale, returnTo ?? "/"),
       })
     } catch {
       toast.error(errorMessageFor("generic"))

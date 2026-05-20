@@ -46,7 +46,19 @@ export async function proxy(request: NextRequest) {
     )
 
     if (!session) {
-      return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url))
+      // El user intentó entrar a una ruta protegida sin sesión. Lo
+      // mandamos a sign-in con un `returnTo` para que, tras autenticarse,
+      // vuelva a donde quería ir. `returnTo` va SIN prefijo de locale
+      // (`/dashboard`, no `/es/dashboard`) — el router locale-aware de
+      // los forms de auth le re-agrega el locale. Se incluye la query
+      // original por si era un deep link. El valor lo valida
+      // `sanitizeReturnTo` en la página que lo consume (anti open-redirect).
+      const signInUrl = new URL(`/${locale}/sign-in`, request.url)
+      signInUrl.searchParams.set(
+        "returnTo",
+        pathWithoutLocale + request.nextUrl.search
+      )
+      return NextResponse.redirect(signInUrl)
     }
 
     if (isAdmin && session.user.role !== "admin") {

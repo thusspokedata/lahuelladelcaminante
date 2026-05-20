@@ -4,8 +4,10 @@
  * SignInForm — form client de `/sign-in`. Maneja:
  *  - Validación cliente con zod (`signInSchema`) via react-hook-form.
  *  - OAuth Google via Better Auth `signIn.social` (redirect del browser).
- *  - Email/password via Better Auth `signIn.email`. En éxito, navigate a
- *    `/dashboard` (preserva locale via i18n-aware `useRouter`).
+ *  - Email/password via Better Auth `signIn.email`. En éxito navega a la
+ *    ruta `returnTo` si la persona llegó desde una ruta protegida (el
+ *    `proxy.ts` propaga ese param), o a `/dashboard` por default.
+ *    Preserva el locale via el `useRouter` i18n-aware.
  *  - Mapeo de errores de Better Auth a copy amigable i18n (no exponer
  *    mensajes técnicos en inglés del SDK al user final).
  *
@@ -23,6 +25,7 @@ import { toast } from "sonner"
 import { useRouter } from "@/i18n/navigation"
 import { Link } from "@/i18n/navigation"
 import { signIn } from "@/lib/auth-client"
+import { withLocale } from "@/lib/safe-redirect"
 import { signInSchema, type SignInInput } from "@/lib/validators/auth"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -80,9 +83,13 @@ export interface SignInFormProps {
   /** Locale activo del request — usado para el `callbackURL` de OAuth y
    * para resolver redirects post-login. */
   locale: string
+  /** Ruta interna (locale-less, ej. `/dashboard`) a la que volver tras el
+   * login. La pasa la page ya validada con `sanitizeReturnTo`. Si no
+   * viene, el login cae a `/dashboard`. */
+  returnTo?: string
 }
 
-export default function SignInForm({ locale }: SignInFormProps) {
+export default function SignInForm({ locale, returnTo }: SignInFormProps) {
   const t = useTranslations("auth.signIn")
   const tErrors = useTranslations("auth.signIn.errors")
   const router = useRouter()
@@ -119,7 +126,8 @@ export default function SignInForm({ locale }: SignInFormProps) {
       return
     }
 
-    router.push("/dashboard")
+    // `router` es locale-aware: `/dashboard` → `/es/dashboard`.
+    router.push(returnTo ?? "/dashboard")
   }
 
   function handleGoogleClick() {
@@ -127,11 +135,11 @@ export default function SignInForm({ locale }: SignInFormProps) {
     // devuelve. Try/catch defensivo por si el SDK rechaza síncronamente
     // (config inválida, popup bloqueado, etc.) — sin esto el botón
     // queda en disabled silencioso. `callbackURL` debe incluir el
-    // locale para volver a la versión correcta del dashboard.
+    // locale (Better Auth redirige el browser sin pasar por next-intl).
     try {
       signIn.social({
         provider: "google",
-        callbackURL: `/${locale}/dashboard`,
+        callbackURL: withLocale(locale, returnTo ?? "/dashboard"),
       })
     } catch {
       toast.error(errorMessageFor("generic"))
