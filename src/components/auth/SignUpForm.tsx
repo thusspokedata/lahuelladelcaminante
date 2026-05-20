@@ -9,8 +9,9 @@
  *  - Checkbox `acceptTerms` (required) con rich-text wrappers que linkean
  *    a `/terms` y `/privacy`. Esas rutas no existen aún — apuntan a `#`
  *    con TODO en el código. Decisión del spec: no bloquear esta PR.
- *  - OAuth Google (decisión consistente con sign-in: mantener el flow
- *    OAuth disponible en ambos lados).
+ *
+ * Único método de auth: email/password (Better Auth). El login con
+ * Google OAuth se removió — ver `chore/remove-google-oauth`.
  *
  * En éxito redirige a la home (`/`, respetando el locale activo), o a la
  * ruta `returnTo` si la persona llegó al sign-up desde una ruta protegida
@@ -25,14 +26,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useRouter, Link } from "@/i18n/navigation"
-import { signUp, signIn } from "@/lib/auth-client"
-import { withLocale } from "@/lib/safe-redirect"
+import { signUp } from "@/lib/auth-client"
 import { signUpSchema, type SignUpInput } from "@/lib/validators/auth"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import AuthField from "@/components/auth/AuthField"
-import OAuthButton from "@/components/auth/OAuthButton"
-import OrDivider from "@/components/auth/OrDivider"
 import { cn } from "@/lib/utils"
 
 const KNOWN_ERROR_CODES = new Set<string>([
@@ -76,14 +74,13 @@ function mapAuthErrorToCode(error?: {
 }
 
 export interface SignUpFormProps {
-  locale: string
   /** Ruta interna (locale-less, ej. `/dashboard`) a la que volver tras el
    * signup. La pasa la page ya validada con `sanitizeReturnTo`. Si no
    * viene, el signup directo cae a la home. */
   returnTo?: string
 }
 
-export default function SignUpForm({ locale, returnTo }: SignUpFormProps) {
+export default function SignUpForm({ returnTo }: SignUpFormProps) {
   const t = useTranslations("auth.signUp")
   const tErrors = useTranslations("auth.signUp.errors")
   const router = useRouter()
@@ -125,22 +122,6 @@ export default function SignUpForm({ locale, returnTo }: SignUpFormProps) {
     router.push(returnTo ?? "/")
   }
 
-  function handleGoogleClick() {
-    // Try/catch defensivo — `signIn.social` normalmente hace redirect
-    // del browser, pero puede rechazar sync con popup bloqueado o
-    // config inválida. Sin esto el botón queda en disabled silencioso.
-    try {
-      signIn.social({
-        provider: "google",
-        // `callbackURL` necesita el locale explícito: Better Auth hace un
-        // redirect directo del browser, no pasa por el router de next-intl.
-        callbackURL: withLocale(locale, returnTo ?? "/"),
-      })
-    } catch {
-      toast.error(errorMessageFor("generic"))
-    }
-  }
-
   return (
     <form
       method="post"
@@ -148,15 +129,6 @@ export default function SignUpForm({ locale, returnTo }: SignUpFormProps) {
       className="flex flex-col gap-l"
       noValidate
     >
-      <OAuthButton
-        provider="google"
-        label={t("continueWith", { provider: "Google" })}
-        onClick={handleGoogleClick}
-        disabled={isSubmitting}
-      />
-
-      <OrDivider label={t("orEmail")} />
-
       <AuthField
         id="signup-name"
         label={t("nameLabel")}

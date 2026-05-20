@@ -14,12 +14,9 @@ import {
  * en el idioma que la persona tenía activo en el sitio.
  *
  *  1. Cookie `NEXT_LOCALE` — la setea el middleware de next-intl y
- *     persiste entre navegaciones. Funciona tanto para el signup
- *     email/password como para el callback de Google OAuth (en OAuth el
- *     request final lo origina nuestro dominio, así que la cookie viaja).
- *  2. Header `Referer` — la página de signup es `/<locale>/sign-up`.
- *     Respaldo para email/password si faltara la cookie; en OAuth el
- *     referer es de Google y no matchea.
+ *     persiste entre navegaciones.
+ *  2. Header `Referer` — la página de signup es `/<locale>/sign-up`;
+ *     respaldo si faltara la cookie.
  *  3. Fallback: `es` (default del sitio — decisión cerrada del spec).
  */
 function detectSignupLocale(headers: Headers | null): string {
@@ -60,12 +57,6 @@ export const auth = betterAuth({
     "https://www.lahuelladelcaminante.de",
     "http://localhost:3000",
   ],
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    },
-  },
   plugins: [
     admin({
       defaultRole: "user",

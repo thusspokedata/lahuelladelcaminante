@@ -130,7 +130,7 @@ export default async function SignInPage({
           {t("subtitle")}
         </p>
 
-        <SignInForm locale={locale} returnTo={returnTo} />
+        <SignInForm returnTo={returnTo} />
 
         <p className="text-body-s text-fg-secondary">
           {t.rich("footer", {
