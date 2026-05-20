@@ -69,11 +69,12 @@ export default async function CreatorGate({
   userEmail,
 }: CreatorGateProps) {
   // Application más reciente del user (puede haber aplicado más de una
-  // vez). `select` acotado — solo necesitamos status + fecha.
+  // vez). `select` acotado — status + fecha + id (el id solo se usa
+  // para el log de diagnóstico del caso APPROVED-a-medias, sin PII).
   const application = await prisma.application.findFirst({
     where: { email: userEmail },
     orderBy: { createdAt: "desc" },
-    select: { status: true, createdAt: true },
+    select: { id: true, status: true, createdAt: true },
   })
 
   // ── Sub-estado 2 — Application PENDING (o APPROVED a medias) ──────────
@@ -88,8 +89,12 @@ export default async function CreatorGate({
       // el approve no terminó de bumpear el role. Lo mostramos como
       // "en revisión" para no exhibir algo roto, pero lo dejamos en
       // logs para diagnóstico.
+      //
+      // Logueamos `applicationId` (cuid random, no-PII) en lugar del
+      // email — alcanza para ir directo al row de Application en la DB
+      // sin filtrar un identificador personal a los logs.
       console.warn("creator_gate_approved_but_not_creator", {
-        email: userEmail,
+        applicationId: application.id,
       })
     }
 
