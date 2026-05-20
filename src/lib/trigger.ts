@@ -233,9 +233,13 @@ export async function triggerApplicationNotification(payload: {
 
           <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0">
             <tr><td align="center">
-              <a href="https://lahuelladelcaminante.de/es/admin/users"
+              <!-- Apunta a /admin/applications (no /admin/users): aprobar la
+                   solicitud ahí sube el rol a creator y notifica a la
+                   persona. Cambiar el rol a mano en /admin/users no hace
+                   ninguna de esas dos cosas. -->
+              <a href="https://lahuelladelcaminante.de/es/admin/applications"
                  style="display:inline-block;background:#c0392b;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:50px">
-                Gestionar usuarios →
+                Revisar solicitud →
               </a>
             </td></tr>
           </table>
