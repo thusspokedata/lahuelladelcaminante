@@ -5,10 +5,8 @@ import {
   getFeaturedEvents,
   getHeroVariant,
   getUpcomingEventsWithin,
-  getUpcomingStats,
   getActiveGenres,
   type EventSummary,
-  type UpcomingStats,
 } from "@/services/events"
 import { getActiveArtists } from "@/services/artists"
 import { getCurrentUser } from "@/services/auth"
@@ -44,7 +42,6 @@ export default async function HomePage({
     upcomingAgenda,
     activeArtists,
     activeGenres,
-    stats,
     user,
   ] = await Promise.all([
     getHeroVariant(),
@@ -54,7 +51,6 @@ export default async function HomePage({
     getUpcomingEventsWithin(365, 10),
     getActiveArtists(8),
     getActiveGenres(),
-    getUpcomingStats(),
     getCurrentUser(),
   ])
 
@@ -62,7 +58,10 @@ export default async function HomePage({
     <div>
       <HeroSection variant={heroVariant} locale={locale} />
 
-      <StatsSection stats={stats} locale={locale} />
+      {/* StatsSection (shows/artistas/ciudades/rango) oculta por ahora —
+          con la agenda todavía chica los contadores quedan flojos.
+          Re-agregar cuando crezca: `git log` tiene el componente, el copy
+          sigue en `messages.home.stats`. */}
 
       {featuredEvents.length > 0 ? (
         <FeaturedSection events={featuredEvents} locale={locale} />
@@ -124,42 +123,6 @@ async function HeroSection({ variant, locale }: HeroSectionProps) {
         <p className="text-body-l text-fg-secondary leading-relaxed max-w-[40ch] lg:justify-self-end">
           {tHero("tagline")}
         </p>
-      </div>
-    </section>
-  )
-}
-
-// ── Stats ─────────────────────────────────────────────────────────────
-
-interface StatsSectionProps {
-  stats: UpcomingStats
-  locale: string
-}
-
-async function StatsSection({ stats, locale }: StatsSectionProps) {
-  const tStats = await getTranslations({ locale, namespace: "home.stats" })
-  const dateRange = formatDateRange(stats.dateRange, locale)
-
-  const items = [
-    { value: String(stats.shows), label: tStats("shows") },
-    { value: String(stats.artists), label: tStats("artists") },
-    { value: String(stats.cities), label: tStats("cities") },
-    { value: dateRange || "—", label: tStats("dateRange") },
-  ]
-
-  return (
-    <section className="border-b border-border py-l">
-      <div className="mx-auto grid grid-cols-2 gap-l lg:grid-cols-4" style={CONTAINER_STYLE}>
-        {items.map((item) => (
-          <div key={item.label} className="flex flex-col gap-xs">
-            <span className="text-display-m font-display text-fg-primary leading-none">
-              {item.value}
-            </span>
-            <span className="text-caption font-mono uppercase text-fg-tertiary">
-              {item.label}
-            </span>
-          </div>
-        ))}
       </div>
     </section>
   )
@@ -353,37 +316,4 @@ async function CtaSection() {
       </div>
     </section>
   )
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────
-
-const LOCALE_MAP: Record<string, string> = {
-  es: "es-ES",
-  en: "en-US",
-  de: "de-DE",
-}
-
-/**
- * Re-hidratación: a partir de este PR `getUpcomingStats()` rehidrata el
- * `dateRange` antes de devolverlo (ver `src/lib/date.ts`), así que `from`
- * y `to` vienen como `Date` real en uso normal. La signature `Date | string`
- * y la conversión defensiva quedan como red de seguridad para callers que
- * pudieran pasar ISO strings directamente. */
-function formatDateRange(
-  range: { from: Date | string | null; to: Date | string | null },
-  locale: string
-): string {
-  if (!range.from || !range.to) return ""
-  const fromObj =
-    range.from instanceof Date ? range.from : new Date(range.from)
-  const toObj = range.to instanceof Date ? range.to : new Date(range.to)
-  if (isNaN(fromObj.getTime()) || isNaN(toObj.getTime())) return ""
-  const intl = new Intl.DateTimeFormat(LOCALE_MAP[locale] ?? "es-ES", {
-    day: "numeric",
-    month: "short",
-  })
-  const from = intl.format(fromObj).replace(/\./g, "")
-  const to = intl.format(toObj).replace(/\./g, "")
-  if (from === to) return from
-  return `${from} – ${to}`
 }
