@@ -685,5 +685,17 @@
     "artistCreated": "Artist created",
     "eventDeleted": "Event deleted",
     "notFound": "Page not found"
+  },
+  "emails": {
+    "welcomeUser": {
+      "subject": "Welcome to La Huella del Caminante",
+      "heading": "Welcome to the journey",
+      "greeting": "Hi",
+      "intro": "La Huella del Caminante is the home of live Latin American music in Germany.",
+      "body": "Your account is now active. Explore the concert calendar and discover artists from across the scene.",
+      "exploreCta": "Explore events",
+      "creatorNudge": "Do you organize events? You can apply as a creator to publish your own on the platform.",
+      "creatorCta": "Apply as a creator"
+    }
   }
 }

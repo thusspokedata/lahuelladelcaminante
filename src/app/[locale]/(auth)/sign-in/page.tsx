@@ -22,6 +22,7 @@ import SignInForm from "@/components/auth/SignInForm"
 import Eyebrow from "@/components/ui/Eyebrow"
 import FlyerImage from "@/components/ui/FlyerImage"
 import { getFeaturedEvents, getUpcomingStats } from "@/services/events"
+import { sanitizeReturnTo } from "@/lib/safe-redirect"
 
 export async function generateMetadata({
   params,
@@ -35,11 +36,29 @@ export async function generateMetadata({
 
 export default async function SignInPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ returnTo?: string | string[] }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+
+  // `returnTo`: ruta interna a la que volver tras el login, propagada por
+  // el `proxy.ts` cuando intercepta un acceso no autenticado a una ruta
+  // protegida. Se valida acá (trust boundary) — `sanitizeReturnTo`
+  // descarta URLs externas y similares (anti open-redirect). `undefined`
+  // si no es válida → el form cae a su default (`/dashboard`).
+  const { returnTo: rawReturnTo } = await searchParams
+  const returnTo =
+    sanitizeReturnTo(
+      typeof rawReturnTo === "string" ? rawReturnTo : undefined
+    ) ?? undefined
+  // El link "crear cuenta" debe arrastrar el `returnTo` para que, si la
+  // persona se registra en vez de loguearse, igual vuelva a destino.
+  const signUpHref = returnTo
+    ? { pathname: "/sign-up", query: { returnTo } }
+    : "/sign-up"
 
   const t = await getTranslations({ locale, namespace: "auth.signIn" })
   const tHero = await getTranslations({ locale, namespace: "auth.signIn.hero" })
@@ -111,13 +130,13 @@ export default async function SignInPage({
           {t("subtitle")}
         </p>
 
-        <SignInForm locale={locale} />
+        <SignInForm locale={locale} returnTo={returnTo} />
 
         <p className="text-body-s text-fg-secondary">
           {t.rich("footer", {
             createAccount: (chunks) => (
               <Link
-                href="/sign-up"
+                href={signUpHref}
                 className="font-semibold text-fg-primary underline-offset-4 hover:underline"
               >
                 {chunks}

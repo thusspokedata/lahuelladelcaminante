@@ -19,6 +19,7 @@ import { Link } from "@/i18n/navigation"
 import AuthShell from "@/components/auth/AuthShell"
 import SignUpForm from "@/components/auth/SignUpForm"
 import Eyebrow from "@/components/ui/Eyebrow"
+import { sanitizeReturnTo } from "@/lib/safe-redirect"
 
 export async function generateMetadata({
   params,
@@ -42,11 +43,29 @@ const STEPS = [
 
 export default async function SignUpPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ returnTo?: string | string[] }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+
+  // `returnTo`: ruta interna a la que volver tras el signup, propagada
+  // por el `proxy.ts` cuando intercepta un acceso no autenticado a una
+  // ruta protegida. Se valida acá (trust boundary) — `sanitizeReturnTo`
+  // descarta URLs externas y similares (anti open-redirect). `undefined`
+  // si no es válida → el form cae a su default (la home).
+  const { returnTo: rawReturnTo } = await searchParams
+  const returnTo =
+    sanitizeReturnTo(
+      typeof rawReturnTo === "string" ? rawReturnTo : undefined
+    ) ?? undefined
+  // Si la persona llegó acá desde una ruta protegida, el link a sign-in
+  // debe arrastrar el `returnTo` para no perderlo en el cruce.
+  const signInHref = returnTo
+    ? { pathname: "/sign-in", query: { returnTo } }
+    : "/sign-in"
 
   const t = await getTranslations({ locale, namespace: "auth.signUp" })
   const tHero = await getTranslations({ locale, namespace: "auth.signUp.hero" })
@@ -122,13 +141,13 @@ export default async function SignUpPage({
           {t("subtitle")}
         </p>
 
-        <SignUpForm locale={locale} />
+        <SignUpForm locale={locale} returnTo={returnTo} />
 
         <p className="text-body-s text-fg-secondary">
           {t.rich("footer", {
             signInLink: (chunks) => (
               <Link
-                href="/sign-in"
+                href={signInHref}
                 className="font-semibold text-fg-primary underline-offset-4 hover:underline"
               >
                 {chunks}

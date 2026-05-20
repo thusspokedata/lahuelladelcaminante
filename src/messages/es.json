@@ -685,5 +685,17 @@
     "artistCreated": "Artista creado",
     "eventDeleted": "Evento eliminado",
     "notFound": "Página no encontrada"
+  },
+  "emails": {
+    "welcomeUser": {
+      "subject": "Bienvenido a La Huella del Caminante",
+      "heading": "Bienvenido al camino",
+      "greeting": "Hola",
+      "intro": "La Huella del Caminante es el portal de la música latinoamericana en vivo en Alemania.",
+      "body": "Tu cuenta ya está activa. Podés explorar la agenda de conciertos y descubrir artistas de toda la escena.",
+      "exploreCta": "Explorar eventos",
+      "creatorNudge": "¿Organizás eventos? Podés aplicar como creator para publicar los tuyos en la plataforma.",
+      "creatorCta": "Aplicar como creator"
+    }
   }
 }
