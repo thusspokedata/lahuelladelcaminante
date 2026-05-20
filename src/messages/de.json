@@ -646,6 +646,22 @@
       "canSee": "Du kannst weiterhin alle öffentlichen Events der Seite sehen.",
       "canBrowse": "Du kannst weiterhin Künstlerprofile ansehen.",
       "cannot": "Du kannst nicht veröffentlichen, bearbeiten oder auf das Creator-Panel zugreifen."
+    },
+    "creatorGate": {
+      "notCreator": {
+        "eyebrow": "CREATOR-PANEL",
+        "title": "Dein Konto ist noch kein Creator-Konto.",
+        "body": "Um Events auf La Huella zu veröffentlichen, musst du dich zuerst als Creator bewerben. Wir prüfen jede Anfrage — meistens dauert es 1-2 Tage.",
+        "ctaApply": "Als Creator bewerben →",
+        "ctaHome": "Zur Startseite"
+      },
+      "rejected": {
+        "eyebrow": "ANFRAGE GEPRÜFT",
+        "title": "Deine Anfrage wurde diesmal nicht genehmigt.",
+        "body": "Du kannst dich jederzeit erneut bewerben. Wenn du Fragen zum Warum hast, schreib uns.",
+        "ctaReapply": "Erneut bewerben →",
+        "ctaContact": "Schreib uns"
+      }
     }
   },
   "common": {

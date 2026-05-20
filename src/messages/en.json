@@ -646,6 +646,22 @@
       "canSee": "You can still see all the public events on the site.",
       "canBrowse": "You can still browse artist profiles.",
       "cannot": "You can't publish, edit or access the creator panel."
+    },
+    "creatorGate": {
+      "notCreator": {
+        "eyebrow": "CREATOR PANEL",
+        "title": "Your account isn't a creator account yet.",
+        "body": "To publish events on La Huella, you first need to apply as a creator. We review every request — it usually takes 1-2 days.",
+        "ctaApply": "Apply as a creator →",
+        "ctaHome": "Back to home"
+      },
+      "rejected": {
+        "eyebrow": "REQUEST REVIEWED",
+        "title": "Your request wasn't approved this time.",
+        "body": "You can apply again whenever you want. If you have questions about why, get in touch.",
+        "ctaReapply": "Apply again →",
+        "ctaContact": "Get in touch"
+      }
     }
   },
   "common": {

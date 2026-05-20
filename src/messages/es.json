@@ -646,6 +646,22 @@
       "canSee": "Podés ver todos los eventos públicos del sitio.",
       "canBrowse": "Podés seguir consultando perfiles de artistas.",
       "cannot": "No podés publicar, editar ni acceder al panel creator."
+    },
+    "creatorGate": {
+      "notCreator": {
+        "eyebrow": "PANEL DE CREATOR",
+        "title": "Tu cuenta todavía no es de creator.",
+        "body": "Para publicar eventos en La Huella, primero tenés que aplicar como creator. Revisamos cada solicitud — suele tomar 1-2 días.",
+        "ctaApply": "Aplicar como creator →",
+        "ctaHome": "Volver al inicio"
+      },
+      "rejected": {
+        "eyebrow": "SOLICITUD REVISADA",
+        "title": "Tu solicitud no fue aprobada esta vez.",
+        "body": "Podés volver a aplicar cuando quieras. Si tenés dudas sobre por qué, escribinos.",
+        "ctaReapply": "Volver a aplicar →",
+        "ctaContact": "Escribinos"
+      }
     }
   },
   "common": {
