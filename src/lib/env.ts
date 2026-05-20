@@ -22,6 +22,19 @@ const envSchema = z.object({
     .email()
     .optional()
     .default("info@lahuelladelcaminante.de"),
+  /**
+   * Email interno del equipo al que llegan las notificaciones del
+   * sistema: nuevas applications de creator (`/apply`) y nuevos signups.
+   * Separado a propósito de `CONTACT_RECIPIENT_EMAIL` (mensajes públicos
+   * de `/contact`) para poder rutear, a futuro, las notificaciones
+   * internas y los mensajes de contacto a inboxes distintas sin tocar
+   * código. Si no está definida, cae a `info@lahuelladelcaminante.de`.
+   */
+  ADMIN_NOTIFICATION_EMAIL: z
+    .string()
+    .email()
+    .optional()
+    .default("info@lahuelladelcaminante.de"),
 })
 
 export const env = envSchema.parse(process.env)

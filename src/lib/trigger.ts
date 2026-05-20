@@ -1,3 +1,6 @@
+import { createTranslator } from "next-intl"
+import { env } from "./env"
+
 async function sendEmail(
   to: string,
   subject: string,
@@ -251,8 +254,231 @@ export async function triggerApplicationNotification(payload: {
 </html>`
 
   await sendEmail(
-    "info@lahuelladelcaminante.de",
+    env.ADMIN_NOTIFICATION_EMAIL,
     `Nueva solicitud: ${payload.name} quiere publicar eventos`,
+    html
+  )
+}
+
+// Locales soportados para el email de bienvenida. El copy de los 3 vive
+// en `src/messages/{es,en,de}.json` bajo `emails.welcomeUser`. Debe
+// mantenerse en sincronía con `routing.locales` (`src/i18n/routing.ts`):
+// si se agrega un idioma al sitio, sumarlo acá y al `switch` de
+// `loadEmailMessages`.
+const EMAIL_LOCALES = ["es", "en", "de"] as const
+type EmailLocale = (typeof EMAIL_LOCALES)[number]
+
+/** Normaliza un locale arbitrario al set soportado. Fallback: `es`
+ * (default del sitio) — decisión cerrada del spec. */
+function normalizeEmailLocale(locale: string): EmailLocale {
+  return (EMAIL_LOCALES as readonly string[]).includes(locale)
+    ? (locale as EmailLocale)
+    : "es"
+}
+
+/** Etiqueta legible del idioma para el email interno al admin. */
+const LOCALE_LABEL: Record<EmailLocale, string> = {
+  es: "Español",
+  en: "English",
+  de: "Deutsch",
+}
+
+/**
+ * Carga el JSON de mensajes de un locale. Import dinámico con string
+ * estático (un chunk por idioma) — mismo enfoque que `src/i18n/request.ts`.
+ * El `createTranslator` de next-intl resuelve el copy sin depender de un
+ * request scope, así que sirve dentro del hook de Better Auth.
+ */
+async function loadEmailMessages(locale: EmailLocale) {
+  switch (locale) {
+    case "en":
+      return (await import("../messages/en.json")).default
+    case "de":
+      return (await import("../messages/de.json")).default
+    default:
+      return (await import("../messages/es.json")).default
+  }
+}
+
+/**
+ * Email de bienvenida al usuario que acaba de registrarse. Se envía en
+ * el idioma que tenía activo en el sitio al momento del signup (ES/EN/DE,
+ * fallback ES). Tono editorial y corto.
+ *
+ * IMPORTANTE: el signup es inmediato — la cuenta nace activa. Este email
+ * NO promete "revisión en 1-2 días" (eso es solo para el flujo creator
+ * de `/apply`). La mención del camino creator es informativa, no un CTA
+ * que presione.
+ */
+export async function triggerSignupWelcome(payload: {
+  email: string
+  name: string
+  locale: string
+}) {
+  const locale = normalizeEmailLocale(payload.locale)
+  const messages = await loadEmailMessages(locale)
+  const t = createTranslator({
+    locale,
+    messages,
+    namespace: "emails.welcomeUser",
+  })
+
+  const safeName = payload.name.trim()
+  // El nombre es lo único interpolado de fuente no controlada. Se escapa
+  // e interpola directo en el template literal del HTML — igual que en
+  // `triggerSignupAdminNotification` y `triggerContactNotification` — en
+  // vez de pasarlo por `t()`. Así el escape es una sola capa explícita,
+  // sin depender de cómo trate `createTranslator` los valores ICU. La
+  // key `greeting` es solo la palabra ("Hola"/"Hi"/"Hallo").
+  const greeting = safeName
+    ? `${t("greeting")} ${escapeHtml(safeName)},`
+    : `${t("greeting")},`
+  const eventsUrl = `https://lahuelladelcaminante.de/${locale}/events`
+  const applyUrl = `https://lahuelladelcaminante.de/${locale}/apply`
+
+  const html = `<!DOCTYPE html>
+<html lang="${locale}">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0e0407;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;padding:40px 20px">
+    <tr><td align="center">
+      <table width="100%" style="max-width:580px;background:#130609;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+
+        <tr><td style="background:linear-gradient(135deg,#7a1a0e 0%,#c0392b 50%,#7a1a0e 100%);padding:40px 32px;text-align:center">
+          <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 12px">La Huella del Caminante</p>
+          <h1 style="color:#ffffff;font-size:26px;font-weight:900;margin:0;line-height:1.2">${t("heading")}</h1>
+        </td></tr>
+
+        <tr><td style="padding:36px 32px">
+          <p style="color:#e8d5d0;font-size:16px;margin:0 0 20px;line-height:1.6">${greeting}</p>
+          <p style="color:#c4a9a4;font-size:15px;margin:0 0 16px;line-height:1.7">${t("intro")}</p>
+          <p style="color:#c4a9a4;font-size:15px;margin:0 0 28px;line-height:1.7">${t("body")}</p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px">
+            <tr><td align="center">
+              <a href="${eventsUrl}"
+                 style="display:inline-block;background:#c0392b;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:50px;letter-spacing:0.02em">
+                ${t("exploreCta")} →
+              </a>
+            </td></tr>
+          </table>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;border-radius:10px;padding:20px 24px">
+            <tr><td>
+              <p style="color:#c4a9a4;font-size:14px;margin:0 0 10px;line-height:1.6">${t("creatorNudge")}</p>
+              <p style="margin:0">
+                <a href="${applyUrl}" style="color:#c0392b;font-size:14px;font-weight:700;text-decoration:none">${t("creatorCta")} →</a>
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="border-top:1px solid rgba(255,255,255,0.06);padding:20px 32px;text-align:center">
+          <p style="color:rgba(255,255,255,0.2);font-size:12px;margin:0">
+            © ${new Date().getFullYear()} La Huella del Caminante · Berlín
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  await sendEmail(payload.email, t("subject"), html)
+}
+
+/**
+ * Email interno al admin avisando que hubo un signup nuevo. Uno por cada
+ * registro (decisión del spec — sin agrupamiento). Siempre en castellano
+ * (lo lee el founder). Destinatario: `env.ADMIN_NOTIFICATION_EMAIL`.
+ *
+ * Solo incluye lo necesario para que el admin sepa que hubo un alta:
+ * nombre, email, idioma usado y fecha. Sin datos sensibles extra.
+ */
+export async function triggerSignupAdminNotification(payload: {
+  email: string
+  name: string
+  locale: string
+  createdAt: Date
+}) {
+  const locale = normalizeEmailLocale(payload.locale)
+  // Defensa en profundidad: colapsar CRLF antes de que `name` toque el
+  // `Subject:` MIME header (mismo tratamiento que triggerContactNotification).
+  const safeSubjectName = payload.name
+    .replace(/[\r\n]+/g, " ")
+    .trim()
+    .slice(0, 100)
+  const fecha = new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Europe/Berlin",
+  }).format(payload.createdAt)
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0e0407;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;padding:40px 20px">
+    <tr><td align="center">
+      <table width="100%" style="max-width:580px;background:#130609;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+
+        <tr><td style="background:#1a0c10;padding:28px 32px;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 6px">La Huella del Caminante</p>
+          <h1 style="color:#ffffff;font-size:20px;font-weight:800;margin:0">Nuevo registro en la plataforma</h1>
+        </td></tr>
+
+        <tr><td style="padding:32px">
+          <p style="color:#c4a9a4;font-size:14px;margin:0 0 24px">
+            Una persona creó una cuenta nueva:
+          </p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;border-radius:10px;overflow:hidden">
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Nombre</p>
+              <p style="color:#ffffff;font-size:15px;font-weight:600;margin:0">${escapeHtml(payload.name)}</p>
+            </td></tr>
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Email</p>
+              <p style="color:#c0392b;font-size:15px;font-weight:600;margin:0">
+                <a href="mailto:${escapeHtml(payload.email)}" style="color:#c0392b;text-decoration:none">${escapeHtml(payload.email)}</a>
+              </p>
+            </td></tr>
+            <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Idioma</p>
+              <p style="color:#e8d5d0;font-size:15px;margin:0">${LOCALE_LABEL[locale]} (${locale})</p>
+            </td></tr>
+            <tr><td style="padding:14px 20px">
+              <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 4px">Fecha</p>
+              <p style="color:#e8d5d0;font-size:15px;margin:0">${escapeHtml(fecha)}</p>
+            </td></tr>
+          </table>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0">
+            <tr><td align="center">
+              <a href="https://lahuelladelcaminante.de/es/admin/users"
+                 style="display:inline-block;background:#c0392b;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:50px">
+                Gestionar usuarios →
+              </a>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="border-top:1px solid rgba(255,255,255,0.06);padding:18px 32px;text-align:center">
+          <p style="color:rgba(255,255,255,0.2);font-size:12px;margin:0">
+            © ${new Date().getFullYear()} La Huella del Caminante · Berlín
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  await sendEmail(
+    env.ADMIN_NOTIFICATION_EMAIL,
+    `Nuevo registro en La Huella: ${safeSubjectName || payload.email}`,
     html
   )
 }
