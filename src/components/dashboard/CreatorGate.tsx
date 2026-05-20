@@ -19,7 +19,13 @@
  *
  * El caso `APPROVED` no debería llegar acá (el user ya sería `creator`).
  * Si llega — approve a medias, role no bumpeado — se trata como
- * sub-estado 2 ("esperá") para no mostrar algo roto.
+ * sub-estado 2 ("esperá") para no mostrar algo roto, y se loggea un
+ * warning para que el estado inconsistente sea visible en los logs.
+ *
+ * NO monta su propio header/shell: vive dentro del `(protected)/layout.tsx`
+ * que ya provee `Header` + `Footer` globales. Solo aporta el `<main>`
+ * centrado. (El patrón "shell austero con BrandLockup propio" de
+ * `/user-pending` aplica allá porque esa ruta vive fuera de `(protected)`.)
  *
  * Server component — hace el query directo, sin estado. Solo el
  * `SignOutButton` del sub-estado 2 cruza a client.
@@ -28,7 +34,6 @@
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { prisma } from "@/lib/prisma"
-import BrandLockup from "@/components/brand/BrandLockup"
 import StatusHero from "@/components/auth/StatusHero"
 import SignOutButton from "@/components/auth/SignOutButton"
 import Eyebrow from "@/components/ui/Eyebrow"
@@ -49,19 +54,13 @@ function formatApplicationDate(date: Date, locale: string): string {
   }).format(date)
 }
 
-/** Shell mínimo compartido por los 3 sub-estados: header austero con
- * BrandLockup + main centrado. Sin Header global ni DashboardShell —
- * el user acá no debería navegar nada salvo las CTAs del sub-estado. */
-function GateShell({ children }: { children: React.ReactNode }) {
+/** Contenedor centrado compartido por los 3 sub-estados. NO incluye
+ * header ni footer — el `(protected)/layout.tsx` ya los provee. */
+function GateLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-bg-page">
-      <header className="flex h-16 items-center px-l">
-        <BrandLockup orientation="horizontal" href="/" />
-      </header>
-      <main className="mx-auto flex max-w-[560px] flex-col items-center gap-l px-l py-2xl text-center">
-        {children}
-      </main>
-    </div>
+    <main className="mx-auto flex max-w-[560px] flex-col items-center gap-l px-l py-3xl text-center">
+      {children}
+    </main>
   )
 }
 
@@ -83,6 +82,17 @@ export default async function CreatorGate({
     application &&
     (application.status === "PENDING" || application.status === "APPROVED")
   ) {
+    if (application.status === "APPROVED") {
+      // Estado inconsistente: la Application está aprobada pero el user
+      // sigue siendo `role: user` (por eso llegó al gate). Significa que
+      // el approve no terminó de bumpear el role. Lo mostramos como
+      // "en revisión" para no exhibir algo roto, pero lo dejamos en
+      // logs para diagnóstico.
+      console.warn("creator_gate_approved_but_not_creator", {
+        email: userEmail,
+      })
+    }
+
     const t = await getTranslations({ locale, namespace: "account.pending" })
     const tAccount = await getTranslations({ locale, namespace: "account" })
     const formattedDate = formatApplicationDate(
@@ -91,7 +101,7 @@ export default async function CreatorGate({
     )
 
     return (
-      <GateShell>
+      <GateLayout>
         <StatusHero variant="pending" />
         <Eyebrow accent="editorial" as="p">
           {t("eyebrow")}
@@ -126,7 +136,7 @@ export default async function CreatorGate({
             className="h-11"
           />
         </div>
-      </GateShell>
+      </GateLayout>
     )
   }
 
@@ -135,7 +145,7 @@ export default async function CreatorGate({
   // ── Sub-estado 3 — Application REJECTED ──────────────────────────────
   if (application && application.status === "REJECTED") {
     return (
-      <GateShell>
+      <GateLayout>
         <Eyebrow accent="brand" as="p">
           {t("rejected.eyebrow")}
         </Eyebrow>
@@ -156,13 +166,13 @@ export default async function CreatorGate({
             <Link href="/contact">{t("rejected.ctaContact")}</Link>
           </Button>
         </div>
-      </GateShell>
+      </GateLayout>
     )
   }
 
   // ── Sub-estado 1 — nunca aplicó (no hay Application) ─────────────────
   return (
-    <GateShell>
+    <GateLayout>
       <Eyebrow accent="brand" as="p">
         {t("notCreator.eyebrow")}
       </Eyebrow>
@@ -183,6 +193,6 @@ export default async function CreatorGate({
           <Link href="/">{t("notCreator.ctaHome")}</Link>
         </Button>
       </div>
-    </GateShell>
+    </GateLayout>
   )
 }

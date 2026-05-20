@@ -31,7 +31,12 @@ export default async function DashboardLayout({
   const { user } = await requireActive(locale)
 
   // Un `role: user` no es creator todavía → pantalla intermedia en vez
-  // del shell. `children` (los page.tsx de las sub-rutas) no se renderiza.
+  // del shell. Al no devolver `children`, los `page.tsx` de las
+  // sub-rutas ni siquiera se invocan (RSC los construye lazy como prop):
+  // su `requireRole("creator")` y sus fetches no corren. Por eso un user
+  // no-creator en `/dashboard/events/create` ve el gate sin loop ni
+  // doble-redirect. Invariante a preservar: este branch NUNCA debe
+  // renderizar `children`.
   if (!isCreatorOrAdmin(user.role)) {
     return <CreatorGate locale={locale} userEmail={user.email} />
   }
