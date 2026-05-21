@@ -340,7 +340,7 @@ export async function getUpcomingEvents(
 }
 
 const _getPastEvents = unstable_cache(
-  async (): Promise<EventSummary[]> => {
+  async (limit?: number): Promise<EventSummary[]> => {
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
@@ -348,6 +348,7 @@ const _getPastEvents = unstable_cache(
       },
       include: eventInclude,
       orderBy: { createdAt: "desc" },
+      ...(limit !== undefined ? { take: limit } : {}),
     })
     return events.map(mapToSummary)
   },
@@ -355,8 +356,17 @@ const _getPastEvents = unstable_cache(
   { revalidate: 600, tags: ["events"] }
 )
 
-export async function getPastEvents(): Promise<EventSummary[]> {
-  return (await _getPastEvents()).map(rehydrateEvent)
+/**
+ * Eventos pasados — no eliminados (`isDeleted: false`) cuyas fechas ya
+ * ocurrieron todas. Sin `limit` devuelve la lista completa
+ * (`/events/past`); con `limit`, los N más recientes — lo usa la sección
+ * de eventos pasados del home. Orden `createdAt` desc.
+ *
+ * NOTA: a diferencia de `getUpcomingEvents`, no filtra por `isActive`
+ * (comportamiento preexistente de `/events/past`, ver review del PR).
+ */
+export async function getPastEvents(limit?: number): Promise<EventSummary[]> {
+  return (await _getPastEvents(limit)).map(rehydrateEvent)
 }
 
 /**

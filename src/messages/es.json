@@ -47,6 +47,11 @@
       "eyebrow": "PARA ARTISTAS Y ORGANIZADORES",
       "title": "¿Tocás música latina? Sumate a la huella.",
       "button": "Para artistas"
+    },
+    "past": {
+      "eyebrow": "ARCHIVO",
+      "title": "Eventos pasados",
+      "viewAll": "Ver todos →"
     }
   },
   "apply": {

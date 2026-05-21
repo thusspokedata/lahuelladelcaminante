@@ -5,6 +5,7 @@ import {
   getFeaturedEvents,
   getHeroVariant,
   getUpcomingEventsWithin,
+  getPastEvents,
   getActiveGenres,
   type EventSummary,
 } from "@/services/events"
@@ -42,6 +43,7 @@ export default async function HomePage({
     upcomingAgenda,
     activeArtists,
     activeGenres,
+    pastEvents,
     user,
   ] = await Promise.all([
     getHeroVariant(),
@@ -51,6 +53,8 @@ export default async function HomePage({
     getUpcomingEventsWithin(365, 10),
     getActiveArtists(8),
     getActiveGenres(),
+    // 4 pasados más recientes para la sección de archivo del final.
+    getPastEvents(4),
     getCurrentUser(),
   ])
 
@@ -80,6 +84,10 @@ export default async function HomePage({
       ) : null}
 
       {!user ? <CtaSection /> : null}
+
+      {pastEvents.length > 0 ? (
+        <PastEventsSection events={pastEvents} locale={locale} />
+      ) : null}
     </div>
   )
 }
@@ -312,6 +320,50 @@ async function CtaSection() {
           >
             {t("button")} <span aria-hidden="true">→</span>
           </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Past events ────────────────────────────────────────────────────────
+
+interface PastEventsSectionProps {
+  events: EventSummary[]
+  locale: string
+}
+
+/**
+ * Sección de archivo al final del home: los eventos pasados más
+ * recientes. Da impronta — un portal con historia se ve más vivo.
+ *
+ * Usa el `EventCard` default (mismo que `/events/past`), no la variante
+ * `featured` de la sección de destacados — eso, más el encabezado claro
+ * "ARCHIVO · Eventos pasados", evita confundir un evento pasado con uno
+ * próximo. El caller no la renderiza si `events` viene vacío.
+ */
+async function PastEventsSection({ events, locale }: PastEventsSectionProps) {
+  const t = await getTranslations({ locale, namespace: "home.past" })
+
+  return (
+    <section className={cn(SECTION_GAP_CLASS, "border-t border-border")}>
+      <div className="mx-auto flex flex-col gap-xl" style={CONTAINER_STYLE}>
+        <SectionHeader
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          action={
+            <Link
+              href="/events/past"
+              className="text-body-s font-semibold text-fg-primary hover:text-brand transition-colors"
+            >
+              {t("viewAll")}
+            </Link>
+          }
+        />
+        <div className="grid grid-cols-1 gap-l sm:grid-cols-2 lg:grid-cols-3">
+          {events.map((event) => (
+            <EventCard key={event.id} event={event} locale={locale} />
+          ))}
         </div>
       </div>
     </section>
