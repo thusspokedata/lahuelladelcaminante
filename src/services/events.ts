@@ -348,7 +348,7 @@ const _getPastEvents = unstable_cache(
       },
       include: eventInclude,
       orderBy: { createdAt: "desc" },
-      ...(limit ? { take: limit } : {}),
+      ...(limit !== undefined ? { take: limit } : {}),
     })
     return events.map(mapToSummary)
   },
