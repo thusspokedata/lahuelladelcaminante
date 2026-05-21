@@ -12,7 +12,11 @@ export default async function PastEventsPage({
   const events = await getPastEvents()
 
   return (
-    <div className="space-y-6">
+    // Contenedor con las mismas clases de ancho / gutter / padding
+    // vertical que `/events` y `/artists` — la página venía sin aire,
+    // pegada a los bordes del viewport. (El header con banda de esas
+    // páginas queda fuera de scope: acá solo se agrega el aire.)
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       <h1 className="text-3xl font-bold">{t("past")}</h1>
       <EventList events={events} />
     </div>
