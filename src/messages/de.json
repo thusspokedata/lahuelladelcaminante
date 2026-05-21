@@ -47,6 +47,11 @@
       "eyebrow": "FÜR KÜNSTLER UND VERANSTALTER",
       "title": "Spielst du lateinamerikanische Musik? Werde Teil von la huella.",
       "button": "Für Künstler"
+    },
+    "past": {
+      "eyebrow": "ARCHIV",
+      "title": "Vergangene Events",
+      "viewAll": "Alle ansehen →"
     }
   },
   "apply": {

@@ -47,6 +47,11 @@
       "eyebrow": "FOR ARTISTS AND PROMOTERS",
       "title": "Play Latin music? Join la huella.",
       "button": "For artists"
+    },
+    "past": {
+      "eyebrow": "ARCHIVE",
+      "title": "Past events",
+      "viewAll": "View all →"
     }
   },
   "apply": {
