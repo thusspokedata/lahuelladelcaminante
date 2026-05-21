@@ -5,7 +5,9 @@
  *  - Nav central con underline-on-active sangre (desktop).
  *  - LanguageSwitcher (pills siempre, compactas en mobile).
  *  - Estado de usuario: "Iniciar sesión" + "Para artistas" si no logueado;
- *    avatar/iniciales + "Sign out" si logueado.
+ *    avatar/iniciales + "Sign out" si logueado. Para creators/admins se
+ *    suma el link "Mi panel" (→ `/dashboard`) y el avatar pasa a linkear
+ *    al dashboard; admins ven además un link a `/admin`.
  *  - Drawer mobile con la misma nav + estado de usuario, accesible desde
  *    botón hamburguesa.
  *
@@ -149,7 +151,21 @@ function isNavItemActive(pathname: string, item: NavItem): boolean {
 }
 
 interface SessionLike {
-  user?: { name?: string | null } | null
+  user?: { name?: string | null; role?: string | null } | null
+}
+
+/**
+ * Acceso al panel derivado del rol de la sesión. Client-safe a propósito:
+ * `services/auth.ts` (donde viven `isCreatorOrAdmin`/`isAdmin`) es
+ * `server-only` y no se puede importar en este client component. El
+ * `role` llega del plugin `admin` de Better Auth vía `useSession()`.
+ */
+function getPanelAccess(session: SessionLike | null | undefined) {
+  const role = session?.user?.role?.toLowerCase()
+  return {
+    canSeeDashboard: role === "creator" || role === "admin",
+    canSeeAdmin: role === "admin",
+  }
 }
 
 interface UserSlotProps {
@@ -185,18 +201,59 @@ function UserSlot({ session, t, onSignOut }: UserSlotProps) {
   }
 
   const initials = getInitials(session.user?.name ?? null)
+  const { canSeeDashboard, canSeeAdmin } = getPanelAccess(session)
+
+  const avatarBase = cn(
+    "w-9 h-9 rounded-pill bg-bg-surface-2 border border-border",
+    "flex items-center justify-center text-caption font-semibold text-fg-primary"
+  )
 
   return (
-    <div className="flex items-center gap-s">
-      <div
-        aria-hidden="true"
-        className={cn(
-          "w-9 h-9 rounded-pill bg-bg-surface-2 border border-border",
-          "flex items-center justify-center text-caption font-semibold text-fg-primary"
-        )}
-      >
-        {initials ?? "·"}
-      </div>
+    <div className="flex items-center gap-m">
+      {canSeeDashboard && (
+        <Link
+          href="/dashboard"
+          className={cn(
+            "text-body-s font-medium text-creator hover:text-fg-primary",
+            "transition-colors duration-200 ease-out rounded-s px-xs",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+            "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+          )}
+        >
+          {t("dashboard")}
+        </Link>
+      )}
+      {canSeeAdmin && (
+        <Link
+          href="/admin/applications"
+          className={cn(
+            "text-body-s text-fg-secondary hover:text-fg-primary",
+            "transition-colors duration-200 ease-out rounded-s px-xs",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+            "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+          )}
+        >
+          {t("admin")}
+        </Link>
+      )}
+      {canSeeDashboard ? (
+        <Link
+          href="/dashboard"
+          aria-label={t("dashboard")}
+          className={cn(
+            avatarBase,
+            "hover:border-creator transition-colors duration-200 ease-out",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+            "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+          )}
+        >
+          {initials ?? "·"}
+        </Link>
+      ) : (
+        <div aria-hidden="true" className={avatarBase}>
+          {initials ?? "·"}
+        </div>
+      )}
       <button
         type="button"
         onClick={onSignOut}
@@ -274,6 +331,7 @@ function MobileDrawer({
   onSignOut,
 }: MobileDrawerProps) {
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null)
+  const { canSeeDashboard, canSeeAdmin } = getPanelAccess(session)
 
   // Lock body scroll cuando el drawer está abierto + cerrar con Escape +
   // gestionar foco (al abrir, mover al primer link; al cerrar, restaurar
@@ -385,17 +443,47 @@ function MobileDrawer({
               </Link>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-m">
-              <span className="text-body-s text-fg-secondary">
-                {session.user?.name ?? ""}
-              </span>
-              <button
-                type="button"
-                onClick={onSignOut}
-                className="text-body-s text-fg-secondary hover:text-fg-primary py-s"
-              >
-                {t("signOut")}
-              </button>
+            <div className="flex flex-col gap-xs">
+              {canSeeDashboard && (
+                <Link
+                  href="/dashboard"
+                  onClick={onClose}
+                  className={cn(
+                    "text-body-l py-s rounded-m px-m transition-colors",
+                    "text-creator hover:bg-bg-surface-2",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                    "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+                  )}
+                >
+                  {t("dashboard")}
+                </Link>
+              )}
+              {canSeeAdmin && (
+                <Link
+                  href="/admin/applications"
+                  onClick={onClose}
+                  className={cn(
+                    "text-body-l py-s rounded-m px-m transition-colors",
+                    "text-fg-secondary hover:bg-bg-surface-2 hover:text-fg-primary",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                    "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+                  )}
+                >
+                  {t("admin")}
+                </Link>
+              )}
+              <div className="flex items-center justify-between gap-m px-m pt-s">
+                <span className="text-body-s text-fg-secondary">
+                  {session.user?.name ?? ""}
+                </span>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  className="text-body-s text-fg-secondary hover:text-fg-primary py-s"
+                >
+                  {t("signOut")}
+                </button>
+              </div>
             </div>
           )}
         </div>
