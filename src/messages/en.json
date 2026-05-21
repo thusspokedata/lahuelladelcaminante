@@ -2,7 +2,8 @@
   "nav": {
     "events": "Events",
     "artists": "Artists",
-    "dashboard": "Dashboard",
+    "dashboard": "My panel",
+    "admin": "Admin",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "thisWeek": "This week",

@@ -2,7 +2,8 @@
   "nav": {
     "events": "Veranstaltungen",
     "artists": "Künstler",
-    "dashboard": "Dashboard",
+    "dashboard": "Mein Bereich",
+    "admin": "Admin",
     "signIn": "Anmelden",
     "signOut": "Abmelden",
     "thisWeek": "Diese Woche",
