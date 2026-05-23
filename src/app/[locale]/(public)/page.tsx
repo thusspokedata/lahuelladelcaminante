@@ -58,9 +58,17 @@ export default async function HomePage({
     getCurrentUser(),
   ])
 
+  // El "próximo show" del mini-card mobile del hero = primera fila de
+  // la agenda (eventos ya ordenados por fecha asc). Una sola query.
+  // (El `limit` de `getUpcomingEventsWithin` se aplica en memoria, no
+  // en Prisma, así que pedir `(365, 1)` aparte traería los mismos
+  // events que `(365, 10)` con otro slice — dos cache entries
+  // equivalentes. Mejor derivar.)
+  const nextEvent = upcomingAgenda[0] ?? null
+
   return (
     <div>
-      <HeroSection variant={heroVariant} locale={locale} />
+      <HeroSection variant={heroVariant} nextEvent={nextEvent} locale={locale} />
 
       {/* StatsSection (shows/artistas/ciudades/rango) oculta por ahora —
           con la agenda todavía chica los contadores quedan flojos.
@@ -96,10 +104,11 @@ export default async function HomePage({
 
 interface HeroSectionProps {
   variant: "thisWeek" | "nextMonth" | "whatComes"
+  nextEvent: EventSummary | null
   locale: string
 }
 
-async function HeroSection({ variant, locale }: HeroSectionProps) {
+async function HeroSection({ variant, nextEvent, locale }: HeroSectionProps) {
   const tHero = await getTranslations({ locale, namespace: "home.hero" })
 
   // El copy del h1 tiene dos partes: prefijo neutro + sufijo coloreado.
@@ -132,6 +141,19 @@ async function HeroSection({ variant, locale }: HeroSectionProps) {
           {tHero("tagline")}
         </p>
       </div>
+      {/* Mini-card del próximo show — sibling de la grilla, no parte
+          de ella (la grilla pasa a 2 columnas en `lg` y el mini-card
+          tendría posición rara). Visible mientras el hero queda en
+          1 columna (mobile + tablet, <`lg`). A partir de `lg` se
+          oculta — el hero ya tiene info densa en sus 2 cols. */}
+      {nextEvent ? (
+        <div
+          className="mx-auto mt-xl lg:hidden"
+          style={CONTAINER_STYLE}
+        >
+          <EventRow event={nextEvent} locale={locale} />
+        </div>
+      ) : null}
     </section>
   )
 }
