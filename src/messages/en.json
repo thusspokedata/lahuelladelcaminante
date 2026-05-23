@@ -29,9 +29,9 @@
       "cities": "cities",
       "dateRange": "range"
     },
-    "featured": {
-      "eyebrow": "FEATURED · THIS WEEK",
-      "title": "Must-see",
+    "nextWeeks": {
+      "eyebrow": "NEXT 4 WEEKS",
+      "title": "What's coming up",
       "viewAll": "View all →"
     },
     "upcoming": {

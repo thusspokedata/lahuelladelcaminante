@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import {
-  getFeaturedEvents,
   getHeroVariant,
   getUpcomingEventsWithin,
   getPastEvents,
@@ -39,7 +38,7 @@ export default async function HomePage({
 
   const [
     heroVariant,
-    featuredEvents,
+    nextWeeksEvents,
     upcomingAgenda,
     activeArtists,
     activeGenres,
@@ -47,7 +46,8 @@ export default async function HomePage({
     user,
   ] = await Promise.all([
     getHeroVariant(),
-    getFeaturedEvents(3),
+    // Próximos 3 dentro de las 4 semanas — sección "Próximas 4 semanas".
+    getUpcomingEventsWithin(28, 3),
     // Próximos 10 dentro del próximo año, suficiente para la agenda
     // compacta de la home sin traer toda la lista futura.
     getUpcomingEventsWithin(365, 10),
@@ -67,8 +67,8 @@ export default async function HomePage({
           Re-agregar cuando crezca: `git log` tiene el componente, el copy
           sigue en `messages.home.stats`. */}
 
-      {featuredEvents.length > 0 ? (
-        <FeaturedSection events={featuredEvents} locale={locale} />
+      {nextWeeksEvents.length > 0 ? (
+        <NextWeeksSection events={nextWeeksEvents} locale={locale} />
       ) : null}
 
       {upcomingAgenda.length > 0 ? (
@@ -136,15 +136,15 @@ async function HeroSection({ variant, locale }: HeroSectionProps) {
   )
 }
 
-// ── Featured ──────────────────────────────────────────────────────────
+// ── Próximas 4 semanas ────────────────────────────────────────────────
 
-interface FeaturedSectionProps {
+interface NextWeeksSectionProps {
   events: EventSummary[]
   locale: string
 }
 
-async function FeaturedSection({ events, locale }: FeaturedSectionProps) {
-  const t = await getTranslations({ locale, namespace: "home.featured" })
+async function NextWeeksSection({ events, locale }: NextWeeksSectionProps) {
+  const t = await getTranslations({ locale, namespace: "home.nextWeeks" })
 
   return (
     <section className={SECTION_GAP_CLASS}>

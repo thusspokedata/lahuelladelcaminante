@@ -29,9 +29,9 @@
       "cities": "ciudades",
       "dateRange": "rango"
     },
-    "featured": {
-      "eyebrow": "DESTACADOS · ESTA AGENDA",
-      "title": "Imperdibles",
+    "nextWeeks": {
+      "eyebrow": "PRÓXIMAS 4 SEMANAS",
+      "title": "Lo que se viene",
       "viewAll": "Ver todo →"
     },
     "upcoming": {
