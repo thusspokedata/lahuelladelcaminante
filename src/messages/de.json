@@ -29,9 +29,9 @@
       "cities": "Städte",
       "dateRange": "Zeitraum"
     },
-    "featured": {
-      "eyebrow": "HIGHLIGHTS · DIESE WOCHE",
-      "title": "Nicht verpassen",
+    "nextWeeks": {
+      "eyebrow": "NÄCHSTE 4 WOCHEN",
+      "title": "Was bald läuft",
       "viewAll": "Alle ansehen →"
     },
     "upcoming": {
