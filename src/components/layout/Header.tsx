@@ -4,7 +4,7 @@
  *  - BrandLockup horizontal (link a la home del locale activo).
  *  - Nav central con underline-on-active sangre (desktop).
  *  - LanguageSwitcher (pills siempre, compactas en mobile).
- *  - Estado de usuario: "Iniciar sesión" + "Para artistas" si no logueado;
+ *  - Estado de usuario: "Iniciar sesión" + "Sumate como creador/a" si no logueado;
  *    avatar/iniciales + "Sign out" si logueado. Para creators/admins se
  *    suma el link "Mi panel" (→ `/dashboard`) y el avatar pasa a linkear
  *    al dashboard; admins ven además un link a `/admin`.
@@ -194,7 +194,7 @@ function UserSlot({ session, t, onSignOut }: UserSlotProps) {
             "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
           )}
         >
-          {t("forArtists")}
+          {t("becomeCreator")}
         </Link>
       </div>
     )
@@ -439,7 +439,7 @@ function MobileDrawer({
                   "hover:bg-brand-dim transition-colors duration-200 ease-out"
                 )}
               >
-                {t("forArtists")}
+                {t("becomeCreator")}
               </Link>
             </div>
           ) : (

@@ -7,7 +7,7 @@
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "thisWeek": "This week",
-    "forArtists": "For artists",
+    "becomeCreator": "Become a creator",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "languageSwitcherLabel": "Language switcher"
@@ -47,7 +47,7 @@
     "cta": {
       "eyebrow": "FOR ARTISTS AND PROMOTERS",
       "title": "Play Latin music? Join la huella.",
-      "button": "For artists"
+      "button": "Become a creator"
     },
     "past": {
       "eyebrow": "ARCHIVE",
