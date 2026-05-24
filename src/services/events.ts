@@ -3,7 +3,7 @@ import "server-only"
 import { cache } from "react"
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
-import { rehydrateDate, rehydrateDates } from "@/lib/date"
+import { rehydrateDate, rehydrateDates, startOfTodayBerlin } from "@/lib/date"
 import { generateUniqueSlug } from "@/lib/slugify"
 import { deleteImages } from "./cloudinary"
 
@@ -119,11 +119,11 @@ const eventInclude = {
  * en el `mapToSummary` resulta en la próxima fecha real del evento, no
  * en una fecha pasada de un evento que tiene varias funciones.
  */
-function futureEventInclude(now: Date, until?: Date) {
+function futureEventInclude(from: Date, until?: Date) {
   return {
     dates: {
       where: {
-        date: { gte: now, ...(until ? { lte: until } : {}) },
+        date: { gte: from, ...(until ? { lte: until } : {}) },
       },
       orderBy: { date: "asc" as const },
       take: 1,
@@ -155,18 +155,22 @@ function sortByNextDate(events: EventSummary[]): EventSummary[] {
  */
 export const getHeroVariant = unstable_cache(
   async (): Promise<"thisWeek" | "nextMonth" | "whatComes"> => {
-    const now = new Date()
-    const in7 = new Date(now)
-    in7.setDate(in7.getDate() + 7)
-    const in30 = new Date(now)
-    in30.setDate(in30.getDate() + 30)
+    // Filtramos por día calendario en Berlín, no por instante (ver
+    // `startOfTodayBerlin` y el comentario en `@/lib/date`). Los `in7`/
+    // `in30` se calculan en ms desde ese inicio de día — tz-independiente.
+    const today = startOfTodayBerlin()
+    // `+(N+1)*24h - 1ms` = último instante del día calendario Berlín N
+    // días después de hoy, INCLUSIVE. Sin el +1 perdíamos los eventos
+    // del día N (almacenados como 00:00 UTC = anteriores al bound).
+    const in7 = new Date(today.getTime() + 8 * 24 * 60 * 60 * 1000 - 1)
+    const in30 = new Date(today.getTime() + 31 * 24 * 60 * 60 * 1000 - 1)
 
     // Una sola query: trae la próxima fecha de evento activo no borrado
     // y decidimos contra los umbrales en memoria. `select: { date: true }`
     // mantiene el payload mínimo.
     const nextDate = await prisma.eventDate.findFirst({
       where: {
-        date: { gte: now, lte: in30 },
+        date: { gte: today, lte: in30 },
         event: { isDeleted: false, isActive: true },
       },
       orderBy: { date: "asc" },
@@ -189,16 +193,19 @@ export const getHeroVariant = unstable_cache(
  */
 const _getUpcomingEventsWithin = unstable_cache(
   async (days: number, limit?: number): Promise<EventSummary[]> => {
-    const now = new Date()
-    const until = new Date(now)
-    until.setDate(until.getDate() + days)
+    const today = startOfTodayBerlin()
+    // `+(days+1)*24h - 1ms` = último instante del día calendario Berlín
+    // `days` después de hoy, INCLUSIVE (los eventos se guardan como
+    // 00:00 UTC, así que el bound debe extenderse al fin del día para
+    // capturarlos). Ver mismo patrón en getHeroVariant.
+    const until = new Date(today.getTime() + (days + 1) * 24 * 60 * 60 * 1000 - 1)
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: now, lte: until } } },
+        dates: { some: { date: { gte: today, lte: until } } },
       },
-      include: futureEventInclude(now, until),
+      include: futureEventInclude(today, until),
     })
     const ordered = sortByNextDate(events.map(mapToSummary))
     return limit ? ordered.slice(0, limit) : ordered
@@ -223,14 +230,14 @@ export async function getUpcomingEventsWithin(
  */
 const _getFeaturedEvents = unstable_cache(
   async (limit = 3): Promise<EventSummary[]> => {
-    const now = new Date()
+    const today = startOfTodayBerlin()
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: now } } },
+        dates: { some: { date: { gte: today } } },
       },
-      include: futureEventInclude(now),
+      include: futureEventInclude(today),
     })
     return sortByNextDate(events.map(mapToSummary)).slice(0, limit)
   },
@@ -256,17 +263,17 @@ export interface UpcomingStats {
  */
 const _getUpcomingStats = unstable_cache(
   async (): Promise<UpcomingStats> => {
-    const now = new Date()
+    const today = startOfTodayBerlin()
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: now } } },
+        dates: { some: { date: { gte: today } } },
       },
       select: {
         artistId: true,
         location: true,
-        dates: { where: { date: { gte: now } }, select: { date: true } },
+        dates: { where: { date: { gte: today } }, select: { date: true } },
       },
     })
 
@@ -316,11 +323,12 @@ export async function getUpcomingStats(): Promise<UpcomingStats> {
 
 const _getUpcomingEvents = unstable_cache(
   async (filters?: { genre?: string; city?: string }): Promise<EventSummary[]> => {
+    const today = startOfTodayBerlin()
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: new Date() } } },
+        dates: { some: { date: { gte: today } } },
         ...(filters?.genre ? { genre: filters.genre } : {}),
         ...(filters?.city ? { location: { contains: filters.city, mode: "insensitive" } } : {}),
       },
@@ -344,7 +352,7 @@ const _getPastEvents = unstable_cache(
     const events = await prisma.event.findMany({
       where: {
         isDeleted: false,
-        dates: { every: { date: { lt: new Date() } } },
+        dates: { every: { date: { lt: startOfTodayBerlin() } } },
       },
       include: eventInclude,
       orderBy: { createdAt: "desc" },
@@ -432,7 +440,7 @@ export const getActiveGenres = unstable_cache(
         isDeleted: false,
         isActive: true,
         genre: { not: null },
-        dates: { some: { date: { gte: new Date() } } },
+        dates: { some: { date: { gte: startOfTodayBerlin() } } },
       },
       select: { genre: true },
       distinct: ["genre"],
@@ -450,7 +458,7 @@ export const getActiveCities = unstable_cache(
       where: {
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: new Date() } } },
+        dates: { some: { date: { gte: startOfTodayBerlin() } } },
       },
       select: { location: true },
       distinct: ["location"],
@@ -488,15 +496,15 @@ export async function getEventsByArtist(artistId: string): Promise<EventSummary[
  */
 const _getUpcomingEventsByArtist = unstable_cache(
   async (artistId: string, limit?: number): Promise<EventSummary[]> => {
-    const now = new Date()
+    const today = startOfTodayBerlin()
     const events = await prisma.event.findMany({
       where: {
         artistId,
         isDeleted: false,
         isActive: true,
-        dates: { some: { date: { gte: now } } },
+        dates: { some: { date: { gte: today } } },
       },
-      include: futureEventInclude(now),
+      include: futureEventInclude(today),
     })
     const ordered = sortByNextDate(events.map(mapToSummary))
     return limit ? ordered.slice(0, limit) : ordered
@@ -524,16 +532,16 @@ const _getOtherEventsByArtist = unstable_cache(
     excludeEventId: string,
     limit?: number
   ): Promise<EventSummary[]> => {
-    const now = new Date()
+    const today = startOfTodayBerlin()
     const events = await prisma.event.findMany({
       where: {
         artistId,
         isDeleted: false,
         isActive: true,
         id: { not: excludeEventId },
-        dates: { some: { date: { gte: now } } },
+        dates: { some: { date: { gte: today } } },
       },
-      include: futureEventInclude(now),
+      include: futureEventInclude(today),
     })
     const ordered = sortByNextDate(events.map(mapToSummary))
     return limit ? ordered.slice(0, limit) : ordered
@@ -602,13 +610,14 @@ export async function getEventsByUserGrouped(
     include: eventInclude,
     orderBy: { createdAt: "desc" },
   })
-  const now = new Date()
+  const today = startOfTodayBerlin()
 
   // Agrupamos sobre el array Prisma para tener acceso a `isActive` (no
   // expuesto en `EventSummary`). `event.dates` viene ordenado asc por
   // `eventInclude`. Para distinguir upcoming/past comparamos la **última**
-  // fecha: si la última ya pasó, el evento entero es pasado; si hay al
-  // menos una futura, es upcoming. Evita duplicación entre buckets.
+  // fecha contra el inicio del día calendario Berlín: si la última ya
+  // pasó (anterior a hoy), el evento entero es pasado; si hay al menos
+  // una hoy/futura, es upcoming. Evita duplicación entre buckets.
   const upcoming: EventSummary[] = []
   const drafts: EventSummary[] = []
   const past: EventSummary[] = []
@@ -622,15 +631,15 @@ export async function getEventsByUserGrouped(
       continue
     }
     const lastDate = summary.dates[summary.dates.length - 1]
-    if (lastDate && lastDate >= now) {
-      // En upcoming filtramos las fechas a solo las futuras, para que el
-      // `EventRow` muestre la próxima cronológica real (`dates[0]`) en su
-      // `DateTile`. Sin este filtro, un evento con varias funciones (una
-      // pasada + una futura) mostraría la pasada porque `dates` viene
-      // ordenado asc desde el include.
+    if (lastDate && lastDate >= today) {
+      // En upcoming filtramos las fechas a solo las hoy/futuras, para
+      // que el `EventRow` muestre la próxima cronológica real
+      // (`dates[0]`) en su `DateTile`. Sin este filtro, un evento con
+      // varias funciones (una pasada + una futura) mostraría la pasada
+      // porque `dates` viene ordenado asc desde el include.
       upcoming.push({
         ...summary,
-        dates: summary.dates.filter((d) => d >= now),
+        dates: summary.dates.filter((d) => d >= today),
       })
     } else {
       past.push(summary)

@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
+import { isTodayBerlin } from "@/lib/date"
 import {
   getHeroVariant,
   getUpcomingEventsWithin,
@@ -58,13 +59,22 @@ export default async function HomePage({
     getCurrentUser(),
   ])
 
-  // El "próximo show" del mini-card mobile del hero = primera fila de
-  // la agenda (eventos ya ordenados por fecha asc). Una sola query.
-  // (El `limit` de `getUpcomingEventsWithin` se aplica en memoria, no
-  // en Prisma, así que pedir `(365, 1)` aparte traería los mismos
-  // events que `(365, 10)` con otro slice — dos cache entries
-  // equivalentes. Mejor derivar.)
-  const nextEvent = upcomingAgenda[0] ?? null
+  // Separamos los eventos de HOY de los demás futuros. Los de hoy van
+  // arriba en su propia sección destacada con badge "HOY"; el resto baja
+  // a "Próximas 4 semanas" y "Próximas semanas" sin duplicar. Derivamos
+  // del agenda (10/365d) porque ahí seguro caben todos los de hoy aunque
+  // sean varios.
+  const todayEvents = upcomingAgenda.filter((ev) =>
+    ev.dates.some((d) => isTodayBerlin(d))
+  )
+  const todayIds = new Set(todayEvents.map((ev) => ev.id))
+  const futureAgenda = upcomingAgenda.filter((ev) => !todayIds.has(ev.id))
+  const futureNextWeeks = nextWeeksEvents.filter((ev) => !todayIds.has(ev.id))
+
+  // El mini-card del hero (mobile) muestra el próximo show DESPUÉS de hoy
+  // — si hay eventos hoy, esos ya están destacados arriba; el mini-card
+  // entonces actúa como teaser "lo que viene después".
+  const nextEvent = futureAgenda[0] ?? null
 
   return (
     <div>
@@ -75,13 +85,17 @@ export default async function HomePage({
           Re-agregar cuando crezca: `git log` tiene el componente, el copy
           sigue en `messages.home.stats`. */}
 
-      {nextWeeksEvents.length > 0 ? (
-        <NextWeeksSection events={nextWeeksEvents} locale={locale} />
+      {todayEvents.length > 0 ? (
+        <TodaySection events={todayEvents} locale={locale} />
       ) : null}
 
-      {upcomingAgenda.length > 0 ? (
+      {futureNextWeeks.length > 0 ? (
+        <NextWeeksSection events={futureNextWeeks} locale={locale} />
+      ) : null}
+
+      {futureAgenda.length > 0 ? (
         <AgendaSection
-          events={upcomingAgenda}
+          events={futureAgenda}
           genres={activeGenres}
           locale={locale}
         />
@@ -154,6 +168,46 @@ async function HeroSection({ variant, nextEvent, locale }: HeroSectionProps) {
           <EventRow event={nextEvent} locale={locale} />
         </div>
       ) : null}
+    </section>
+  )
+}
+
+// ── Hoy ───────────────────────────────────────────────────────────────
+
+interface TodaySectionProps {
+  events: EventSummary[]
+  locale: string
+}
+
+/**
+ * Sección de eventos de HOY (día calendario Berlín). Aparece arriba del
+ * home cuando hay al menos un evento que sucede hoy. Reusa `EventCard`
+ * con la prop `todayLabel`, que tiñe el `DateTile` de rojo (accent
+ * `brand`) y reemplaza el eyebrow por "HOY · 21:00" (o "HOY" si el
+ * evento no tiene `time`). Si no hay eventos hoy, el caller no la
+ * renderiza — no muestra una sección vacía.
+ */
+async function TodaySection({ events, locale }: TodaySectionProps) {
+  const t = await getTranslations({ locale, namespace: "home.today" })
+  const badge = t("badge")
+
+  return (
+    <section className={cn(SECTION_GAP_CLASS, "border-b border-border")}>
+      <div className="mx-auto flex flex-col gap-xl" style={CONTAINER_STYLE}>
+        <SectionHeader title={t("title")} />
+        <div className="grid grid-cols-1 gap-l sm:grid-cols-2 lg:grid-cols-3">
+          {events.map((event, index) => (
+            <EventCard
+              key={event.id}
+              event={event}
+              variant="featured"
+              priority={index === 0}
+              locale={locale}
+              todayLabel={badge}
+            />
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

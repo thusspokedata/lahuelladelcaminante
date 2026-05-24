@@ -3,6 +3,7 @@ import "server-only"
 import { cache } from "react"
 import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { startOfTodayBerlin } from "@/lib/date"
 import { generateUniqueSlug } from "@/lib/slugify"
 import { deleteImages } from "./cloudinary"
 
@@ -100,7 +101,7 @@ export async function getUpcomingArtists(): Promise<ArtistSummary[]> {
             some: {
               isDeleted: false,
               isActive: true,
-              dates: { some: { date: { gte: new Date() } } },
+              dates: { some: { date: { gte: startOfTodayBerlin() } } },
             },
           },
         },
@@ -120,11 +121,11 @@ export async function getPastArtists(): Promise<ArtistSummary[]> {
       events: {
         some: {
           isDeleted: false,
-          dates: { some: { date: { lt: new Date() } } },
+          dates: { some: { date: { lt: startOfTodayBerlin() } } },
         },
         none: {
           isDeleted: false,
-          dates: { some: { date: { gte: new Date() } } },
+          dates: { some: { date: { gte: startOfTodayBerlin() } } },
         },
       },
     },
@@ -180,7 +181,7 @@ export const getActiveArtists = unstable_cache(
           some: {
             isDeleted: false,
             isActive: true,
-            dates: { some: { date: { gte: new Date() } } },
+            dates: { some: { date: { gte: startOfTodayBerlin() } } },
           },
         },
       },

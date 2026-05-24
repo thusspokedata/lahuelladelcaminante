@@ -29,6 +29,10 @@
       "cities": "cities",
       "dateRange": "range"
     },
+    "today": {
+      "title": "Today",
+      "badge": "TODAY"
+    },
     "nextWeeks": {
       "eyebrow": "NEXT 4 WEEKS",
       "title": "What's coming up",
