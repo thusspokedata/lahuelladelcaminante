@@ -29,6 +29,10 @@
       "cities": "Städte",
       "dateRange": "Zeitraum"
     },
+    "today": {
+      "title": "Heute",
+      "badge": "HEUTE"
+    },
     "nextWeeks": {
       "eyebrow": "NÄCHSTE 4 WOCHEN",
       "title": "Was bald läuft",

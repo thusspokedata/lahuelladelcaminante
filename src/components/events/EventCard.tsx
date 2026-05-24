@@ -37,6 +37,13 @@ export interface EventCardProps {
   priority?: boolean
   /** Si el caller ya resolvió el locale, pasarlo evita un await por card. */
   locale?: string
+  /**
+   * Si está presente, la card se renderiza marcada como "hoy": el
+   * `DateTile` pasa a accent `brand` (rojo) y el eyebrow muestra este
+   * label (típicamente "HOY"/"TODAY"/"HEUTE") en lugar del weekday +
+   * fecha. Lo usa el home para destacar los eventos del día.
+   */
+  todayLabel?: string
 }
 
 const MONTHS_BY_LOCALE: Record<string, string> = {
@@ -50,13 +57,22 @@ export async function EventCard({
   variant = "default",
   priority = false,
   locale,
+  todayLabel,
 }: EventCardProps) {
   const resolvedLocale = locale ?? (await getLocale())
   const nextDate = event.dates[0] ?? null
   const accent = genreAccent(event.genre)
   const isFeatured = variant === "featured"
+  const isToday = Boolean(todayLabel)
 
-  const eyebrowText = formatEyebrow(nextDate, event.time, resolvedLocale)
+  // Cuando la card es "hoy", el eyebrow dice "HOY · 21:00" (o solo "HOY"
+  // si no hay time) en vez del weekday-fecha. El día/mes igual quedan
+  // visibles en el `DateTile` rojo del overlay.
+  const eyebrowText = isToday
+    ? event.time
+      ? `${todayLabel} · ${event.time}`
+      : (todayLabel as string)
+    : formatEyebrow(nextDate, event.time, resolvedLocale)
 
   return (
     <Link
@@ -83,7 +99,12 @@ export async function EventCard({
 
         {nextDate ? (
           <div className="absolute top-m left-m">
-            <DateTile date={nextDate} size="m" locale={resolvedLocale} />
+            <DateTile
+              date={nextDate}
+              size="m"
+              locale={resolvedLocale}
+              accent={isToday ? "brand" : undefined}
+            />
           </div>
         ) : null}
 
@@ -99,7 +120,9 @@ export async function EventCard({
       {/* Info debajo del flyer */}
       <div className="flex flex-col gap-xs p-m flex-1">
         {eyebrowText ? (
-          <Eyebrow accent={isFeatured ? "editorial" : "neutral"}>
+          <Eyebrow
+            accent={isToday ? "brand" : isFeatured ? "editorial" : "neutral"}
+          >
             {eyebrowText}
           </Eyebrow>
         ) : null}
