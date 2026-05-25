@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
-import { isTodayBerlin } from "@/lib/date"
+import { endOfDayBerlinPlus, isTodayBerlin } from "@/lib/date"
 import {
   getHeroVariant,
   getUpcomingEventsWithin,
@@ -39,7 +39,6 @@ export default async function HomePage({
 
   const [
     heroVariant,
-    nextWeeksEvents,
     upcomingAgenda,
     activeArtists,
     activeGenres,
@@ -47,10 +46,12 @@ export default async function HomePage({
     user,
   ] = await Promise.all([
     getHeroVariant(),
-    // Próximos 3 dentro de las 4 semanas — sección "Próximas 4 semanas".
-    getUpcomingEventsWithin(28, 3),
-    // Próximos 10 dentro del próximo año, suficiente para la agenda
-    // compacta de la home sin traer toda la lista futura.
+    // Próximos 10 dentro del próximo año — fuente única para la Agenda y
+    // para "Próximas 4 semanas" (que se deriva de este set abajo). Antes
+    // había una query separada `getUpcomingEventsWithin(28, 3)` que
+    // duplicaba el fetch y disparaba un bug de orden: el slice top-3 se
+    // aplicaba ANTES de filtrar today, dejando los slots tomados por
+    // eventos de hoy cuando había varios.
     getUpcomingEventsWithin(365, 10),
     getActiveArtists(8),
     getActiveGenres(),
@@ -69,7 +70,15 @@ export default async function HomePage({
   )
   const todayIds = new Set(todayEvents.map((ev) => ev.id))
   const futureAgenda = upcomingAgenda.filter((ev) => !todayIds.has(ev.id))
-  const futureNextWeeks = nextWeeksEvents.filter((ev) => !todayIds.has(ev.id))
+
+  // "Próximas 4 semanas" sale del mismo set ya filtrado de today, y el
+  // slice top-3 ocurre DESPUÉS del filtrado (no antes, como en la versión
+  // con query separada). Eso evita que N eventos de hoy se coman N slots
+  // del top-3 y dejen fuera eventos futuros legítimos.
+  const fourWeeksCutoff = endOfDayBerlinPlus(28)
+  const futureNextWeeks = futureAgenda
+    .filter((ev) => ev.dates[0] && ev.dates[0] <= fourWeeksCutoff)
+    .slice(0, 3)
 
   // El mini-card del hero (mobile) muestra el próximo show DESPUÉS de hoy
   // — si hay eventos hoy, esos ya están destacados arriba; el mini-card

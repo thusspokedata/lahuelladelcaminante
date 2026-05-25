@@ -129,3 +129,20 @@ export function startOfTodayBerlin(): Date {
 export function isTodayBerlin(d: Date): boolean {
   return berlinDateString(d) === berlinDateString(new Date())
 }
+
+/**
+ * Último instante del día calendario Berlín `days` días después de hoy
+ * (INCLUSIVE). Pensado como bound superior para filtros tipo "eventos
+ * dentro de los próximos N días" — sirve tanto en queries Prisma (con
+ * `lte`) como en comparaciones en memoria contra `event.dates[0]`.
+ *
+ * Las fechas de evento se guardan como `00:00 UTC` del día calendario,
+ * así que el bound se extiende al fin del día N para capturar esos
+ * eventos. `+(days+1)*24h - 1ms` es equivalente a `startOfBerlinDay(today+N+1) - 1ms`
+ * para días sin transición DST en la ventana.
+ */
+export function endOfDayBerlinPlus(days: number): Date {
+  return new Date(
+    startOfTodayBerlin().getTime() + (days + 1) * 24 * 60 * 60 * 1000 - 1
+  )
+}
