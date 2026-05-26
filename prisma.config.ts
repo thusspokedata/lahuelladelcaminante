@@ -19,9 +19,18 @@ function loadEnv() {
 
 loadEnv()
 
+// Prisma 7: el `url` del datasource vive acá, no en el schema (P1012).
+// Preferimos `DIRECT_URL` (endpoint Neon sin pooler) para que el CLI
+// (`migrate deploy`, `migrate dev`, `introspect`) no se cuelgue en el
+// `pg_advisory_lock` que el pooler no soporta — esto cierra el P1002
+// intermitente que veíamos en deploys. Fallback a `DATABASE_URL` para
+// entornos que aún no migraron las env vars (dev local sin DIRECT_URL).
+//
+// El runtime client de la app sigue usando `DATABASE_URL` (pooler) vía
+// el adapter PrismaPg en `src/lib/prisma.ts` — independiente de esto.
 export default defineConfig({
   schema: path.join("prisma", "schema.prisma"),
   datasource: {
-    url: process.env.DATABASE_URL!,
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL!,
   },
 })

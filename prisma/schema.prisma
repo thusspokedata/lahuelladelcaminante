@@ -3,6 +3,12 @@ generator client {
 }
 
 datasource db {
+  // En Prisma 7 las URLs viven fuera del schema (P1012 si se declaran
+  // acá). El runtime client lee `DATABASE_URL` (pooler de Neon) vía el
+  // adapter en `src/lib/prisma.ts`. El CLI lee la URL desde
+  // `prisma.config.ts`, donde resolvemos `DIRECT_URL` (endpoint sin
+  // pooler) para evitar P1002 en migrate por timeout del
+  // `pg_advisory_lock` del pooler.
   provider = "postgresql"
 }
 
