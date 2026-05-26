@@ -14,14 +14,12 @@
 import { useImageLightbox } from "./ImageLightboxRoot"
 import { cn } from "@/lib/utils"
 
-interface ImageLightboxTriggerProps {
+interface ImageLightboxTriggerProps
+  extends Omit<React.ComponentProps<"button">, "onClick" | "type" | "aria-label"> {
   /** 0-based slide index in the images array passed to `<ImageLightboxRoot>`. */
   index: number
   /** Localised aria-label, e.g. "Abrir foto 2 de 5". */
   ariaLabel: string
-  /** Tailwind classes added to the rendered `<button>`. */
-  className?: string
-  children: React.ReactNode
 }
 
 export default function ImageLightboxTrigger({
@@ -29,10 +27,12 @@ export default function ImageLightboxTrigger({
   ariaLabel,
   className,
   children,
+  ...rest
 }: ImageLightboxTriggerProps) {
   const { open } = useImageLightbox()
   return (
     <button
+      {...rest}
       type="button"
       onClick={() => open(index)}
       aria-label={ariaLabel}
@@ -40,7 +40,7 @@ export default function ImageLightboxTrigger({
         "block w-full appearance-none cursor-zoom-in",
         // Remove default button focus ring inside images — we keep
         // keyboard accessibility via focus-visible on the wrapper.
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page",
         className,
       )}
     >
