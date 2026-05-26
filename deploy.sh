@@ -46,6 +46,16 @@ ssh $VPS "cd $REMOTE_DIR && npm install --no-save \
   lightningcss-linux-x64-gnu \
   2>/dev/null || true"
 
+echo "→ Applying pending migrations on VPS..."
+# `migrate deploy` aplica las migrations pendientes en orden, sin prompts.
+# Idempotente: si no hay nuevas, no hace nada. Imprescindible en este step
+# del flow porque `prisma generate` (siguiente) NO toca el DB — solo
+# regenera el client TS. Sin esto, código nuevo que referencia columnas
+# de migrations no aplicadas vuelca 500 en runtime.
+#
+# DATABASE_URL se autoloadea desde el `.env.local` que vive en el VPS.
+ssh $VPS "cd $REMOTE_DIR && npx prisma migrate deploy"
+
 echo "→ Regenerating Prisma client on VPS..."
 ssh $VPS "cd $REMOTE_DIR && npx prisma generate"
 
