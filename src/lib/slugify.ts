@@ -10,7 +10,7 @@ type SlugModel = {
 
 export async function generateUniqueSlug(
   base: string,
-  model: "event" | "artist"
+  model: "event" | "artist" | "userProfile"
 ): Promise<string> {
   const slug = slugify(base)
   const delegate = prisma[model] as unknown as SlugModel
