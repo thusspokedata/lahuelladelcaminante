@@ -53,10 +53,19 @@ echo "→ Applying pending migrations on VPS..."
 # regenera el client TS. Sin esto, código nuevo que referencia columnas
 # de migrations no aplicadas vuelca 500 en runtime.
 #
-# DATABASE_URL: Prisma CLI por sí solo NO auto-loadea `.env.local` (solo
-# `.env`). Este repo cierra ese gap en `prisma.config.ts` con un `loadEnv()`
-# custom que lee `.env.local` antes de exponer `datasource.url`. Verificado
-# empíricamente: `prisma migrate status` desde el VPS conecta a Neon prod.
+# DATABASE_URL / DIRECT_URL: Prisma CLI por sí solo NO auto-loadea
+# `.env.local` (solo `.env`). Este repo cierra ese gap en `prisma.config.ts`
+# con un `loadEnv()` custom que lee `.env.local` y populá `process.env`
+# antes de que Prisma resuelva `env("DATABASE_URL")` y `env("DIRECT_URL")`
+# del `datasource db` en el schema.
+#
+# `migrate deploy` usa `DIRECT_URL` (endpoint Neon sin pooler) porque el
+# pooler de Neon no soporta de forma confiable `pg_advisory_lock`, lo que
+# producía P1002 intermitente en deploys. El runtime client sigue usando
+# `DATABASE_URL` (pooler).
+#
+# Verificado empíricamente: `prisma migrate status` desde el VPS conecta
+# a Neon prod.
 ssh $VPS "cd $REMOTE_DIR && npx prisma migrate deploy"
 
 echo "→ Regenerating Prisma client on VPS..."
