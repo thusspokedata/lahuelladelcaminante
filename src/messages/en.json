@@ -116,7 +116,10 @@
     "date": "Date",
     "dates": "Dates",
     "noDate": "No date",
-    "musicLabel": "Live Latin Music · Germany"
+    "musicLabel": "Live Latin Music · Germany",
+    "detail": {
+      "publishedBy": "Published by"
+    }
   },
   "eventForm": {
     "create": {
@@ -420,7 +423,25 @@
     "profileConfirmPassword": "Confirm new password",
     "profileDeleteAccount": "Delete account",
     "profileDeleteWarning": "This action is irreversible. Your account and all your creations (events, artists, images) will be deleted.",
-    "profileDeleteConfirmLabel": "To confirm, type"
+    "profileDeleteConfirmLabel": "To confirm, type",
+    "profilePublic": {
+      "title": "Your public profile",
+      "sectionAvatar": "Photo",
+      "sectionBio": "Bio",
+      "sectionCity": "City",
+      "sectionSocial": "Social",
+      "sectionUrl": "Public URL",
+      "bioPlaceholder": "Tell people what kind of events you organize, where you usually play, what you're working on. Max 500 characters.",
+      "bioCharsLeft": "{count} characters left",
+      "cityPlaceholder": "Berlin · Munich · Hamburg",
+      "instagramHandle": "Instagram username (without @)",
+      "website": "Website (with https://)",
+      "socialOtherLabel": "Label (e.g. Spotify, Bandcamp)",
+      "socialOtherUrl": "URL",
+      "slugChangeWarning": "Changing the URL breaks old links. Anyone who had the old link saved will get a 404.",
+      "save": "Save",
+      "slugCollision": "That URL is already taken, try another."
+    }
   },
   "admin": {
     "users": "User Management",
@@ -669,6 +690,16 @@
         "ctaContact": "Get in touch"
       }
     }
+  },
+  "creators": {
+    "notFound": "We couldn't find this creator.",
+    "upcomingEvents": "Upcoming events",
+    "pastEvents": "Past events",
+    "noEvents": "No published events yet.",
+    "from": "From",
+    "bio": "Bio",
+    "social": "Social",
+    "location": "Location"
   },
   "common": {
     "save": "Save",
