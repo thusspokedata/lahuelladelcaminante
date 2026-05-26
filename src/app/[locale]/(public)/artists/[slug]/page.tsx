@@ -10,6 +10,7 @@
  */
 
 import type { Metadata } from "next"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
@@ -145,6 +146,38 @@ export default async function ArtistDetailPage({
 
           {/* Redes sociales */}
           <SocialLinks socialMedia={artist.socialMedia} />
+
+          {/*
+            Galería de fotos — restaura la sección que el redesign (commit
+            6e18e53) borró sin querer. Datos y forms de upload nunca se
+            tocaron; solo faltaba el render.
+
+            `images[0]` ya se renderiza como portrait grande arriba, así
+            que la galería empieza desde `images[1]` para no duplicar.
+            El grid responsive (2 cols mobile, 3 cols sm+) cabe bien
+            dentro del col-span-7 del layout.
+          */}
+          {artist.images.length > 1 ? (
+            <section className="flex flex-col gap-m">
+              <Eyebrow as="h2">{t("photosLabel")}</Eyebrow>
+              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-s">
+                {artist.images.slice(1).map((img) => (
+                  <li
+                    key={img.id}
+                    className="relative aspect-square overflow-hidden rounded-lg bg-bg-surface-2"
+                  >
+                    <Image
+                      src={img.url}
+                      alt={img.alt ?? artist.name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           {/* Próximas fechas */}
           <section className="flex flex-col gap-m">
