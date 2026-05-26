@@ -271,7 +271,14 @@
     "share": "Compartir",
     "calendar": "Agendar",
     "save": "Guardar",
-    "backToEvents": "Eventos"
+    "backToEvents": "Eventos",
+    "photosLabel": "Fotos"
+  },
+  "lightbox": {
+    "close": "Cerrar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "openImage": "Abrir foto {index} de {total}"
   },
   "artistDetail": {
     "upcomingShows": "Próximas fechas",

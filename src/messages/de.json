@@ -271,7 +271,14 @@
     "share": "Teilen",
     "calendar": "Zum Kalender",
     "save": "Speichern",
-    "backToEvents": "Zu den Veranstaltungen"
+    "backToEvents": "Zu den Veranstaltungen",
+    "photosLabel": "Fotos"
+  },
+  "lightbox": {
+    "close": "Schließen",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "openImage": "Foto {index} von {total} öffnen"
   },
   "artistDetail": {
     "upcomingShows": "Kommende Termine",
