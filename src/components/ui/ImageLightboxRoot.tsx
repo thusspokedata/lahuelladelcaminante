@@ -62,12 +62,12 @@ export default function ImageLightboxRoot({
   children,
 }: ImageLightboxRootProps) {
   const t = useTranslations("lightbox")
-  const [openState, setOpenState] = useState<{ open: boolean; index: number }>(
-    { open: false, index: 0 },
+  const [openState, setOpenState] = useState<{ isOpen: boolean; index: number }>(
+    { isOpen: false, index: 0 },
   )
 
   const open = useCallback((index: number) => {
-    setOpenState({ open: true, index })
+    setOpenState({ isOpen: true, index })
   }, [])
 
   const value = useMemo<LightboxContextValue>(() => ({ open }), [open])
@@ -75,18 +75,22 @@ export default function ImageLightboxRoot({
   // Library expects slides with `src` for the image, `alt` for the img
   // attribute and `description` for the Captions plugin display. We use
   // the same alt string in both — that's the only text we have.
-  const slides = images.map((img) => ({
-    src: img.src,
-    alt: img.alt,
-    description: img.alt,
-  }))
+  const slides = useMemo(
+    () =>
+      images.map((img) => ({
+        src: img.src,
+        alt: img.alt,
+        description: img.alt,
+      })),
+    [images],
+  )
 
   return (
     <LightboxContext.Provider value={value}>
       {children}
       <Lightbox
-        open={openState.open}
-        close={() => setOpenState((s) => ({ ...s, open: false }))}
+        open={openState.isOpen}
+        close={() => setOpenState((s) => ({ ...s, isOpen: false }))}
         index={openState.index}
         slides={slides}
         plugins={[Captions, Counter, Thumbnails, Zoom]}
@@ -95,10 +99,6 @@ export default function ImageLightboxRoot({
           Next: t("next"),
           Previous: t("previous"),
         }}
-        // Counter: top-left corner by default; library handles styling.
-        // Captions: bottom of the viewport.
-        // Zoom: pinch on touch + scroll-wheel on desktop.
-        // Thumbnails: strip at the bottom of the viewport.
       />
     </LightboxContext.Provider>
   )
