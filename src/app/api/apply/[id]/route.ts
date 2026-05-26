@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { triggerApplicationApproved } from "@/lib/trigger"
+import { generateUniqueSlug } from "@/lib/slugify"
 
 /** Schema reducido — el body solo trae el status nuevo. El email y
  * name del aplicante se leen del row del DB (no del body) para defensa
@@ -82,6 +83,24 @@ export async function PATCH(
 
       return { application, userMatched, transitionedToApproved }
     })
+
+  // Lazy backfill: el creator necesita slug público para /creators/[slug].
+  // El script one-off de Task 1 cubrió users existentes; este path cubre
+  // los nuevos. Corre fuera de la transacción porque generateUniqueSlug usa
+  // el cliente prisma del módulo — la ventana sin slug es mínima (admin action).
+  if (transitionedToApproved) {
+    const profileToBackfill = await prisma.userProfile.findFirst({
+      where: { user: { email: application.email } },
+      select: { id: true, slug: true, user: { select: { name: true } } },
+    })
+    if (profileToBackfill && !profileToBackfill.slug) {
+      const slug = await generateUniqueSlug(profileToBackfill.user.name, "userProfile")
+      await prisma.userProfile.update({
+        where: { id: profileToBackfill.id },
+        data: { slug },
+      })
+    }
+  }
 
   // Solo notificamos (email + log) en la transición real para evitar
   // duplicados. Si el admin clickea "aprobar" dos veces o vuelve a PATCH
