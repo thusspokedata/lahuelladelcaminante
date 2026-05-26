@@ -162,9 +162,15 @@ export async function PATCH(req: Request) {
   // Si cambia el slug, los bylines de eventos cacheados quedan con el slug
   // viejo hasta su próxima revalidación (5 min). Para cerrar el window,
   // invalidamos también `events` SOLO cuando el slug cambió.
-  revalidateTag("creators", {})
+  //
+  // `{ expire: 0 }` (no `{}`) — Next 16 requiere el 2º arg como string
+  // ("max" para SWR) o `{ expire }`. `{}` tipa pero cae al comportamiento
+  // deprecated del single-arg. Acá queremos read-your-writes: el user acaba
+  // de submitir su perfil y al navegar a /creators/[slug] espera ver lo
+  // nuevo ya. Fix de CR review #53.
+  revalidateTag("creators", { expire: 0 })
   if (parsed.slug !== undefined) {
-    revalidateTag("events", {})
+    revalidateTag("events", { expire: 0 })
   }
 
   // Shape `{data: profile}` alineado con `api/events:POST` que devuelve el

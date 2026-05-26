@@ -93,16 +93,30 @@ export async function PATCH(
   // que re-aprobaciones re-intenten el backfill: si el primer slug write
   // tiró transient error, una segunda aprobación lo cura. Sin esto el
   // profile podía quedar sin slug indefinidamente — fix de CR review #53.
+  //
+  // Best-effort: el approval YA commiteó en la transacción de arriba. Si el
+  // backfill del slug falla (P2002 en generateUniqueSlug bajo concurrencia,
+  // o transient DB error), no debe volcar la respuesta a 500 — el admin
+  // recibe "Failed" pero el user real ya está APPROVED y promovido a creator,
+  // con perfil sin slug que la próxima re-aprobación curará. Logueamos
+  // contexto para troubleshooting. Fix de CR review #53.
   if (result.data.status === "APPROVED") {
-    const profileToBackfill = await prisma.userProfile.findFirst({
-      where: { user: { email: application.email } },
-      select: { id: true, slug: true, user: { select: { name: true } } },
-    })
-    if (profileToBackfill && !profileToBackfill.slug) {
-      const slug = await generateUniqueSlug(profileToBackfill.user.name, "userProfile")
-      await prisma.userProfile.update({
-        where: { id: profileToBackfill.id },
-        data: { slug },
+    try {
+      const profileToBackfill = await prisma.userProfile.findFirst({
+        where: { user: { email: application.email } },
+        select: { id: true, slug: true, user: { select: { name: true } } },
+      })
+      if (profileToBackfill && !profileToBackfill.slug) {
+        const slug = await generateUniqueSlug(profileToBackfill.user.name, "userProfile")
+        await prisma.userProfile.update({
+          where: { id: profileToBackfill.id },
+          data: { slug },
+        })
+      }
+    } catch (e) {
+      console.warn("creator_slug_backfill_failed", {
+        applicationId: application.id,
+        error: e instanceof Error ? e.message : String(e),
       })
     }
   }

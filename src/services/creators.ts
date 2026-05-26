@@ -95,7 +95,16 @@ const _getPastEventsByCreator = unstable_cache(
         // eventualmente se despublicaron siguen siendo parte del track
         // record del creator. Si se decide ocultar despublicados pasados,
         // agregar `isActive: true` acá y replicar en events.ts.
-        dates: { every: { date: { lt: today } } },
+        //
+        // `some` antes de `every`: Prisma evalúa `every` como `true` si la
+        // relación está vacía. Event creation valida `dates.min(1)`, pero
+        // dejamos el guard defensivo para no listar eventos sin EventDate
+        // si alguna vez se introducen por backfill/migración. Fix de CR
+        // review #53.
+        dates: {
+          some: { date: { lt: today } },
+          every: { date: { lt: today } },
+        },
       },
       include: eventInclude,
       orderBy: { createdAt: "desc" },
