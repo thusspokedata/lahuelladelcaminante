@@ -5,6 +5,26 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 
+// Restrict URLs to http(s) only — `z.string().url()` por sí solo acepta
+// `javascript:` / `data:` / `file:`, que si después se usan como href
+// abren vector XSS. Fix de CR review #53.
+const httpUrlSchema = z
+  .string()
+  .trim()
+  .url()
+  .max(256)
+  .refine(
+    (v) => {
+      try {
+        const protocol = new URL(v).protocol
+        return protocol === "http:" || protocol === "https:"
+      } catch {
+        return false
+      }
+    },
+    { message: "url must use http or https" },
+  )
+
 const socialMediaSchema = z
   .object({
     // El strip del leading `@` se hace dentro del transform del schema,
@@ -16,11 +36,11 @@ const socialMediaSchema = z
       .transform((v) => v.replace(/^@/, ""))
       .pipe(z.string().min(1).max(30).regex(/^[a-zA-Z0-9._]+$/))
       .optional(),
-    website: z.string().trim().url().max(256).optional(),
+    website: httpUrlSchema.optional(),
     other: z
       .object({
         label: z.string().trim().min(1).max(48),
-        url: z.string().trim().url().max(256),
+        url: httpUrlSchema,
       })
       .optional(),
   })
@@ -103,20 +123,41 @@ export async function PATCH(req: Request) {
     }
   }
 
-  const profile = await prisma.userProfile.update({
-    where: { userId: user.id },
-    data: {
-      ...(parsed.bio !== undefined && { bio: parsed.bio }),
-      ...(parsed.city !== undefined && { city: parsed.city }),
-      ...(parsed.socialMedia !== undefined && {
-        // Prisma necesita `Prisma.JsonNull` como sentinel para limpiar
-        // un campo `Json?`. Pasar `null` directo falla con type error.
-        socialMedia:
-          parsed.socialMedia === null ? Prisma.JsonNull : parsed.socialMedia,
-      }),
-      ...(parsed.slug !== undefined && { slug: parsed.slug }),
-    },
-  })
+  let profile
+  try {
+    profile = await prisma.userProfile.update({
+      where: { userId: user.id },
+      data: {
+        ...(parsed.bio !== undefined && { bio: parsed.bio }),
+        ...(parsed.city !== undefined && { city: parsed.city }),
+        ...(parsed.socialMedia !== undefined && {
+          // Prisma necesita `Prisma.JsonNull` como sentinel para limpiar
+          // un campo `Json?`. Pasar `null` directo falla con type error.
+          socialMedia:
+            parsed.socialMedia === null ? Prisma.JsonNull : parsed.socialMedia,
+        }),
+        ...(parsed.slug !== undefined && { slug: parsed.slug }),
+      },
+    })
+  } catch (e) {
+    // Race condition real: el pre-check (líneas arriba) NO es atómico vs
+    // este update — dos PATCHes concurrentes con el mismo slug nuevo
+    // pueden pasar ambos el findUnique y solo uno ganar acá. Sin este
+    // catch, el perdedor recibe 500 (P2002 sin manejar) en lugar del 409
+    // intencional. Fix de CR review #53.
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002" &&
+      Array.isArray(e.meta?.target) &&
+      e.meta.target.includes("slug")
+    ) {
+      return NextResponse.json(
+        { error: "slug_collision", code: "SLUG_COLLISION" },
+        { status: 409 },
+      )
+    }
+    throw e
+  }
 
   // Si cambia el slug, los bylines de eventos cacheados quedan con el slug
   // viejo hasta su próxima revalidación (5 min). Para cerrar el window,

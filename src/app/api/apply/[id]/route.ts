@@ -88,7 +88,12 @@ export async function PATCH(
   // El script one-off de Task 1 cubrió users existentes; este path cubre
   // los nuevos. Corre fuera de la transacción porque generateUniqueSlug usa
   // el cliente prisma del módulo — la ventana sin slug es mínima (admin action).
-  if (transitionedToApproved) {
+  //
+  // Gated por `status === "APPROVED"` (no por `transitionedToApproved`) para
+  // que re-aprobaciones re-intenten el backfill: si el primer slug write
+  // tiró transient error, una segunda aprobación lo cura. Sin esto el
+  // profile podía quedar sin slug indefinidamente — fix de CR review #53.
+  if (result.data.status === "APPROVED") {
     const profileToBackfill = await prisma.userProfile.findFirst({
       where: { user: { email: application.email } },
       select: { id: true, slug: true, user: { select: { name: true } } },

@@ -430,7 +430,7 @@
       "sectionSocial": "Social Media",
       "sectionUrl": "Öffentliche URL",
       "bioPlaceholder": "Erzähl, welche Events du veranstaltest, wo du normalerweise spielst, woran du arbeitest. Max. 500 Zeichen.",
-      "bioCharsLeft": "{count, plural, =0 {Keine Zeichen übrig} other {# Zeichen übrig}}",
+      "bioCharsLeft": "{count, plural, =0 {Keine Zeichen übrig} one {# Zeichen übrig} other {# Zeichen übrig}}",
       "cityPlaceholder": "Berlin · München · Hamburg",
       "instagramHandle": "Instagram-Name (ohne @)",
       "website": "Website (mit https://)",
