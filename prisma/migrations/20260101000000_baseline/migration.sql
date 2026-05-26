@@ -1,6 +1,11 @@
--- Baseline migration: represents the schema as it existed before Prisma
--- Migrate was introduced. Marked applied via `prisma migrate resolve --applied`.
--- This migration is intentionally a no-op against the live DB.
+-- Baseline migration: captures the schema as it existed before Prisma Migrate
+-- was introduced (the project used `db push` until this commit).
+--
+-- No-op against environments that already have the schema applied (dev/prod
+-- Neon as of this commit — must be marked applied there via
+-- `prisma migrate resolve --applied 20260101000000_baseline` BEFORE the first
+-- `migrate deploy` runs). Applies fully against fresh databases (new dev
+-- clones, CI) — the CREATE TYPE / CREATE TABLE statements run normally.
 
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACTIVE', 'BLOCKED');
