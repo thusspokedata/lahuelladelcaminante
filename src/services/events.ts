@@ -45,6 +45,10 @@ export interface EventDetail extends EventSummary {
     genres: string[]
     socialMedia: unknown
   } | null
+  publishedBy: {
+    name: string
+    slug: string | null
+  }
 }
 
 export interface CreateEventInput {
@@ -408,6 +412,12 @@ async function _getEventBySlugImpl(slug: string): Promise<EventDetail | null> {
         },
       },
       images: { select: { id: true, url: true, alt: true, publicId: true } },
+      createdBy: {
+        select: {
+          name: true,
+          profile: { select: { slug: true } },
+        },
+      },
     },
   })
   if (!event) return null
@@ -430,6 +440,10 @@ async function _getEventBySlugImpl(slug: string): Promise<EventDetail | null> {
     price: event.price,
     images: event.images,
     artist: event.artist,
+    publishedBy: {
+      name: event.createdBy.name,
+      slug: event.createdBy.profile?.slug ?? null,
+    },
   }
 }
 
