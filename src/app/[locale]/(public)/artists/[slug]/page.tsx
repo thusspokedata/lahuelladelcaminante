@@ -98,6 +98,19 @@ export default async function ArtistDetailPage({
     alt: img.alt ?? artist.name,
   }))
 
+  // Mismo FlyerImage en ambas ramas del conditional de abajo — extraído
+  // a una const para evitar drift si se agregan/cambian props.
+  const portrait = (
+    <FlyerImage
+      publicId={artist.coverImagePublicId ?? undefined}
+      src={artist.coverImage ?? undefined}
+      alt={artist.coverImageAlt ?? artist.name}
+      aspectRatio="4:5"
+      fallbackAccent={fallbackAccent}
+      priority
+    />
+  )
+
   return (
     <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
       {/* Breadcrumb */}
@@ -118,26 +131,11 @@ export default async function ArtistDetailPage({
                 <ImageLightboxTrigger
                   index={0}
                   ariaLabel={tLightbox("openImage", { index: 1, total: lightboxImages.length })}
-                  className="block"
                 >
-                  <FlyerImage
-                    publicId={artist.coverImagePublicId ?? undefined}
-                    src={artist.coverImage ?? undefined}
-                    alt={artist.coverImageAlt ?? artist.name}
-                    aspectRatio="4:5"
-                    fallbackAccent={fallbackAccent}
-                    priority
-                  />
+                  {portrait}
                 </ImageLightboxTrigger>
               ) : (
-                <FlyerImage
-                  publicId={artist.coverImagePublicId ?? undefined}
-                  src={artist.coverImage ?? undefined}
-                  alt={artist.coverImageAlt ?? artist.name}
-                  aspectRatio="4:5"
-                  fallbackAccent={fallbackAccent}
-                  priority
-                />
+                portrait
               )}
             </div>
           </div>
