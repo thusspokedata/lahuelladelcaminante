@@ -116,10 +116,7 @@
     "date": "Date",
     "dates": "Dates",
     "noDate": "No date",
-    "musicLabel": "Live Latin Music · Germany",
-    "detail": {
-      "publishedBy": "Published by"
-    }
+    "musicLabel": "Live Latin Music · Germany"
   },
   "eventForm": {
     "create": {
@@ -248,6 +245,7 @@
     "upcomingDatesLabel": "Upcoming dates"
   },
   "eventDetail": {
+    "publishedBy": "Published by",
     "eyebrow": {
       "live": "LIVE",
       "featured": "★ FEATURED"
@@ -432,7 +430,7 @@
       "sectionSocial": "Social",
       "sectionUrl": "Public URL",
       "bioPlaceholder": "Tell people what kind of events you organize, where you usually play, what you're working on. Max 500 characters.",
-      "bioCharsLeft": "{count} characters left",
+      "bioCharsLeft": "{count, plural, =0 {No characters left} one {# character left} other {# characters left}}",
       "cityPlaceholder": "Berlin · Munich · Hamburg",
       "instagramHandle": "Instagram username (without @)",
       "website": "Website (with https://)",

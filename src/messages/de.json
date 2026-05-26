@@ -116,10 +116,7 @@
     "date": "Datum",
     "dates": "Termine",
     "noDate": "Kein Datum",
-    "musicLabel": "Lateinamerikanische Livemusik · Deutschland",
-    "detail": {
-      "publishedBy": "Veröffentlicht von"
-    }
+    "musicLabel": "Lateinamerikanische Livemusik · Deutschland"
   },
   "eventForm": {
     "create": {
@@ -248,6 +245,7 @@
     "upcomingDatesLabel": "Kommende Termine"
   },
   "eventDetail": {
+    "publishedBy": "Veröffentlicht von",
     "eyebrow": {
       "live": "LIVE",
       "featured": "★ HIGHLIGHT"
@@ -432,7 +430,7 @@
       "sectionSocial": "Social Media",
       "sectionUrl": "Öffentliche URL",
       "bioPlaceholder": "Erzähl, welche Events du veranstaltest, wo du normalerweise spielst, woran du arbeitest. Max. 500 Zeichen.",
-      "bioCharsLeft": "{count} Zeichen übrig",
+      "bioCharsLeft": "{count, plural, =0 {Keine Zeichen übrig} other {# Zeichen übrig}}",
       "cityPlaceholder": "Berlin · München · Hamburg",
       "instagramHandle": "Instagram-Name (ohne @)",
       "website": "Website (mit https://)",
@@ -692,7 +690,7 @@
     }
   },
   "creators": {
-    "notFound": "Wir konnten diesen Creator nicht finden.",
+    "notFound": "Diesen Creator haben wir nicht gefunden.",
     "upcomingEvents": "Kommende Events",
     "pastEvents": "Vergangene Events",
     "noEvents": "Noch keine Events veröffentlicht.",
