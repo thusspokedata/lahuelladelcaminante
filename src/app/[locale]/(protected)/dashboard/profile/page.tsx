@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server"
+import { prisma } from "@/lib/prisma"
 import { requireActive } from "@/services/auth"
 import { ProfileForm } from "./ProfileForm"
 
@@ -10,6 +11,10 @@ export default async function ProfilePage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "dashboard" })
   const { user } = await requireActive(locale)
+  const profile = await prisma.userProfile.findUnique({
+    where: { userId: user.id },
+    select: { bio: true, city: true, socialMedia: true, slug: true },
+  })
 
   return (
     <div className="space-y-8 max-w-lg">
@@ -24,6 +29,17 @@ export default async function ProfilePage({
         userId={user.id}
         currentName={user.name}
         currentEmail={user.email}
+        currentImage={user.image ?? null}
+        currentBio={profile?.bio ?? null}
+        currentCity={profile?.city ?? null}
+        currentSocial={
+          (profile?.socialMedia as {
+            instagram?: string
+            website?: string
+            other?: { label: string; url: string }
+          } | null) ?? null
+        }
+        currentSlug={profile?.slug ?? null}
       />
     </div>
   )
