@@ -82,7 +82,7 @@ export interface UpdateEventInput {
   newImages?: { url: string; alt?: string; publicId: string }[]
 }
 
-function mapToSummary(event: {
+export function mapToSummary(event: {
   id: string
   title: string
   slug: string
@@ -111,7 +111,7 @@ function mapToSummary(event: {
   }
 }
 
-const eventInclude = {
+export const eventInclude = {
   dates: { orderBy: { date: "asc" as const } },
   artist: { select: { name: true } },
   images: { select: { url: true, publicId: true, alt: true } },
@@ -123,7 +123,7 @@ const eventInclude = {
  * en el `mapToSummary` resulta en la próxima fecha real del evento, no
  * en una fecha pasada de un evento que tiene varias funciones.
  */
-function futureEventInclude(from: Date, until?: Date) {
+export function futureEventInclude(from: Date, until?: Date) {
   return {
     dates: {
       where: {
@@ -142,7 +142,7 @@ function futureEventInclude(from: Date, until?: Date) {
  * que cada summary ya viene con `dates` filtradas a futuras (la primera es
  * la próxima). Los que no tienen dates van al final.
  */
-function sortByNextDate(events: EventSummary[]): EventSummary[] {
+export function sortByNextDate(events: EventSummary[]): EventSummary[] {
   return [...events].sort((a, b) => {
     const da = a.dates[0]?.getTime() ?? Infinity
     const db = b.dates[0]?.getTime() ?? Infinity

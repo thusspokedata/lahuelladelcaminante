@@ -2,9 +2,14 @@ import "server-only"
 
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
-import { startOfTodayBerlin } from "@/lib/date"
-import { rehydrateDates } from "@/lib/date"
-import type { EventSummary } from "./events"
+import { rehydrateDates, startOfTodayBerlin } from "@/lib/date"
+import {
+  eventInclude,
+  futureEventInclude,
+  mapToSummary,
+  sortByNextDate,
+  type EventSummary,
+} from "./events"
 
 export interface CreatorSocialMedia {
   instagram?: string
@@ -34,7 +39,11 @@ const _getCreatorBySlug = unstable_cache(
     return {
       id: u.id,
       name: u.name,
-      slug: profile.slug!,
+      // El row se encontró por findUnique({ where: { slug } }) con `slug`
+      // recibido como argumento; por construcción `profile.slug` es ese
+      // mismo valor. Usamos `?? slug` en lugar de `!` para evitar la
+      // non-null assertion y dejar el invariante visible.
+      slug: profile.slug ?? slug,
       bio: profile.bio,
       city: profile.city,
       image: u.image,
@@ -49,61 +58,6 @@ export async function getCreatorBySlug(slug: string): Promise<CreatorDetail | nu
   return _getCreatorBySlug(slug)
 }
 
-// Per-creator event gallery (upcoming + past). Reuses startOfTodayBerlin()
-// and sortByNextDate logic. mapEvent is local because mapToSummary in
-// events.ts is file-private (no export).
-
-const eventInclude = {
-  dates: { orderBy: { date: "asc" as const } },
-  artist: { select: { name: true } },
-  images: { select: { url: true, publicId: true, alt: true } },
-}
-
-function futureEventInclude(from: Date) {
-  return {
-    dates: { where: { date: { gte: from } }, orderBy: { date: "asc" as const }, take: 1 },
-    artist: { select: { name: true } },
-    images: { select: { url: true, publicId: true, alt: true } },
-  }
-}
-
-function mapEvent(e: {
-  id: string
-  title: string
-  slug: string
-  location: string
-  genre: string | null
-  time: string | null
-  price: string | null
-  dates: { date: Date }[]
-  artist: { name: string } | null
-  images: { url: string; publicId: string; alt: string | null }[]
-}): EventSummary {
-  const cover = e.images?.[0] ?? null
-  return {
-    id: e.id,
-    title: e.title,
-    slug: e.slug,
-    location: e.location,
-    genre: e.genre,
-    time: e.time,
-    price: e.price,
-    dates: e.dates.map((d: { date: Date }) => d.date),
-    artistName: e.artist?.name ?? null,
-    coverImage: cover?.url ?? null,
-    coverImagePublicId: cover?.publicId ?? null,
-    coverImageAlt: cover?.alt ?? null,
-  }
-}
-
-function sortByNextDate(events: EventSummary[]): EventSummary[] {
-  return [...events].sort((a, b) => {
-    const da = a.dates[0]?.getTime() ?? Infinity
-    const db = b.dates[0]?.getTime() ?? Infinity
-    return da - db
-  })
-}
-
 const _getUpcomingEventsByCreator = unstable_cache(
   async (userId: string): Promise<EventSummary[]> => {
     const today = startOfTodayBerlin()
@@ -116,7 +70,7 @@ const _getUpcomingEventsByCreator = unstable_cache(
       },
       include: futureEventInclude(today),
     })
-    return sortByNextDate(events.map(mapEvent))
+    return sortByNextDate(events.map(mapToSummary))
   },
   ["upcoming-events-by-creator"],
   { revalidate: 300, tags: ["events", "creators"] }
@@ -134,12 +88,19 @@ const _getPastEventsByCreator = unstable_cache(
       where: {
         createdById: userId,
         isDeleted: false,
+        // NOTA: a diferencia de `_getUpcomingEventsByCreator`, no filtra
+        // por `isActive` — mismo comportamiento que `_getPastEvents` en
+        // events.ts. La sección de "pasados" del perfil público incluye
+        // historia editorial: eventos que fueron publicados, ocurrieron, y
+        // eventualmente se despublicaron siguen siendo parte del track
+        // record del creator. Si se decide ocultar despublicados pasados,
+        // agregar `isActive: true` acá y replicar en events.ts.
         dates: { every: { date: { lt: today } } },
       },
       include: eventInclude,
       orderBy: { createdAt: "desc" },
     })
-    return events.map(mapEvent)
+    return events.map(mapToSummary)
   },
   ["past-events-by-creator"],
   { revalidate: 600, tags: ["events", "creators"] }
