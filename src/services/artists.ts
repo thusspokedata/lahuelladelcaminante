@@ -225,7 +225,7 @@ export async function createArtist(
     },
   })
 
-  revalidateTag("artists", {})
+  revalidateTag("artists", { expire: 0 })
   return artist
 }
 
@@ -266,7 +266,7 @@ export async function updateArtist(id: string, data: UpdateArtistInput) {
     },
   })
 
-  revalidateTag("artists", {})
+  revalidateTag("artists", { expire: 0 })
   return artist
 }
 
@@ -281,5 +281,5 @@ export async function deleteArtist(id: string): Promise<void> {
   }
 
   await prisma.artist.delete({ where: { id } })
-  revalidateTag("artists", {})
+  revalidateTag("artists", { expire: 0 })
 }

@@ -708,7 +708,7 @@ export async function createEvent(
     return created
   })
 
-  revalidateTag("events", {})
+  revalidateTag("events", { expire: 0 })
   return event
 }
 
@@ -755,7 +755,7 @@ export async function updateEvent(id: string, data: UpdateEventInput): Promise<v
     },
   })
 
-  revalidateTag("events", {})
+  revalidateTag("events", { expire: 0 })
 }
 
 export async function softDeleteEvent(id: string): Promise<void> {
@@ -772,7 +772,7 @@ export async function softDeleteEvent(id: string): Promise<void> {
     where: { id },
     data: { isDeleted: true, deletedAt: new Date() },
   })
-  revalidateTag("events", {})
+  revalidateTag("events", { expire: 0 })
 }
 
 export async function restoreEvent(id: string): Promise<void> {
@@ -780,7 +780,7 @@ export async function restoreEvent(id: string): Promise<void> {
     where: { id },
     data: { isDeleted: false, deletedAt: null },
   })
-  revalidateTag("events", {})
+  revalidateTag("events", { expire: 0 })
 }
 
 export async function hardDeleteEvent(id: string): Promise<void> {
@@ -794,5 +794,5 @@ export async function hardDeleteEvent(id: string): Promise<void> {
   }
 
   await prisma.event.delete({ where: { id } })
-  revalidateTag("events", {})
+  revalidateTag("events", { expire: 0 })
 }
