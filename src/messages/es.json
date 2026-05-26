@@ -7,7 +7,7 @@
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
     "thisWeek": "Esta semana",
-    "becomeCreator": "Sumate como creador/a",
+    "createEvent": "Crea un evento",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "languageSwitcherLabel": "Selector de idioma"
@@ -49,9 +49,9 @@
       "viewAll": "Ver todo →"
     },
     "cta": {
-      "eyebrow": "PARA ARTISTAS Y ORGANIZADORES",
-      "title": "¿Tocás música latina? Sumate a la huella.",
-      "button": "Sumate como creador/a"
+      "eyebrow": "PUBLICÁ TUS EVENTOS",
+      "title": "¿Organizás shows de música latina? Hacelos visibles.",
+      "button": "Crea un evento"
     },
     "past": {
       "eyebrow": "ARCHIVO",

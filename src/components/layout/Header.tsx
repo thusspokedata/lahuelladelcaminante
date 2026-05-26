@@ -4,10 +4,12 @@
  *  - BrandLockup horizontal (link a la home del locale activo).
  *  - Nav central con underline-on-active sangre (desktop).
  *  - LanguageSwitcher (pills siempre, compactas en mobile).
- *  - Estado de usuario: "Iniciar sesión" + "Sumate como creador/a" si no logueado;
- *    avatar/iniciales + "Sign out" si logueado. Para creators/admins se
- *    suma el link "Mi panel" (→ `/dashboard`) y el avatar pasa a linkear
- *    al dashboard; admins ven además un link a `/admin`.
+ *  - Pill "Crea un evento" universal (todos los estados de auth). Rutea
+ *    según rol vía `getCreateEventHref`: creator/admin → form, resto →
+ *    `/apply`. Para no logueados se suma "Iniciar sesión"; para logueados
+ *    se suma avatar/iniciales + "Sign out", y para creators/admins el
+ *    link "Mi panel" (→ `/dashboard`) con el avatar también linkeando al
+ *    dashboard; los admins ven además un link a `/admin`.
  *  - Drawer mobile con la misma nav + estado de usuario, accesible desde
  *    botón hamburguesa.
  *
@@ -168,6 +170,20 @@ function getPanelAccess(session: SessionLike | null | undefined) {
   }
 }
 
+/**
+ * Destino del botón "Crea un evento" según el rol de la sesión.
+ * Creator/admin van directo al form de crear evento; el resto cae a
+ * `/apply` (página pública que maneja signup + apply como creator).
+ * Mismo patrón client-safe que `getPanelAccess` — sin importar
+ * `services/auth.ts` (que es `server-only`).
+ */
+function getCreateEventHref(role: string | null | undefined): string {
+  const r = role?.toLowerCase()
+  return r === "creator" || r === "admin"
+    ? "/dashboard/events/create"
+    : "/apply"
+}
+
 interface UserSlotProps {
   session: SessionLike | null | undefined
   t: (key: string) => string
@@ -185,7 +201,7 @@ function UserSlot({ session, t, onSignOut }: UserSlotProps) {
           {t("signIn")}
         </Link>
         <Link
-          href="/apply"
+          href={getCreateEventHref(null)}
           className={cn(
             "inline-flex items-center rounded-pill bg-brand text-on-brand",
             "px-l py-xs text-body-s font-semibold",
@@ -194,7 +210,7 @@ function UserSlot({ session, t, onSignOut }: UserSlotProps) {
             "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
           )}
         >
-          {t("becomeCreator")}
+          {t("createEvent")}
         </Link>
       </div>
     )
@@ -210,6 +226,18 @@ function UserSlot({ session, t, onSignOut }: UserSlotProps) {
 
   return (
     <div className="flex items-center gap-m">
+      <Link
+        href={getCreateEventHref(session.user?.role)}
+        className={cn(
+          "inline-flex items-center rounded-pill bg-brand text-on-brand",
+          "px-l py-xs text-body-s font-semibold",
+          "hover:bg-brand-dim transition-colors duration-200 ease-out",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+          "focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page"
+        )}
+      >
+        {t("createEvent")}
+      </Link>
       {canSeeDashboard && (
         <Link
           href="/dashboard"
@@ -431,7 +459,7 @@ function MobileDrawer({
                 {t("signIn")}
               </Link>
               <Link
-                href="/apply"
+                href={getCreateEventHref(null)}
                 onClick={onClose}
                 className={cn(
                   "inline-flex items-center justify-center rounded-pill",
@@ -439,11 +467,22 @@ function MobileDrawer({
                   "hover:bg-brand-dim transition-colors duration-200 ease-out"
                 )}
               >
-                {t("becomeCreator")}
+                {t("createEvent")}
               </Link>
             </div>
           ) : (
             <div className="flex flex-col gap-xs">
+              <Link
+                href={getCreateEventHref(session.user?.role)}
+                onClick={onClose}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-pill",
+                  "bg-brand text-on-brand px-l py-s text-body-s font-semibold",
+                  "hover:bg-brand-dim transition-colors duration-200 ease-out"
+                )}
+              >
+                {t("createEvent")}
+              </Link>
               {canSeeDashboard && (
                 <Link
                   href="/dashboard"
