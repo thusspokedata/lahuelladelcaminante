@@ -202,6 +202,24 @@ export default async function EventDetailPage({
               <h1 className="text-heading-l sm:text-display-m font-display text-fg-primary leading-tight">
                 {event.title}
               </h1>
+              {/* Byline: linkea al perfil del creator que publicó el evento.
+                  Fallback a texto plano si el creator no tiene slug (legacy
+                  user pre-Task-1-backfill o el script no corrió aún). */}
+              {event.publishedBy.slug ? (
+                <Link
+                  href={`/creators/${event.publishedBy.slug}`}
+                  className="text-body-s text-fg-secondary hover:text-brand transition-colors w-fit"
+                >
+                  {t("publishedBy")}{" "}
+                  <span className="text-fg-primary">
+                    {event.publishedBy.name}
+                  </span>
+                </Link>
+              ) : (
+                <p className="text-body-s text-fg-secondary">
+                  {t("publishedBy")} {event.publishedBy.name}
+                </p>
+              )}
               {event.artist ? (
                 <p className="text-body-l text-fg-secondary">
                   <Link

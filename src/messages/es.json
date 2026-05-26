@@ -245,6 +245,7 @@
     "upcomingDatesLabel": "Próximas fechas"
   },
   "eventDetail": {
+    "publishedBy": "Publicado por",
     "eyebrow": {
       "live": "EN VIVO",
       "featured": "★ DESTACADO"
@@ -420,7 +421,25 @@
     "profileConfirmPassword": "Confirmar nueva contraseña",
     "profileDeleteAccount": "Eliminar cuenta",
     "profileDeleteWarning": "Esta acción es irreversible. Se eliminarán tu cuenta y todas tus creaciones (eventos, artistas, imágenes).",
-    "profileDeleteConfirmLabel": "Para confirmar, escribí"
+    "profileDeleteConfirmLabel": "Para confirmar, escribí",
+    "profilePublic": {
+      "title": "Tu perfil público",
+      "sectionAvatar": "Foto",
+      "sectionBio": "Bio",
+      "sectionCity": "Ciudad",
+      "sectionSocial": "Redes",
+      "sectionUrl": "URL pública",
+      "bioPlaceholder": "Contá qué eventos organizás, dónde solés tocar, en qué andás. Máx 500 caracteres.",
+      "bioCharsLeft": "{count, plural, =0 {Sin caracteres restantes} one {# carácter restante} other {# caracteres restantes}}",
+      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "instagramHandle": "Usuario de Instagram (sin @)",
+      "website": "Sitio web (con https://)",
+      "socialOtherLabel": "Etiqueta (ej. Spotify, Bandcamp)",
+      "socialOtherUrl": "URL",
+      "slugChangeWarning": "Cambiar la URL rompe los links viejos. Quien tenga guardado el link anterior va a recibir un 404.",
+      "save": "Guardar",
+      "slugCollision": "Esa URL ya está tomada, probá otra."
+    }
   },
   "admin": {
     "users": "Gestión de Usuarios",
@@ -669,6 +688,16 @@
         "ctaContact": "Escribinos"
       }
     }
+  },
+  "creators": {
+    "notFound": "No encontramos a este creator.",
+    "upcomingEvents": "Próximos eventos",
+    "pastEvents": "Eventos pasados",
+    "noEvents": "Todavía no publicó eventos.",
+    "from": "De",
+    "bio": "Bio",
+    "social": "Redes",
+    "location": "Ubicación"
   },
   "common": {
     "save": "Guardar",
