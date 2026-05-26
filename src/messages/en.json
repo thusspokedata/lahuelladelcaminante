@@ -278,7 +278,8 @@
     "noUpcomingShows": "No upcoming shows for now. Follow us on socials to stay tuned.",
     "bioShowMore": "Show more",
     "bioShowLess": "Show less",
-    "backToArtists": "Artists"
+    "backToArtists": "Artists",
+    "photosLabel": "Photos"
   },
   "dashboard": {
     "title": "My Dashboard",

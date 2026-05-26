@@ -278,7 +278,8 @@
     "noUpcomingShows": "Aktuell keine Shows geplant. Folge uns auf Social Media, um nichts zu verpassen.",
     "bioShowMore": "Mehr anzeigen",
     "bioShowLess": "Weniger anzeigen",
-    "backToArtists": "Zu den Künstlern"
+    "backToArtists": "Zu den Künstlern",
+    "photosLabel": "Fotos"
   },
   "dashboard": {
     "title": "Mein Dashboard",

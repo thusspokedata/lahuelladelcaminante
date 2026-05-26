@@ -278,7 +278,8 @@
     "noUpcomingShows": "Por ahora no hay shows próximos. Seguinos en redes para enterarte.",
     "bioShowMore": "Mostrar más",
     "bioShowLess": "Mostrar menos",
-    "backToArtists": "Artistas"
+    "backToArtists": "Artistas",
+    "photosLabel": "Fotos"
   },
   "dashboard": {
     "title": "Mi Panel",
