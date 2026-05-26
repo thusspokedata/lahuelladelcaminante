@@ -7,7 +7,7 @@
     "signIn": "Anmelden",
     "signOut": "Abmelden",
     "thisWeek": "Diese Woche",
-    "becomeCreator": "Werde Creator",
+    "createEvent": "Event erstellen",
     "openMenu": "Menü öffnen",
     "closeMenu": "Menü schließen",
     "languageSwitcherLabel": "Sprachauswahl"
@@ -49,9 +49,9 @@
       "viewAll": "Alle ansehen →"
     },
     "cta": {
-      "eyebrow": "FÜR KÜNSTLER UND VERANSTALTER",
-      "title": "Spielst du lateinamerikanische Musik? Werde Teil von la huella.",
-      "button": "Als Creator bewerben"
+      "eyebrow": "VERÖFFENTLICHE DEINE EVENTS",
+      "title": "Organisierst du Latin-Music-Shows? Mach sie sichtbar.",
+      "button": "Event erstellen"
     },
     "past": {
       "eyebrow": "ARCHIV",

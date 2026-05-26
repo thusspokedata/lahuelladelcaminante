@@ -7,7 +7,7 @@
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "thisWeek": "This week",
-    "becomeCreator": "Become a creator",
+    "createEvent": "Create an event",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "languageSwitcherLabel": "Language switcher"
@@ -49,9 +49,9 @@
       "viewAll": "View all →"
     },
     "cta": {
-      "eyebrow": "FOR ARTISTS AND PROMOTERS",
-      "title": "Play Latin music? Join la huella.",
-      "button": "Become a creator"
+      "eyebrow": "PUBLISH YOUR EVENTS",
+      "title": "Putting on Latin music shows? Make them visible.",
+      "button": "Create an event"
     },
     "past": {
       "eyebrow": "ARCHIVE",
