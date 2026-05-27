@@ -22,31 +22,37 @@ la inferencia de App Router.
 `app`; si se mueven al subsegmento de locale, dejan de emitirse para
 la página raíz `/` y para rutas no-localizadas.
 
-## Fuente
+## Fuentes (setup híbrido)
 
-Los binarios se generan a partir de **un único SVG fuente**:
+Los binarios se generan a partir de **dos fuentes distintas** según el
+tamaño de output, deliberadamente:
 
-```text
-scripts/favicon-source.svg
-```
+| Output | Fuente | Por qué |
+|---|---|---|
+| `icon.png` (512×512) | `public/brand-mark.png` | El logo completo (12 figuras + huella ochre) lee perfecto a 180-512px |
+| `apple-icon.png` (180×180) | `public/brand-mark.png` | Mismo — iOS home screen tiene tamaño suficiente |
+| `favicon.ico` (16/32/48) | `scripts/favicon-source.svg` | Las 12 figuras del logo completo se hacen blob ilegible a 16px; el SVG simplificado (huella estilizada sobre rect sangre) mantiene la identidad hasta el favicon de pestaña |
 
-Es el SVG entregado por Claude Design (versión simplificada de la
-huella humana del BrandMark — 3 dedos en vez de 5, `<circle>` puros
-en vez de `<ellipse>` rotadas) sobre fondo sangre con esquinas
-redondeadas. Está pensado específicamente para tamaños chicos:
+Esto **no es un fallback** — es diseño deliberado. Cualquier logo con
+más de ~5 elementos visuales necesita una versión simplificada para
+los tamaños chicos del browser tab.
 
-- BrandMark renderiza a 24–72px → 5 dedos del SVG principal leen bien.
-- Favicon renderiza a 16–48px → 5 dedos se manchan; 3 dedos siguen
-  legibles como "pie".
+### Si la marca cambia
 
-Por eso el SVG del favicon **no es el mismo** que el del componente
-`BrandMark`. Si en algún momento la marca cambia, hay que actualizar
-los dos:
+Hay que actualizar **dos cosas**:
 
-1. `src/components/brand/BrandMark.tsx` — SVG principal (24×24, 5 dedos,
-   `currentColor`).
-2. `scripts/favicon-source.svg` — SVG simplificado (16×16, 3 dedos,
-   fills hardcoded).
+1. **El logo grande** — `public/brand-mark.png` (o el archivo que apunte
+   `SOURCE_LARGE` en `scripts/generate-favicons.ts`). Lo consume el
+   BrandMark del header y los PNGs grandes del favicon.
+
+2. **El símbolo simplificado** — `scripts/favicon-source.svg` (mantiene
+   los `<circle>` puros del trazado simplificado de huella, fills
+   hardcoded sangre + cream porque favicons son assets estáticos sin
+   `currentColor`). Lo consume solo el ICO multi-resolution.
+
+Si ambos están desalineados (logo grande dice una cosa, favicon de
+browser dice otra), la coherencia de marca se rompe — re-generá los
+dos juntos cuando hagas un cambio mayor.
 
 ## Regeneración
 
@@ -56,9 +62,11 @@ npm run favicons
 
 Esto corre `scripts/generate-favicons.ts`, que:
 
-1. Lee `scripts/favicon-source.svg`.
-2. Genera con `sharp` los PNGs intermedios (16/32/48) en memoria + los
-   PNGs finales (180 y 512) en disco.
+1. Lee `public/brand-mark.png` (logo completo) y
+   `scripts/favicon-source.svg` (símbolo simplificado).
+2. Genera con `sharp`:
+   - `icon.png` 512 y `apple-icon.png` 180 desde el logo completo.
+   - PNGs intermedios 16/32/48 desde el SVG simplificado.
 3. Combina los 3 chicos en un ICO multi-resolution con `png-to-ico`.
 4. Escribe los 3 archivos finales a `src/app/`.
 
