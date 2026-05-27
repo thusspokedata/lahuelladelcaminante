@@ -271,7 +271,14 @@
     "share": "Share",
     "calendar": "Add to calendar",
     "save": "Save",
-    "backToEvents": "Events"
+    "backToEvents": "Events",
+    "photosLabel": "Photos"
+  },
+  "lightbox": {
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "openImage": "Open photo {index} of {total}"
   },
   "artistDetail": {
     "upcomingShows": "Upcoming dates",

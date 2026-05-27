@@ -11,6 +11,7 @@
  */
 
 import type { Metadata } from "next"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
@@ -22,6 +23,8 @@ import Chip from "@/components/ui/Chip"
 import Eyebrow from "@/components/ui/Eyebrow"
 import FactGrid from "@/components/ui/FactGrid"
 import FlyerImage from "@/components/ui/FlyerImage"
+import ImageLightboxRoot, { type ImageEntry } from "@/components/ui/ImageLightboxRoot"
+import ImageLightboxTrigger from "@/components/ui/ImageLightboxTrigger"
 import StickyCTABar from "@/components/ui/StickyCTABar"
 import { EventCard } from "@/components/events/EventCard"
 import EventAccessCTA from "@/components/events/EventAccessCTA"
@@ -121,6 +124,7 @@ export default async function EventDetailPage({
   if (!event) notFound()
 
   const t = await getTranslations({ locale, namespace: "eventDetail" })
+  const tLightbox = await getTranslations({ locale, namespace: "lightbox" })
 
   const otherEvents = event.artist
     ? await getOtherEventsByArtist(event.artist.id, event.id, 3)
@@ -154,6 +158,35 @@ export default async function EventDetailPage({
   )
   const isLive = nextDate ? nextDate >= todayStart && nextDate <= in7End : false
 
+  // Array unificado para el lightbox: cover en index 0, thumbs nuevos
+  // en index 1..N-1. Misma estructura que en /artists/[slug].
+  //
+  // INVARIANTE: hero y `lightboxImages[0]` apuntan al MISMO image físico.
+  // El service (`getEventBySlug` en `services/events.ts`) deriva
+  // `coverImage = images[0].url` y `coverImageAlt = images[0].alt`, así
+  // que el `<FlyerImage>` del hero y el slide 0 del lightbox renderizan
+  // exactamente la misma imagen. El hero usa el campo extra
+  // `coverImagePublicId` para activar el path de `<CldImage>` con
+  // transformaciones Cloudinary del flyer; el lightbox usa la URL plana.
+  const lightboxImages: ImageEntry[] = event.images.map((img) => ({
+    src: img.url,
+    alt: img.alt ?? event.title,
+  }))
+
+  // Hoist del FlyerImage del hero para evitar duplicación entre las dos
+  // ramas del conditional de abajo (trigger vs plain) — mismo patrón
+  // usado en /artists/[slug].
+  const hero = (
+    <FlyerImage
+      publicId={event.coverImagePublicId ?? undefined}
+      src={event.coverImage ?? undefined}
+      alt={event.coverImageAlt ?? event.title}
+      aspectRatio="4:5"
+      fallbackAccent={fallbackAccent}
+      priority
+    />
+  )
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
@@ -166,18 +199,21 @@ export default async function EventDetailPage({
           <span>{t("backToEvents")}</span>
         </Link>
 
+        <ImageLightboxRoot images={lightboxImages}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
           {/* Columna izquierda: flyer sticky */}
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-[calc(var(--layout-header-h)+24px)]">
-              <FlyerImage
-                publicId={event.coverImagePublicId ?? undefined}
-                src={event.coverImage ?? undefined}
-                alt={event.coverImageAlt ?? event.title}
-                aspectRatio="4:5"
-                fallbackAccent={fallbackAccent}
-                priority
-              />
+              {lightboxImages.length > 0 ? (
+                <ImageLightboxTrigger
+                  index={0}
+                  ariaLabel={tLightbox("openImage", { index: 1, total: lightboxImages.length })}
+                >
+                  {hero}
+                </ImageLightboxTrigger>
+              ) : (
+                hero
+              )}
             </div>
           </div>
 
@@ -283,6 +319,40 @@ export default async function EventDetailPage({
               </section>
             ) : null}
 
+            {/* Galería de fotos — mirror del patrón de artist. Cover ya
+                renderizada como flyer arriba; la galería empieza en
+                event.images[1] para no duplicar. Misma grid 2/3 cols. */}
+            {event.images.length > 1 ? (
+              <section className="flex flex-col gap-m">
+                <Eyebrow as="h2">{t("photosLabel")}</Eyebrow>
+                <ul className="grid grid-cols-2 sm:grid-cols-3 gap-s">
+                  {event.images.slice(1).map((img, i) => {
+                    const lightboxIndex = i + 1
+                    return (
+                      <li key={img.id}>
+                        <ImageLightboxTrigger
+                          index={lightboxIndex}
+                          ariaLabel={tLightbox("openImage", {
+                            index: lightboxIndex + 1,
+                            total: lightboxImages.length,
+                          })}
+                          className="relative aspect-square overflow-hidden rounded-lg bg-bg-surface-2"
+                        >
+                          <Image
+                            src={img.url}
+                            alt={img.alt ?? event.title}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+                            className="object-cover transition-transform duration-500 hover:scale-105"
+                          />
+                        </ImageLightboxTrigger>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            ) : null}
+
             {/* Más fechas del mismo evento */}
             {otherDates.length > 0 ? (
               <section className="flex flex-col gap-s">
@@ -312,6 +382,7 @@ export default async function EventDetailPage({
             ) : null}
           </div>
         </div>
+        </ImageLightboxRoot>
       </div>
 
       {/* Sticky CTA mobile */}
