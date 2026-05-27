@@ -160,6 +160,14 @@ export default async function EventDetailPage({
 
   // Array unificado para el lightbox: cover en index 0, thumbs nuevos
   // en index 1..N-1. Misma estructura que en /artists/[slug].
+  //
+  // INVARIANTE: hero y `lightboxImages[0]` apuntan al MISMO image físico.
+  // El service (`getEventBySlug` en `services/events.ts`) deriva
+  // `coverImage = images[0].url` y `coverImageAlt = images[0].alt`, así
+  // que el `<FlyerImage>` del hero y el slide 0 del lightbox renderizan
+  // exactamente la misma imagen. El hero usa el campo extra
+  // `coverImagePublicId` para activar el path de `<CldImage>` con
+  // transformaciones Cloudinary del flyer; el lightbox usa la URL plana.
   const lightboxImages: ImageEntry[] = event.images.map((img) => ({
     src: img.url,
     alt: img.alt ?? event.title,

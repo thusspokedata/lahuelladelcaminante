@@ -164,7 +164,7 @@ The lightbox library's internal `labels` prop is fed the `close`/`next`/`previou
 
 ## Dependencies
 
-```
+```shell
 pnpm add yet-another-react-lightbox
 ```
 

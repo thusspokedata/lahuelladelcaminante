@@ -90,7 +90,7 @@ export default function ImageLightboxRoot({
       {children}
       <Lightbox
         open={openState.isOpen}
-        close={() => setOpenState((s) => ({ ...s, isOpen: false }))}
+        close={() => setOpenState({ isOpen: false, index: 0 })}
         index={openState.index}
         slides={slides}
         plugins={[Captions, Counter, Thumbnails, Zoom]}

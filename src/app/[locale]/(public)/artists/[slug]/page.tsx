@@ -93,6 +93,15 @@ export default async function ArtistDetailPage({
   // Array unificado para el lightbox: cover en index 0, gallery thumbs
   // a partir de index 1. Cada trigger conoce su índice (0 para la
   // portrait, i+1 para el thumb i de `images.slice(1)`).
+  //
+  // INVARIANTE: hero y `lightboxImages[0]` apuntan al MISMO image físico.
+  // El service (`getArtistBySlug` en `services/artists.ts`) deriva
+  // `coverImage = images[0].url` y `coverImageAlt = images[0].alt`, así que
+  // el `<FlyerImage>` del hero y el slide 0 del lightbox renderizan
+  // exactamente la misma imagen. El hero usa el campo `coverImagePublicId`
+  // adicional para activar el path de `<CldImage>` con transformaciones
+  // Cloudinary (mejor rendering del flyer grande); el lightbox alcanza
+  // con la URL plana.
   const lightboxImages: ImageEntry[] = artist.images.map((img) => ({
     src: img.url,
     alt: img.alt ?? artist.name,
