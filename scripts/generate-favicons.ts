@@ -1,5 +1,6 @@
 /**
- * Genera los binarios de favicon a partir del SVG fuente.
+ * Genera los binarios de favicon a partir de DOS fuentes distintas
+ * (setup híbrido por legibilidad a tamaño chico).
  *
  * Outputs (todos en `src/app/`, donde Next.js App Router los recoge
  * automáticamente y emite los `<link rel="icon">` correspondientes):
@@ -7,19 +8,21 @@
  *  - `icon.png` — 512×512, ícono canónico moderno.
  *  - `apple-icon.png` — 180×180, iOS "Add to home screen".
  *
- * Fuente: `scripts/favicon-source.svg` (3 dedos, viewBox 16, con rect
- * sangre + foreground crema hardcoded — no usa `currentColor` porque
- * el favicon es asset estático sin contexto de color heredado).
+ * Fuentes:
+ *  - `SOURCE_LARGE` = `public/brand-mark.png` — el logo completo con 12
+ *    figuras humanas en ronda + huella ochre. Mismo asset que usa el
+ *    BrandMark del header. Lee bien a 180px+ (apple-icon, icon.png).
+ *  - `SOURCE_SMALL` = `scripts/favicon-source.svg` — versión SIMPLIFICADA
+ *    (huella estilizada con 3 dedos sobre rect sangre redondeado). Las 12
+ *    figuras del logo completo se hacen blob ilegible a 16×16; el SVG
+ *    simplificado mantiene legibilidad hasta 16px para la pestaña del
+ *    browser (donde el favicon más se ve). Solo se usa para el ICO.
  *
- * Por qué un SVG fuente distinto al del BrandMark:
- *  - BrandMark renderiza a 24-72px (5 dedos leen bien).
- *  - Favicon renderiza a 16-48px (5 dedos se manchan en un blob).
- *  - Versión simplificada con 3 dedos + circles puros mantiene legible
- *    el "esto es un pie" hasta 16×16. El rect sangre + redondeo viven
- *    en el SVG fuente para que el ICO/PNG nazcan con el branding listo.
+ * Esto es deliberado, no un fallback: un favicon a 16px nunca debe
+ * mostrar el logo completo si el logo tiene >5 elementos.
  *
  * Uso:
- *   pnpm run favicons
+ *   npm run favicons
  *
  * No corre en CI ni en deploy — solo cuando el dev quiere regenerar
  * los binarios. Los outputs se committean al repo.
@@ -36,10 +39,11 @@ import { fileURLToPath } from "node:url"
 // Paths anclados al archivo del script (NO a `process.cwd()`) — el dev
 // puede correr `tsx scripts/generate-favicons.ts` desde cualquier
 // directorio (raíz del repo, subdir, IDE con cwd al archivo) y siempre
-// encuentra el SVG fuente + escribe los outputs al lugar correcto.
+// encuentra las fuentes + escribe los outputs al lugar correcto.
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(SCRIPT_DIR, "..")
-const SOURCE_SVG = join(SCRIPT_DIR, "favicon-source.svg")
+const SOURCE_LARGE = join(REPO_ROOT, "public/brand-mark.png")
+const SOURCE_SMALL = join(SCRIPT_DIR, "favicon-source.svg")
 const APP_DIR = join(REPO_ROOT, "src/app")
 
 /** Tamaños del multi-resolution ICO. 16/32/48 son los estándar histórico
@@ -47,29 +51,31 @@ const APP_DIR = join(REPO_ROOT, "src/app")
 const ICO_SIZES = [16, 32, 48] as const
 
 async function generate(): Promise<void> {
-  const svgBuffer = readFileSync(SOURCE_SVG)
+  const largeBuffer = readFileSync(SOURCE_LARGE)
+  const smallBuffer = readFileSync(SOURCE_SMALL)
 
   // PNG 512 (icon.png) — usado por browsers modernos para favicons de
-  // alta resolución (retina, install prompts de PWA, etc.).
-  await sharp(svgBuffer)
+  // alta resolución (retina, install prompts de PWA, etc.). Logo completo.
+  await sharp(largeBuffer)
     .resize(512, 512)
     .png()
     .toFile(join(APP_DIR, "icon.png"))
 
   // PNG 180 (apple-icon.png) — iOS "Add to home screen". iOS aplica su
-  // propio redondeo, así que el rect del SVG ya redondeado es para los
-  // demás clientes (no rompe iOS, solo es redundante allá).
-  await sharp(svgBuffer)
+  // propio redondeo encima del PNG (mask de la home screen), así que el
+  // asset puede llegar plano-cuadrado sin redondeo propio. Logo completo.
+  await sharp(largeBuffer)
     .resize(180, 180)
     .png()
     .toFile(join(APP_DIR, "apple-icon.png"))
 
-  // PNGs intermedios para combinar en el ICO. NO se escriben a disco
-  // (no necesitamos los archivos sueltos), van directo a `png-to-ico`
+  // PNGs intermedios para combinar en el ICO. Vienen del SVG simplificado
+  // porque a 16/32/48 el logo completo es un blob ilegible. NO se escriben
+  // a disco (no necesitamos los archivos sueltos), van directo a `png-to-ico`
   // que los empaqueta en el contenedor multi-resolution.
   const buffers = await Promise.all(
     ICO_SIZES.map((size) =>
-      sharp(svgBuffer).resize(size, size).png().toBuffer()
+      sharp(smallBuffer).resize(size, size).png().toBuffer()
     )
   )
 
