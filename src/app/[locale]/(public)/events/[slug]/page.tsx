@@ -301,7 +301,23 @@ export default async function EventDetailPage({
                 {
                   id: "address",
                   label: t("facts.address"),
-                  value: event.address,
+                  value: event.address
+                    ? (() => {
+                        const q = [event.location, event.address]
+                          .filter(Boolean)
+                          .join(", ")
+                        return (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-brand transition-colors"
+                          >
+                            {event.address}
+                          </a>
+                        )
+                      })()
+                    : null,
                 },
               ]}
             />
