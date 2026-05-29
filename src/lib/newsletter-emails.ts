@@ -73,9 +73,9 @@ function getLang(lang: string): Lang {
     : "es"
 }
 
-function emailWrapper(content: string): string {
+function emailWrapper(content: string, lang: string): string {
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${lang}">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#0e0407;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0407;padding:40px 20px">
@@ -124,7 +124,7 @@ export function buildConfirmationEmail(
       <p style="color:rgba(255,255,255,0.3);font-size:12px;margin:0;text-align:center">${escapeHtml(s.confirmIgnore)}</p>
     </td></tr>`
 
-  return { subject: s.confirmSubject, html: emailWrapper(body) }
+  return { subject: s.confirmSubject, html: emailWrapper(body, getLang(lang)) }
 }
 
 function formatDigestDate(isoDate: string, lang: Lang): string {
@@ -204,5 +204,5 @@ export function buildDigestEmail(
       </table>
     </td></tr>`
 
-  return { subject: s.digestSubject, html: emailWrapper(body) }
+  return { subject: s.digestSubject, html: emailWrapper(body, l) }
 }

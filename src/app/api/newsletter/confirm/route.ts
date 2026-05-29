@@ -38,11 +38,11 @@ export async function GET(request: Request) {
     return redirectTo("es", isExpired ? "error=token_expired" : "error=invalid_token")
   }
 
-  const { email, language } = payload
+  const { email, language, contactId } = payload
   const resend = getResend()
 
   try {
-    await resend.contacts.update({ email, unsubscribed: false })
+    await resend.contacts.update({ id: contactId, unsubscribed: false })
   } catch (err) {
     console.error("newsletter_confirm_update_failed", {
       errorName: err instanceof Error ? err.name : typeof err,

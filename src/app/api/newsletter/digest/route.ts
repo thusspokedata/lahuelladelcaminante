@@ -96,12 +96,14 @@ export async function POST(request: Request) {
 
     let subscriberEmails: string[] = []
     try {
-      const { data: list } = await resend.contacts.list({ segmentId })
+      // TODO: implement cursor-based pagination when segments exceed 100 subscribers
+      const { data: list } = await resend.contacts.list({ segmentId, limit: 100 })
       subscriberEmails = (list?.data ?? [])
         .filter((c) => !c.unsubscribed)
         .map((c) => c.email)
     } catch (err) {
-      console.error(`newsletter_digest_list_failed_${lang}`, {
+      console.error("newsletter_digest_list_failed", {
+        lang,
         errorName: err instanceof Error ? err.name : typeof err,
       })
       continue
@@ -127,7 +129,8 @@ export async function POST(request: Request) {
         })
         sent += batch.length
       } catch (err) {
-        console.error(`newsletter_digest_send_failed_${lang}`, {
+        console.error("newsletter_digest_send_failed", {
+          lang,
           errorName: err instanceof Error ? err.name : typeof err,
           batch: i,
         })

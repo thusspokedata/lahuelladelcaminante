@@ -90,22 +90,18 @@ export async function POST(request: Request) {
   const resend = getResend()
   const segmentId = segmentIdForLang(language)
 
+  // Direct lookup by email — avoids pagination truncation of contacts.list
   let existingContactId: string | null = null
   let isAlreadySubscribed = false
 
-  if (segmentId) {
-    try {
-      const { data: list } = await resend.contacts.list({ segmentId })
-      const existing = list?.data?.find((c) => c.email === email)
-      if (existing) {
-        existingContactId = existing.id
-        isAlreadySubscribed = !existing.unsubscribed
-      }
-    } catch (err) {
-      console.error("newsletter_list_contacts_failed", {
-        errorName: err instanceof Error ? err.name : typeof err,
-      })
+  try {
+    const { data: existing } = await resend.contacts.get({ email })
+    if (existing?.id) {
+      existingContactId = existing.id
+      isAlreadySubscribed = !existing.unsubscribed
     }
+  } catch {
+    // Contact not found or error — proceed to create
   }
 
   if (isAlreadySubscribed) {
