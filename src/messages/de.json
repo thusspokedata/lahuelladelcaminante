@@ -804,5 +804,18 @@
     "ariaLabel": "Cookie-Hinweis",
     "body": "Diese Website verwendet nur technisch notwendige Cookies (Sitzung und Sprache) — kein Tracking, keine Werbung. Mehr dazu in unserer <privacyLink>Datenschutzerklärung</privacyLink>.",
     "dismiss": "Verstanden"
+  },
+  "newsletter": {
+    "pageTitle": "Newsletter",
+    "pageDescription": "Abonniere und erhalte jede Woche die kommenden lateinamerikanischen Events in Berlin.",
+    "formEmailPlaceholder": "deine@email.com",
+    "formSubmit": "Anmelden",
+    "formConsent": "Ich stimme zu, den wöchentlichen Newsletter von La Huella del Caminante zu erhalten. Ich kann mich jederzeit abmelden.",
+    "formConsentLink": "Datenschutzerklärung",
+    "successMessage": "Fertig! Prüfe deine E-Mails, um das Abonnement zu bestätigen.",
+    "errorMessage": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "confirmedBanner": "Abonnement bestätigt! Ab dem nächsten Montag erhältst du die Events der Woche.",
+    "tokenExpiredMessage": "Der Bestätigungslink ist abgelaufen. Melde dich erneut an, um eine neue E-Mail zu erhalten.",
+    "footerLabel": "Wöchentlicher Newsletter"
   }
 }

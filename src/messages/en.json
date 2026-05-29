@@ -804,5 +804,18 @@
     "ariaLabel": "Cookie notice",
     "body": "This site uses only essential technical cookies (session and language) — no tracking, no advertising. More in our <privacyLink>privacy policy</privacyLink>.",
     "dismiss": "Got it"
+  },
+  "newsletter": {
+    "pageTitle": "Newsletter",
+    "pageDescription": "Subscribe to receive the upcoming Latin events in Berlin every week.",
+    "formEmailPlaceholder": "your@email.com",
+    "formSubmit": "Subscribe",
+    "formConsent": "I agree to receive the weekly newsletter from La Huella del Caminante. I can unsubscribe at any time.",
+    "formConsentLink": "Privacy policy",
+    "successMessage": "Done! Check your email to confirm your subscription.",
+    "errorMessage": "Something went wrong. Please try again.",
+    "confirmedBanner": "Subscription confirmed! Starting next Monday you'll receive the week's events.",
+    "tokenExpiredMessage": "The confirmation link has expired. Subscribe again to receive a new email.",
+    "footerLabel": "Weekly newsletter"
   }
 }

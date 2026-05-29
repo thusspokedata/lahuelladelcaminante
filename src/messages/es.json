@@ -804,5 +804,18 @@
     "ariaLabel": "Aviso de cookies",
     "body": "Este sitio usa solo cookies técnicas esenciales (sesión e idioma) — sin seguimiento ni publicidad. Más información en nuestra <privacyLink>política de privacidad</privacyLink>.",
     "dismiss": "Entendido"
+  },
+  "newsletter": {
+    "pageTitle": "Newsletter",
+    "pageDescription": "Suscribite para recibir cada semana los eventos latinos que se vienen en Berlín.",
+    "formEmailPlaceholder": "tu@email.com",
+    "formSubmit": "Suscribirme",
+    "formConsent": "Acepto recibir el newsletter semanal de La Huella del Caminante. Puedo darme de baja en cualquier momento.",
+    "formConsentLink": "Política de privacidad",
+    "successMessage": "¡Listo! Revisá tu email para confirmar la suscripción.",
+    "errorMessage": "Algo salió mal. Intentá de nuevo.",
+    "confirmedBanner": "¡Suscripción confirmada! A partir del próximo lunes vas a recibir los eventos de la semana.",
+    "tokenExpiredMessage": "El link de confirmación expiró. Volvé a suscribirte para recibir un nuevo email.",
+    "footerLabel": "Newsletter semanal"
   }
 }
