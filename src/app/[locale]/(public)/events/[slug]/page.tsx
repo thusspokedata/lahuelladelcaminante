@@ -187,6 +187,21 @@ export default async function EventDetailPage({
     />
   )
 
+  // Link de Google Maps: combina venue + dirección para mejorar resultados
+  // cuando solo está el nombre del local sin dirección exacta.
+  const addressLink = event.address ? (
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        [event.location, event.address].filter(Boolean).join(", ")
+      )}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline underline-offset-2 hover:text-brand transition-colors"
+    >
+      {event.address}
+    </a>
+  ) : null
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-m sm:px-l py-l lg:py-xl">
@@ -301,7 +316,7 @@ export default async function EventDetailPage({
                 {
                   id: "address",
                   label: t("facts.address"),
-                  value: event.address,
+                  value: addressLink,
                 },
               ]}
             />
