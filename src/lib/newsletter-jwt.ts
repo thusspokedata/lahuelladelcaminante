@@ -47,6 +47,16 @@ export async function signNewsletterToken(payload: {
 export async function verifyNewsletterToken(
   token: string
 ): Promise<NewsletterTokenPayload> {
-  const { payload } = await jwtVerify(token, getSecret())
+  const { payload } = await jwtVerify(token, getSecret(), {
+    algorithms: ["HS256"],
+  })
+  // Runtime validation — jwtVerify only checks signature/expiry
+  if (
+    typeof payload.email !== "string" || !payload.email ||
+    typeof payload.language !== "string" || !payload.language ||
+    typeof payload.contactId !== "string" || !payload.contactId
+  ) {
+    throw new Error("Invalid token payload")
+  }
   return payload as NewsletterTokenPayload
 }

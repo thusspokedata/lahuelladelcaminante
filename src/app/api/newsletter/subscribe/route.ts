@@ -95,13 +95,13 @@ export async function POST(request: Request) {
   let isAlreadySubscribed = false
 
   try {
-    const { data: existing } = await resend.contacts.get({ email })
-    if (existing?.id) {
+    const { data: existing, error: getError } = await resend.contacts.get({ email })
+    if (!getError && existing?.id) {
       existingContactId = existing.id
       isAlreadySubscribed = !existing.unsubscribed
     }
   } catch {
-    // Contact not found or error — proceed to create
+    // Contact not found or network error — proceed to create
   }
 
   if (isAlreadySubscribed) {
@@ -122,20 +122,21 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "subscription_failed" }, { status: 502 })
       }
       contactId = created.id
-
-      if (segmentId) {
-        await resend.contacts.segments.add({ email, segmentId }).catch((err) => {
-          console.error("newsletter_add_segment_failed", {
-            errorName: err instanceof Error ? err.name : typeof err,
-          })
-        })
-      }
     } catch (err) {
       console.error("newsletter_create_contact_failed", {
         errorName: err instanceof Error ? err.name : typeof err,
       })
       return NextResponse.json({ error: "subscription_failed" }, { status: 502 })
     }
+  }
+
+  // Add segment for ALL contacts (new + returning unsubscribed)
+  if (segmentId && contactId) {
+    await resend.contacts.segments.add({ email, segmentId }).catch((err) => {
+      console.error("newsletter_add_segment_failed", {
+        errorName: err instanceof Error ? err.name : typeof err,
+      })
+    })
   }
 
   const token = await signNewsletterToken({ email, language, contactId })

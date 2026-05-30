@@ -121,6 +121,7 @@ export default function NewsletterForm({ variant, initialState }: NewsletterForm
         <input
           type="email"
           required
+          aria-label={t("formEmailPlaceholder")}
           placeholder={t("formEmailPlaceholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}

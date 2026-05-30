@@ -151,7 +151,7 @@ export function buildDigestEmail(
 
   const eventCards = events
     .map((ev) => {
-      const eventUrl = `${appUrl}/${lang}/events/${encodeURIComponent(ev.slug)}`
+      const eventUrl = `${appUrl}/${l}/events/${encodeURIComponent(ev.slug)}`
       const dateStr = formatDigestDate(ev.nextDate, l)
       const img = ev.coverImage
         ? `<td width="80" style="padding:0 16px 0 0;vertical-align:top">
@@ -182,7 +182,7 @@ export function buildDigestEmail(
 
   const viewAllRow = hasMore
     ? `<tr><td style="padding:8px 0 0;text-align:center">
-        <a href="${appUrl}/${lang}/events"
+        <a href="${appUrl}/${l}/events"
            style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:underline">
           ${escapeHtml(s.digestViewAll)}
         </a>
