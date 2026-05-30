@@ -19,7 +19,7 @@ Sistema completo de newsletter para La Huella del Caminante:
 | Decisión | Elección | Razón |
 |---|---|---|
 | Opt-in | Doble (confirmación por email) | Obligatorio GDPR Alemania |
-| Source of truth suscriptores | Resend Audiences | Maneja unsubscribes nativamente; sin migration Prisma |
+| Source of truth suscriptores | Resend Segments | Maneja unsubscribes nativamente; sin migration Prisma |
 | Tokens de confirmación | JWT firmados (NEWSLETTER_JWT_SECRET, exp 24h) | Sin tabla extra en DB |
 | Idiomas | ES / EN / DE | Idioma del locale activo del visitante |
 | Frecuencia digest | Semanal, lunes 8:00AM UTC | ~9-10AM Berlín según DST |
@@ -33,17 +33,17 @@ Sistema completo de newsletter para La Huella del Caminante:
 ## 3. Variables de entorno nuevas
 
 ```env
-# Una audiencia por idioma — evita depender de custom fields en Resend
+# Un segment por idioma — evita depender de custom fields en Resend
 # (la API de Contacts no garantiza campos arbitrarios en todos los planes)
-RESEND_AUDIENCE_ID_ES=    # ID audiencia español
-RESEND_AUDIENCE_ID_EN=    # ID audiencia inglés
-RESEND_AUDIENCE_ID_DE=    # ID audiencia alemán
+RESEND_SEGMENT_ID_ES=    # ID segment español
+RESEND_SEGMENT_ID_EN=    # ID segment inglés
+RESEND_SEGMENT_ID_DE=    # ID segment alemán
 NEWSLETTER_JWT_SECRET=    # Secret para firmar tokens de confirmación (min 32 chars)
 ```
 
 Todas deben agregarse a `.env.local`, `.env.local.example`, y a los secrets del VPS.
 
-**Por qué 3 audiencias:** Resend Contacts no expone campos personalizados estables en todos los planes. Audiencias separadas por idioma eliminan esta dependencia y simplifican el fetch del digest (una audiencia = un idioma, sin filtrado post-fetch).
+**Por qué 3 segments:** Resend Contacts no expone campos personalizados estables en todos los planes. Segments separados por idioma eliminan esta dependencia y simplifican el fetch del digest (un segment = un idioma, sin filtrado post-fetch).
 
 ---
 
@@ -58,9 +58,9 @@ POST /api/newsletter/subscribe
   ├─ checkRateLimit(ip)         — mismo lib que /api/contact
   ├─ Zod: { email, language, website (honeypot) }
   ├─ honeypot trip → fakeOk()
-  ├─ resend.contacts.create({ audienceId, email, unsubscribed: true,
-  │    firstName: "", lastName: "",
-  │    fields: { language } })  — unsubscribed=true hasta confirmar
+  ├─ resend.contacts.create({ email, unsubscribed: true,
+  │    firstName: "", lastName: "" })  — unsubscribed=true hasta confirmar
+  ├─ Agregar al segment del idioma (segmentId)
   ├─ JWT firmado: { email, language, iat, exp: +24h }
   └─ sendEmail() → email de confirmación con link
        └─ GET /api/newsletter/confirm?token=xxx
@@ -97,7 +97,7 @@ POST /api/newsletter/subscribe
 |---|---|
 | `src/components/layout/Footer.tsx` | Reemplaza FooterLink placeholder por `<NewsletterForm />` inline |
 | `src/lib/trigger.ts` | Agrega `sendNewsletterDigest()` helper de envío |
-| `.env.local.example` | Agrega `RESEND_AUDIENCE_ID` y `NEWSLETTER_JWT_SECRET` |
+| `.env.local.example` | Agrega `RESEND_SEGMENT_ID` y `NEWSLETTER_JWT_SECRET` |
 | `src/messages/es.json` | Claves `newsletter.*` |
 | `src/messages/en.json` | Claves `newsletter.*` |
 | `src/messages/de.json` | Claves `newsletter.*` |
@@ -197,7 +197,7 @@ Enviado en 3 pasadas (ES/EN/DE) según `language` del contacto en Resend. Si nin
 1. Fetch eventos: próximos 15 días, isActive=true, isDeleted=false, ordenados por fecha
 2. Si events.length === 0 → log "no_events_skipping" → exit
 3. Tomar primeros 5 (o todos si ≤5), preparar hasMore = total > 5
-4. Fetch contactos de Resend Audience (paginado si necesario)
+4. Fetch contactos de Resend Segment (paginado si necesario)
 5. Filtrar: unsubscribed=false
 6. Agrupar por language: { es: [...], en: [...], de: [...] }
 7. Por cada grupo con length > 0:

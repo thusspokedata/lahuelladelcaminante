@@ -1303,8 +1303,9 @@ crontab -e
 ```
 
 Agregar línea:
-```cron
-0 8 * * 1 curl -s -X POST https://lahuelladelcaminante.de/api/newsletter/digest -H "Authorization: Bearer TU_DIGEST_CRON_SECRET" >> /var/log/newsletter-digest.log 2>&1
+```bash
+# Asegurate de exportar DIGEST_CRON_SECRET en el entorno del cron
+0 8 * * 1 curl -s -X POST https://lahuelladelcaminante.de/api/newsletter/digest -H "Authorization: Bearer ${DIGEST_CRON_SECRET}" >> /var/log/newsletter-digest.log 2>&1
 ```
 
 - [ ] **Step 3: Verificar cron funcionando**
@@ -1312,7 +1313,7 @@ Agregar línea:
 Testear el endpoint manualmente desde local:
 ```bash
 curl -X POST https://lahuelladelcaminante.de/api/newsletter/digest \
-  -H "Authorization: Bearer TU_DIGEST_CRON_SECRET"
+  -H "Authorization: Bearer ${DIGEST_CRON_SECRET}"
 # Esperar: {"data":{"sent":false,"reason":"no_events"}} si no hay eventos
 # O: {"data":{"sent":true,"result":{"es":N,"en":N,"de":N},"events":M}}
 ```
