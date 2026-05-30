@@ -32,7 +32,7 @@ export default async function NewsletterPage({ params, searchParams }: PageProps
   const initialState =
     sp.confirmed === "true"
       ? "confirmed"
-      : sp.error === "token_expired"
+      : sp.error === "token_expired" || sp.error === "invalid_token"
         ? "token_expired"
         : null
 
