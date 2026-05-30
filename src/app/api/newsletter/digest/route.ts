@@ -97,10 +97,10 @@ export async function POST(request: Request) {
     let subscriberEmails: string[] = []
     try {
       const allEmails: string[] = []
-      let hasMore = true
+      let pageHasMore = true
       let after: string | undefined = undefined
 
-      while (hasMore) {
+      while (pageHasMore) {
         const { data: page } = await resend.contacts.list({
           segmentId,
           limit: 100,
@@ -110,11 +110,11 @@ export async function POST(request: Request) {
         allEmails.push(
           ...contacts.filter((c) => !c.unsubscribed).map((c) => c.email)
         )
-        hasMore = page?.has_more ?? false
-        if (hasMore && contacts.length > 0) {
+        pageHasMore = page?.has_more ?? false
+        if (pageHasMore && contacts.length > 0) {
           after = contacts[contacts.length - 1]?.id
         } else {
-          hasMore = false
+          pageHasMore = false
         }
       }
       subscriberEmails = allEmails

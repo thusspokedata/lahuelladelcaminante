@@ -47,9 +47,7 @@ export default async function NewsletterConfirmPage({
   })
 
   if (error) {
-    console.error("newsletter_confirm_update_failed", {
-      errorName: "ResendUpdateError",
-    })
+    console.error("newsletter_confirm_update_failed", { error })
     redirect(`/${payload.language}/newsletter?error=confirm_failed`)
   }
 
