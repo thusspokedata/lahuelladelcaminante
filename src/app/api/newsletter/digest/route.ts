@@ -96,11 +96,28 @@ export async function POST(request: Request) {
 
     let subscriberEmails: string[] = []
     try {
-      // TODO: implement cursor-based pagination when segments exceed 100 subscribers
-      const { data: list } = await resend.contacts.list({ segmentId, limit: 100 })
-      subscriberEmails = (list?.data ?? [])
-        .filter((c) => !c.unsubscribed)
-        .map((c) => c.email)
+      const allEmails: string[] = []
+      let hasMore = true
+      let after: string | undefined = undefined
+
+      while (hasMore) {
+        const { data: page } = await resend.contacts.list({
+          segmentId,
+          limit: 100,
+          ...(after ? { after } : {}),
+        })
+        const contacts = page?.data ?? []
+        allEmails.push(
+          ...contacts.filter((c) => !c.unsubscribed).map((c) => c.email)
+        )
+        hasMore = page?.has_more ?? false
+        if (hasMore && contacts.length > 0) {
+          after = contacts[contacts.length - 1]?.id
+        } else {
+          hasMore = false
+        }
+      }
+      subscriberEmails = allEmails
     } catch (err) {
       console.error("newsletter_digest_list_failed", {
         lang,
@@ -116,23 +133,21 @@ export async function POST(request: Request) {
 
     const { subject, html } = buildDigestEmail(lang, digestEvents, hasMore, appUrl)
 
-    const BATCH = 50
+    // Send individually to protect subscriber privacy
     let sent = 0
-    for (let i = 0; i < subscriberEmails.length; i += BATCH) {
-      const batch = subscriberEmails.slice(i, i + BATCH)
+    for (const email of subscriberEmails) {
       try {
         await resend.emails.send({
           from: "La Huella del Caminante <noreply@lahuelladelcaminante.de>",
-          to: batch,
+          to: email,
           subject,
           html,
         })
-        sent += batch.length
+        sent += 1
       } catch (err) {
         console.error("newsletter_digest_send_failed", {
           lang,
           errorName: err instanceof Error ? err.name : typeof err,
-          batch: i,
         })
       }
     }
