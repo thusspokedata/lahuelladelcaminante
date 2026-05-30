@@ -140,7 +140,7 @@ export async function POST(request: Request) {
 
   const token = await signNewsletterToken({ email, language, contactId })
   const appUrl = env.NEXT_PUBLIC_APP_URL
-  const confirmUrl = `${appUrl}/api/newsletter/confirm?token=${encodeURIComponent(token)}`
+  const confirmUrl = `${appUrl}/${language}/newsletter/confirm?token=${encodeURIComponent(token)}`
   const { subject, html } = buildConfirmationEmail(language, confirmUrl)
 
   try {
