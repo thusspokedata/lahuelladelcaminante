@@ -9,6 +9,11 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().optional().default(""),
   CLOUDINARY_API_SECRET: z.string().optional().default(""),
   RESEND_API_KEY: z.string().optional().default(""),
+  RESEND_SEGMENT_ID_ES: z.string().optional().default(""),
+  RESEND_SEGMENT_ID_EN: z.string().optional().default(""),
+  RESEND_SEGMENT_ID_DE: z.string().optional().default(""),
+  NEWSLETTER_JWT_SECRET: z.string().optional().default(""),
+  DIGEST_CRON_SECRET: z.string().optional().default(""),
   TRIGGER_SECRET_KEY: z.string().optional().default(""),
   /**
    * Email del founder al que llegan los mensajes de `/contact`. Si no

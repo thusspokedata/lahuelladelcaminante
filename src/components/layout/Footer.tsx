@@ -23,6 +23,7 @@ import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import BrandLockup from "@/components/brand/BrandLockup"
 import Eyebrow from "@/components/ui/Eyebrow"
+import NewsletterForm from "@/components/newsletter/NewsletterForm"
 
 export async function Footer() {
   const t = await getTranslations("footer")
@@ -77,10 +78,9 @@ export async function Footer() {
             >
               Instagram
             </FooterLink>
-            {/* TODO: replace `#` with real newsletter signup once flow exists. */}
-            <FooterLink href="#" external>
-              {t("newsletter")}
-            </FooterLink>
+            <li>
+              <NewsletterForm variant="footer" />
+            </li>
             <FooterLink href="/contact">{t("contact")}</FooterLink>
           </FooterColumn>
         </div>

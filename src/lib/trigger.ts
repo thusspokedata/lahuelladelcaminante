@@ -1,5 +1,6 @@
 import { createTranslator } from "next-intl"
 import { env } from "./env"
+import { escapeHtml } from "./newsletter-escape"
 
 async function sendEmail(
   to: string,
@@ -509,14 +510,3 @@ export async function triggerContactNotification(payload: {
   )
 }
 
-/** Escape mínimo para interpolar input del user en el HTML del email.
- * Suficiente para evitar HTML injection en una plantilla controlada
- * (no markdown ni script tags). */
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-}
