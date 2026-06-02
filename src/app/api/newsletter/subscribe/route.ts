@@ -114,11 +114,9 @@ export async function POST(request: Request) {
       const { data: created, error } = await resend.contacts.create({
         email,
         unsubscribed: true,
-        firstName: "",
-        lastName: "",
       })
       if (error || !created?.id) {
-        console.error("newsletter_create_contact_failed", { errorName: "CreateContactError" })
+        console.error("newsletter_create_contact_failed", { error })
         return NextResponse.json({ error: "subscription_failed" }, { status: 502 })
       }
       contactId = created.id
