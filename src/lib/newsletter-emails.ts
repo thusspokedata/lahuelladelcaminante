@@ -97,6 +97,8 @@ function emailWrapper(content: string, lang: string): string {
 
 function emailHeader(heading: string): string {
   return `<tr><td style="background:linear-gradient(135deg,#7a1a0e 0%,#c0392b 50%,#7a1a0e 100%);padding:40px 32px;text-align:center">
+    <img src="https://lahuelladelcaminante.de/brand-mark.png" width="72" height="72"
+         alt="La Huella del Caminante" style="border-radius:10px;display:block;margin:0 auto 16px;">
     <p style="color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 12px">La Huella del Caminante</p>
     <h1 style="color:#ffffff;font-size:26px;font-weight:900;margin:0;line-height:1.2">${escapeHtml(heading)}</h1>
   </td></tr>`
