@@ -123,6 +123,8 @@ export async function POST(request: Request) {
     } catch (err) {
       console.error("newsletter_create_contact_failed", {
         errorName: err instanceof Error ? err.name : typeof err,
+        message: err instanceof Error ? err.message : String(err),
+        err,
       })
       return NextResponse.json({ error: "subscription_failed" }, { status: 502 })
     }
