@@ -60,6 +60,7 @@ export function Header() {
   const navItems: NavItem[] = [
     { href: "/events", label: t("events") },
     { href: "/artists", label: t("artists") },
+    { href: "/events/calendar", label: t("calendar") },
     { href: "/events#esta-semana", hashOnly: true, label: t("thisWeek") },
   ]
 

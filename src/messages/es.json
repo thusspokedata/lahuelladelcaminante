@@ -2,6 +2,7 @@
   "nav": {
     "events": "Eventos",
     "artists": "Artistas",
+    "calendar": "Calendario",
     "dashboard": "Mi panel",
     "admin": "Admin",
     "signIn": "Iniciar sesión",
