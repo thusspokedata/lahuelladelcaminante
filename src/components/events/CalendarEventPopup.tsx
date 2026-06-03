@@ -59,9 +59,11 @@ export default function CalendarEventPopup({
     }
   }, [onClose])
 
-  // Mover foco al dialog al abrir
+  // Mover foco al dialog al abrir y restaurarlo al cerrar
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
     popupRef.current?.focus()
+    return () => previouslyFocused?.focus()
   }, [])
 
   // Calcular posición desktop
