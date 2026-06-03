@@ -817,5 +817,38 @@
     "confirmedBanner": "Subscription confirmed! Starting next Monday you'll receive the week's events.",
     "tokenExpiredMessage": "The confirmation link has expired. Subscribe again to receive a new email.",
     "footerLabel": "Weekly newsletter"
+  },
+  "calendar": {
+    "pageTitle": "Calendar",
+    "pageDescription": "All events from the Latin scene in Berlin",
+    "navPrev": "Previous month",
+    "navNext": "Next month",
+    "noEvents": "No events this month",
+    "sceneEventBadge": "Other scene",
+    "viewEvent": "View event →",
+    "viewSource": "View source →",
+    "moreEvents": "+{count} more",
+    "loading": "Loading...",
+    "weekdays": {
+      "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu",
+      "fri": "Fri", "sat": "Sat", "sun": "Sun"
+    },
+    "months": {
+      "1": "January", "2": "February", "3": "March", "4": "April",
+      "5": "May", "6": "June", "7": "July", "8": "August",
+      "9": "September", "10": "October", "11": "November", "12": "December"
+    },
+    "dashboard": {
+      "title": "Scene entries",
+      "addEntry": "Add entry",
+      "dateLabel": "Date",
+      "titleLabel": "Title",
+      "venueLabel": "Venue (optional)",
+      "urlLabel": "External link (optional)",
+      "delete": "Delete",
+      "empty": "No scene entries loaded",
+      "saving": "Saving...",
+      "saved": "Saved"
+    }
   }
 }

@@ -817,5 +817,43 @@
     "confirmedBanner": "¡Suscripción confirmada! A partir del próximo lunes vas a recibir los eventos de la semana.",
     "tokenExpiredMessage": "El link de confirmación expiró. Volvé a suscribirte para recibir un nuevo email.",
     "footerLabel": "Newsletter semanal"
+  },
+  "calendar": {
+    "pageTitle": "Calendario",
+    "pageDescription": "Todos los eventos de la escena latina en Berlín",
+    "navPrev": "Mes anterior",
+    "navNext": "Mes siguiente",
+    "noEvents": "Sin eventos este mes",
+    "sceneEventBadge": "Otra escena",
+    "viewEvent": "Ver evento →",
+    "viewSource": "Ver fuente →",
+    "moreEvents": "+{count} más",
+    "loading": "Cargando...",
+    "weekdays": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "months": {
+      "1": "Enero", "2": "Febrero", "3": "Marzo", "4": "Abril",
+      "5": "Mayo", "6": "Junio", "7": "Julio", "8": "Agosto",
+      "9": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre"
+    },
+    "dashboard": {
+      "title": "Entradas de escena",
+      "addEntry": "Agregar entrada",
+      "dateLabel": "Fecha",
+      "titleLabel": "Título",
+      "venueLabel": "Venue (opcional)",
+      "urlLabel": "Link externo (opcional)",
+      "delete": "Eliminar",
+      "empty": "No hay entradas de escena cargadas",
+      "saving": "Guardando...",
+      "saved": "Guardado"
+    }
   }
 }
