@@ -13,7 +13,7 @@ const createSceneEventSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must be YYYY-MM-DD"),
   title: z.string().min(1).max(200),
   venue: z.string().max(200).optional(),
-  externalUrl: z.string().url().optional().or(z.literal("")),
+  externalUrl: z.url().optional().or(z.literal("")),
 })
 
 export async function GET() {

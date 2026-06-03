@@ -854,7 +854,9 @@
       "delete": "Eliminar",
       "empty": "No hay entradas de escena cargadas",
       "saving": "Guardando...",
-      "saved": "Guardado"
+      "saved": "Guardado",
+      "errorMessage": "Algo salió mal. Intentá de nuevo.",
+      "loading": "Cargando..."
     }
   }
 }

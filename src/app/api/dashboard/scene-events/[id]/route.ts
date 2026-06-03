@@ -16,7 +16,14 @@ export async function DELETE(
   try {
     await prisma.sceneEvent.delete({ where: { id } })
     return NextResponse.json({ data: { deleted: true } })
-  } catch {
-    return NextResponse.json({ error: "not_found" }, { status: 404 })
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      "code" in err &&
+      (err as { code: string }).code === "P2025"
+    ) {
+      return NextResponse.json({ error: "not_found" }, { status: 404 })
+    }
+    throw err
   }
 }

@@ -23,6 +23,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+/**
+ * TODO: esta lógica duplica `calendarGridBounds` en /api/calendar/route.ts.
+ * Extraer a src/lib/calendar-utils.ts cuando se necesite reutilizar en más lugares.
+ */
 /** Calcula los límites de la grilla para el mes actual (UTC). */
 function currentMonthGridBounds(): { from: Date; to: Date; ym: string } {
   const now = new Date()

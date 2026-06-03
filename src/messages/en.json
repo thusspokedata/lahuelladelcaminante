@@ -849,7 +849,9 @@
       "delete": "Delete",
       "empty": "No scene entries loaded",
       "saving": "Saving...",
-      "saved": "Saved"
+      "saved": "Saved",
+      "errorMessage": "Something went wrong. Please try again.",
+      "loading": "Loading..."
     }
   }
 }

@@ -10,6 +10,7 @@
  */
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { CalendarEntry } from "@/services/calendar"
 
@@ -30,6 +31,7 @@ export default function CalendarDayCell({
   entries,
   onEntryClick,
 }: CalendarDayCellProps) {
+  const t = useTranslations("calendar")
   const [expanded, setExpanded] = useState(false)
 
   const hasEvents = entries.length > 0
@@ -105,7 +107,7 @@ export default function CalendarDayCell({
             }}
             className="w-full text-left rounded px-1.5 py-0.5 text-[9px] font-semibold text-fg-tertiary border border-dashed border-fg-tertiary/30 hover:border-fg-tertiary/60 transition-colors"
           >
-            +{hiddenCount} más
+            {t("moreEvents", { count: hiddenCount })}
           </button>
         )}
       </div>

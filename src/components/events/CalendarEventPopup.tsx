@@ -59,6 +59,11 @@ export default function CalendarEventPopup({
     }
   }, [onClose])
 
+  // Mover foco al dialog al abrir
+  useEffect(() => {
+    popupRef.current?.focus()
+  }, [])
+
   // Calcular posición desktop
   const style: React.CSSProperties = isMobile
     ? {}
@@ -88,6 +93,7 @@ export default function CalendarEventPopup({
   const popup = (
     <div
       ref={popupRef}
+      tabIndex={-1}
       style={style}
       className={cn(
         "bg-bg-subtle rounded-xl border border-border p-4 shadow-xl",

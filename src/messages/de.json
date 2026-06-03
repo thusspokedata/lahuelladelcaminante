@@ -849,7 +849,9 @@
       "delete": "Löschen",
       "empty": "Keine Szene-Einträge vorhanden",
       "saving": "Speichern...",
-      "saved": "Gespeichert"
+      "saved": "Gespeichert",
+      "errorMessage": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "loading": "Laden..."
     }
   }
 }

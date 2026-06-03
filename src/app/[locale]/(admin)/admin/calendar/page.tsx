@@ -77,14 +77,17 @@ export default function AdminCalendarPage() {
         setUrl("")
         await loadEvents()
       } else {
-        const json = await res.json()
-        setError(json.error ?? "Error al guardar")
+        setError(t("errorMessage"))
       }
     })
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/dashboard/scene-events/${id}`, { method: "DELETE" })
+    const res = await fetch(`/api/dashboard/scene-events/${id}`, { method: "DELETE" })
+    if (!res.ok) {
+      setError(t("errorMessage"))
+      return
+    }
     await loadEvents()
   }
 
@@ -152,7 +155,7 @@ export default function AdminCalendarPage() {
 
       {/* Lista de entradas */}
       {loading ? (
-        <p className="text-fg-tertiary text-body">Cargando...</p>
+        <p className="text-fg-tertiary text-body">{t("loading")}</p>
       ) : events.length === 0 ? (
         <p className="text-fg-tertiary text-body">{t("empty")}</p>
       ) : (
