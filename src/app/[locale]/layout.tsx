@@ -72,7 +72,7 @@ export default async function LocaleLayout({
           <Script
             src="https://umami.lahuelladelcaminante.de/script.js"
             data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-            data-domains="lahuelladelcaminante.de"
+            data-domains="lahuelladelcaminante.de,www.lahuelladelcaminante.de"
             strategy="afterInteractive"
           />
         ) : null}
