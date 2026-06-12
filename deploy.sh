@@ -7,6 +7,12 @@ VPS="root@187.33.155.194"
 REMOTE_DIR="/var/www/lahuelladelcaminante"
 
 echo "→ Building locally..."
+# NEXT_PUBLIC_* se inlinea en BUILD TIME desde el entorno de esta máquina
+# (.env.local local). Si falta el website-id de Umami, el tracker desaparece
+# de prod sin error — warning visible para que no pase silencioso.
+if ! grep -q "^NEXT_PUBLIC_UMAMI_WEBSITE_ID=." .env.local 2>/dev/null; then
+  echo "⚠ WARNING: NEXT_PUBLIC_UMAMI_WEBSITE_ID no está en .env.local — el build sale SIN analytics."
+fi
 npm run build
 
 echo "→ Syncing code to VPS..."

@@ -33,11 +33,13 @@ const cspDirectives = [
   // bloquea <object>, <embed>, <applet> — superficie clásica de XSS via
   // plugin. Recomendación de OWASP incluso si default-src ya es 'self'.
   "object-src 'none'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // umami.lahuelladelcaminante.de: tracker self-hosted — script-src carga
+  // script.js y connect-src postea los pageviews a su /api/send.
+  `script-src 'self' 'unsafe-inline' https://umami.lahuelladelcaminante.de${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://res.cloudinary.com",
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' https://api.cloudinary.com${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self' https://api.cloudinary.com https://umami.lahuelladelcaminante.de${isDev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
