@@ -792,6 +792,8 @@
     "processorsNeon": "Neon — managed PostgreSQL database where the application data is stored. <link>Neon privacy policy</link>.",
     "cookiesHeading": "Cookies",
     "cookiesBody": "This website uses exclusively technically necessary cookies: a cookie for your signed-in session (Better Auth) and a cookie for your language preference (NEXT_LOCALE). We do not use analytics, tracking or marketing cookies. As only technically necessary cookies are used, no consent is required for them.",
+    "analyticsHeading": "Web analytics (Umami)",
+    "analyticsBody": "To measure how the site is used, we run Umami, an open-source analytics tool self-hosted on our own server within the European Union. Umami works without cookies and builds no personal profiles: it only collects aggregated information such as pages visited, referrer, browser and device type, and country. IP addresses are not stored. The data never leaves our server and is not shared with third parties. The legal basis is our legitimate interest in the statistical analysis and improvement of the site (Art. 6(1)(f) GDPR).",
     "rightsHeading": "Your rights",
     "rightsIntro": "Under the GDPR, you have the following rights regarding your personal data at any time:",
     "rightAccess": "Right of access to the data stored about you.",

@@ -792,6 +792,8 @@
     "processorsNeon": "Neon — gehostete PostgreSQL-Datenbank, in der die Anwendungsdaten gespeichert werden. <link>Datenschutzerklärung von Neon</link>.",
     "cookiesHeading": "Cookies",
     "cookiesBody": "Diese Website verwendet ausschließlich technisch notwendige Cookies: ein Cookie für deine angemeldete Sitzung (Better Auth) und ein Cookie für deine Sprachpräferenz (NEXT_LOCALE). Wir setzen keine Analyse-, Tracking- oder Marketing-Cookies ein. Da nur technisch notwendige Cookies verwendet werden, ist hierfür keine Einwilligung erforderlich (§ 25 Abs. 2 TDDDG).",
+    "analyticsHeading": "Webanalyse (Umami)",
+    "analyticsBody": "Zur Reichweitenmessung nutzen wir die Open-Source-Software Umami, die wir selbst auf unserem eigenen Server innerhalb der Europäischen Union betreiben. Umami arbeitet ohne Cookies und erstellt keine personenbezogenen Profile: Erfasst werden ausschließlich aggregierte Informationen wie aufgerufene Seiten, Referrer, Browser- und Gerätetyp sowie das Herkunftsland. IP-Adressen werden nicht gespeichert. Die Daten verlassen unseren Server nicht und werden nicht an Dritte weitergegeben. Rechtsgrundlage ist unser berechtigtes Interesse an der statistischen Analyse und Verbesserung unseres Angebots (Art. 6 Abs. 1 lit. f DSGVO).",
     "rightsHeading": "Deine Rechte",
     "rightsIntro": "Dir stehen nach der DSGVO jederzeit folgende Rechte bezüglich deiner personenbezogenen Daten zu:",
     "rightAccess": "Recht auf Auskunft über die zu deiner Person gespeicherten Daten.",
