@@ -1,42 +1,39 @@
 # Umami analytics self-hosted en el VPS
 
-**Fecha:** 2026-06-12
-**Branch:** `feat/umami-analytics`
-
 ## Contexto
 
-Queremos analytics web para lahuelladelcaminante.de sin Google Analytics ni
-terceros. El dev tiene Umami en su Umbrel, pero un Umbrel doméstico no es
-alcanzable desde los navegadores de los visitantes. Decisión tomada: hostear
-Umami en el VPS de producción (descartado exponer el Umbrel vía tunnel, y
-descartado depender de la conexión de casa).
+Portal lahuelladelcaminante.de (Next.js 16, deploy manual vía rsync + PM2 en VPS
+propio). Queremos analytics web sin Google Analytics ni terceros. Decisión tomada:
+Umami self-hosted en el VPS de producción con Docker Compose (descartado: Umbrel
+doméstico vía tunnel, DB de Umami en Neon, build from source con PM2).
 
-Umami es cookieless y anonimiza visitantes → no requiere banner de
-consentimiento GDPR (aun así, conviene mencionarlo en el Datenschutz).
+Umami es cookieless y anonimiza visitantes → no requiere banner de consentimiento
+GDPR. Aun así se recomienda mencionarlo en el Datenschutz (paso opcional al final).
 
-## Estado del VPS (verificado 2026-06-12)
-
-- 4GB RAM (~2.3 disponibles), 7.3GB disco libre — sobra para Umami (~300MB).
-- Docker 29 instalado.
-- nginx 1.24 con un vhost por sitio; ya existe el patrón subdominio→cert→proxy
+Estado del VPS (verificado 2026-06-12):
+- 4GB RAM (~2.3 disponibles), 7.3GB disco libre. Docker 29 instalado.
+- nginx 1.24, un vhost por sitio; ya existe el patrón subdominio→cert→proxy
   (`vault.lahuelladelcaminante.de`).
-- Node 22 (no relevante: Umami va en contenedor).
-- Puertos ocupados: 3001, 3002 (lahuella), 3004, 3006, 8000, 8888. **3005 libre
-  → lo usa Umami.**
-- DNS en clouding.io. Falta el registro A `umami → 187.33.155.194` (lo agrega
-  el dev a mano; certbot lo necesita propagado).
+- Puertos ocupados: 3001, 3002, 3004, 3006, 8000, 8888. **3005 libre → Umami.**
+- DNS en clouding.io. El dev agrega a mano el registro A
+  `umami → 187.33.155.194` (certbot lo necesita propagado).
 
-## Decisión de hosting
+Esta tarea tiene DOS FASES con flujos distintos. No las mezcles.
 
-**Docker Compose oficial** (opción A del brainstorm): contenedor
-`ghcr.io/umami-software/umami:postgresql-latest` + `postgres:15-alpine` con
-volumen propio. Descartado: DB en Neon (acopla analytics a la cuota del
-negocio, latencia por evento) y PM2-from-source (el VPS no buildea bien,
-mantenimiento doloroso).
+---
 
-## Diseño
+## FASE 1 — Infra en el VPS (por SSH, NO es parte del PR)
 
-### 1. Infra en el VPS — `/opt/umami/docker-compose.yml`
+Ejecutás cada paso por SSH **anunciando antes qué vas a hacer y por qué**. Si algo
+falla, parás y reportás; no improvises workarounds en el server de producción.
+
+### 1.0 Precondición
+
+Confirmá con el dev que el registro A `umami.lahuelladelcaminante.de →
+187.33.155.194` ya está creado y propagado (`dig +short
+umami.lahuelladelcaminante.de`). Sin esto, certbot falla. No sigas hasta tenerlo.
+
+### 1.1 Docker Compose — `/opt/umami/docker-compose.yml`
 
 ```yaml
 services:
@@ -69,18 +66,72 @@ volumes:
   umami-db-data:
 ```
 
-- `<DB_PASSWORD>` y `<APP_SECRET>` se generan con `openssl rand -base64 32` al
-  momento del setup y viven SOLO en ese archivo en el VPS (no en el repo).
-- El Postgres del contenedor no expone puerto al host.
+- Generá `<DB_PASSWORD>` y `<APP_SECRET>` con `openssl rand -base64 32` en el
+  momento. Viven SOLO en ese archivo en el VPS. NUNCA los pegues en el repo, en
+  un commit, ni en el chat más allá de lo imprescindible.
+- El Postgres del contenedor NO expone puerto al host.
+- `docker compose up -d` y esperá a que ambos servicios estén healthy.
 
-### 2. nginx + TLS
+### 1.2 Cambiar la password de admin ANTES de exponer el panel
 
-Vhost `umami.lahuelladelcaminante.de` (mismo patrón que los sites existentes):
-`proxy_pass http://127.0.0.1:3005`, headers de proxy estándar. Cert con
-`certbot --nginx -d umami.lahuelladelcaminante.de` (requiere el A record
-propagado). HTTP→HTTPS redirect como en los demás vhosts.
+El stack arranca con credenciales default `admin`/`umami`. NO crees el vhost de
+nginx todavía. Primero, desde el VPS, cambiá la password vía la API REST de Umami
+contra `http://127.0.0.1:3005`:
 
-### 3. Integración en el sitio (el único cambio en el repo)
+1. `POST /api/auth/login` con `{"username":"admin","password":"umami"}` → token.
+2. Generá una password nueva (`openssl rand -base64 24`).
+3. Cambiala vía la API de update de usuario usando el token (verificá el endpoint
+   exacto en la versión instalada; en Umami 2.x es un PATCH/POST sobre el usuario
+   admin con `password`).
+4. Verificá que el login con la password nueva funciona y que `admin`/`umami` ya
+   NO funciona.
+5. Entregale la password nueva al dev por el canal en que están trabajando y
+   borrala de cualquier archivo temporal del VPS.
+
+Si la API no lo permite en esta versión, frená y avisale al dev para que la cambie
+él por UI vía tunnel SSH (`ssh -L 3005:127.0.0.1:3005`) ANTES de seguir con nginx.
+El panel no debe quedar nunca accesible públicamente con credenciales default.
+
+### 1.3 nginx + TLS
+
+- Vhost `umami.lahuelladelcaminante.de` siguiendo el patrón de los vhosts
+  existentes (mirá el de `vault.` como referencia): `proxy_pass
+  http://127.0.0.1:3005`, headers de proxy estándar.
+- `certbot --nginx -d umami.lahuelladelcaminante.de`.
+- Redirect HTTP→HTTPS como en los demás vhosts.
+- `nginx -t` antes de recargar. Verificá que los sitios existentes siguen
+  respondiendo después del reload.
+
+### 1.4 Crear el website en Umami
+
+Con el dev logueado (o vos vía API con el token nuevo): crear el website
+"La Huella del Caminante" con dominio `lahuelladelcaminante.de` y obtener el
+**website ID**. Lo necesitás para la Fase 2.
+
+### Verificación de Fase 1
+
+- `https://umami.lahuelladelcaminante.de` sirve el panel con TLS válido.
+- `curl http://187.33.155.194:3005` desde fuera NO responde (loopback only).
+- `docker compose ps` en `/opt/umami`: ambos servicios healthy.
+- `free -h`: RAM bajo control, PM2 y las otras apps no afectadas.
+- Login default `admin`/`umami` rechazado.
+
+---
+
+## FASE 2 — Integración en el sitio (repo, branch `feat/umami-analytics`)
+
+### 2.0 Verificar dónde corre el build (CRÍTICO antes de tocar nada)
+
+`NEXT_PUBLIC_*` se inyecta en el bundle **en build time**, no en runtime. Leé
+`deploy.sh` y determiná dónde corre `next build`:
+
+- Si el build corre **en el VPS** → la var va en el `.env.local` del VPS.
+- Si el build corre **local** y se rsyncea `.next/` → la var tiene que estar en el
+  `.env.local` LOCAL del dev al momento de buildear; setearla en el VPS no sirve.
+
+Reportale al dev cuál es el caso y dónde la vas a setear antes de seguir.
+
+### 2.1 Script de Umami en el layout
 
 En `src/app/[locale]/layout.tsx` (es el layout que renderiza `<html>`; el
 `src/app/layout.tsx` raíz es passthrough):
@@ -95,56 +146,53 @@ En `src/app/[locale]/layout.tsx` (es el layout que renderiza `<html>`; el
 ) : null}
 ```
 
-- Gated por `NEXT_PUBLIC_UMAMI_WEBSITE_ID`: sin la env var no se renderiza →
-  dev local y builds sin analytics no ensucian datos. La var se setea en el
-  `.env.local` del VPS (prod) después de crear el website en Umami.
+- Gated por la env var: sin ella no se renderiza → dev local y builds sin
+  analytics no ensucian datos.
 - `next/script` con `afterInteractive`: no bloquea el render.
-- Sin cookies → no toca el banner/consent (no hay) ni requiere opt-in.
+- Import de `Script` desde `next/script`.
 
-### 4. Pasos manuales del dev
+### 2.2 Env var
 
-1. **Antes del certbot:** agregar registro A en clouding.io:
-   `umami → 187.33.155.194`.
-2. **Tras el deploy de infra:** login en `https://umami.lahuelladelcaminante.de`
-   con `admin` / `umami` y **cambiar la password inmediatamente**.
-3. Crear el website "La Huella del Caminante" en el panel de Umami → copiar el
-   **website ID**.
-4. Pasarle el website ID a CC para setear `NEXT_PUBLIC_UMAMI_WEBSITE_ID` en el
-   `.env.local` del VPS y deployar el sitio.
-5. Opcional (recomendado en DE): párrafo en Datenschutz sobre analytics
-   self-hosted sin cookies ni datos personales.
-
-### 5. Operación
-
-- Logs: `docker compose -C /opt/umami logs` (o `docker compose -f ... logs`).
-- Update: `docker compose pull && docker compose up -d` en `/opt/umami`.
-- Los datos viven en el volumen `umami-db-data`; un `docker compose down` sin
-  `-v` no los borra.
-- Backup: fuera de alcance de este spec (el volumen queda en el VPS; si se
-  quiere backup, `pg_dump` del contenedor a cron — decisión futura).
+- Setear `NEXT_PUBLIC_UMAMI_WEBSITE_ID=<website ID de Fase 1>` donde el build la
+  lea (según 2.0).
+- Agregar la var (sin valor real, comentada o de ejemplo) a `.env.example` si el
+  repo lo tiene.
 
 ## Criterios de aceptación
 
-- [ ] `https://umami.lahuelladelcaminante.de` sirve el panel de Umami con TLS.
-- [ ] El contenedor escucha solo en loopback (no accesible por IP:3005 desde
-      fuera).
+- [ ] `https://umami.lahuelladelcaminante.de` sirve el panel con TLS.
+- [ ] Contenedor accesible solo por loopback (verificado desde fuera).
+- [ ] Credenciales default deshabilitadas ANTES de que el panel sea público.
 - [ ] Visitar lahuelladelcaminante.de en prod registra un pageview en Umami.
 - [ ] En dev local NO se carga el script (sin env var).
-- [ ] `docker compose ps` muestra ambos servicios healthy/running y PM2/las
-      otras apps no se ven afectadas (RAM bajo control).
-- [ ] Password de admin cambiada (manual dev).
+- [ ] `docker compose ps` healthy; PM2 y demás apps sin impacto de RAM.
+- [ ] Build pasa; el diff del PR contiene SOLO el cambio del layout (+
+      `.env.example` si aplica).
 
-## Fuera de alcance (YAGNI)
+## Fuera de alcance (YAGNI — no implementar)
 
-- Eventos custom / goals (solo pageviews por ahora).
+- Eventos custom / goals (solo pageviews).
 - Backup automatizado del Postgres de Umami.
-- Tracking del dashboard/admin con segmentación (el script carga en todas las
-  páginas; si molesta el ruido, excluir es decisión futura).
-- Cualquier otro sitio del VPS en este Umami (multi-site es trivial después).
+- Exclusión del tracking en dashboard/admin.
+- Otros sitios del VPS en este Umami.
 
 ## Flujo de entrega
 
-- Infra del VPS: la ejecuta CC por SSH **anunciando cada paso** (compose up,
-  nginx, certbot). No es parte del PR.
-- Cambio en el repo (script en layout): branch `feat/umami-analytics` → PR →
-  CodeRabbit → merge con OK del dev → `deploy.sh`.
+1. Ejecutá la Fase 1 (infra) por SSH anunciando cada paso. NO es parte del PR.
+2. Implementá la Fase 2 cumpliendo los criterios de aceptación, en branch
+   `feat/umami-analytics` desde `main` actualizado.
+3. Hacé todos los commits necesarios (atómicos, mensajes descriptivos). No abras
+   PR con trabajo a medio terminar.
+4. Antes de abrir el PR, corré el code review interno con los agentes
+   `architecture-reviewer` y `api-contract-reviewer` sobre el diff, y resolvé lo
+   que marquen.
+5. Recién después abrí el PR contra `main` — lo va a revisar CodeRabbit, así que
+   el mensaje del PR debe ser claro y el diff limpio.
+6. NO hagas merge a `main` sin autorización explícita del dev.
+7. Tras el merge autorizado: deploy según `deploy.sh`, con la env var presente
+   donde el build la necesite (ver 2.0).
+
+## Paso manual del dev (opcional, recomendado en DE)
+
+Párrafo en el Datenschutz sobre analytics self-hosted, cookieless y sin datos
+personales. Si querés, pedíselo al PM como tarea aparte.
