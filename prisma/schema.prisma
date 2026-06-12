@@ -124,7 +124,7 @@ model Event {
   location    String
   address     String?
   organizer   String?
-  genre       String?
+  genres      String[]
   time        String?
   price       String?
   isActive    Boolean     @default(true)

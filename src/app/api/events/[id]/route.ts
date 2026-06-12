@@ -9,7 +9,7 @@ const updateSchema = z.object({
   location: z.string().min(1).optional(),
   address: z.string().optional(),
   organizer: z.string().optional(),
-  genre: z.string().optional(),
+  genres: z.array(z.string()).optional(),
   time: z.string().optional(),
   price: z.string().optional(),
   artistId: z.string().optional(),
