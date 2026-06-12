@@ -39,10 +39,34 @@ En `prisma/schema.prisma`: reemplazar la línea `genre String?` por `genres Stri
 
 ### Migración (Neon, manual según runbook de deploy)
 
+El script real vive en `prisma/migrations-manual/2026-06-12_event_genre_to_genres_array.sql`
+(transaccional e idempotente, con guards `IF NOT EXISTS` y backfill condicional).
+Resumen:
+
 ```sql
-ALTER TABLE "Event" ADD COLUMN "genres" TEXT[] NOT NULL DEFAULT '{}';
-UPDATE "Event" SET "genres" = ARRAY["genre"] WHERE "genre" IS NOT NULL;
-ALTER TABLE "Event" DROP COLUMN "genre";
+BEGIN;
+
+ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "genres" TEXT[] NOT NULL DEFAULT '{}';
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'Event' AND column_name = 'genre'
+  ) THEN
+    UPDATE "Event"
+    SET "genres" = ARRAY["genre"]
+    WHERE "genre" IS NOT NULL
+      AND ("genres" IS NULL OR cardinality("genres") = 0);
+
+    ALTER TABLE "Event" DROP COLUMN "genre";
+  END IF;
+END $$;
+
+-- GIN para el filtro público `genres: { has }` (home / `/events`).
+CREATE INDEX IF NOT EXISTS "Event_genres_idx" ON "Event" USING GIN ("genres");
+
+COMMIT;
 ```
 
 - Backfill ANTES de dropear: ningún evento existente pierde su género.
