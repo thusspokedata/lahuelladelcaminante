@@ -5,6 +5,7 @@ import { unstable_cache, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { rehydrateDate, rehydrateDates, startOfTodayBerlin } from "@/lib/date"
 import { generateUniqueSlug } from "@/lib/slugify"
+import { dedupeGenres, mergeGenreSuggestions } from "@/lib/genres"
 import { deleteImages } from "./cloudinary"
 
 /**
@@ -21,7 +22,7 @@ export interface EventSummary {
   title: string
   slug: string
   location: string
-  genre: string | null
+  genres: string[]
   time: string | null
   price: string | null
   dates: Date[]
@@ -57,7 +58,7 @@ export interface CreateEventInput {
   location: string
   address?: string
   organizer?: string
-  genre?: string
+  genres?: string[]
   time?: string
   price?: string
   artistId?: string
@@ -71,7 +72,7 @@ export interface UpdateEventInput {
   location?: string
   address?: string
   organizer?: string
-  genre?: string
+  genres?: string[]
   time?: string
   price?: string
   artistId?: string | null
@@ -87,7 +88,7 @@ export function mapToSummary(event: {
   title: string
   slug: string
   location: string
-  genre: string | null
+  genres: string[]
   time: string | null
   price: string | null
   dates: { date: Date }[]
@@ -100,7 +101,7 @@ export function mapToSummary(event: {
     title: event.title,
     slug: event.slug,
     location: event.location,
-    genre: event.genre,
+    genres: event.genres,
     time: event.time,
     price: event.price,
     dates: event.dates.map((d: { date: Date }) => d.date),
@@ -333,7 +334,7 @@ const _getUpcomingEvents = unstable_cache(
         isDeleted: false,
         isActive: true,
         dates: { some: { date: { gte: today } } },
-        ...(filters?.genre ? { genre: filters.genre } : {}),
+        ...(filters?.genre ? { genres: { has: filters.genre } } : {}),
         ...(filters?.city ? { location: { contains: filters.city, mode: "insensitive" } } : {}),
       },
       include: eventInclude,
@@ -427,7 +428,7 @@ async function _getEventBySlugImpl(slug: string): Promise<EventDetail | null> {
     title: event.title,
     slug: event.slug,
     location: event.location,
-    genre: event.genre,
+    genres: event.genres,
     dates: event.dates.map((d: { date: Date }) => d.date),
     artistName: event.artist?.name ?? null,
     coverImage: cover?.url ?? null,
@@ -447,22 +448,45 @@ async function _getEventBySlugImpl(slug: string): Promise<EventDetail | null> {
   }
 }
 
+/**
+ * Géneros que aparecen en al menos un evento activo con fecha futura. Usado
+ * por los filtros públicos (pills de home / `/events`). Como `genres` es un
+ * array, no se puede `distinct` en SQL sobre los elementos: traemos los arrays
+ * y los aplanamos + deduplicamos (case/acento-insensitive) + ordenamos en
+ * memoria. El dataset es chico; no justifica un `unnest` crudo.
+ */
 export const getActiveGenres = unstable_cache(
   async (): Promise<string[]> => {
     const rows = await prisma.event.findMany({
       where: {
         isDeleted: false,
         isActive: true,
-        genre: { not: null },
         dates: { some: { date: { gte: startOfTodayBerlin() } } },
       },
-      select: { genre: true },
-      distinct: ["genre"],
-      orderBy: { genre: "asc" },
+      select: { genres: true },
     })
-    return rows.map((r) => r.genre as string)
+    return dedupeGenres(rows.flatMap((r) => r.genres)).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    )
   },
   ["active-genres"],
+  { revalidate: 300, tags: ["events"] }
+)
+
+/**
+ * Sugerencias de género para el form de evento: la lista curada base unida a
+ * TODOS los géneros ya usados en eventos no borrados (incluye pasados y
+ * borradores, para que un género tipeado una vez quede disponible siempre).
+ */
+export const getGenreSuggestions = unstable_cache(
+  async (): Promise<string[]> => {
+    const rows = await prisma.event.findMany({
+      where: { isDeleted: false },
+      select: { genres: true },
+    })
+    return mergeGenreSuggestions(rows.flatMap((r) => r.genres))
+  },
+  ["genre-suggestions"],
   { revalidate: 300, tags: ["events"] }
 )
 
@@ -692,7 +716,7 @@ export async function createEvent(
         location: data.location,
         address: data.address,
         organizer: data.organizer,
-        genre: data.genre,
+        genres: dedupeGenres(data.genres ?? []),
         time: data.time,
         price: data.price,
         artistId: data.artistId,
@@ -739,11 +763,12 @@ export async function updateEvent(id: string, data: UpdateEventInput): Promise<v
   }
 
   // Update event fields
-  const { keepImageIds: _k, newImages: _n, dates, ...fields } = data
+  const { keepImageIds: _k, newImages: _n, dates, genres, ...fields } = data
   await prisma.event.update({
     where: { id },
     data: {
       ...fields,
+      ...(genres !== undefined ? { genres: dedupeGenres(genres) } : {}),
       ...(dates?.length
         ? {
             dates: {

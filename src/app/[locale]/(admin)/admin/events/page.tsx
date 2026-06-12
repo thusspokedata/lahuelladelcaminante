@@ -72,7 +72,15 @@ export default function AdminEventsPage() {
           {events.map((event) => (
             <TableRow key={event.id}>
               <TableCell className="font-medium">{event.title}</TableCell>
-              <TableCell>{event.genre && <Badge variant="outline">{event.genre}</Badge>}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {event.genres.map((genre) => (
+                    <Badge key={genre} variant="outline">
+                      {genre}
+                    </Badge>
+                  ))}
+                </div>
+              </TableCell>
               <TableCell className="text-sm text-muted-foreground">{event.artistName}</TableCell>
               <TableCell>
                 <div className="flex gap-2">

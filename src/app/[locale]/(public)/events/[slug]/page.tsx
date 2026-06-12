@@ -130,8 +130,8 @@ export default async function EventDetailPage({
     ? await getOtherEventsByArtist(event.artist.id, event.id, 3)
     : []
 
-  const accent = genreAccent(event.genre)
-  const chipAccent = accent === "neutral" ? "brand" : accent
+  // El accent visual (flyer fallback) se deriva del primer género del evento.
+  const accent = genreAccent(event.genres[0])
   const fallbackAccent = accent === "neutral" ? "brand" : accent
   const resolvedLocale = locale
 
@@ -241,11 +241,14 @@ export default async function EventDetailPage({
                   {t("eyebrow.live")}
                 </Chip>
               ) : null}
-              {event.genre ? (
-                <Chip accent={chipAccent} active size="s">
-                  {event.genre}
-                </Chip>
-              ) : null}
+              {event.genres.map((genre) => {
+                const a = genreAccent(genre)
+                return (
+                  <Chip key={genre} accent={a === "neutral" ? "brand" : a} active size="s">
+                    {genre}
+                  </Chip>
+                )
+              })}
             </div>
 
             {/* Título + artista vinculado */}

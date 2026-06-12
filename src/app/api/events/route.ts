@@ -9,7 +9,7 @@ const createEventSchema = z.object({
   location: z.string().min(1),
   address: z.string().optional(),
   organizer: z.string().optional(),
-  genre: z.string().optional(),
+  genres: z.array(z.string().trim().min(1)).optional(),
   time: z.string().optional(),
   price: z.string().optional(),
   artistId: z.string().optional(),
