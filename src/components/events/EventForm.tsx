@@ -370,13 +370,14 @@ export function EventForm({
             render={({ field }) => (
               <GenreCombobox
                 id="event-genre"
+                aria-describedby="event-genre-helper"
                 value={field.value ?? []}
                 onValueChange={field.onChange}
                 suggestions={genreSuggestions}
                 placeholder={tEvent("fields.genrePlaceholder")}
                 createLabel={(v) => tEvent("fields.genreCreate", { value: v })}
                 emptyLabel={tEvent("fields.genreEmpty")}
-                removeLabel={tEvent("fields.removeGenre")}
+                removeLabel={(g) => tEvent("fields.removeGenre", { genre: g })}
               />
             )}
           />

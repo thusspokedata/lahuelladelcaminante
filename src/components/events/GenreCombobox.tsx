@@ -38,8 +38,11 @@ export interface GenreComboboxProps {
   createLabel: (value: string) => string
   /** Texto cuando no hay coincidencias ni opción de crear. */
   emptyLabel: string
-  /** aria-label para el botón de quitar cada chip. */
-  removeLabel: string
+  /** aria-label del botón de quitar — recibe el género para distinguir cada
+   * chip ante un lector de pantalla, ej. `Quitar Tango`. */
+  removeLabel: (genre: string) => string
+  /** ID del helper text para asociarlo al input vía aria-describedby. */
+  "aria-describedby"?: string
   "aria-invalid"?: boolean
 }
 
@@ -52,6 +55,7 @@ export function GenreCombobox({
   createLabel,
   emptyLabel,
   removeLabel,
+  "aria-describedby": ariaDescribedby,
   "aria-invalid": ariaInvalid,
 }: GenreComboboxProps) {
   const [inputValue, setInputValue] = React.useState("")
@@ -107,11 +111,11 @@ export function GenreCombobox({
               <Combobox.Chip
                 key={genre}
                 aria-label={genre}
-                className="inline-flex items-center gap-1 rounded-full bg-bg-surface px-s py-0.5 text-eyebrow text-fg-primary"
+                className="inline-flex items-center gap-1 rounded-full bg-bg-surface px-s py-0.5 text-caption text-fg-primary"
               >
                 {genre}
                 <Combobox.ChipRemove
-                  aria-label={removeLabel}
+                  aria-label={removeLabel(genre)}
                   className="inline-flex items-center justify-center rounded-full text-fg-secondary transition-colors hover:text-status-danger"
                 >
                   <X className="size-3" aria-hidden={true} />
@@ -122,6 +126,7 @@ export function GenreCombobox({
         </Combobox.Value>
         <Combobox.Input
           id={id}
+          aria-describedby={ariaDescribedby}
           aria-invalid={ariaInvalid}
           placeholder={value.length === 0 ? placeholder : undefined}
           className="min-w-[8ch] flex-1 bg-transparent text-body text-fg-primary outline-none placeholder:text-fg-tertiary"

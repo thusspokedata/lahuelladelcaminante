@@ -179,7 +179,7 @@
       "genrePlaceholder": "Genres hinzufügen oder auswählen…",
       "genreCreate": "„{value}“ erstellen",
       "genreEmpty": "Keine Treffer",
-      "removeGenre": "Dieses Genre entfernen"
+      "removeGenre": "{genre} entfernen"
     }
   },
   "artistForm": {

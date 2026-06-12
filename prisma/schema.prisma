@@ -138,6 +138,11 @@ model Event {
   artist      Artist?     @relation(fields: [artistId], references: [id])
   dates       EventDate[]
   images      Image[]
+
+  // GIN para el filtro público por género (`genres: { has }`), camino
+  // caliente en home / `/events`. Sin esto la contención sobre text[] es
+  // seq scan. Ver migración manual 2026-06-12.
+  @@index([genres], type: Gin)
 }
 
 model EventDate {

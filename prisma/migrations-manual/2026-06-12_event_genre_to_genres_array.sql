@@ -41,4 +41,9 @@ BEGIN
   END IF;
 END $$;
 
+-- Índice GIN para el filtro público `genres: { has }` (home / `/events`).
+-- Sin esto la contención sobre text[] es seq scan. `db push` debería
+-- reportar "Already in sync" porque el schema declara @@index([genres], Gin).
+CREATE INDEX IF NOT EXISTS "Event_genres_idx" ON "Event" USING GIN ("genres");
+
 COMMIT;
