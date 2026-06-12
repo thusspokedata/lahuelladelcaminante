@@ -115,10 +115,15 @@ export default function EventsCalendar({
       if (res.ok) {
         const json = await res.json()
         setEntries(json.data.entries)
+        // Solo avanzamos de mes si el fetch trajo datos: así el header/grid
+        // nunca muestran el mes nuevo con las entries del anterior.
+        setCurrentMonth(ym)
       }
+    } catch {
+      // Fallo de red: nos quedamos en el mes actual con sus datos (consistente).
+      // El `onClick` no awaitea, así que sin este catch sería un unhandled rejection.
     } finally {
       setLoading(false)
-      setCurrentMonth(ym)
     }
   }
 
