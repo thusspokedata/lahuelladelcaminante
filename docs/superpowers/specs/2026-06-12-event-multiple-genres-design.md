@@ -1,35 +1,41 @@
-# Eventos con múltiples géneros + géneros nuevos
+# Eventos con múltiples géneros + creación de géneros nuevos
 
-**Fecha:** 2026-06-12
-**Branch sugerida:** `feat/event-multiple-genres` (desde `main` actualizado)
+## Contexto
 
-## Problema
+Portal de eventos de música latinoamericana (Next.js 16, React 19, TS, Tailwind 4,
+Prisma 7 + PostgreSQL en **Neon**, Better Auth, next-intl). Roles: admin, creator, user.
 
 Hoy un evento tiene un único género (`Event.genre String?`) elegido de una lista
-hardcodeada con un `<select>` de opción única. Necesitamos:
+hardcodeada con un `<select>` de opción única. Caso disparador real: un organizador
+necesita cargar un evento cuyo género es "Fusión Multicultural: Latin Pop, Blues,
+Reggae" — tres géneros, dos de ellos (Blues, Reggae) no están en la lista curada.
 
-1. Que un evento pueda tener **varios géneros**.
-2. Que si un género **no existe** en la lista, se pueda **agregar** en el momento.
+Decisión de producto ya tomada (no la re-evalúes): cualquier usuario con permiso de
+cargar/editar eventos (creator o admin) puede crear géneros nuevos al vuelo. El
+control de duplicados va por UX (filtrado normalizado de sugerencias), NO por
+permisos ni por flujo de aprobación.
 
-Caso disparador: un organizador pidió cargar un evento cuyo género es
-"Fusión Multicultural: Latin Pop, Blues, Reggae" — tres géneros, dos de ellos
-(Blues, Reggae) no están en la lista curada actual.
+## Objetivo
+
+1. Que un evento pueda tener **varios géneros** (`String[]`).
+2. Que si un género no existe en la lista, se pueda **crear en el momento** desde el
+   form, con un combobox multi-select creatable.
+3. Que el filtrado de sugerencias sea **normalizado** (case + acentos) para empujar
+   reutilización y minimizar duplicados semánticos.
 
 ## Decisión de diseño
 
-**Array de strings + combobox multi-select creatable.** No se introduce una tabla
-catálogo (`Genre`) ni relación many-to-many: sería overkill. El catálogo "crece
-solo" porque las sugerencias se derivan de los géneros ya usados en eventos.
-
-Esto es consistente con `Artist.genres` (que ya es `String[]`), pero mejora la UX
-respecto al input de texto-por-comas de Artists usando el Combobox nativo de
-Base UI (chips + sugerencias + crear).
+Array de strings + combobox multi-select creatable. **No** se introduce tabla
+catálogo (`Genre`) ni relación many-to-many: es overkill. El catálogo "crece solo"
+porque las sugerencias se derivan de los géneros ya usados en eventos, unidos a una
+lista curada base. Consistente con `Artist.genres` (ya es `String[]`), pero con mejor
+UX vía el Combobox de Base UI (chips + sugerencias + crear).
 
 ## Modelo de datos
 
 `Event.genre String?` → **`Event.genres String[] @default([])`**
 
-`prisma/schema.prisma`: reemplazar la línea `genre String?` por `genres String[]`.
+En `prisma/schema.prisma`: reemplazar la línea `genre String?` por `genres String[]`.
 
 ### Migración (Neon, manual según runbook de deploy)
 
@@ -39,37 +45,44 @@ UPDATE "Event" SET "genres" = ARRAY["genre"] WHERE "genre" IS NOT NULL;
 ALTER TABLE "Event" DROP COLUMN "genre";
 ```
 
-- Backfill antes de dropear: ningún evento existente pierde su género.
-- La columna `genre` vieja **se elimina** (decisión confirmada: no se conserva).
+- Backfill ANTES de dropear: ningún evento existente pierde su género.
+- La columna `genre` vieja se elimina (decisión confirmada: no se conserva).
 - Orden seguro contra downtime: el ADD con default y el UPDATE son no-bloqueantes
-  en la práctica para el tamaño actual de la tabla; el DROP corre al final.
+  para el tamaño actual de la tabla; el DROP corre al final.
 - `SceneEvent` (calendario) no tiene género: no se toca.
 - `Artist.genres` ya es `String[]`: no se toca.
 
-Recordatorio del proyecto: Prisma 7 declara las URLs en `prisma.config.ts`, no en
-`schema.prisma`. Tras `npm ci` correr `prisma generate` a mano (no hay postinstall).
+Recordatorio Prisma 7: las URLs se declaran en `prisma.config.ts`, no en
+`schema.prisma`. Tras `npm ci`, correr `prisma generate` a mano (no hay postinstall).
 
 ## Form — `src/components/events/EventForm.tsx`
 
-- Eliminar la const `GENRES` y el `<FormSelect>` de género único (incluida la
-  opción `""`/`noGenre` y `Otros`/`genreOther`).
-- Insertar un **Combobox multi-select creatable** (`@base-ui/react/combobox`,
-  partes `Chips` / `Chip` / `ChipRemove` / `Input` / `Item` / `Empty`):
-  - Chips para los géneros seleccionados, cada uno con su botón de quitar.
+- Eliminar la const `GENRES` y el `<FormSelect>` de género único (incluida la opción
+  `""`/`noGenre` y `Otros`/`genreOther`).
+- Insertar un **Combobox multi-select creatable** (`@base-ui/react/combobox`, partes
+  `Chips` / `Chip` / `ChipRemove` / `Input` / `Item` / `Empty`):
+  - Chips para los géneros seleccionados, cada uno con botón de quitar.
   - Lista de sugerencias filtrada por lo que se escribe.
-  - Opción "+ crear «X»" cuando el texto tipeado no coincide con ninguna sugerencia.
-- **Fuente de sugerencias:** unión de
-  1. lista curada base (la actual: Tango, Salsa, Cumbia, Reggaeton, Merengue,
-     Son Cubano, Bossa Nova, Vallenato, Flamenco Latino, Latin Jazz, Folklore), y
+  - Opción "+ crear «X»" SOLO cuando el texto tipeado no matchea ninguna sugerencia
+    tras normalizar (ver abajo).
+- **Fuente de sugerencias** (prop `genreSuggestions: string[]` desde el server):
+  unión de
+  1. lista curada base (`BASE_GENRES`): Tango, Salsa, Cumbia, Reggaeton, Merengue,
+     Son Cubano, Bossa Nova, Vallenato, Flamenco Latino, Latin Jazz, Folklore; y
   2. géneros ya usados en eventos existentes.
 
-  Se pasa al form como prop `genreSuggestions: string[]` desde el server (páginas
-  new/edit), calculada con un helper de servicios. La lista curada base vive como
-  constante compartida (p. ej. `BASE_GENRES` en services o en un módulo de constantes).
+  `BASE_GENRES` vive como constante compartida (en services o un módulo de constantes).
+- **Filtrado normalizado (el delta clave):** al comparar lo tipeado contra las
+  sugerencias, normalizar AMBOS lados con lowercase + strip de acentos antes de
+  matchear (substring sobre el valor normalizado). Esto hace que "regae" sugiera
+  "Reggae" y "folclore" sugiera "Folklore", suprimiendo la opción "+ crear" cuando
+  ya existe algo equivalente. Typo-tolerance completa (Levenshtein/fuzzy con
+  distancia) es OPCIONAL y solo si NO requiere sumar dependencia nueva; si la
+  requiere, no la implementes.
 - **Validación / normalización al guardar** (antes de mandar al backend):
   - `trim` de cada valor, descartar vacíos.
-  - **Dedup case-insensitive**: Reggae y reggae cuentan como uno; se conserva la
-    primera grafía ingresada.
+  - Dedup case-insensitive (y acento-insensitive): "Reggae" y "reggae" cuentan como
+    uno; se conserva la primera grafía ingresada.
   - Zod del form: `genre: z.string().optional()` → `genres: z.array(z.string())`.
 - `defaultValues`: `genre ?? ""` → `genres ?? []`.
 
@@ -77,14 +90,14 @@ Recordatorio del proyecto: Prisma 7 declara las URLs en `prisma.config.ts`, no e
 
 - Tipos: `genre: string | null` → `genres: string[]` en `EventSummary` y en el tipo
   de detalle. Los mapeos (`genre: event.genre`) pasan a `genres: event.genres`.
-- **Create / update**: escribir `genres` (array normalizado) en lugar de `genre`.
-- **Filtrado por género**: `where: { genre: X }` → `where: { genres: { has: X } }`.
-- **`getActiveGenres()`**: hoy hace `distinct` + `orderBy` sobre la columna escalar.
+- Create / update: escribir `genres` (array normalizado) en lugar de `genre`.
+- Filtrado por género: `where: { genre: X }` → `where: { genres: { has: X } }`.
+- `getActiveGenres()`: hoy hace `distinct` + `orderBy` sobre la columna escalar.
   Pasa a: traer `select: { genres: true }` de los eventos activos no borrados,
-  aplanar, dedup (case-insensitive) y ordenar alfabéticamente en JS. El dataset es
+  aplanar, dedup (case/acento-insensitive) y ordenar alfabéticamente en JS. Dataset
   chico; no se necesita `unnest` en SQL.
-- **Nuevo helper** `getGenreSuggestions(): Promise<string[]>` (o reusar
-  `getActiveGenres` unido a `BASE_GENRES`) para alimentar el form.
+- Nuevo helper `getGenreSuggestions(): Promise<string[]>` (o reusar `getActiveGenres`
+  unido a `BASE_GENRES`) para alimentar el form en las páginas new/edit.
 
 ## API — Zod schemas
 
@@ -97,13 +110,12 @@ Recordatorio del proyecto: Prisma 7 declara las URLs en `prisma.config.ts`, no e
 
 Renderizar varios chips/badges en vez de uno:
 
-- Detalle público: `src/app/[locale]/(public)/events/[slug]/page.tsx` (badge de género).
+- Detalle público: `src/app/[locale]/(public)/events/[slug]/page.tsx`.
 - Card de evento (lista pública) — donde se muestre el género.
 - Lista dashboard: `src/app/[locale]/(protected)/dashboard/events/page.tsx`.
 - Lista admin: `src/app/[locale]/(admin)/admin/events/page.tsx`.
 
-Sin cambios funcionales (siguen operando sobre lista de strings), sólo se adaptan
-a array:
+Sin cambios funcionales (siguen operando sobre lista de strings), solo adaptar a array:
 
 - Strip de géneros del home (`(public)/page.tsx`) — ya consume `getActiveGenres()`.
 - `EventFilter` — ya opera sobre `string[]`; el filtrado pasa a `has` vía servicio.
@@ -112,29 +124,56 @@ a array:
 
 - Quitar las keys obsoletas `eventForm.fields.noGenre` y `eventForm.fields.genreOther`.
 - Agregar las del combobox en los tres locales:
-  - placeholder del input (p. ej. "Agregá o elegí géneros…").
-  - label de crear (p. ej. "Crear «{value}»").
+  - placeholder del input (ej. "Agregá o elegí géneros…").
+  - label de crear (ej. "Crear «{value}»").
   - empty state (sin coincidencias).
 
-## Testing / verificación
+## Criterios de aceptación
 
-- `prisma generate` + typecheck pasan tras el cambio de tipos.
-- Build local con Node 22.13.1.
-- Manual: crear un evento con varios géneros incluyendo uno nuevo (Blues/Reggae),
-  editar uno existente (se ve su género migrado como chip), verificar que el género
-  nuevo aparece como sugerencia en el siguiente alta, y que el filtro público por
-  ese género lista el evento.
+- [ ] `Event.genres String[] @default([])` en schema; columna `genre` eliminada.
+- [ ] Migración SQL hace backfill ANTES del DROP; ningún evento pierde su género.
+- [ ] El form usa el Combobox multi-select creatable con chips removibles.
+- [ ] Se pueden cargar varios géneros en un evento, incluyendo géneros nuevos.
+- [ ] Al tipear "regae" se sugiere "Reggae" y NO aparece "+ crear «regae»"
+      (filtrado normalizado case + acentos funcionando).
+- [ ] La opción "+ crear «X»" solo aparece cuando no hay match normalizado.
+- [ ] Al guardar: trim, descarte de vacíos, y dedup case/acento-insensitive.
+- [ ] Géneros nuevos creados aparecen como sugerencia en el siguiente alta.
+- [ ] Filtro público por un género lista los eventos que lo tienen (vía `has`).
+- [ ] Todas las superficies de display muestran N badges en vez de uno.
+- [ ] i18n: keys obsoletas removidas, nuevas keys en es/en/de.
+- [ ] `prisma generate` + typecheck pasan. Build local con Node 22.13.1.
 
-## Fuera de alcance (YAGNI)
+## Fuera de alcance (YAGNI — no implementar)
 
 - Tabla catálogo `Genre` y UI de gestión de catálogo.
 - Renombrado/merge masivo de géneros existentes.
 - Traducción de los nombres de género (se guardan como strings tal cual).
+- Restricción de creación por rol o flujo de aprobación de géneros.
+- Cualquier analytics/instrumentación de uso de géneros.
+
+## Verificación manual
+
+- Crear un evento con varios géneros incluyendo uno nuevo (Blues/Reggae).
+- Editar uno existente: su género migrado se ve como chip.
+- Verificar que el género nuevo aparece como sugerencia en el siguiente alta.
+- Verificar que tipear una variante (acentos/case) del género existente NO ofrece crear.
+- Verificar que el filtro público por ese género lista el evento.
 
 ## Flujo de entrega
 
-1. Branch desde `main` actualizado, commits atómicos.
-2. PR contra `main`, esperar CodeRabbit antes de proponer merge.
-3. Correr architecture-reviewer / api-contract-reviewer sobre el diff antes del PR.
-4. Como el PR toca `prisma/schema.prisma`: además de `deploy.sh`, aplicar la
-   migración SQL manual + `prisma db push` contra Neon.
+1. Implementá la tarea cumpliendo los criterios de aceptación. Branch
+   `feat/event-multiple-genres` desde `main` actualizado.
+2. Hacé todos los commits necesarios (atómicos, mensajes descriptivos). No abras PR
+   con trabajo a medio terminar.
+3. Antes de abrir el PR, corré el code review interno con los agentes
+   `architecture-reviewer` y `api-contract-reviewer` sobre el diff, y resolvé lo que
+   marquen.
+4. Recién después abrí el PR contra `main` — lo va a revisar CodeRabbit, así que el
+   mensaje del PR debe ser claro y el diff limpio.
+5. NO hagas merge a `main` sin autorización explícita del dev.
+
+## Nota de deploy (para el dev, ejecutar manualmente — CC no lo hace)
+
+Este PR toca `prisma/schema.prisma`. Además de `deploy.sh`, aplicar la migración SQL
+manual contra Neon + `prisma db push`. Correr `prisma generate` tras `npm ci`.
