@@ -137,17 +137,22 @@ En `src/app/[locale]/layout.tsx` (es el layout que renderiza `<html>`; el
 `src/app/layout.tsx` raíz es passthrough):
 
 ```tsx
-{process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? (
+{process.env.NODE_ENV === "production" &&
+process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? (
   <Script
     src="https://umami.lahuelladelcaminante.de/script.js"
     data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+    data-domains="lahuelladelcaminante.de"
     strategy="afterInteractive"
   />
 ) : null}
 ```
 
-- Gated por la env var: sin ella no se renderiza → dev local y builds sin
-  analytics no ensucian datos.
+- **Doble gate + data-domains** (delta sobre el snippet original del spec):
+  como el build de prod corre LOCAL (ver 2.0), la env var vive en el
+  `.env.local` del dev — sin el check de `NODE_ENV === "production"`,
+  `npm run dev` también trackearía. `data-domains` además restringe la
+  emisión al dominio real (cinturón extra para previews/IP).
 - `next/script` con `afterInteractive`: no bloquea el render.
 - Import de `Script` desde `next/script`.
 

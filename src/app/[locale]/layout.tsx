@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Script from "next/script"
 import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google"
 import { NextIntlClientProvider } from "next-intl"
 import { getMessages } from "next-intl/server"
@@ -60,6 +61,21 @@ export default async function LocaleLayout({
           <CookieNotice />
           <Toaster />
         </NextIntlClientProvider>
+        {/* Umami analytics (self-hosted, cookieless — no requiere consent).
+            Doble gate de BUILD TIME: la env var (sin ella no se renderiza) y
+            NODE_ENV === "production" — necesario porque el deploy buildea
+            LOCAL (deploy.sh) y la var vive en el .env.local del dev, así que
+            sin este check `npm run dev` también trackearía. `data-domains`
+            es el tercer cinturón: el script solo emite desde el dominio real. */}
+        {process.env.NODE_ENV === "production" &&
+        process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? (
+          <Script
+            src="https://umami.lahuelladelcaminante.de/script.js"
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            data-domains="lahuelladelcaminante.de"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   )
