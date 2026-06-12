@@ -175,8 +175,11 @@
       "price": "Preis oder Zugangsmodus",
       "pricePlaceholder": "€10 · Spendenbasiert · Eintritt frei",
       "genre": "Genre",
-      "noGenre": "— Kein Genre —",
-      "genreOther": "Andere"
+      "genreHelper": "Wähle eines oder mehrere. Fehlt es, tippe es ein, um es anzulegen.",
+      "genrePlaceholder": "Genres hinzufügen oder auswählen…",
+      "genreCreate": "„{value}“ erstellen",
+      "genreEmpty": "Keine Treffer",
+      "removeGenre": "Dieses Genre entfernen"
     }
   },
   "artistForm": {

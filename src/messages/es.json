@@ -175,8 +175,11 @@
       "price": "Precio o modo",
       "pricePlaceholder": "€10 · Aporte voluntario · Entrada libre",
       "genre": "Género",
-      "noGenre": "— Sin género —",
-      "genreOther": "Otros"
+      "genreHelper": "Elegí uno o varios. Si no está en la lista, escribilo y crealo.",
+      "genrePlaceholder": "Agregá o elegí géneros…",
+      "genreCreate": "Crear «{value}»",
+      "genreEmpty": "Sin coincidencias",
+      "removeGenre": "Quitar este género"
     }
   },
   "artistForm": {

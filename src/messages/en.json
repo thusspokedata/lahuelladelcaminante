@@ -175,8 +175,11 @@
       "price": "Price or access mode",
       "pricePlaceholder": "€10 · Donation-based · Free entry",
       "genre": "Genre",
-      "noGenre": "— No genre —",
-      "genreOther": "Other"
+      "genreHelper": "Pick one or more. If it's not listed, type it to create it.",
+      "genrePlaceholder": "Add or pick genres…",
+      "genreCreate": "Create “{value}”",
+      "genreEmpty": "No matches",
+      "removeGenre": "Remove this genre"
     }
   },
   "artistForm": {
