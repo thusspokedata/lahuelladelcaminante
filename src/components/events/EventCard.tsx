@@ -61,7 +61,8 @@ export async function EventCard({
 }: EventCardProps) {
   const resolvedLocale = locale ?? (await getLocale())
   const nextDate = event.dates[0] ?? null
-  const accent = genreAccent(event.genre)
+  // El accent visual de la card se deriva del primer género del evento.
+  const accent = genreAccent(event.genres[0])
   const isFeatured = variant === "featured"
   const isToday = Boolean(todayLabel)
 
@@ -108,11 +109,13 @@ export async function EventCard({
           </div>
         ) : null}
 
-        {event.genre ? (
-          <div className="absolute top-m right-m">
-            <Chip accent={accent} active size="s">
-              {event.genre}
-            </Chip>
+        {event.genres.length > 0 ? (
+          <div className="absolute top-m right-m flex max-w-[70%] flex-wrap justify-end gap-xs">
+            {event.genres.map((genre) => (
+              <Chip key={genre} accent={genreAccent(genre)} active size="s">
+                {genre}
+              </Chip>
+            ))}
           </div>
         ) : null}
       </div>

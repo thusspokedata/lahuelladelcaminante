@@ -64,7 +64,8 @@ export async function EventRow({
 }: EventRowProps) {
   const resolvedLocale = locale ?? (await getLocale())
   const nextDate = event.dates[0] ?? null
-  const accent = genreAccent(event.genre)
+  // El accent visual de la row se deriva del primer género del evento.
+  const accent = genreAccent(event.genres[0])
 
   const subtitle = [event.location, event.time].filter(Boolean).join(" · ")
 
@@ -107,11 +108,13 @@ export async function EventRow({
     <p className="text-body-s text-fg-secondary line-clamp-1">{subtitle}</p>
   ) : null
 
-  const genreChip = event.genre ? (
-    <div className="shrink-0 hidden md:block">
-      <Chip accent={accent} active size="s">
-        {event.genre}
-      </Chip>
+  const genreChip = event.genres.length > 0 ? (
+    <div className="shrink-0 hidden md:flex flex-wrap justify-end gap-xs">
+      {event.genres.map((genre) => (
+        <Chip key={genre} accent={genreAccent(genre)} active size="s">
+          {genre}
+        </Chip>
+      ))}
     </div>
   ) : null
 
