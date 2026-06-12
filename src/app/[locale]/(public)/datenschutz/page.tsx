@@ -7,8 +7,10 @@
  * (datos compartidos en `@/components/legal/legal-data`).
  *
  * Terceros declarados: Cloudinary (imágenes), Resend (emails), Neon
- * (base de datos). El sitio NO usa Google OAuth ni analytics/tracking,
- * así que no se declaran.
+ * (base de datos). Analytics: Umami self-hosted (sección propia, NO va
+ * en processors — los datos no salen de nuestro servidor). Es cookieless,
+ * así que la sección de cookies sigue siendo exacta. El sitio NO usa
+ * Google OAuth.
  *
  * Server component estático.
  */
@@ -128,6 +130,10 @@ export default async function DatenschutzPage({
 
       <LegalSection heading={t("cookiesHeading")}>
         <p>{t("cookiesBody")}</p>
+      </LegalSection>
+
+      <LegalSection heading={t("analyticsHeading")}>
+        <p>{t("analyticsBody")}</p>
       </LegalSection>
 
       <LegalSection heading={t("rightsHeading")}>
