@@ -179,3 +179,15 @@ enum ApplicationStatus {
   APPROVED
   REJECTED
 }
+
+model SceneEvent {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  title       String
+  venue       String?
+  externalUrl String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+}

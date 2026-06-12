@@ -2,6 +2,7 @@
   "nav": {
     "events": "Veranstaltungen",
     "artists": "Künstler",
+    "calendar": "Kalender",
     "dashboard": "Mein Bereich",
     "admin": "Admin",
     "signIn": "Anmelden",
@@ -817,5 +818,40 @@
     "confirmedBanner": "Abonnement bestätigt! Ab dem nächsten Montag erhältst du die Events der Woche.",
     "tokenExpiredMessage": "Der Bestätigungslink ist abgelaufen. Melde dich erneut an, um eine neue E-Mail zu erhalten.",
     "footerLabel": "Wöchentlicher Newsletter"
+  },
+  "calendar": {
+    "pageTitle": "Kalender",
+    "pageDescription": "Alle Events der lateinamerikanischen Szene in Berlin",
+    "navPrev": "Vorheriger Monat",
+    "navNext": "Nächster Monat",
+    "noEvents": "Keine Events in diesem Monat",
+    "sceneEventBadge": "Andere Szene",
+    "viewEvent": "Event ansehen →",
+    "viewSource": "Quelle ansehen →",
+    "moreEvents": "+{count} mehr",
+    "loading": "Laden...",
+    "weekdays": {
+      "mon": "Mo", "tue": "Di", "wed": "Mi", "thu": "Do",
+      "fri": "Fr", "sat": "Sa", "sun": "So"
+    },
+    "months": {
+      "1": "Januar", "2": "Februar", "3": "März", "4": "April",
+      "5": "Mai", "6": "Juni", "7": "Juli", "8": "August",
+      "9": "September", "10": "Oktober", "11": "November", "12": "Dezember"
+    },
+    "dashboard": {
+      "title": "Szene-Einträge",
+      "addEntry": "Eintrag hinzufügen",
+      "dateLabel": "Datum",
+      "titleLabel": "Titel",
+      "venueLabel": "Venue (optional)",
+      "urlLabel": "Externer Link (optional)",
+      "delete": "Löschen",
+      "empty": "Keine Szene-Einträge vorhanden",
+      "saving": "Speichern...",
+      "saved": "Gespeichert",
+      "errorMessage": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "loading": "Laden..."
+    }
   }
 }

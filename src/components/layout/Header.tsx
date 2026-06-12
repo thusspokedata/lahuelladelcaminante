@@ -60,6 +60,7 @@ export function Header() {
   const navItems: NavItem[] = [
     { href: "/events", label: t("events") },
     { href: "/artists", label: t("artists") },
+    { href: "/events/calendar", label: t("calendar") },
     { href: "/events#esta-semana", hashOnly: true, label: t("thisWeek") },
   ]
 
@@ -87,7 +88,7 @@ export function Header() {
         {/* Nav central — desktop only */}
         <nav className="hidden md:flex items-center gap-l mx-auto">
           {navItems.map((item) => {
-            const isActive = isNavItemActive(pathname, item)
+            const isActive = isNavItemActive(pathname, item, navItems)
             return (
               <Link
                 key={item.href}
@@ -145,11 +146,29 @@ export function Header() {
  * `@/i18n/navigation`). Para items con hash (`hashOnly: true`) no
  * intentamos matchear basándonos en el path — el hash es ambiguo entre
  * varias rutas y leerlo desde el server-rendered no es posible. */
-function isNavItemActive(pathname: string, item: NavItem): boolean {
+function isNavItemActive(
+  pathname: string,
+  item: NavItem,
+  allItems: NavItem[]
+): boolean {
   if (item.hashOnly) return false
   const path = item.href
   if (path === "/") return pathname === "/"
-  return pathname === path || pathname.startsWith(`${path}/`)
+  const matches = pathname === path || pathname.startsWith(`${path}/`)
+  if (!matches) return false
+  // "El más específico gana": si otro item del nav es un prefijo más largo
+  // que también matchea el pathname, ese item es el activo y este no. Así
+  // `/events/calendar` no enciende también `/events`, pero `/events` sigue
+  // activo en `/events/past` y `/events/[slug]` (no hay item más específico).
+  const hasMoreSpecific = allItems.some((other) => {
+    if (other === item || other.hashOnly) return false
+    const otherPath = other.href
+    if (otherPath.length <= path.length || !otherPath.startsWith(`${path}/`)) {
+      return false
+    }
+    return pathname === otherPath || pathname.startsWith(`${otherPath}/`)
+  })
+  return !hasMoreSpecific
 }
 
 interface SessionLike {
@@ -425,7 +444,7 @@ function MobileDrawer({
       >
         <nav className="flex flex-col gap-xs px-l py-l">
           {navItems.map((item, index) => {
-            const isActive = isNavItemActive(pathname, item)
+            const isActive = isNavItemActive(pathname, item, navItems)
             return (
               <Link
                 key={item.href}
