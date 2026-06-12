@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { notFound, redirect } from "next/navigation"
 import { requireActive, canEditEvent } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
+import { getGenreSuggestions } from "@/services/events"
 import { prisma } from "@/lib/prisma"
 import { EventForm } from "@/components/events/EventForm"
 import Eyebrow from "@/components/ui/Eyebrow"
@@ -18,7 +19,7 @@ export default async function EditEventPage({
   const canEdit = await canEditEvent(id)
   if (!canEdit) redirect(`/${locale}/dashboard`)
 
-  const [event, userArtists] = await Promise.all([
+  const [event, userArtists, genreSuggestions] = await Promise.all([
     prisma.event.findUnique({
       where: { id, isDeleted: false },
       include: {
@@ -27,6 +28,7 @@ export default async function EditEventPage({
       },
     }),
     getArtistsByUser(user.id),
+    getGenreSuggestions(),
   ])
 
   if (!event) notFound()
@@ -43,7 +45,7 @@ export default async function EditEventPage({
     city,
     address: event.address ?? "",
     organizer: event.organizer ?? "",
-    genre: event.genre ?? "",
+    genres: event.genres,
     time: event.time ?? "",
     price: event.price ?? "",
     artistId: event.artistId ?? "",
@@ -63,6 +65,7 @@ export default async function EditEventPage({
         eventId={id}
         defaultValues={defaultValues}
         artists={userArtists.map((a) => ({ id: a.id, name: a.name }))}
+        genreSuggestions={genreSuggestions}
       />
     </div>
   )

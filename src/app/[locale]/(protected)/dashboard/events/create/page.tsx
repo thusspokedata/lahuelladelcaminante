@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { requireRole } from "@/services/auth"
 import { getArtistsByUser } from "@/services/artists"
+import { getGenreSuggestions } from "@/services/events"
 import { EventForm } from "@/components/events/EventForm"
 import Eyebrow from "@/components/ui/Eyebrow"
 
@@ -12,7 +13,10 @@ export default async function CreateEventPage({
   const { locale } = await params
   const user = await requireRole("creator", locale)
   const t = await getTranslations({ locale, namespace: "eventForm.create" })
-  const artists = await getArtistsByUser(user.id)
+  const [artists, genreSuggestions] = await Promise.all([
+    getArtistsByUser(user.id),
+    getGenreSuggestions(),
+  ])
 
   return (
     <div className="flex flex-col gap-xl">
@@ -22,7 +26,10 @@ export default async function CreateEventPage({
           {t("title")}
         </h1>
       </header>
-      <EventForm artists={artists.map((a) => ({ id: a.id, name: a.name }))} />
+      <EventForm
+        artists={artists.map((a) => ({ id: a.id, name: a.name }))}
+        genreSuggestions={genreSuggestions}
+      />
     </div>
   )
 }

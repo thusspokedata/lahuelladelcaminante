@@ -24,7 +24,7 @@
 
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useState } from "react"
@@ -36,6 +36,8 @@ import FormTextarea from "@/components/forms/FormTextarea"
 import FormSelect from "@/components/forms/FormSelect"
 import FormSection from "@/components/forms/FormSection"
 import FormError from "@/components/forms/FormError"
+import { GenreCombobox } from "@/components/events/GenreCombobox"
+import { dedupeGenres } from "@/lib/genres"
 import ImageUploader, {
   type ExistingImage,
   type PendingImage,
@@ -49,7 +51,7 @@ const schema = z.object({
   city: z.string().min(1),
   address: z.string().optional(),
   organizer: z.string().optional(),
-  genre: z.string().optional(),
+  genres: z.array(z.string()),
   time: z.string().optional(),
   price: z.string().optional(),
   artistId: z.string().optional(),
@@ -73,35 +75,23 @@ interface EventFormProps {
     city?: string
     address?: string
     organizer?: string
-    genre?: string
+    genres?: string[]
     time?: string
     price?: string
     artistId?: string
     dates?: string[]
     images?: ExistingImage[]
   }
+  /** Sugerencias para el combobox de género: base curada ∪ géneros usados. */
+  genreSuggestions?: string[]
 }
 
-/** Lista cerrada de géneros — `""` representa "sin género" (default
- * para nuevos eventos sin clasificar). Si se expande, mantener
- * consistente con el filtro de género en `/events`. */
-const GENRES = [
-  "",
-  "Tango",
-  "Salsa",
-  "Cumbia",
-  "Reggaeton",
-  "Merengue",
-  "Son Cubano",
-  "Bossa Nova",
-  "Vallenato",
-  "Flamenco Latino",
-  "Latin Jazz",
-  "Folklore",
-  "Otros",
-]
-
-export function EventForm({ eventId, artists = [], defaultValues }: EventFormProps) {
+export function EventForm({
+  eventId,
+  artists = [],
+  defaultValues,
+  genreSuggestions = [],
+}: EventFormProps) {
   const tCommon = useTranslations("common")
   const tForms = useTranslations("forms")
   const tEvent = useTranslations("eventForm")
@@ -127,7 +117,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
       city: defaultValues?.city ?? "",
       address: defaultValues?.address ?? "",
       organizer: defaultValues?.organizer ?? "",
-      genre: defaultValues?.genre ?? "",
+      genres: defaultValues?.genres ?? [],
       time: defaultValues?.time ?? "",
       price: defaultValues?.price ?? "",
       artistId: defaultValues?.artistId ?? "",
@@ -153,7 +143,7 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
       location,
       address: data.address || undefined,
       organizer: data.organizer,
-      genre: data.genre || undefined,
+      genres: dedupeGenres(data.genres ?? []),
       time: data.time,
       price: data.price,
       artistId: data.artistId || undefined,
@@ -369,28 +359,27 @@ export function EventForm({ eventId, artists = [], defaultValues }: EventFormPro
           />
         </FormField>
 
-        <FormField label={tEvent("fields.genre")} name="event-genre">
-          <FormSelect id="event-genre" {...register("genre")}>
-            {GENRES.map((g) => {
-              // Display label: la mayoría de los géneros son nombres
-              // propios del estilo musical y no se traducen (Tango,
-              // Cumbia, Salsa, etc. se mantienen igual en ES/EN/DE).
-              // La excepción es "Otros" que SÍ varía por locale —
-              // mapeamos el value crudo (que va al DB) al label
-              // traducido solo para ese caso.
-              const label =
-                g === ""
-                  ? tEvent("fields.noGenre")
-                  : g === "Otros"
-                    ? tEvent("fields.genreOther")
-                    : g
-              return (
-                <option key={g} value={g}>
-                  {label}
-                </option>
-              )
-            })}
-          </FormSelect>
+        <FormField
+          label={tEvent("fields.genre")}
+          name="event-genre"
+          helper={tEvent("fields.genreHelper")}
+        >
+          <Controller
+            control={control}
+            name="genres"
+            render={({ field }) => (
+              <GenreCombobox
+                id="event-genre"
+                value={field.value ?? []}
+                onValueChange={field.onChange}
+                suggestions={genreSuggestions}
+                placeholder={tEvent("fields.genrePlaceholder")}
+                createLabel={(v) => tEvent("fields.genreCreate", { value: v })}
+                emptyLabel={tEvent("fields.genreEmpty")}
+                removeLabel={tEvent("fields.removeGenre")}
+              />
+            )}
+          />
         </FormField>
       </FormSection>
 
