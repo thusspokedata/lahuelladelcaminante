@@ -15,14 +15,14 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "EN VIVO · MÚSICA LATINA · ALEMANIA",
+      "eyebrow": "EN VIVO · MÚSICA LATINA · BERLÍN",
       "thisWeekPrefix": "La huella",
       "thisWeekHighlight": "de esta semana",
       "nextMonthPrefix": "La huella",
       "nextMonthHighlight": "del mes que viene",
       "whatComesPrefix": "La huella,",
       "whatComesHighlight": "lo que viene",
-      "tagline": "Lo que está sonando en Berlín, Múnich y Hamburgo. Curado por la escena, hecho por uno de ustedes."
+      "tagline": "Lo que está sonando en Berlín. Hecho por uno de ustedes."
     },
     "stats": {
       "shows": "shows próximos",
@@ -117,7 +117,7 @@
     "date": "Fecha",
     "dates": "Fechas",
     "noDate": "Sin fecha",
-    "musicLabel": "Música latina en vivo · Alemania"
+    "musicLabel": "Música latina en vivo · Berlín"
   },
   "eventForm": {
     "create": {
@@ -166,7 +166,7 @@
       "venue": "Venue",
       "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
       "city": "Ciudad",
-      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "cityPlaceholder": "Berlín",
       "cityRequired": "Indicá la ciudad.",
       "address": "Dirección",
       "addressHelper": "Lo más exacta posible — la usamos para Google Maps.",
@@ -443,7 +443,7 @@
       "sectionUrl": "URL pública",
       "bioPlaceholder": "Contá qué eventos organizás, dónde solés tocar, en qué andás. Máx 500 caracteres.",
       "bioCharsLeft": "{count, plural, =0 {Sin caracteres restantes} one {# carácter restante} other {# caracteres restantes}}",
-      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "cityPlaceholder": "Berlín",
       "instagramHandle": "Usuario de Instagram (sin @)",
       "website": "Sitio web (con https://)",
       "socialOtherLabel": "Etiqueta (ej. Spotify, Bandcamp)",
@@ -494,7 +494,7 @@
     "newBadge": "Nueva"
   },
   "footer": {
-    "tagline": "Música latina viva en Alemania. Hecha en Berlín.",
+    "tagline": "Música latina viva, hecha en Berlín.",
     "copyright": "© {year} La Huella del Caminante. Hecho con ♥ en Berlín by Thusspokedata",
     "explore": "Explorar",
     "forYou": "Para vos",
@@ -611,7 +611,7 @@
         "generic": "No pudimos iniciar sesión. Probá de nuevo."
       },
       "hero": {
-        "eyebrow": "EN VIVO · MÚSICA LATINA · ALEMANIA",
+        "eyebrow": "EN VIVO · MÚSICA LATINA · BERLÍN",
         "title": "Hecho por uno <accent>de ustedes</accent>.",
         "body": "La Huella es un portal independiente. No vendemos entradas, no tomamos comisión. Solo mostramos lo que está sonando.",
         "statsFormat": "{shows} SHOWS PRÓXIMOS · {cities} CIUDADES"
@@ -738,7 +738,7 @@
       "subject": "Bienvenido a La Huella del Caminante",
       "heading": "Bienvenido al camino",
       "greeting": "Hola",
-      "intro": "La Huella del Caminante es el portal de la música latinoamericana en vivo en Alemania.",
+      "intro": "La Huella del Caminante es el portal de la música latinoamericana en vivo en Berlín.",
       "body": "Tu cuenta ya está activa. Podés explorar la agenda de conciertos y descubrir artistas de toda la escena.",
       "exploreCta": "Explorar eventos",
       "creatorNudge": "¿Organizás eventos? Podés aplicar como creator para publicar los tuyos en la plataforma.",

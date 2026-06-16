@@ -181,7 +181,7 @@ Una clave representativa por dominio, con las 3 traducciones, para que el redise
 
 | Clave | ES | EN | DE |
 |---|---|---|---|
-| `home.tagline` | "La escena musical latinoamericana en Berlín, Múnich, Hamburgo y más ciudades alemanas." | "The Latin American music scene in Berlin, Munich, Hamburg and more German cities." | "Die lateinamerikanische Musikszene in Berlin, München, Hamburg und weiteren deutschen Städten." |
+| `home.tagline` | "Lo que está sonando en Berlín. Curado por la escena, hecho por uno de ustedes." | "What's playing in Berlin. Curated by the scene, made by one of us." | "Was in Berlin läuft. Kuratiert von der Szene, gemacht von einem von uns." |
 | `events.title` | "Próximos Eventos" | "Upcoming Events" | "Kommende Veranstaltungen" |
 | `dashboard.myEvents` | "Mis Eventos" | "My Events" | "Meine Veranstaltungen" |
 | `auth.signIn` | "Iniciar Sesión" | "Sign In" | "Anmelden" |

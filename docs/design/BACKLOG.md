@@ -163,8 +163,7 @@ contactar a un creator local para tocar — no tiene cómo encontrarlo.
 - Cada item: nombre del creator + ciudad principal + eventos publicados
   recientes + medio de contacto (Instagram / email / contact form
   específico).
-- Eventualmente: filtros por ciudad (Berlín / Múnich / Hamburgo) y por
-  género de eventos que organiza.
+- Eventualmente: filtros por género de eventos que organiza.
 
 Modelo: necesita una entidad `CreatorProfile` con campos como `bio`,
 `city`, `socialMedia`, `contactEmail`, etc. Hoy el creator solo tiene

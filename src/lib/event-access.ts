@@ -44,7 +44,7 @@ export interface EventAccessInfo {
 }
 
 const URL_RE = /(https?:\/\/[^\s)]+)/i
-// Precio "solo número" en formatos comunes de Berlín/Hamburgo/Múnich:
+// Precio "solo número" en formatos comunes de Berlín:
 //   - símbolo prefijo o sufijo: "€15", "15€", "$ 20", "£10"
 //   - decimales: "12,50", "10.5"
 //   - notación DE sin decimales: "15,-" (15 euros exactos)

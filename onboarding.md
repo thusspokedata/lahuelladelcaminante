@@ -1,8 +1,7 @@
 Contexto para trabajar en La Huella del Caminante. (Actualizado: junio 2026)
 
 PROYECTO
-Portal de eventos de música latinoamericana en vivo en Alemania (Berlín, Múnich,
-Hamburgo). Repo local: <LOCAL_REPO_PATH>
+Portal de eventos de música latinoamericana en vivo en Berlín. Repo local: <LOCAL_REPO_PATH>
 Stack: Next.js 16 (App Router — el ex-middleware.ts ahora es proxy.ts), React 19,
 TypeScript, Tailwind v4, Prisma 7, Better Auth (1.6.x), next-intl (ES/EN/DE). DB:
 Neon (PostgreSQL serverless). Auth: solo email/password (Google OAuth fue removido).

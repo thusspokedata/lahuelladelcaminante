@@ -15,14 +15,14 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+      "eyebrow": "LIVE · LATIN MUSIC · BERLIN",
       "thisWeekPrefix": "This week's",
       "thisWeekHighlight": "huella",
       "nextMonthPrefix": "Next month's",
       "nextMonthHighlight": "huella",
       "whatComesPrefix": "La huella,",
       "whatComesHighlight": "what comes next",
-      "tagline": "What's playing in Berlin, Munich and Hamburg. Curated by the scene, made by one of us."
+      "tagline": "What's playing in Berlin. Made by one of us."
     },
     "stats": {
       "shows": "upcoming shows",
@@ -117,7 +117,7 @@
     "date": "Date",
     "dates": "Dates",
     "noDate": "No date",
-    "musicLabel": "Live Latin Music · Germany"
+    "musicLabel": "Live Latin Music · Berlin"
   },
   "eventForm": {
     "create": {
@@ -166,7 +166,7 @@
       "venue": "Venue",
       "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
       "city": "City",
-      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityPlaceholder": "Berlin",
       "cityRequired": "City is required.",
       "address": "Address",
       "addressHelper": "As exact as possible — used for Google Maps.",
@@ -443,7 +443,7 @@
       "sectionUrl": "Public URL",
       "bioPlaceholder": "Tell people what kind of events you organize, where you usually play, what you're working on. Max 500 characters.",
       "bioCharsLeft": "{count, plural, =0 {No characters left} one {# character left} other {# characters left}}",
-      "cityPlaceholder": "Berlin · Munich · Hamburg",
+      "cityPlaceholder": "Berlin",
       "instagramHandle": "Instagram username (without @)",
       "website": "Website (with https://)",
       "socialOtherLabel": "Label (e.g. Spotify, Bandcamp)",
@@ -494,7 +494,7 @@
     "newBadge": "New"
   },
   "footer": {
-    "tagline": "Live Latin music in Germany. Made in Berlin.",
+    "tagline": "Live Latin music, made in Berlin.",
     "copyright": "© {year} La Huella del Caminante. Made with ♥ in Berlin by Thusspokedata",
     "explore": "Explore",
     "forYou": "For you",
@@ -611,7 +611,7 @@
         "generic": "Sign-in failed. Try again in a moment."
       },
       "hero": {
-        "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+        "eyebrow": "LIVE · LATIN MUSIC · BERLIN",
         "title": "Made by one <accent>of you</accent>.",
         "body": "La Huella is an independent portal. We don't sell tickets, we don't take a cut. We just show what's playing.",
         "statsFormat": "{shows} UPCOMING SHOWS · {cities} CITIES"
@@ -738,7 +738,7 @@
       "subject": "Welcome to La Huella del Caminante",
       "heading": "Welcome to the journey",
       "greeting": "Hi",
-      "intro": "La Huella del Caminante is the home of live Latin American music in Germany.",
+      "intro": "La Huella del Caminante is the home of live Latin American music in Berlin.",
       "body": "Your account is now active. Explore the concert calendar and discover artists from across the scene.",
       "exploreCta": "Explore events",
       "creatorNudge": "Do you organize events? You can apply as a creator to publish your own on the platform.",
