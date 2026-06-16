@@ -29,11 +29,12 @@ CÓMO TRABAJAMOS
 
 BASE DE DATOS — LEER ESTO (crítico)
 - El proyecto Neon tiene DOS branches:
-  · `production` (endpoint ep-muddy-surf-al0awhfe) → la usa el VPS de prod.
+  · `production` (endpoint ep-muddy-surf-al0awhfe) → la usa el contenedor de prod (la Pi).
   · `dev` (endpoint ep-dark-bread-al63zez1) → a la que apunta el `.env.local`
     LOCAL del repo (DATABASE_URL pooled + DIRECT_URL direct). Copia COW de prod.
-- La URL de prod NO está en el `.env.local` local — vive solo en el VPS. Para saber
-  a qué pega un comando, mirá el host en el output: ep-dark-bread = dev, ep-muddy-surf = prod.
+- La URL de prod NO está en el `.env.local` local — vive en el `app.env` de la Pi
+  (`~/lahuelladelcaminante`; antes estaba en el VPS). Para saber a qué pega un comando,
+  mirá el host en el output: ep-dark-bread = dev, ep-muddy-surf = prod.
 - ANTES de junio 2026 NO había branch dev: el `.env.local` local apuntaba a la
   MISMA DB que prod, y una migración destructiva "de dev" (DROP COLUMN) tiró el
   sitio de prod. Por eso existe la branch dev. Aun así: ante un cambio destructivo
@@ -46,7 +47,7 @@ BASE DE DATOS — LEER ESTO (crítico)
 GOTCHAS TÉCNICOS
 - Usá Node 22.13.1 para builds y Prisma en local:
   export PATH="$HOME/.nvm/versions/node/v22.13.1/bin:$PATH"
-  (el shell por default trae Node viejo y Prisma 7 falla). El VPS corre Node 22.x.
+  (el shell por default trae Node viejo y Prisma 7 falla). El contenedor de la Pi usa node:22 (bookworm-slim).
 - El repo usa npm (package-lock.json) como lockfile real. deploy.sh usa npm.
 - No hay postinstall: prisma generate → después de npm ci/install hay que correr
   prisma generate a mano o el build falla con errores de tipo.
@@ -56,39 +57,49 @@ GOTCHAS TÉCNICOS
 - AGENTS.md del repo: "This is NOT the Next.js you know" — leé
   node_modules/next/dist/docs/ antes de tocar APIs de Next.
 
-DEPLOY A PRODUCCIÓN
-- bash deploy.sh desde local (con el PATH de Node 22) — buildea LOCAL, rsyncea
-  .next/ y node_modules/ al VPS, reinstala binarios nativos Linux, corre
-  `prisma migrate deploy` + `prisma generate` en el VPS, reinicia PM2. Los valores
-  del VPS (host, REMOTE_DIR) están en deploy.sh.
-- OJO build-time vs runtime: el build corre LOCAL, así que las NEXT_PUBLIC_* se
-  congelan en el bundle desde el `.env.local` LOCAL — setearlas en el VPS no sirve.
-- Cambios de schema: deploy.sh `prisma migrate deploy` SOLO aplica migraciones
-  formales de prisma/migrations/. El proyecto usa db push como workflow principal,
-  así que:
-  · Tabla/modelo nuevo (additivo) → correr `prisma db push` en el VPS (migrate
-    deploy NO lo crea si no hay migración formal).
-  · Cambio que transforma datos (backfill, drop, rename) → script versionado en
-    prisma/migrations-manual/ (transaccional + idempotente), aplicado a mano. En
-    el VPS NO hay psql: usar `npx prisma db execute --file=<script>` (usa
-    prisma.config → la DB de prod). Aplicar ANTES del restart de PM2.
-- Deploy y mutaciones de servicios externos (gh pr merge, gh api, git push, ssh al
-  VPS, tocar la DB) → pedime confirmación explícita por chat; un OK general no
-  alcanza. (El SSH al VPS lo apruebo por Bitwarden en cada conexión.)
+DEPLOY A PRODUCCIÓN (el sitio se migró del VPS a la Raspberry Pi `nextcloud`)
+- Prod = contenedor Docker en la Pi `nextcloud`: `~/lahuelladelcaminante`, escucha en
+  0.0.0.0:3007. Lo consume el reverse proxy por el túnel WireGuard; DNS/TLS/nginx/túnel
+  los maneja el dueño de la infra y NO se tocan. `restart: unless-stopped` (sobrevive reboots).
+- Deploy: rsync del working tree local (main) → `~/lahuelladelcaminante` de la Pi, SIN
+  `--delete` y EXCLUYENDO `app.env`, `.env*`, `Dockerfile`, `docker-compose.yml`,
+  `.dockerignore` (esos viven solo en la Pi; con `--delete` se borran). Después, en la Pi:
+  `docker compose up -d --build`. El build corre NATIVO en la Pi (arm64; Prisma engine =
+  debian-openssl-arm64).
+- OJO NEXT_PUBLIC_* (build-time): ahora el build corre EN LA PI dentro del contenedor, así
+  que las NEXT_PUBLIC_* se hornean desde los build args de `docker-compose.yml` (seteados a
+  los valores de PROD), NO desde el `.env.local` local. (Distinto del flujo viejo del VPS.)
+- Secrets de runtime: `app.env` (perms 600, env_file) en `~/lahuelladelcaminante`, con la
+  DATABASE_URL de PROD (Neon `ep-muddy-surf`, pooled) + el resto. NO se hornea en la imagen.
+- Cambios de schema: el contenedor solo corre `prisma generate` en build, NO migra. Para un
+  cambio de schema en prod, aplicarlo a mano contra la DB de prod ANTES de recrear:
+  · Additivo (tabla/columna nueva) → `npx prisma db push`.
+  · Transforma datos (backfill, drop, rename) → script versionado en prisma/migrations-manual/
+    (transaccional + idempotente). Sin psql a mano: `npx prisma db execute --file=<script>`
+    (usa prisma.config → la DB de prod), o vía el contenedor de la Pi.
+- Gestión en la Pi: `docker compose logs -f` / `restart` / `up -d --build` en `~/lahuelladelcaminante`.
+- LEGACY (superado): `bash deploy.sh` → VPS (root@187.33.155.194, build local + rsync + PM2).
+  Era el prod anterior; quedó atrás tras la migración a la Pi. Solo referencia histórica.
+- Deploy y mutaciones de servicios externos (gh pr merge, gh api, git push, ssh a la Pi/VPS,
+  tocar la DB de prod) → pedime confirmación explícita por chat; un OK general no alcanza.
+  (El SSH lo apruebo por Bitwarden en cada conexión. Firmar commits NO usa Bitwarden: es
+  local con `~/.ssh/macbookpro1_ed25519`.)
 
-ANALYTICS — UMAMI (self-hosted en el VPS)
-- Instancia self-hosted en el VPS: Docker Compose en /opt/umami (contenedor umami
-  + postgres propio, app solo en 127.0.0.1:3005, volumen persistente). Detrás de
-  nginx + TLS en https://umami.lahuelladelcaminante.de. Cookieless → sin banner.
+ANALYTICS — UMAMI (self-hosted, migrado del VPS a la Pi `nextcloud`)
+- Instancia self-hosted en la Pi `nextcloud`: Docker Compose en `~/umami` (contenedor
+  umami + postgres propio con el histórico migrado, app en 0.0.0.0:3008, volumen
+  persistente). El reverse proxy (nginx, en el VPS) la sirve con TLS en
+  https://umami.lahuelladelcaminante.de por el túnel. Cookieless → sin banner.
 - Es MULTI-SITIO: una instancia trackea varios sitios, cada uno con su website-id.
   Sitios dados de alta: La Huella, Sonaq (sonaq.com.ar), Viajar País
   (viajarpais.com.ar), Bel Registro (belregistro.com).
 - Integración en La Huella: <Script> de Umami en src/app/[locale]/layout.tsx,
-  gateado por NODE_ENV === "production" && NEXT_PUBLIC_UMAMI_WEBSITE_ID (la var
-  vive en el `.env.local` LOCAL, por el build-time). CSP en next.config.ts incluye
+  gateado por NODE_ENV === "production" && NEXT_PUBLIC_UMAMI_WEBSITE_ID (es
+  build-time: con el deploy en la Pi se hornea desde los build args de
+  `docker-compose.yml`, no del `.env.local`). CSP en next.config.ts incluye
   el origen de Umami en script-src y connect-src.
-- Para sumar otro sitio: crear el website en el panel (o por API contra
-  127.0.0.1:3005 con token de admin) → tomar el website-id → pegar el script con
+- Para sumar otro sitio: crear el website en el panel (o por API contra el umami
+  de la Pi, puerto 3008, con token de admin) → tomar el website-id → pegar el script con
   ese id + data-domains. La password de admin la tenés vos (guardala en Bitwarden;
   NO va en el repo).
 
