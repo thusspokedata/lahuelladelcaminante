@@ -1,6 +1,6 @@
 # La Huella del Caminante
 
-Portal de eventos de música latinoamericana en Alemania (Berlín, Múnich, Hamburgo y más). Conecta artistas y público con la escena latina en Europa.
+Portal de eventos de música latinoamericana en vivo en Berlín. Conecta artistas y público con la escena latina.
 
 **Live:** [https://lahuelladelcaminante.de](https://lahuelladelcaminante.de)
 

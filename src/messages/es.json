@@ -22,7 +22,7 @@
       "nextMonthHighlight": "del mes que viene",
       "whatComesPrefix": "La huella,",
       "whatComesHighlight": "lo que viene",
-      "tagline": "Lo que está sonando en Berlín, Múnich y Hamburgo. Curado por la escena, hecho por uno de ustedes."
+      "tagline": "Lo que está sonando en Berlín. Curado por la escena, hecho por uno de ustedes."
     },
     "stats": {
       "shows": "shows próximos",
@@ -166,7 +166,7 @@
       "venue": "Venue",
       "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
       "city": "Ciudad",
-      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "cityPlaceholder": "Berlín",
       "cityRequired": "Indicá la ciudad.",
       "address": "Dirección",
       "addressHelper": "Lo más exacta posible — la usamos para Google Maps.",
@@ -443,7 +443,7 @@
       "sectionUrl": "URL pública",
       "bioPlaceholder": "Contá qué eventos organizás, dónde solés tocar, en qué andás. Máx 500 caracteres.",
       "bioCharsLeft": "{count, plural, =0 {Sin caracteres restantes} one {# carácter restante} other {# caracteres restantes}}",
-      "cityPlaceholder": "Berlín · Múnich · Hamburgo",
+      "cityPlaceholder": "Berlín",
       "instagramHandle": "Usuario de Instagram (sin @)",
       "website": "Sitio web (con https://)",
       "socialOtherLabel": "Etiqueta (ej. Spotify, Bandcamp)",

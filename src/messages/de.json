@@ -22,7 +22,7 @@
       "nextMonthHighlight": "des nächsten Monats",
       "whatComesPrefix": "Die huella,",
       "whatComesHighlight": "was kommt",
-      "tagline": "Was in Berlin, München und Hamburg läuft. Kuratiert von der Szene, gemacht von einem von uns."
+      "tagline": "Was in Berlin läuft. Kuratiert von der Szene, gemacht von einem von uns."
     },
     "stats": {
       "shows": "kommende Shows",
@@ -166,7 +166,7 @@
       "venue": "Venue",
       "venuePlaceholder": "Sameheads · Lido · Beirut Beirut",
       "city": "Stadt",
-      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityPlaceholder": "Berlin",
       "cityRequired": "Stadt ist erforderlich.",
       "address": "Adresse",
       "addressHelper": "So genau wie möglich — wir nutzen sie für Google Maps.",
@@ -443,7 +443,7 @@
       "sectionUrl": "Öffentliche URL",
       "bioPlaceholder": "Erzähl, welche Events du veranstaltest, wo du normalerweise spielst, woran du arbeitest. Max. 500 Zeichen.",
       "bioCharsLeft": "{count, plural, =0 {Keine Zeichen übrig} one {# Zeichen übrig} other {# Zeichen übrig}}",
-      "cityPlaceholder": "Berlin · München · Hamburg",
+      "cityPlaceholder": "Berlin",
       "instagramHandle": "Instagram-Name (ohne @)",
       "website": "Website (mit https://)",
       "socialOtherLabel": "Beschriftung (z.B. Spotify, Bandcamp)",
