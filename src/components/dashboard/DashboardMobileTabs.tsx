@@ -17,7 +17,7 @@
 
 import type { ComponentType, SVGProps } from "react"
 import { Link, usePathname } from "@/i18n/navigation"
-import { Home, Calendar, Users, User, ClipboardList, UserCog } from "lucide-react"
+import { Home, Calendar, CalendarDays, Users, User, ClipboardList, UserCog } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { DashboardRole } from "./shell-constants"
 
@@ -26,6 +26,7 @@ import type { DashboardRole } from "./shell-constants"
 export type DashboardTabIconKey =
   | "home"
   | "calendar"
+  | "calendarDays"
   | "users"
   | "user"
   | "clipboardList"
@@ -37,6 +38,7 @@ const ICON_BY_KEY: Record<
 > = {
   home: Home,
   calendar: Calendar,
+  calendarDays: CalendarDays,
   users: Users,
   user: User,
   clipboardList: ClipboardList,

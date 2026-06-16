@@ -124,7 +124,7 @@ async function getDashboardNavItems(
       label: tSidebar("admin.calendar"),
       shortLabel: tSidebar("admin.calendar"),
       href: "/admin/calendar",
-      iconKey: "calendar",
+      iconKey: "calendarDays",
     },
   ]
 }
