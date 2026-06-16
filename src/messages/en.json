@@ -15,7 +15,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+      "eyebrow": "LIVE · LATIN MUSIC · BERLIN",
       "thisWeekPrefix": "This week's",
       "thisWeekHighlight": "huella",
       "nextMonthPrefix": "Next month's",
@@ -117,7 +117,7 @@
     "date": "Date",
     "dates": "Dates",
     "noDate": "No date",
-    "musicLabel": "Live Latin Music · Germany"
+    "musicLabel": "Live Latin Music · Berlin"
   },
   "eventForm": {
     "create": {
@@ -494,7 +494,7 @@
     "newBadge": "New"
   },
   "footer": {
-    "tagline": "Live Latin music in Germany. Made in Berlin.",
+    "tagline": "Live Latin music, made in Berlin.",
     "copyright": "© {year} La Huella del Caminante. Made with ♥ in Berlin by Thusspokedata",
     "explore": "Explore",
     "forYou": "For you",
@@ -611,7 +611,7 @@
         "generic": "Sign-in failed. Try again in a moment."
       },
       "hero": {
-        "eyebrow": "LIVE · LATIN MUSIC · GERMANY",
+        "eyebrow": "LIVE · LATIN MUSIC · BERLIN",
         "title": "Made by one <accent>of you</accent>.",
         "body": "La Huella is an independent portal. We don't sell tickets, we don't take a cut. We just show what's playing.",
         "statsFormat": "{shows} UPCOMING SHOWS · {cities} CITIES"
@@ -738,7 +738,7 @@
       "subject": "Welcome to La Huella del Caminante",
       "heading": "Welcome to the journey",
       "greeting": "Hi",
-      "intro": "La Huella del Caminante is the home of live Latin American music in Germany.",
+      "intro": "La Huella del Caminante is the home of live Latin American music in Berlin.",
       "body": "Your account is now active. Explore the concert calendar and discover artists from across the scene.",
       "exploreCta": "Explore events",
       "creatorNudge": "Do you organize events? You can apply as a creator to publish your own on the platform.",

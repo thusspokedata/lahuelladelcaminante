@@ -15,7 +15,7 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · DEUTSCHLAND",
+      "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · BERLIN",
       "thisWeekPrefix": "Die huella",
       "thisWeekHighlight": "dieser Woche",
       "nextMonthPrefix": "Die huella",
@@ -117,7 +117,7 @@
     "date": "Datum",
     "dates": "Termine",
     "noDate": "Kein Datum",
-    "musicLabel": "Lateinamerikanische Livemusik · Deutschland"
+    "musicLabel": "Lateinamerikanische Livemusik · Berlin"
   },
   "eventForm": {
     "create": {
@@ -494,7 +494,7 @@
     "newBadge": "Neu"
   },
   "footer": {
-    "tagline": "Lebendige lateinamerikanische Musik in Deutschland. Aus Berlin.",
+    "tagline": "Lebendige lateinamerikanische Musik aus Berlin.",
     "copyright": "© {year} La Huella del Caminante. Gemacht mit ♥ in Berlin von Thusspokedata",
     "explore": "Entdecken",
     "forYou": "Für dich",
@@ -611,7 +611,7 @@
         "generic": "Anmeldung fehlgeschlagen. Versuche es gleich noch einmal."
       },
       "hero": {
-        "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · DEUTSCHLAND",
+        "eyebrow": "LIVE · LATEINAMERIKANISCHE MUSIK · BERLIN",
         "title": "Gemacht von einem <accent>von euch</accent>.",
         "body": "La Huella ist ein unabhängiges Portal. Wir verkaufen keine Tickets, wir nehmen keine Provision. Wir zeigen einfach, was läuft.",
         "statsFormat": "{shows} KOMMENDE SHOWS · {cities} STÄDTE"
@@ -738,7 +738,7 @@
       "subject": "Willkommen bei La Huella del Caminante",
       "heading": "Willkommen auf dem Weg",
       "greeting": "Hallo",
-      "intro": "La Huella del Caminante ist die Heimat der lateinamerikanischen Live-Musik in Deutschland.",
+      "intro": "La Huella del Caminante ist die Heimat der lateinamerikanischen Live-Musik in Berlin.",
       "body": "Dein Konto ist jetzt aktiv. Entdecke den Konzertkalender und Künstler aus der gesamten Szene.",
       "exploreCta": "Veranstaltungen entdecken",
       "creatorNudge": "Organisierst du Veranstaltungen? Du kannst dich als Creator bewerben, um deine eigenen zu veröffentlichen.",
