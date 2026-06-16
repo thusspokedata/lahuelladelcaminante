@@ -56,25 +56,33 @@ GOTCHAS TÉCNICOS
 - AGENTS.md del repo: "This is NOT the Next.js you know" — leé
   node_modules/next/dist/docs/ antes de tocar APIs de Next.
 
-DEPLOY A PRODUCCIÓN
-- bash deploy.sh desde local (con el PATH de Node 22) — buildea LOCAL, rsyncea
-  .next/ y node_modules/ al VPS, reinstala binarios nativos Linux, corre
-  `prisma migrate deploy` + `prisma generate` en el VPS, reinicia PM2. Los valores
-  del VPS (host, REMOTE_DIR) están en deploy.sh.
-- OJO build-time vs runtime: el build corre LOCAL, así que las NEXT_PUBLIC_* se
-  congelan en el bundle desde el `.env.local` LOCAL — setearlas en el VPS no sirve.
-- Cambios de schema: deploy.sh `prisma migrate deploy` SOLO aplica migraciones
-  formales de prisma/migrations/. El proyecto usa db push como workflow principal,
-  así que:
-  · Tabla/modelo nuevo (additivo) → correr `prisma db push` en el VPS (migrate
-    deploy NO lo crea si no hay migración formal).
-  · Cambio que transforma datos (backfill, drop, rename) → script versionado en
-    prisma/migrations-manual/ (transaccional + idempotente), aplicado a mano. En
-    el VPS NO hay psql: usar `npx prisma db execute --file=<script>` (usa
-    prisma.config → la DB de prod). Aplicar ANTES del restart de PM2.
-- Deploy y mutaciones de servicios externos (gh pr merge, gh api, git push, ssh al
-  VPS, tocar la DB) → pedime confirmación explícita por chat; un OK general no
-  alcanza. (El SSH al VPS lo apruebo por Bitwarden en cada conexión.)
+DEPLOY A PRODUCCIÓN (el sitio se migró del VPS a la Raspberry Pi `nextcloud`)
+- Prod = contenedor Docker en la Pi `nextcloud`: `~/lahuelladelcaminante`, escucha en
+  0.0.0.0:3007. Lo consume el reverse proxy por el túnel WireGuard; DNS/TLS/nginx/túnel
+  los maneja el dueño de la infra y NO se tocan. `restart: unless-stopped` (sobrevive reboots).
+- Deploy: rsync del working tree local (main) → `~/lahuelladelcaminante` de la Pi, SIN
+  `--delete` y EXCLUYENDO `app.env`, `.env*`, `Dockerfile`, `docker-compose.yml`,
+  `.dockerignore` (esos viven solo en la Pi; con `--delete` se borran). Después, en la Pi:
+  `docker compose up -d --build`. El build corre NATIVO en la Pi (arm64; Prisma engine =
+  debian-openssl-arm64).
+- OJO NEXT_PUBLIC_* (build-time): ahora el build corre EN LA PI dentro del contenedor, así
+  que las NEXT_PUBLIC_* se hornean desde los build args de `docker-compose.yml` (seteados a
+  los valores de PROD), NO desde el `.env.local` local. (Distinto del flujo viejo del VPS.)
+- Secrets de runtime: `app.env` (perms 600, env_file) en `~/lahuelladelcaminante`, con la
+  DATABASE_URL de PROD (Neon `ep-muddy-surf`, pooled) + el resto. NO se hornea en la imagen.
+- Cambios de schema: el contenedor solo corre `prisma generate` en build, NO migra. Para un
+  cambio de schema en prod, aplicarlo a mano contra la DB de prod ANTES de recrear:
+  · Additivo (tabla/columna nueva) → `npx prisma db push`.
+  · Transforma datos (backfill, drop, rename) → script versionado en prisma/migrations-manual/
+    (transaccional + idempotente). Sin psql a mano: `npx prisma db execute --file=<script>`
+    (usa prisma.config → la DB de prod), o vía el contenedor de la Pi.
+- Gestión en la Pi: `docker compose logs -f` / `restart` / `up -d --build` en `~/lahuelladelcaminante`.
+- LEGACY (superado): `bash deploy.sh` → VPS (root@187.33.155.194, build local + rsync + PM2).
+  Era el prod anterior; quedó atrás tras la migración a la Pi. Solo referencia histórica.
+- Deploy y mutaciones de servicios externos (gh pr merge, gh api, git push, ssh a la Pi/VPS,
+  tocar la DB de prod) → pedime confirmación explícita por chat; un OK general no alcanza.
+  (El SSH lo apruebo por Bitwarden en cada conexión. Firmar commits NO usa Bitwarden: es
+  local con `~/.ssh/macbookpro1_ed25519`.)
 
 ANALYTICS — UMAMI (self-hosted en el VPS)
 - Instancia self-hosted en el VPS: Docker Compose en /opt/umami (contenedor umami
