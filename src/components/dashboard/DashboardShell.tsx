@@ -120,6 +120,12 @@ async function getDashboardNavItems(
       href: "/admin/events",
       iconKey: "calendar",
     },
+    {
+      label: tSidebar("admin.calendar"),
+      shortLabel: tSidebar("admin.calendar"),
+      href: "/admin/calendar",
+      iconKey: "calendarDays",
+    },
   ]
 }
 

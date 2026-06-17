@@ -317,7 +317,8 @@
         "admin": {
           "applications": "Aplicaciones",
           "users": "Usuarios",
-          "events": "Eventos"
+          "events": "Eventos",
+          "calendar": "Calendario"
         }
       },
       "mobileTabs": {
@@ -472,6 +473,7 @@
     "colTitle": "Título",
     "colGenre": "Género",
     "colArtist": "Artista",
+    "calendar": "Calendario",
     "applications": "Solicitudes",
     "applicationsLabel": "Panel de administración",
     "applicationsPending": "Pendientes",
