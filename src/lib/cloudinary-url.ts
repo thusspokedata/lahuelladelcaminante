@@ -45,3 +45,54 @@ export function getCloudinaryUrl(
     .join(",")
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`
 }
+
+/**
+ * Host de delivery estándar de Cloudinary.
+ */
+export const CLOUDINARY_DELIVERY_HOST = "res.cloudinary.com"
+
+/**
+ * Guard anti-abuso para el endpoint `/api/events/extract-from-flyer`: valida
+ * que una URL de imagen pertenece a NUESTRA cloud de Cloudinary antes de
+ * mandarla al extractor de IA (que la descarga y la analiza, con costo por
+ * request). Sin esto, cualquiera con rol creator podría mandar URLs
+ * arbitrarias y hacernos pagar por analizar imágenes ajenas.
+ *
+ * Solo acepta el host de delivery estándar (`res.cloudinary.com`) sobre https
+ * y cuya ruta sea explícitamente `<cloud_name>/image/upload/...` — las URLs de
+ * Cloudinary tienen la forma `https://res.cloudinary.com/<cloud_name>/image/upload/...`
+ * (ver `getCloudinaryUrl` arriba, que las construye con esa misma estructura).
+ *
+ * Importante: exigimos el path de delivery `image/upload` (no solo que el
+ * primer segmento sea `cloudName`). De lo contrario una URL de tipo
+ * `.../image/fetch/https://evil.com/x.jpg` sobre nuestra propia cloud pasaría
+ * el guard y haría que Cloudinary descargue una imagen remota arbitraria que
+ * luego mandaríamos a Anthropic — exactamente el abuso que queremos evitar.
+ *
+ * Función pura (recibe `cloudName` en vez de leer el env) para poder
+ * unit-testearla sin el handler.
+ */
+export function isAllowedCloudinaryUrl(
+  rawUrl: string,
+  cloudName: string | undefined | null
+): boolean {
+  if (!cloudName) return false
+
+  let url: URL
+  try {
+    url = new URL(rawUrl)
+  } catch {
+    return false
+  }
+
+  if (url.protocol !== "https:") return false
+  if (url.hostname !== CLOUDINARY_DELIVERY_HOST) return false
+
+  const segments = url.pathname.split("/").filter(Boolean)
+  return (
+    segments.length >= 4 &&
+    segments[0] === cloudName &&
+    segments[1] === "image" &&
+    segments[2] === "upload"
+  )
+}

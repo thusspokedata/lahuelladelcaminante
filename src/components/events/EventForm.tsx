@@ -27,10 +27,10 @@ import { useParams, useRouter } from "next/navigation"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import FormField from "@/components/forms/FormField"
+import FormField, { InferredBadge } from "@/components/forms/FormField"
 import FormInput from "@/components/forms/FormInput"
 import FormTextarea from "@/components/forms/FormTextarea"
 import FormSelect from "@/components/forms/FormSelect"
@@ -42,7 +42,8 @@ import ImageUploader, {
   type ExistingImage,
   type PendingImage,
 } from "@/components/cloudinary/ImageUploader"
-import { X } from "lucide-react"
+import { X, Loader2, Sparkles } from "lucide-react"
+import type { ExtractedEvent } from "@/lib/flyer-extraction"
 
 const schema = z.object({
   title: z.string().min(1),
@@ -103,10 +104,16 @@ export function EventForm({
   )
   const [newImages, setNewImages] = useState<PendingImage[]>([])
 
+  // Autocompletar con IA: estado de la request en vuelo + set de campos que
+  // vinieron inferidos (para el badge). Se limpia por campo cuando el user edita.
+  const [autofilling, setAutofilling] = useState(false)
+  const [inferredFields, setInferredFields] = useState<Set<string>>(new Set())
+
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -131,7 +138,106 @@ export function EventForm({
     fields: dateFields,
     append: appendDate,
     remove: removeDate,
+    replace: replaceDates,
   } = useFieldArray({ control, name: "dates" })
+
+  const inferredBadge = tEvent("autofill.inferredBadge")
+  const flyerUrl = newImages[0]?.url ?? existingImages[0]?.url
+
+  // Siempre refleja el flyer actual. `handleAutofill` awaitea la extracción;
+  // si el user quita/reemplaza el flyer mientras tanto, comparamos contra este
+  // ref al resolver para descartar respuestas stale (de un flyer viejo).
+  const flyerUrlRef = useRef(flyerUrl)
+  flyerUrlRef.current = flyerUrl
+
+  /** Quita un campo del set de inferidos (borra su badge) cuando el user lo edita. */
+  const clearInferred = (name: string) =>
+    setInferredFields((prev) => {
+      if (!prev.has(name)) return prev
+      const next = new Set(prev)
+      next.delete(name)
+      return next
+    })
+
+  /** register() + onChange que además limpia el badge de inferido del campo. */
+  const registerWithClear = (name: Parameters<typeof register>[0]) => {
+    const reg = register(name)
+    return {
+      ...reg,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        clearInferred(name)
+        return reg.onChange(e)
+      },
+    }
+  }
+
+  async function handleAutofill() {
+    if (!flyerUrl || autofilling) return
+    const requestedFlyerUrl = flyerUrl
+    setAutofilling(true)
+    try {
+      const res = await fetch("/api/events/extract-from-flyer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: requestedFlyerUrl, locale }),
+      })
+      if (!res.ok) {
+        toast.error(tEvent("autofill.error"))
+        return
+      }
+      const json = (await res.json().catch(() => null)) as
+        | { data?: ExtractedEvent }
+        | null
+      const data = json?.data
+      if (!data) {
+        toast.error(tEvent("autofill.error"))
+        return
+      }
+
+      // El user pudo haber quitado/reemplazado el flyer mientras esperábamos:
+      // si ya no coincide con el que pedimos, descartamos la respuesta stale.
+      if (flyerUrlRef.current !== requestedFlyerUrl) return
+
+      const inferred = new Set<string>()
+      const applyString = (
+        name: "title" | "description" | "venue" | "city" | "address" | "organizer" | "time" | "price",
+        field: { value: string; inferred: boolean }
+      ) => {
+        // No pisar un valor que el user ya tipeó con "" del extractor.
+        if (!field.value) return
+        setValue(name, field.value, { shouldDirty: true })
+        if (field.inferred) inferred.add(name)
+      }
+
+      applyString("title", data.title)
+      applyString("description", data.description)
+      applyString("venue", data.venue)
+      applyString("city", data.city)
+      applyString("address", data.address)
+      applyString("organizer", data.organizer)
+      applyString("time", data.time)
+      applyString("price", data.price)
+
+      // Solo aplicar géneros si el extractor devolvió alguno — no vaciar los
+      // que el user ya haya cargado.
+      if (data.genres.value.length > 0) {
+        setValue("genres", data.genres.value, { shouldDirty: true })
+        if (data.genres.inferred) inferred.add("genres")
+      }
+
+      if (data.dates.value.length > 0) {
+        replaceDates(data.dates.value.map((value) => ({ value })))
+        if (data.dates.inferred) inferred.add("dates")
+      }
+
+      setInferredFields(inferred)
+      toast.success(tEvent("autofill.success"))
+    } catch {
+      toast.error(tEvent("autofill.error"))
+    } finally {
+      setAutofilling(false)
+    }
+  }
 
   async function onSubmit(data: FormData) {
     const location = `${data.venue}, ${data.city}`
@@ -193,21 +299,28 @@ export function EventForm({
           name="event-title"
           required
           error={errors.title ? tForms("titleRequired") : undefined}
+          inferred={inferredFields.has("title")}
+          inferredLabel={inferredBadge}
         >
           <FormInput
             id="event-title"
             placeholder={tEvent("fields.titlePlaceholder")}
             aria-invalid={Boolean(errors.title)}
-            {...register("title")}
+            {...registerWithClear("title")}
           />
         </FormField>
 
-        <FormField label={tEvent("fields.description")} name="event-description">
+        <FormField
+          label={tEvent("fields.description")}
+          name="event-description"
+          inferred={inferredFields.has("description")}
+          inferredLabel={inferredBadge}
+        >
           <FormTextarea
             id="event-description"
             placeholder={tEvent("fields.descriptionPlaceholder")}
             rows={4}
-            {...register("description")}
+            {...registerWithClear("description")}
           />
         </FormField>
 
@@ -243,6 +356,9 @@ export function EventForm({
               *
             </span>
             <span className="sr-only"> {tForms("required")}</span>
+            {inferredFields.has("dates") ? (
+              <InferredBadge label={inferredBadge} />
+            ) : null}
           </legend>
           <div className="flex flex-col gap-xs">
             {dateFields.map((field, i) => (
@@ -252,7 +368,9 @@ export function EventForm({
                   className="flex-1"
                   aria-label={tEvent("fields.dateNth", { n: i + 1 })}
                   aria-invalid={Boolean(errors.dates)}
-                  {...register(`dates.${i}.value`)}
+                  {...register(`dates.${i}.value`, {
+                    onChange: () => clearInferred("dates"),
+                  })}
                 />
                 {dateFields.length > 1 ? (
                   <Button
@@ -285,11 +403,16 @@ export function EventForm({
           </Button>
         </fieldset>
 
-        <FormField label={tEvent("fields.time")} name="event-time">
+        <FormField
+          label={tEvent("fields.time")}
+          name="event-time"
+          inferred={inferredFields.has("time")}
+          inferredLabel={inferredBadge}
+        >
           <FormInput
             id="event-time"
             placeholder="21:00"
-            {...register("time")}
+            {...registerWithClear("time")}
           />
         </FormField>
       </FormSection>
@@ -303,12 +426,14 @@ export function EventForm({
           name="event-venue"
           required
           error={errors.venue ? tForms("venueRequired") : undefined}
+          inferred={inferredFields.has("venue")}
+          inferredLabel={inferredBadge}
         >
           <FormInput
             id="event-venue"
             placeholder={tEvent("fields.venuePlaceholder")}
             aria-invalid={Boolean(errors.venue)}
-            {...register("venue")}
+            {...registerWithClear("venue")}
           />
         </FormField>
 
@@ -317,12 +442,14 @@ export function EventForm({
           name="event-city"
           required
           error={errors.city ? tEvent("fields.cityRequired") : undefined}
+          inferred={inferredFields.has("city")}
+          inferredLabel={inferredBadge}
         >
           <FormInput
             id="event-city"
             placeholder={tEvent("fields.cityPlaceholder")}
             aria-invalid={Boolean(errors.city)}
-            {...register("city")}
+            {...registerWithClear("city")}
           />
         </FormField>
 
@@ -330,19 +457,26 @@ export function EventForm({
           label={tEvent("fields.address")}
           name="event-address"
           helper={tEvent("fields.addressHelper")}
+          inferred={inferredFields.has("address")}
+          inferredLabel={inferredBadge}
         >
           <FormInput
             id="event-address"
             placeholder={tEvent("fields.addressPlaceholder")}
-            {...register("address")}
+            {...registerWithClear("address")}
           />
         </FormField>
 
-        <FormField label={tEvent("fields.organizer")} name="event-organizer">
+        <FormField
+          label={tEvent("fields.organizer")}
+          name="event-organizer"
+          inferred={inferredFields.has("organizer")}
+          inferredLabel={inferredBadge}
+        >
           <FormInput
             id="event-organizer"
             placeholder={tEvent("fields.organizerPlaceholder")}
-            {...register("organizer")}
+            {...registerWithClear("organizer")}
           />
         </FormField>
       </FormSection>
@@ -351,11 +485,16 @@ export function EventForm({
         eyebrow={tEvent("sections.access.eyebrow")}
         title={tEvent("sections.access.title")}
       >
-        <FormField label={tEvent("fields.price")} name="event-price">
+        <FormField
+          label={tEvent("fields.price")}
+          name="event-price"
+          inferred={inferredFields.has("price")}
+          inferredLabel={inferredBadge}
+        >
           <FormInput
             id="event-price"
             placeholder={tEvent("fields.pricePlaceholder")}
-            {...register("price")}
+            {...registerWithClear("price")}
           />
         </FormField>
 
@@ -363,6 +502,8 @@ export function EventForm({
           label={tEvent("fields.genre")}
           name="event-genre"
           helper={tEvent("fields.genreHelper")}
+          inferred={inferredFields.has("genres")}
+          inferredLabel={inferredBadge}
         >
           <Controller
             control={control}
@@ -372,7 +513,10 @@ export function EventForm({
                 id="event-genre"
                 aria-describedby="event-genre-helper"
                 value={field.value ?? []}
-                onValueChange={field.onChange}
+                onValueChange={(next) => {
+                  clearInferred("genres")
+                  field.onChange(next)
+                }}
                 suggestions={genreSuggestions}
                 placeholder={tEvent("fields.genrePlaceholder")}
                 createLabel={(v) => tEvent("fields.genreCreate", { value: v })}
@@ -403,6 +547,26 @@ export function EventForm({
           emptyLabel={tForms("noImages")}
           newBadgeLabel={tForms("newBadge")}
         />
+
+        <div className="flex flex-col gap-xs">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleAutofill}
+            disabled={!flyerUrl || autofilling}
+            className="self-start"
+          >
+            {autofilling ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden={true} />
+            ) : (
+              <Sparkles className="h-4 w-4" aria-hidden={true} />
+            )}
+            {autofilling ? tEvent("autofill.loading") : tEvent("autofill.button")}
+          </Button>
+          <p className="text-caption text-fg-tertiary">
+            {flyerUrl ? tEvent("autofill.help") : tEvent("autofill.hint")}
+          </p>
+        </div>
       </FormSection>
 
       <div className="flex flex-wrap items-center gap-s border-t border-border pt-l">
