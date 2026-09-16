@@ -24,6 +24,7 @@
  *   400 { error, code }                        // json inválido / body inválido / url no permitida
  *   401 { error, code: "UNAUTHORIZED" }
  *   403 { error, code: "FORBIDDEN" }
+ *   429 { error, code: "RATE_LIMITED" }         // throttle por-usuario in-memory
  *   500 { error, code: "MISSING_API_KEY" }     // falta ANTHROPIC_API_KEY
  *   502 { error, code: "ANTHROPIC_ERROR" }     // fallo llamando a Anthropic
  */
@@ -34,6 +35,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getCurrentUser, isCreatorOrAdmin } from "@/services/auth"
 import { isAllowedCloudinaryUrl } from "@/lib/cloudinary-url"
+import { checkRateLimit } from "@/lib/rate-limit"
 import {
   EXTRACT_EVENT_TOOL,
   EXTRACT_EVENT_TOOL_NAME,
@@ -92,6 +94,25 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "invalid_image_url", code: "INVALID_IMAGE_URL" },
       { status: 400 }
+    )
+  }
+
+  // Throttle in-memory por-USUARIO (no por IP) para evitar hammering accidental
+  // de este endpoint caro (cada request dispara una llamada a Anthropic con
+  // costo). Keyeamos por `user.id` para que el límite sea por cuenta creator y
+  // no compartido entre todas. Un quota de billing durable (persistido en DB)
+  // es un posible follow-up futuro — acá alcanza con un throttle en memoria.
+  const rate = checkRateLimit(`flyer-extract:${user.id}`, {
+    windowMs: 5 * 60_000,
+    maxRequests: 10,
+  })
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "rate_limited", code: "RATE_LIMITED" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
     )
   }
 

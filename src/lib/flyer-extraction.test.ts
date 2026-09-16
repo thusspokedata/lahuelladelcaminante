@@ -112,6 +112,29 @@ describe("parseExtraction", () => {
     expect(out.dates.value).toEqual(["2026-07-04"])
   })
 
+  it("drops impossible calendar dates (e.g. Feb 30, Apr 31)", () => {
+    const out = parseExtraction(
+      { dates: { value: ["2026-02-30", "2026-04-31", "2026-03-15"], inferred: false } },
+      { today: TODAY }
+    )
+    // Feb 30 y Apr 31 no existen → dropeados; solo sobrevive el válido.
+    expect(out.dates.value).toEqual(["2026-03-15"])
+  })
+
+  it("accepts Feb 29 on a leap year and rejects it on a non-leap year", () => {
+    const leap = parseExtraction(
+      { dates: { value: ["2028-02-29"], inferred: false } },
+      { today: TODAY }
+    )
+    expect(leap.dates.value).toEqual(["2028-02-29"])
+
+    const nonLeap = parseExtraction(
+      { dates: { value: ["2026-02-29"], inferred: false } },
+      { today: TODAY }
+    )
+    expect(nonLeap.dates.value).toEqual([])
+  })
+
   it("tolerates bare (unwrapped) string/array values from the model", () => {
     const out = parseExtraction(
       { title: "Bare Title", genres: ["cumbia"] },

@@ -22,6 +22,27 @@ describe("isAllowedCloudinaryUrl", () => {
     ).toBe(true)
   })
 
+  it("rejects an image/fetch URL on our own cloud (remote fetch abuse)", () => {
+    // `image/fetch` haría que Cloudinary descargue una imagen remota
+    // arbitraria que luego mandaríamos a Anthropic. Debe rechazarse aunque
+    // el cloud name sea el nuestro.
+    expect(
+      isAllowedCloudinaryUrl(
+        `https://res.cloudinary.com/${CLOUD}/image/fetch/https://example.com/flyer.jpg`,
+        CLOUD
+      )
+    ).toBe(false)
+  })
+
+  it("accepts a normal image/upload delivery URL", () => {
+    expect(
+      isAllowedCloudinaryUrl(
+        `https://res.cloudinary.com/${CLOUD}/image/upload/v1/events/flyer.jpg`,
+        CLOUD
+      )
+    ).toBe(true)
+  })
+
   it("rejects a foreign Cloudinary cloud", () => {
     expect(
       isAllowedCloudinaryUrl(

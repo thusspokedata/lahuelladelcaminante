@@ -27,7 +27,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import FormField, { InferredBadge } from "@/components/forms/FormField"
@@ -144,6 +144,12 @@ export function EventForm({
   const inferredBadge = tEvent("autofill.inferredBadge")
   const flyerUrl = newImages[0]?.url ?? existingImages[0]?.url
 
+  // Siempre refleja el flyer actual. `handleAutofill` awaitea la extracción;
+  // si el user quita/reemplaza el flyer mientras tanto, comparamos contra este
+  // ref al resolver para descartar respuestas stale (de un flyer viejo).
+  const flyerUrlRef = useRef(flyerUrl)
+  flyerUrlRef.current = flyerUrl
+
   /** Quita un campo del set de inferidos (borra su badge) cuando el user lo edita. */
   const clearInferred = (name: string) =>
     setInferredFields((prev) => {
@@ -167,12 +173,13 @@ export function EventForm({
 
   async function handleAutofill() {
     if (!flyerUrl || autofilling) return
+    const requestedFlyerUrl = flyerUrl
     setAutofilling(true)
     try {
       const res = await fetch("/api/events/extract-from-flyer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: flyerUrl, locale }),
+        body: JSON.stringify({ imageUrl: requestedFlyerUrl, locale }),
       })
       if (!res.ok) {
         toast.error(tEvent("autofill.error"))
@@ -187,13 +194,19 @@ export function EventForm({
         return
       }
 
+      // El user pudo haber quitado/reemplazado el flyer mientras esperábamos:
+      // si ya no coincide con el que pedimos, descartamos la respuesta stale.
+      if (flyerUrlRef.current !== requestedFlyerUrl) return
+
       const inferred = new Set<string>()
       const applyString = (
         name: "title" | "description" | "venue" | "city" | "address" | "organizer" | "time" | "price",
         field: { value: string; inferred: boolean }
       ) => {
+        // No pisar un valor que el user ya tipeó con "" del extractor.
+        if (!field.value) return
         setValue(name, field.value, { shouldDirty: true })
-        if (field.inferred && field.value) inferred.add(name)
+        if (field.inferred) inferred.add(name)
       }
 
       applyString("title", data.title)
@@ -205,9 +218,11 @@ export function EventForm({
       applyString("time", data.time)
       applyString("price", data.price)
 
-      setValue("genres", data.genres.value, { shouldDirty: true })
-      if (data.genres.inferred && data.genres.value.length > 0) {
-        inferred.add("genres")
+      // Solo aplicar géneros si el extractor devolvió alguno — no vaciar los
+      // que el user ya haya cargado.
+      if (data.genres.value.length > 0) {
+        setValue("genres", data.genres.value, { shouldDirty: true })
+        if (data.genres.inferred) inferred.add("genres")
       }
 
       if (data.dates.value.length > 0) {

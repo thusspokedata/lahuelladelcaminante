@@ -199,27 +199,43 @@ function normalizeDate(
   const full = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
   if (full) {
     const [, y, m, d] = full
+    const year = Number(y)
     const month = Number(m)
     const day = Number(d)
-    if (!isValidMonthDay(month, day)) return null
+    if (!isRealCalendarDate(year, month, day)) return null
     return { value: `${y}-${pad(month)}-${pad(day)}`, yearInferred: false }
   }
 
-  // Sin año: MM-DD ⇒ inferimos la próxima ocurrencia futura.
+  // Sin año: MM-DD ⇒ inferimos la próxima ocurrencia futura, y validamos el
+  // día contra ese año concreto (respeta largo del mes y bisiestos).
   const noYear = s.match(/^(\d{1,2})-(\d{1,2})$/)
   if (noYear) {
     const month = Number(noYear[1])
     const day = Number(noYear[2])
-    if (!isValidMonthDay(month, day)) return null
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null
     const year = nextFutureYear(month, day, today)
+    if (!isRealCalendarDate(year, month, day)) return null
     return { value: `${year}-${pad(month)}-${pad(day)}`, yearInferred: true }
   }
 
   return null
 }
 
-function isValidMonthDay(month: number, day: number): boolean {
-  return month >= 1 && month <= 12 && day >= 1 && day <= 31
+/**
+ * Valida que (year, month, day) sea un día real del calendario — descarta
+ * casos como 2026-02-30 o 2026-04-31 que un chequeo de rango fijo (día 1-31
+ * para todo mes) dejaría pasar. Round-trip por UTC: construimos la fecha y
+ * confirmamos que el año/mes/día resultantes coinciden con los inputs (si el
+ * día se pasa del largo del mes, Date "rueda" al mes siguiente y no matchea).
+ * Maneja largos de mes y años bisiestos sin tablas manuales.
+ */
+function isRealCalendarDate(year: number, month: number, day: number): boolean {
+  const dt = new Date(Date.UTC(year, month - 1, day))
+  return (
+    dt.getUTCFullYear() === year &&
+    dt.getUTCMonth() === month - 1 &&
+    dt.getUTCDate() === day
+  )
 }
 
 function pad(n: number): string {
