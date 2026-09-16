@@ -181,6 +181,15 @@
       "genreCreate": "„{value}“ erstellen",
       "genreEmpty": "Keine Treffer",
       "removeGenre": "{genre} entfernen"
+    },
+    "autofill": {
+      "button": "Mit KI ausfüllen",
+      "loading": "Flyer wird gelesen…",
+      "inferredBadge": "abgeleitet",
+      "help": "Prüfe die automatisch ausgefüllten Felder vor dem Speichern.",
+      "hint": "Lade einen Flyer hoch, um die Felder automatisch auszufüllen.",
+      "success": "Felder ausgefüllt. Bitte vor dem Speichern prüfen.",
+      "error": "Ich konnte den Flyer nicht lesen, bitte fülle die Daten manuell aus."
     }
   },
   "artistForm": {

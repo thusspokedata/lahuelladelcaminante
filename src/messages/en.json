@@ -181,6 +181,15 @@
       "genreCreate": "Create “{value}”",
       "genreEmpty": "No matches",
       "removeGenre": "Remove {genre}"
+    },
+    "autofill": {
+      "button": "Autofill with AI",
+      "loading": "Reading flyer…",
+      "inferredBadge": "inferred",
+      "help": "Review the autofilled fields before saving.",
+      "hint": "Upload a flyer to autofill the fields.",
+      "success": "Fields autofilled. Review them before saving.",
+      "error": "I couldn't read the flyer, please fill in the details manually."
     }
   },
   "artistForm": {

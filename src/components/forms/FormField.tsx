@@ -40,6 +40,10 @@ export interface FormFieldProps {
   required?: boolean
   helper?: string
   error?: string
+  /** Marca el campo como autocompletado por IA (badge "inferido" junto al label). */
+  inferred?: boolean
+  /** Texto del badge de inferido (i18n). Requerido para que el badge aparezca. */
+  inferredLabel?: string
   children: React.ReactNode
   className?: string
 }
@@ -50,6 +54,8 @@ export default function FormField({
   required,
   helper,
   error,
+  inferred,
+  inferredLabel,
   children,
   className,
 }: FormFieldProps) {
@@ -75,6 +81,9 @@ export default function FormField({
         {required ? (
           <span className="sr-only"> {t("required")}</span>
         ) : null}
+        {inferred && inferredLabel ? (
+          <InferredBadge label={inferredLabel} />
+        ) : null}
       </label>
 
       {children}
@@ -87,5 +96,27 @@ export default function FormField({
         </p>
       ) : null}
     </div>
+  )
+}
+
+/**
+ * Badge "inferido" — chip sutil que señala un campo autocompletado por IA.
+ * Se renderiza DENTRO del `<label>` (o `<legend>`) así el screen reader lo
+ * lee como parte del nombre del campo ("Título del evento · inferido"),
+ * dándole al usuario de SR el mismo contexto que al vidente. Exportado para
+ * reusarlo en agrupaciones que no usan `FormField` (p. ej. el fieldset de
+ * fechas en `EventForm`).
+ */
+export function InferredBadge({ label }: { label: string }) {
+  return (
+    <span
+      className={cn(
+        "ml-2 inline-flex items-center rounded-sm align-middle",
+        "bg-editorial/15 text-editorial",
+        "px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider"
+      )}
+    >
+      {label}
+    </span>
   )
 }

@@ -181,6 +181,15 @@
       "genreCreate": "Crear «{value}»",
       "genreEmpty": "Sin coincidencias",
       "removeGenre": "Quitar {genre}"
+    },
+    "autofill": {
+      "button": "Autocompletar con IA",
+      "loading": "Leyendo flyer…",
+      "inferredBadge": "inferido",
+      "help": "Revisá los campos autocompletados antes de guardar.",
+      "hint": "Subí un flyer para autocompletar los campos.",
+      "success": "Campos autocompletados. Revisalos antes de guardar.",
+      "error": "No pude leer el flyer, cargá los datos a mano."
     }
   },
   "artistForm": {

@@ -45,3 +45,43 @@ export function getCloudinaryUrl(
     .join(",")
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`
 }
+
+/**
+ * Host de delivery estándar de Cloudinary.
+ */
+export const CLOUDINARY_DELIVERY_HOST = "res.cloudinary.com"
+
+/**
+ * Guard anti-abuso para el endpoint `/api/events/extract-from-flyer`: valida
+ * que una URL de imagen pertenece a NUESTRA cloud de Cloudinary antes de
+ * mandarla al extractor de IA (que la descarga y la analiza, con costo por
+ * request). Sin esto, cualquiera con rol creator podría mandar URLs
+ * arbitrarias y hacernos pagar por analizar imágenes ajenas.
+ *
+ * Solo acepta el host de delivery estándar (`res.cloudinary.com`) sobre https
+ * y cuyo primer segmento de path sea `cloudName` — las URLs de Cloudinary
+ * tienen la forma `https://res.cloudinary.com/<cloud_name>/image/upload/...`
+ * (ver `getCloudinaryUrl` arriba, que las construye con esa misma estructura).
+ *
+ * Función pura (recibe `cloudName` en vez de leer el env) para poder
+ * unit-testearla sin el handler.
+ */
+export function isAllowedCloudinaryUrl(
+  rawUrl: string,
+  cloudName: string | undefined | null
+): boolean {
+  if (!cloudName) return false
+
+  let url: URL
+  try {
+    url = new URL(rawUrl)
+  } catch {
+    return false
+  }
+
+  if (url.protocol !== "https:") return false
+  if (url.hostname !== CLOUDINARY_DELIVERY_HOST) return false
+
+  const firstSegment = url.pathname.split("/").filter(Boolean)[0]
+  return firstSegment === cloudName
+}
