@@ -22,7 +22,7 @@
     "@prisma/adapter-neon": "^7.7.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
-    "@trigger.dev/sdk": "^4.5.15",
+    "@trigger.dev/sdk": "^4.7.2",
     "better-auth": "^1.6.22",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
