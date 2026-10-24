@@ -48,7 +48,7 @@ GOTCHAS TÉCNICOS
 - Usá Node 22.13.1 para builds y Prisma en local:
   export PATH="$HOME/.nvm/versions/node/v22.13.1/bin:$PATH"
   (el shell por default trae Node viejo y Prisma 7 falla). El contenedor de la Pi usa node:22 (bookworm-slim).
-- El repo usa npm (package-lock.json) como lockfile real. deploy.sh usa npm.
+- El repo usa npm (package-lock.json) como lockfile real.
 - No hay postinstall: prisma generate → después de npm ci/install hay que correr
   prisma generate a mano o el build falla con errores de tipo.
 - psql local: el DATABASE_URL de Neon trae sslmode=verify-full, que necesita un
@@ -78,8 +78,8 @@ DEPLOY A PRODUCCIÓN (el sitio se migró del VPS a la Raspberry Pi `nextcloud`)
     (transaccional + idempotente). Sin psql a mano: `npx prisma db execute --file=<script>`
     (usa prisma.config → la DB de prod), o vía el contenedor de la Pi.
 - Gestión en la Pi: `docker compose logs -f` / `restart` / `up -d --build` en `~/lahuelladelcaminante`.
-- LEGACY (superado): `bash deploy.sh` → VPS (root@187.33.155.194, build local + rsync + PM2).
-  Era el prod anterior; quedó atrás tras la migración a la Pi. Solo referencia histórica.
+- `bash deploy.sh` automatiza este flujo (rsync sin --delete + build en la Pi + verificación
+  y rollback de imagen). El deploy viejo al VPS (root@187.33.155.194, PM2) ya no existe.
 - Deploy y mutaciones de servicios externos (gh pr merge, gh api, git push, ssh a la Pi/VPS,
   tocar la DB de prod) → pedime confirmación explícita por chat; un OK general no alcanza.
   (El SSH lo apruebo por Bitwarden en cada conexión. Firmar commits NO usa Bitwarden: es

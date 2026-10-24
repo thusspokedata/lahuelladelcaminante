@@ -1,86 +1,104 @@
 #!/bin/bash
-# Deploy script — builds locally (VPS cannot reliably run npm install or next build)
-# then syncs build output and node_modules to server via rsync.
-set -e
+# Deploy de producción: working tree local (main) -> Pi `nextcloud`, build en la Pi.
+#
+# Topología:
+#   lahuelladelcaminante.de -> vps2 (nginx, solo reverse proxy)
+#     -> WireGuard 10.8.0.2:3007 -> Pi `nextcloud` (ssh alias `web` por defecto)
+#     -> contenedor `lahuelladelcaminante` (compose en ~/lahuelladelcaminante)
+#
+# Dockerfile, docker-compose.yml, .dockerignore, app.env, db.env e infra/ viven
+# SOLO en la Pi: este script no los sube ni los borra. El rsync va sin --delete
+# (un archivo borrado en el repo queda en la Pi; borrarlo allá a mano).
+# El build corre nativo en la Pi (arm64), así que no se sube node_modules ni .next.
+#
+# Uso:
+#   bash deploy.sh             # deploy completo
+#   bash deploy.sh --dry-run   # muestra qué subiría el rsync, sin tocar nada
+#   PI_HOST=nextcloud bash deploy.sh   # si tu alias ssh de la Pi es otro
+set -euo pipefail
+cd "$(dirname "$0")"
 
-VPS="root@187.33.155.194"
-REMOTE_DIR="/var/www/lahuelladelcaminante"
+PI="${PI_HOST:-web}"
+REMOTE_DIR=lahuelladelcaminante
+DRY=0
+die(){ echo "✗ $*" >&2; exit 1; }
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY=1 ;;
+    *) die "Argumento desconocido: $arg (solo existe --dry-run)" ;;
+  esac
+done
 
-echo "→ Building locally..."
-# NEXT_PUBLIC_* se inlinea en BUILD TIME desde el entorno de esta máquina
-# (.env.local local). Si falta el website-id de Umami, el tracker desaparece
-# de prod sin error — warning visible para que no pase silencioso.
-if ! grep -q "^NEXT_PUBLIC_UMAMI_WEBSITE_ID=." .env.local 2>/dev/null; then
-  echo "⚠ WARNING: NEXT_PUBLIC_UMAMI_WEBSITE_ID no está en .env.local — el build sale SIN analytics."
+# --- 1. Solo se despliega main limpio y al día con origin ---
+[ "$(git rev-parse --abbrev-ref HEAD)" = main ] || die "No estás en main."
+[ -z "$(git status --porcelain)" ] || die "Hay cambios sin commitear."
+git fetch -q origin main
+[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || die "main local no coincide con origin/main (git pull)."
+SHA="$(git rev-parse HEAD)"
+echo "→ Deploy de ${SHA:0:7} a $PI:~/$REMOTE_DIR"
+
+# --- 2. Subir el código (sin --delete, sin los archivos propios de la Pi) ---
+# Solo archivos versionados (git ls-files): nada ignorado por git llega a la Pi,
+# así que lo desplegado es exactamente $SHA. --checksum + permisos fijos: solo
+# viajan (y se listan) los cambios de contenido.
+FILES="$(mktemp)"; trap 'rm -f "$FILES"' EXIT
+# (las carpetas de agentes no van a la Pi; con --files-from rsync no aplica
+# --exclude de directorio a archivos listados, así que se filtran acá)
+git ls-files -z -- . ':!:.claude' ':!:.superpowers' > "$FILES"
+RSYNC_OPTS=(-rlz --checksum --chmod=D755,F644 --itemize-changes --from0 --files-from="$FILES"
+  --exclude=.git --exclude=node_modules/ --exclude=.next/
+  --exclude=app.env --exclude=db.env --exclude='.env*'
+  --exclude=Dockerfile --exclude=docker-compose.yml --exclude=.dockerignore
+  --exclude=infra/ --exclude=DEPLOYED_SHA --exclude='*.bak*'
+  --exclude=.DS_Store --exclude=tsconfig.tsbuildinfo --exclude=next-env.d.ts
+  --exclude=.claude/ --exclude=.superpowers/)
+# La salida se guarda aparte: si rsync falla, el deploy se corta (no se compila
+# código viejo ni se anota el SHA nuevo).
+if [ "$DRY" = 1 ]; then
+  echo "→ rsync --dry-run (archivos que cambiarían):"
+  OUT="$(rsync -n "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/")" || die "rsync --dry-run falló."
+  grep -v '/$' <<<"$OUT" || echo "  (ninguno)"
+  exit 0
 fi
-npm run build
+echo "→ rsync..."
+OUT="$(rsync "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/")" || die "rsync falló: no se tocó el contenedor."
+grep -v '/$' <<<"$OUT" || true
 
-echo "→ Syncing code to VPS..."
-ssh $VPS "cd $REMOTE_DIR && git pull"
+# --- 3. Build y recreate en la Pi, con rollback a la imagen previa ---
+ssh "$PI" bash -s -- "$SHA" <<'REMOTE'
+set -euo pipefail
+SHA="$1"
+cd ~/lahuelladelcaminante
+PREV="pre-$(cut -c1-7 DEPLOYED_SHA 2>/dev/null || date +%Y%m%d-%H%M)"
+docker tag lahuelladelcaminante:latest "lahuelladelcaminante:$PREV"
+echo "→ imagen actual guardada como :$PREV"
 
-echo "→ Syncing .next to VPS..."
-rsync -az --delete .next/ $VPS:$REMOTE_DIR/.next/
+rollback(){
+  rc=$?
+  [ $rc -eq 0 ] && return
+  echo "✗ FALLO (rc=$rc): vuelvo a :$PREV" >&2
+  docker tag "lahuelladelcaminante:$PREV" lahuelladelcaminante:latest
+  docker compose up -d --no-deps --no-build web || true
+  echo "  El código nuevo sigue en la Pi; el contenedor corre la imagen previa." >&2
+}
+trap rollback EXIT
 
-echo "→ Syncing node_modules to VPS..."
-rsync -az --delete node_modules/ $VPS:$REMOTE_DIR/node_modules/
+echo "→ docker compose build web (en la Pi, ~15 min)..."
+docker compose build web
+docker compose up -d --no-deps web
 
-echo "→ Installing Linux-specific native binaries..."
-# El rsync de `node_modules/` desde Mac (arm64) pisa los binarios nativos
-# Linux que necesita el runtime del VPS. Hay que re-instalarlos para que
-# Next/SWC/Tailwind/lightningcss/etc puedan cargar sus addons compilados.
-# `--no-save` evita modificar package.json/package-lock.json del VPS
-# (en el pasado se agregaron sin esa flag y quedó drift git que abortó
-# pulls — ver commit que introdujo este fix).
-#
-# Si en el futuro Next/Prisma/Tailwind suben de versión y agregan un
-# binario Linux nuevo, agregarlo a esta lista. Síntoma típico de uno
-# que falta: PM2 entra en restart loop apenas se hace `pm2 restart`, y
-# `pm2 logs lahuella` muestra "Cannot find module ...-linux-x64-..."
-# en el primer log line.
-#
-# `|| true` mantiene back-compat con el patrón previo: si un install
-# falla (network down, versión renombrada), el deploy continúa. Deuda
-# conocida — si pasa, el sitio se rompe en runtime y lo notamos por
-# el health check siguiente.
-ssh $VPS "cd $REMOTE_DIR && npm install --no-save \
-  @next/swc-linux-x64-gnu \
-  @parcel/watcher-linux-x64-glibc \
-  @rolldown/binding-linux-x64-gnu \
-  @swc/core-linux-x64-gnu \
-  @tailwindcss/oxide-linux-x64-gnu \
-  @unrs/resolver-binding-linux-x64-gnu \
-  lightningcss-linux-x64-gnu \
-  2>/dev/null || true"
+echo "→ esperando healthy..."
+for _ in $(seq 1 60); do
+  [ "$(docker inspect -f '{{.State.Health.Status}}' lahuelladelcaminante)" = healthy ] && break
+  sleep 5
+done
+[ "$(docker inspect -f '{{.State.Health.Status}}' lahuelladelcaminante)" = healthy ]
+for p in /es /de; do
+  code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:3007$p")"
+  [ "$code" = 200 ] || { echo "✗ $p devolvió $code" >&2; exit 1; }
+done
 
-echo "→ Applying pending migrations on VPS..."
-# `migrate deploy` aplica las migrations pendientes en orden, sin prompts.
-# Idempotente: si no hay nuevas, no hace nada. Imprescindible en este step
-# del flow porque `prisma generate` (siguiente) NO toca el DB — solo
-# regenera el client TS. Sin esto, código nuevo que referencia columnas
-# de migrations no aplicadas vuelca 500 en runtime.
-#
-# DATABASE_URL / DIRECT_URL: en Prisma 7 las URLs no viven en el schema
-# (`datasource db` solo declara `provider`); la URL para el CLI vive en
-# `prisma.config.ts`, donde resolvemos `process.env.DIRECT_URL ??
-# process.env.DATABASE_URL`. Prisma CLI por sí solo NO auto-loadea
-# `.env.local` (solo `.env`); ese gap lo cierra el `loadEnv()` custom
-# del propio `prisma.config.ts`, que lee `.env.local` y populá
-# `process.env` antes de que se resuelva el datasource.
-#
-# Por qué `DIRECT_URL`: el pooler de Neon no soporta de forma confiable
-# `pg_advisory_lock`, lo que producía P1002 intermitente en `migrate
-# deploy`. El endpoint sin pooler lo cierra. El runtime client de la app
-# sigue usando `DATABASE_URL` (pooler) vía el adapter PrismaPg en
-# `src/lib/prisma.ts` — independiente de esto.
-#
-# Verificado empíricamente: `prisma migrate status` desde el VPS conecta
-# a Neon prod.
-ssh $VPS "cd $REMOTE_DIR && npx prisma migrate deploy"
-
-echo "→ Regenerating Prisma client on VPS..."
-ssh $VPS "cd $REMOTE_DIR && npx prisma generate"
-
-echo "→ Restarting PM2..."
-ssh $VPS "pm2 restart lahuella"
-
-echo "✓ Deploy completo — https://lahuelladelcaminante.de"
+echo "$SHA" > DEPLOYED_SHA
+echo "✓ Deploy OK: ${SHA:0:7} (healthy, /es y /de 200)."
+echo "  Imagen previa: lahuelladelcaminante:$PREV (borrar con docker rmi cuando esté estable)."
+REMOTE

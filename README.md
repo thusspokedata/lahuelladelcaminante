@@ -76,17 +76,23 @@ npx prisma studio
 
 ## Deploy en producción
 
-El proyecto corre en `root@187.33.155.194` bajo PM2 en el puerto **3002**, servido por nginx con SSL.
+El sitio corre en un contenedor Docker en la Raspberry Pi `nextcloud` (`~/lahuelladelcaminante`, puerto **3007**). nginx en el VPS lo sirve con TLS y le pasa el tráfico por un túnel WireGuard.
 
-Para deployar una nueva versión, ejecutar **desde tu máquina local**:
+Para deployar `main`, ejecutar **desde tu máquina local**, con `main` limpio y al día:
 
 ```bash
+bash deploy.sh --dry-run   # muestra qué archivos subiría
 bash deploy.sh
 ```
 
-El script hace: `git pull` en el VPS → `npm run build` local → `rsync .next/` al VPS → `pm2 restart`.
+El script:
 
-> **Por qué se buildea localmente:** el VPS tiene 1GB de RAM, insuficiente para el build de Next.js 16. El build corre en tu máquina y solo se sube la carpeta `.next` compilada via rsync. Esto también significa que los `node_modules` del VPS nunca se tocan durante el deploy, evitando corrupción de binarios nativos (problema que ocurrió con `@swc/core`, `lightningcss`, etc. al quedarse sin memoria durante `npm install`).
+1. Hace `rsync` del working tree a la Pi, **sin `--delete`** y sin tocar lo que vive solo allá: `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `app.env`, `db.env`, `infra/`.
+2. Guarda la imagen actual como `:pre-<sha>`.
+3. Corre `docker compose build web` **en la Pi** (arm64 nativo, ~15 min) y recrea el contenedor.
+4. Verifica healthy y `/es` y `/de` 200. Si algo falla, vuelve a la imagen previa.
+
+Las `NEXT_PUBLIC_*` se hornean desde los build args de `docker-compose.yml` en la Pi, no desde tu `.env.local`. El alias ssh por defecto es `web`; si el tuyo es otro, usá `PI_HOST=nextcloud bash deploy.sh`.
 
 ---
 
