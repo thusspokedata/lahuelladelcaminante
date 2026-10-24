@@ -21,8 +21,13 @@ cd "$(dirname "$0")"
 PI="${PI_HOST:-web}"
 REMOTE_DIR=lahuelladelcaminante
 DRY=0
-[ "${1:-}" = --dry-run ] && DRY=1
 die(){ echo "✗ $*" >&2; exit 1; }
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY=1 ;;
+    *) die "Argumento desconocido: $arg (solo existe --dry-run)" ;;
+  esac
+done
 
 # --- 1. Solo se despliega main limpio y al día con origin ---
 [ "$(git rev-parse --abbrev-ref HEAD)" = main ] || die "No estás en main."
@@ -33,21 +38,29 @@ SHA="$(git rev-parse HEAD)"
 echo "→ Deploy de ${SHA:0:7} a $PI:~/$REMOTE_DIR"
 
 # --- 2. Subir el código (sin --delete, sin los archivos propios de la Pi) ---
-# --checksum + permisos fijos: solo viajan (y se listan) los cambios de contenido.
-RSYNC_OPTS=(-rlz --checksum --chmod=D755,F644 --itemize-changes
+# Solo archivos versionados (git ls-files): nada ignorado por git llega a la Pi,
+# así que lo desplegado es exactamente $SHA. --checksum + permisos fijos: solo
+# viajan (y se listan) los cambios de contenido.
+FILES="$(mktemp)"; trap 'rm -f "$FILES"' EXIT
+git ls-files -z > "$FILES"
+RSYNC_OPTS=(-rlz --checksum --chmod=D755,F644 --itemize-changes --from0 --files-from="$FILES"
   --exclude=.git --exclude=node_modules/ --exclude=.next/
   --exclude=app.env --exclude=db.env --exclude='.env*'
   --exclude=Dockerfile --exclude=docker-compose.yml --exclude=.dockerignore
   --exclude=infra/ --exclude=DEPLOYED_SHA --exclude='*.bak*'
   --exclude=.DS_Store --exclude=tsconfig.tsbuildinfo --exclude=next-env.d.ts
   --exclude=.claude/ --exclude=.superpowers/)
+# La salida se guarda aparte: si rsync falla, el deploy se corta (no se compila
+# código viejo ni se anota el SHA nuevo).
 if [ "$DRY" = 1 ]; then
   echo "→ rsync --dry-run (archivos que cambiarían):"
-  rsync -n "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/" | grep -v '/$' || echo "  (ninguno)"
+  OUT="$(rsync -n "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/")" || die "rsync --dry-run falló."
+  grep -v '/$' <<<"$OUT" || echo "  (ninguno)"
   exit 0
 fi
 echo "→ rsync..."
-rsync "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/" | grep -v '/$' || true
+OUT="$(rsync "${RSYNC_OPTS[@]}" ./ "$PI:$REMOTE_DIR/")" || die "rsync falló: no se tocó el contenedor."
+grep -v '/$' <<<"$OUT" || true
 
 # --- 3. Build y recreate en la Pi, con rollback a la imagen previa ---
 ssh "$PI" bash -s -- "$SHA" <<'REMOTE'
