@@ -42,7 +42,9 @@ echo "→ Deploy de ${SHA:0:7} a $PI:~/$REMOTE_DIR"
 # así que lo desplegado es exactamente $SHA. --checksum + permisos fijos: solo
 # viajan (y se listan) los cambios de contenido.
 FILES="$(mktemp)"; trap 'rm -f "$FILES"' EXIT
-git ls-files -z > "$FILES"
+# (las carpetas de agentes no van a la Pi; con --files-from rsync no aplica
+# --exclude de directorio a archivos listados, así que se filtran acá)
+git ls-files -z -- . ':!:.claude' ':!:.superpowers' > "$FILES"
 RSYNC_OPTS=(-rlz --checksum --chmod=D755,F644 --itemize-changes --from0 --files-from="$FILES"
   --exclude=.git --exclude=node_modules/ --exclude=.next/
   --exclude=app.env --exclude=db.env --exclude='.env*'
