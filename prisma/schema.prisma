@@ -42,6 +42,9 @@ model Session {
   userAgent String?
   createdAt DateTime
   updatedAt DateTime
+  // Plugin admin (impersonación). Better Auth 1.7 valida el schema al
+  // arrancar y rechaza todos los requests de auth si falta esta columna.
+  impersonatedBy String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
